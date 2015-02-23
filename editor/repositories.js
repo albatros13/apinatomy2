@@ -110,11 +110,14 @@ var tree = new Tree(treeRoot);
 var nodes = [
         new Node(0, 100, 100, null),
         new Node (1, 200, 200, null),
-        new Node (2, 300, 300, tree)
+        new Node (2, 300, 300, tree),
+        new Node (3, 200, 300, null)
     ],
     links = [
         new Link(nodes[0], nodes[1]),
-        new Link(nodes[1], nodes[2])
+        new Link(nodes[1], nodes[2]),
+        new Link(nodes[0], nodes[3]),
+        new Link(nodes[2], nodes[3])
     ];
 
 var graph = new Graph("Graph 1", "Testing graph", nodes, links);

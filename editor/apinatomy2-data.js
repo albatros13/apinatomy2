@@ -765,9 +765,6 @@ function Graph(id, name, nodes, links){
 
             // drawing paths
             path = path.selectAll('path').data(links);
-            path.classed('selected', function (d) {
-                return d === graph.selected_link;
-            });
 
             path.enter().append('path')
                 .attr('class', 'link')
@@ -798,8 +795,41 @@ function Graph(id, name, nodes, links){
                     graph.selected_node = null;
                     onSelectLink();
                     update();
+                })
+
+            //Variable 'path' already gives us access to a graph edge with associated link
+            //To draw a set of layers, we create a 'g' element (group) and place it to the middle of the edge
+            var auIcon = path.enter().append("g")
+                .attr("transform", function (d) {
+                    return "translate(" + (d.target.x + d.source.x) / 2 + "," + (d.target.y + d.source.y) / 2 + ")";
                 });
 
+            var layerHeight = 5; var layerLength = 30;
+            var prev = 0; //a variable to accumulate offset for layers
+            //To draw layers, we must get access to layers of the AU associated with each link
+            //However, not all links have AUs assigned, in this case we return an empty array
+            auIcon.selectAll(".layer")
+                .data(function (d){
+                    if (d.au) return d.au.layers;
+                    return [];
+                }).enter() //we just started an iteration over layers
+                .append("rect")
+                .attr("height", function (d) {return d.thickness * layerHeight;})
+                .attr("width", function (d) {return layerLength;})
+                .attr("x", function(){return 0;})
+                .attr("y", function (d, i) {
+                    if (i ==0) prev =0; // reset the starting y for layers for each link
+                    prev += d.thickness * layerHeight; //remember the relative Y coordinate of the current layer
+
+                    return prev - d.thickness * layerHeight;
+                })
+                .style("fill", function (d) {
+                    return d.material.colour;
+                })
+                .attr("class", "layer")
+            ;
+
+             //Print text label
             path.enter().append('text')
                 .attr('x', function (d) {
                     return (d.target.x + d.source.x)/2;
@@ -809,8 +839,9 @@ function Graph(id, name, nodes, links){
                 })
                 .attr('class', 'au')
                 .text(function (d) {
-                    if (d.au)
+                    if (d.au) {
                        return d.au.id;
+                    }
                 });
         }
 

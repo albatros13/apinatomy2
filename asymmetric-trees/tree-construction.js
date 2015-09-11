@@ -202,7 +202,7 @@ var treeEditor = function () {
                 var mean = eval(lengthMean.value);
                 var stDev = eval(lengthStDev.value);
                 var newBranchingFactor = eval(branchingFactor.value);
-                var newSkipProbability = eval(newSkipProbability.value);
+                var newSkipProbability = eval(skipProbability.value);
                 var newDistribution = (lengthDistribution.value == 1) ? new NormalDistribution(mean, stDev) : new UniformDistribution(mean, stDev);
                 selectedTree.levels[selectedLevelDepth - 1].branchingFactor = newBranchingFactor;
                 selectedTree.levels[selectedLevelDepth - 1].lengthDistr = newDistribution;

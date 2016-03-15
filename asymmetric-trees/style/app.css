@@ -1,0 +1,280 @@
+body .lm_content{
+    overflow-y: scroll;
+    overflow-x: auto;
+}
+
+.axis {
+    font: 10px sans-serif;
+}
+
+.axis path, .axis line {
+    fill: none;
+    stroke: #ccc;
+    shape-rendering: crispEdges;
+}
+
+.chart rect{
+    cursor: pointer;
+    opacity:  0.6;
+    stroke: steelblue;
+    stroke-width: 0.5px;
+}
+
+.barChart rect {
+    stroke: steelblue;
+    shape-rendering: crispEdges;
+}
+
+.treemapNode {
+    border: solid 1px white;
+    line-height: 0.95;
+    overflow: hidden;
+    position: absolute;
+    border-radius: 6px;
+    background-image: -webkit-linear-gradient(top, hsla(0,0%,100%,.3), hsla(0,0%,100%,0));
+    background-image:    -moz-linear-gradient(top, hsla(0,0%,100%,.3), hsla(0,0%,100%,0));
+    background-image:     -ms-linear-gradient(top, hsla(0,0%,100%,.3), hsla(0,0%,100%,0));
+    background-image:      -o-linear-gradient(top, hsla(0,0%,100%,.3), hsla(0,0%,100%,0));
+    background-image:         linear-gradient(top, hsla(0,0%,100%,.3), hsla(0,0%,100%,0));
+    text-shadow: -1px -1px 2px hsla(0,0%,100%,0.25),
+    -1px -1px 2px hsla(0,0%,100%,0.25),
+    -1px 1px 2px hsla(0,0%,100%,0.25),
+    1px -1px 2px hsla(0,0%,100%,0.25),
+    -1px 0 2px hsla(0,0%,100%,0.25),
+    1px 0 2px hsla(0,0%,100%,0.25);
+}
+
+.treemapNode div {
+    padding: 6px 4%;
+}
+
+.canonicalTree line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 2px;
+    cursor: default;
+}
+
+.canonicalTree circle {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 2px;
+}
+
+.canonicalTree rect {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 0.5px;
+}
+
+.node rect {
+    fill: #fff;
+    opacity: .5;
+    stroke: steelblue;
+    stroke-width: 0.5px;
+}
+
+.node text {
+    font: 10px sans-serif;
+    pointer-events: none;
+}
+
+.node circle {
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 2px;
+}
+
+path.link {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 2px;
+}
+
+circle.node {
+    stroke-width: 1.5px;
+    cursor: pointer;
+}
+
+circle .selected {
+    stroke: #f00;
+}
+
+text {
+    font: 10px sans-serif;
+    pointer-events: none;
+}
+
+text.id {
+    text-anchor: middle;
+    font-weight: bold;
+}
+
+.panel{
+    padding: 4px;
+    margin: 4px;
+}
+
+.panel > .content{
+    padding: 4px;
+}
+
+.panel > .heading{
+    padding: .325rem 0 ;
+    height: 2.025rem;
+    font-size: 1.000rem;
+}
+
+.panel > .heading > .icon {
+    height: 2.025rem;
+    width: 2.025rem;
+    padding: .325rem;
+}
+
+.panel:hover > .heading{
+    opacity: 0.5;
+}
+
+.accordion > .frame.alert > .heading, .frame.error > .heading, .frame.danger > .heading {
+    background-color: #ce352c;
+}
+
+.accordion > .frame.warning > .heading {
+    background-color: #fa6800;
+}
+
+.accordion > .frame.success > .heading {
+    background-color: #60a917;
+}
+
+.accordion > .frame.alert > .heading:hover,
+.accordion > .frame.error > .heading:hover,
+.accordion > .frame.danger > .heading:hover {
+    background-color: #ce352c;
+    border-color: #a0a0a0;
+    opacity: 0.7;
+}
+
+.accordion > .frame.warning > .heading:hover {
+    background-color: #fa6800;
+    border-color: #a0a0a0;
+    opacity: 0.7;
+}
+
+.accordion > .frame.success > .heading:hover {
+    background-color: #60a917;
+    border-color: #a0a0a0;
+    opacity: 0.7;
+}
+
+.accordion > .frame.active > .heading {
+    background-color: #f6f6f6;;
+    color: #1d1d1d;
+    border-color: #a0a0a0;
+    opacity: 0.7;
+}
+
+.accordion > .frame.alert.active > .heading,
+.accordion > .frame.error.active > .heading,
+.accordion > .frame.danger.active > .heading {
+    background-color: #ce352c;
+    color: #1d1d1d;
+}
+
+.accordion > .frame.warning.active > .heading {
+    background-color: #fa6800;
+    color: #1d1d1d;
+}
+
+.accordion > .frame.success.active > .heading {
+    background-color: #60a917;
+    color: #1d1d1d;
+}
+
+.accordion > .frame.active > .heading {
+    background-color: #f6f6f6;;
+    color: #1d1d1d;
+}
+
+.frame-toggle {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    margin-top: -8px;
+}
+
+.frame-placeholder {
+    border: 1px dotted black;
+    margin: 0 1em 1em 0;
+    height: 2.025rem;
+}
+
+.accordion{
+    padding: 4px;
+    margin: 10px;
+}
+
+.accordion > .frame > .heading .icon {
+    height: 1.625rem;
+    width: 1.625rem;
+}
+
+.button{
+    border: 1px solid #b4b4b4;
+}
+
+.image-button{
+    margin: 2px;
+    border: 1px solid #b4b4b4;
+}
+
+.toolbar{
+    margin: 4px;
+}
+
+.button-group{
+    margin: 4px;
+}
+
+.input-control{
+    margin: 1rem 4px 4px 4px;
+}
+
+.row {
+    border: 1px #d9d9d9 solid;
+    margin: 4px;
+    padding: 4px;
+}
+
+.cell{
+    border: 1px #d9d9d9 solid;
+    margin: 4px;
+    padding: 4px;
+}
+
+.v-divider {
+    content: "";
+    display: inline-block;
+    width: 0;
+    height: 1.68rem;
+    border-right: 1px solid #fafafa;
+    border-left: 1px solid #b4b4b4;
+    padding: 0;
+    position: relative;
+    top: 10px;
+}
+
+fieldset {
+    border: 1px ridge #e3e3e3;
+}
+
+div.tooltip {
+    position: absolute;
+    padding: 2px;
+    background-color: #f5f5f5;
+    font: 12px sans-serif;
+    border: 1px solid #666;
+    pointer-events: none;
+}
+
+

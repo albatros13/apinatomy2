@@ -1,404 +1,8 @@
-/************************************/
-         /*Repository editor*/
-/************************************/
-function RepoEditor(items) {
-    this.items = items;
-    this.itemsPanel = null;
-    if (!items) this.items = [];
-
-    this.url = "";
-    this.urlExtension = "";
-    this.contentPanel = null;
-    this.editorEnabled = false;
-    this.parent = null;
-
-    this.onClick = function(){};
-
-    this.getItem = function(index){
-        return this.items[index];
-    };
-
-    this.getItemByID = function(id){
-        if (this.items)
-            return this.items.find(function(d){ return d.id === id;});
-        return null;
-    };
-
-
-    this.getIndexByID = function(id){
-        var repo = this;
-        for (var i = 0; i < repo.items.length; i++){
-            if (repo.items[i].id == id) return i;
-        }
-        return -1;
-    };
-
-    this.getIDList = function(){
-        return this.getValidItems().map(function(d) {return d.id;});
-    };
-
-    this.getItemList = function(){
-        return this.getValidItems().map(function(d) {return {id: d.id, caption: d.getHeaderTitle()};});
-    };
-
-    this.isModified = function(){
-        if (!this.items) return false;
-        this.items.forEach(function(d){
-            if (d.isModified) return true;
-        });
-        return false;
-    };
-
-    this.getValidItems = function(){
-        if (!this.items) return [];
-        return this.items.filter(function(d){ return d.isValid();});
-    };
-
-    this.addAt = function(item, index){
-        this.items.splice(index, 0, item);
-    };
-
-    this.removeAt = function(index){
-        return this.items.splice(index, 1);
-    };
-
-    /*this.replaceAt = function(item, index){
-        this.items.splice(index, 1, item);
-    };*/
-
-    this.swapItems = function(index1, index2){
-        var tmp = this.items[index1];
-        this.items[index1] = this.items[index2];
-        this.items[index2] = tmp;
-    };
-
-    this.clean = function(){
-        if (this.items)
-            this.items.remove(0, this.items.length);
-        if (this.itemsPanel) {
-            this.itemsPanel.empty();
-            this.itemsPanel.html();
-        }
-    };
-
-    this.sort = function(){
-        var repo = this;
-        if (repo.items && repo.defaultObject().isOrdered())
-            repo.items = repo.items.sort(function(a,b){
-                if (a.position && b.position)
-                    return a.position - b.position;
-                return 0;
-            });
-    };
-
-    this.enumerateItems = function(onlyValid){
-        var repo = this;
-        var i = 0;
-        repo.items.forEach(function(d){
-            var include = true;
-            if (onlyValid) include = d.isValid();
-            if (include)
-                repo.items[i].position = ++i;
-        });
-    };
-
-    this.beforeCommit = function(){
-        return true;
-    };
-
-    this.afterCommit = function(){
-        var repo = this;
-        repo.items = repo.items.filter(function(d){ return d.status !== "deleted"});
-        repo.enumerateItems(true);
-        for (var i = 0; i < repo.items.length; i++){
-            if (repo.items[i].header)
-                Components.setHeaderTitle(repo.items[i].header, repo.items[i].getHeaderTitle());
-        }
-        repo.updateContent();
-    };
-
-    this.commit = function(){
-        var repo = this;
-        if (repo.beforeCommit()) {
-            var repoChanged = false;
-            repo.items.forEach(function (d) {
-                if (d.commit && d.isModified()){
-                    d.commit(repo.url);
-                    repoChanged = true;
-                }
-            });
-            if (repoChanged) repo.afterCommit();
-        }
-    };
-
-    this.beforeLoad = function(){
-        return new RSVP.resolve();
-    };
-
-    this.afterLoad = function(data){
-        var repo = this;
-        for (var i = 0; i < data.length; i++) {
-            var newItem = repo.defaultObject();
-            newItem.setJSON(data[i]);
-            newItem.status = "ok";
-            newItem.prepareContent(repo.url);
-            repo.add(newItem);
-        }
-        repo.sort();
-        repo.updateContent();
-    };
-
-    this.load = function(url){
-        var repo = this;
-        repo.url = url;
-        var requestURL = repo.url + repo.urlExtension;
-        var load = function(){
-            return new RSVP.Promise(function(resolve, reject){
-                console.dir(requestURL);
-                $.ajax({
-                    url: requestURL,
-                    jsonp: "callback",
-                    dataType: "jsonp",
-                    success: function (response) {
-                        repo.afterLoad(response);
-                        resolve(response);
-                    },
-                    error: function(jqXhr, textStatus, errorThrown){
-                        reject({ jqXhr: jqXhr, textStatus: textStatus, errorThrown: errorThrown});
-                    },
-                    beforeSend: function(){
-                        repo.clean();
-                        Components.disableButtons(repo.contentPanel);
-                    },
-                    complete: function(){
-                        Components.enableButtons(repo.contentPanel);
-                    }
-                })
-            })
-        };
-
-        return repo.beforeLoad()
-            .then(load, logError);
-    };
-
-    this.loadDependent = function(requestURL){
-        var repo = this;
-        var load = function(){
-            return new RSVP.Promise(function(resolve, reject) {
-                if (!repo.parent || !repo.parent.id){
-                    $.Notify({
-                        caption: "Error",
-                        content: "Cannot load data: Parent ID is not specified",
-                        type: 'alert',
-                        keepOpen: true
-                    });
-                    reject("Cannot load data: Parent ID is not specified");
-                } else{
-                    console.dir(requestURL);
-                    $.ajax({
-                        url: requestURL,
-                        jsonp: "callback",
-                        dataType: "jsonp",
-                        success: function (response) {
-                            repo.afterLoad(response);
-                            resolve(response);
-                        },
-                        error: function(jqXhr, textStatus, errorThrown){
-                            reject({ jqXhr: jqXhr, textStatus: textStatus, errorThrown: errorThrown});
-                        },
-                        beforeSend: function(){
-                            repo.clean();
-                            Components.disableButtons(repo.contentPanel);
-                        },
-                        complete: function(){
-                            Components.enableButtons(repo.contentPanel);
-                        }
-                    })
-                }
-            });
-        };
-
-        return repo.beforeLoad()
-            .then(load, logError);
-    };
-
-    this.search = function(val){
-        var repo = this;
-        if (val.length == 0) {
-            repo.items.forEach(function(d){
-                if (d.header) d.header.show();
-            })
-        } else {
-            repo.items.forEach(function(d){
-                if (d.header) d.header.hide();
-            });
-            var selected = repo.items.filter(function(d) {
-                return (d.id + d.name.toLowerCase()).search(val.toLowerCase()) >= 0
-            });
-            selected.forEach(function(d){
-                if (d.header) d.header.show();
-            })
-        }
-    };
-
-    this.add = function(item){
-        this.addAt(item, 0);
-    };
-
-    this.restore = function(){
-        var repo = this;
-        repo.items.forEach(function(d){
-            if (d.status === "deleted")
-                if (d.prevStatus){
-                    d.status = d.prevStatus;
-                    d.prevStatus = "";
-                }
-        });
-
-        for (var i = repo.items.length - 1; i >= 0; i--) {
-            if(repo.items[i].status === "tmp") {
-                if (repo.items[i].header)
-                    repo.items[i].header.remove();
-                repo.removeAt(i);
-            }
-        }
-    };
-
-    this.printItems = function(label){
-        var repo = this;
-        var str = label;
-        repo.items.forEach(function(d) {
-            str += d.name + " ";
-        });
-        console.dir(str);
-    };
-
-    this.reorderItems = function(oldIndex, newIndex){
-        var repo = this;
-        var d = repo.items[oldIndex];
-        if (!d) return;
-        //repo.printItems("Old order: ");
-        repo.removeAt(oldIndex);
-        repo.addAt(d, newIndex);
-        if (d.isOrdered()) {
-            var min = newIndex, max = oldIndex;
-            if (min > max) {
-                min = oldIndex;
-                max = newIndex;
-            }
-            for (var i = min; i <= max; i++){
-                var e = repo.items[i];
-                e.markAsUpdated();
-                Components.updatePanelStatus(e.status, e.header);
-            }
-            if (d.repository){
-                d.repository.enumerateItems();
-                d.repository.sort();
-            }
-        }
-        //repo.printItems("New order: ");
-    };
-
-    this.updateContent = function() {
-        var repo = this;
-        console.dir("Updating panels for " + repo.urlExtension);
-
-        var updateHandler = function( event, ui ) {
-            var oldIndex = ui.item.attr("index");
-            var newIndex = -1;
-            var panels =  repo.itemsPanel.find('.frame');
-            panels.each(function(i) {
-                if ($(this).attr("index") == oldIndex)
-                    newIndex = i;
-            });
-            if (newIndex >= 0 && oldIndex >= 0){
-                repo.reorderItems(oldIndex, newIndex);
-                panels.each(function(index) {
-                    $(this).attr("index", index);
-                });
-            }
-        };
-
-        if (!repo.itemsPanel){
-            if (!repo.contentPanel) return;
-            repo.itemsPanel = Components.createAccordion(repo.contentPanel, true, updateHandler);
-        }
-
-        repo.itemsPanel.html();
-        var i = 0;
-        repo.items.forEach(function(d) {
-            if (!d.header) {
-                d.createHeader(repo.onClick);
-                if (repo.editorEnabled) {
-                    if (!d.editor) {
-                        d.createEditor(d.header);
-                    }
-                }
-            }
-            d.header.attr("index", i++);
-            d.header.appendTo(repo.itemsPanel);
-            Components.updatePanelStatus(d.status, d.header);
-        });
-    };
-
-    this.createHeaders = function(panel, onClick) {
-        var repo = this;
-        repo.contentPanel = panel;
-        repo.onClick = onClick;
-        Components.createSearchInput(panel, function(val){return repo.search(val);});
-
-        //repo.updateContent();
-        return panel;
-    };
-
-    this.createEditors = function(panel, onClick){
-        var repo = this;
-        repo.contentPanel = panel;
-        repo.onClick = onClick;
-        repo.editorEnabled = true;
-
-        var onAdd = function () {
-            var newObj =repo.defaultObject();
-            repo.add(newObj);
-            repo.items.forEach(function(d){
-                if (d.isActive()) {
-                    d.header.removeClass("active");
-                    if (d.editor) d.editor.hide();
-                }
-            });
-            repo.updateContent();
-            if (newObj.header) {
-                newObj.header.addClass("active");
-                if (newObj.header.onclick) newObj.header.onClick();
-            }
-        };
-
-        var onClean = function () {
-            repo.clean();
-            repo.updateContent();
-        };
-
-        var onRestore = function () {
-            repo.restore();
-            repo.updateContent();
-        };
-
-        var onLoad = function(){
-            repo.load(repo.url);
-        };
-
-        var onCommit = function(){repo.commit();};
-
-        var toolbar = Components.createRepoEditToolbar(onAdd, onRestore, onClean, onLoad, onCommit).appendTo(repo.contentPanel);
-        //toobar.find("#btnCommit)
-
-        Components.createSearchInput(toolbar, function(val){return repo.search(val);});
-        //repo.updateContent();
-    };
-}
-
+/**
+ * Created by Natallia on 3/17/2016.
+ */
 /*************************************/
-         /*Object editor*/
+/*Object editor*/
 /*************************************/
 function Editor() {
     this.jsonEntity = null;
@@ -442,6 +46,8 @@ function Editor() {
         var d = this;
         var onclick = function() {
             if (d.repository && d.repository.editorEnabled){
+                if (!d.editor)
+                    d.createEditor(d.header);
                 if (d.repository.selected && d.repository.selected != d) {
                     if (d.repository.selected.status != "deleted")
                         d.repository.selected.save();
@@ -451,7 +57,6 @@ function Editor() {
             }
             if (onClick) onClick(d);
         };
-        //var hClass = ""; //View with collapsible panels - no frame!
         var hClass = "frame";
         this.header = Components.createHeader(this.icon, d.getHeaderTitle(), hClass).click(onclick);
         return this.header;
@@ -462,14 +67,18 @@ function Editor() {
         for (var prop in this.jsonEntity) {
             if (!this[prop]) continue;
             if (prop === "id") continue; //do not copy id to the JSON object that will be committed
+
             if (typeof this[prop] !== "object") {
                 obj[prop] = this[prop];
             } else {
-                if (this[prop].id) //nested object with "id" - commit its identifier only
+                if (this[prop].id)        //nested object with "id" - commit its identifier only
                     obj[prop] = this[prop].id;
                 else {
                     if (isArray(this[prop])) {
-                        obj[prop] = this[prop].map(function(d){ return d.id});
+                        if (this[prop][0] && this[prop][0].id)
+                            obj[prop] = this[prop].map(function(d){ return d.id});
+                        else
+                            obj[prop] = this[prop];
                     } else {
                         //nested object with own editor - process recursively
                         if (this[prop].getJSON)
@@ -493,28 +102,22 @@ function Editor() {
             if (prop in d.jsonEntity) {
                 if (!d[prop]) {
                     //If inline nested object is null in defaultObject, create it here
-                    if (Distribution.isDistribution(obj[prop])){
+                    if (Distribution.isDistribution(obj[prop])) {
                         if (typeof d[prop] != Distribution.class) {
                             d[prop] = Distribution.defaultObject();
                             d[prop].status = "ok";
                         }
                         d[prop].setJSON(obj[prop]);
-                    } else
-                        d[prop] = obj[prop];
+                        continue;
+                    }
                 }
                 else {
-                    if (typeof d[prop] !== "object") {
-                        d[prop] = obj[prop];
-                    }
-                    else {
-                        //it is ok to copy array even if we saved it in a custom way
-                        if (isArray(d[prop]))
-                            d[prop] = obj[prop];
-                        else
-                        if (d[prop].setJSON)
-                            d[prop].setJSON(obj[prop]);
+                    if (typeof d[prop] === "object" && d[prop].setJSON) {
+                        d[prop].setJSON(obj[prop]);
+                        continue;
                     }
                 }
+                d[prop] = obj[prop];
             }
         }
     };
@@ -533,6 +136,10 @@ function Editor() {
 
         function sendPostRequest() {
             var jsonObj = d.getJSON();
+
+            console.dir("Committing object:");
+            console.dir(jsonObj);
+
             var data = JSON.stringify(jsonObj);
             if ((d.status === "updated") && d.id) requestURL += d.id;
             console.dir(requestURL);
@@ -593,7 +200,7 @@ function Editor() {
         }
     };
 
-    //override to find and load nested objects
+    //override to find nested items in preloaded repositories
     this.prepareContent = function (url) {};
 
     this.updateContent = function () {};
@@ -612,6 +219,9 @@ function Editor() {
         else
             d.prepareContent(d.url);
     };
+
+    //override to load nested items from server repositories
+    this.loadDependent = function (url) {};
 
     this.load = function (url, loadDependent) {
         var d = this;
@@ -670,7 +280,6 @@ function Editor() {
             };
 
             d.setJSON(newObj);
-
             updateHeader(d);
 
             if (d.isOrdered() && d.repository){
@@ -731,6 +340,7 @@ function Editor() {
         var onRestore = function () {
             d.restore();
         };
+
         var onRemove = function () {
             d.remove();
         };
@@ -752,24 +362,23 @@ function Editor() {
                     });
                 }
             }
+            d.restore();
         };
 
         var onCommit = function(){
-            if (d.url){
-                d.commit(d.url);
+            var url = d.url;
+            if (!url && d.repository) url = d.repository.url;
+            if (url){
+                d.save();
+                d.commit(url);
             }
             else {
-                if (d.repository) {
-                    d.commit(d.repository.url);
-                }
-                else {
-                    $.Notify({
-                        caption: "Error",
-                        content: "Cannot commit data: Unknown URL",
-                        type: 'alert',
-                        keepOpen: true
-                    });
-                }
+                $.Notify({
+                    caption: "Error",
+                    content: "Cannot commit data: Unknown URL",
+                    type: 'alert',
+                    keepOpen: true
+                });
             }
         };
 
@@ -821,7 +430,7 @@ function Editor() {
 }
 
 /************************************/
-       /*Distributions */
+/*Distributions */
 /************************************/
 
 function Distribution(obj) {
@@ -969,21 +578,3 @@ Distribution.isDistribution = function(obj){
     if (obj.type && (obj.type === "Uniform" || obj.type === "Normal")) return true;
     return false;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

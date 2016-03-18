@@ -58,15 +58,15 @@ function CanonicalTree(obj) {
     this.prepareContent = function(url){
         var d = this;
         if (!d.repository) return;
-
         d.levelRepo.url = url;
         d.levelRepo.setParent(d);
         d.levelRepo.clean();
-        if (d.levels && d.repository.levelRepo) {
-            d.levels = d.repository.levelRepo.items.filter(function (e) {
+        if (d.levels && d.repository.levelRepoFull) {
+            d.levels = d.repository.levelRepoFull.items.filter(function (e) {
                 return e.tree == d.id
             });
             d.levelRepo.items = d.levels;
+            d.levelRepo.items.forEach(function(e){e.repository = d.levelRepo;});
             d.levelRepo.sort();
         }
         if (d.isActive())
@@ -203,8 +203,7 @@ function CanonicalTree(obj) {
 
             var vpIcon = new Plots.vp({
                 scale : {width: 20, height: 4},
-                size  : {width: 20, height: 20},
-                orientation: "vertical"});
+                size  : {width: 20, height: 20}});
 
             function onLyphClickHandler(lyph){
                 if (onClick) onClick(lyph);
@@ -215,6 +214,11 @@ function CanonicalTree(obj) {
                     x: (d.source.x + d.target.x) / 2 + 5,
                     y: (d.source.y + d.target.y) / 2 - 10};
 
+                if (Math.abs(d.source.x - d.target.x) > Math.abs(d.source.y - d.target.y))
+                    vpIcon.orientation="horizontal";
+                else
+                    vpIcon.orientation="vertical";
+
                 if (d.source && d.source.level){
                     var lyphTemplateID = d.source.level.template;
                     if (lyphTemplateID){
@@ -224,8 +228,6 @@ function CanonicalTree(obj) {
                     }
                 }
             });
-
-
 
             function formatData(d){
                 var str = JSON.stringify(d.level.getJSON());
@@ -476,10 +478,10 @@ function CanonicalTreeRepo(items) {
     RepoEditor.call(this, items);
     this.urlExtension = "/canonicalTrees";
 
-    this.levelRepo = new CanonicalTreeLevelRepoFull([]);
+    this.levelRepoFull = new CanonicalTreeLevelRepoFull([]);
 
     this.beforeLoad = function(){
-        return this.levelRepo.load(this.url);
+        return this.levelRepoFull.load(this.url);
     };
 
     this.defaultObject = function(){
@@ -571,11 +573,13 @@ function CanonicalTreeLevel(obj) {
             newObj.template = parseInt(Components.getInputValue(this.editor, "template"), 10);
 
             var materials = Components.getInputValue(this.editor, "materials");
-            if (materials)
-                newObj.materials = materials.map(function(d){return parseInt(d, 10);});
-            else
+            if (!materials)
                 newObj.materials = [];
-
+            else {
+                newObj.materials = materials.map(function(d){
+                    return parseInt(d, 10);
+                });
+            }
             return newObj;
         }
         return null;
@@ -594,12 +598,29 @@ function CanonicalTreeLevel(obj) {
         //skipProbability
         Components.createNumberInput(d.skipProbability, "skipProbability", "Skip probability", 0, 1, 0.1).appendTo(editPanel);
         //LyphTemplate
-        var getOptions = function(){return lyphRepo.getItemList();};
-        Components.createSelect2Input(d.template, d.template, "template", "LyphTemplate", getOptions).appendTo(editPanel);
+        var getOptions = function(){
+            return lyphRepo.getItemList();
+        };
+        var template = {id: ""};
+        if (d.template) {
+            template.id = d.template;
+            var lyph = lyphRepo.getItemByID(d.template);
+            if (lyph) template.caption = lyph.getHeaderTitle();
+        }
+        Components.createSelect2Input(template, "template", "LyphTemplate", getOptions).appendTo(editPanel);
 
         //materials
         var getOptions = function(){return treeRepo.getItemList();};
-        Components.createSelect2InputMulti(d.materials, d.materials, "materials", "Subtrees", getOptions).appendTo(editPanel);
+        var materials = [];
+        if (d.materials) {
+            materials = d.materials.map(function (id) {
+                var obj = {id: id};
+                var tree = treeRepo.getItemByID(id);
+                if (tree) obj.caption = tree.getHeaderTitle();
+                return obj;
+            });
+        }
+        Components.createSelect2InputMulti(materials, "materials", "Subtrees", getOptions).appendTo(editPanel);
 
         this.editor = editPanel;
     };
@@ -660,8 +681,8 @@ function CanonicalTreeLevelRepo(items, parent){
 
 function CanonicalTreeLevelRepoFull(items){
     RepoEditor.call(this, items);
-    this.parent = parent;
     this.urlExtension = "/canonicalTreeLevel";
+
     this.defaultObject = function(){
         var proto = Object.create(Entities.canonicalTreeLevel);
         proto.position = this.items.length + 1;

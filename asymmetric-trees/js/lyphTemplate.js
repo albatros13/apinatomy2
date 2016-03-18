@@ -100,24 +100,27 @@ function LyphTemplate(obj){
         d.layerRepo.url = url;
         d.layerRepo.setParent(d);
         d.layerRepo.clean();
-        if (d.layers && d.repository.layerRepo) {
-            d.layers = d.repository.layerRepo.items.filter(function (e) {
+        if (d.layers && d.repository.layerRepoFull) {
+            d.layers = d.repository.layerRepoFull.items.filter(function (e) {
                 return e.lyphTemplate == d.id
             });
             d.layerRepo.items = d.layers;
+            d.layerRepo.items.forEach(function(e){e.repository = d.layerRepo;});
             d.layerRepo.sort();
         }
 
         d.locatedMeasureRepo.url = url;
         d.locatedMeasureRepo.setParent(d);
         d.locatedMeasureRepo.clean();
-        if (d.locatedMeasures && d.repository.locatedMeasureRepo) {
-            d.locatedMeasures = d.repository.locatedMeasureRepo.items.filter(function (e) {
+        if (d.locatedMeasures && d.repository.locatedMeasureRepoFull) {
+            d.locatedMeasures = d.repository.locatedMeasureRepoFull.items.filter(function (e) {
                 return e.lyphTemplate == d.id
             });
             d.locatedMeasureRepo.items = d.locatedMeasures;
+            d.locatedMeasureRepo.items.forEach(function(e){e.repository = d.locatedMeasureRepo;});
             d.locatedMeasureRepo.sort();
         }
+
         if (d.isActive())
             d.updateContent();
     };
@@ -157,7 +160,6 @@ function LyphTemplate(obj){
         //name
         var namePanel = Components.createTextInput(d.name, "name", "Name").appendTo(editPanel);
         namePanel.attr("style", "width: 100%;");
-
         var nameInput = namePanel.find("> input");
 
         function extractID(url){
@@ -208,10 +210,6 @@ function LyphTemplate(obj){
         d.createOptionalObjectPanel(Components.createContentPanel(widthHeader), "radius",
             Distribution.defaultObject);
 
-        //materialIn
-        //var getOptions = function(){return lyphRepo.getItemList();}
-        //createSelect2InputMulti(d.materialIn, [], "materialIn", "Material in", getOptions).appendTo(editPanel);
-
         //layers
         this.layerRepo.createContentPanel(editPanel);
         this.layerRepo.createEditors(this.layerRepo.contentPanel, null);
@@ -219,15 +217,6 @@ function LyphTemplate(obj){
         //located measures
         this.locatedMeasureRepo.createContentPanel(editPanel);
         this.locatedMeasureRepo.createEditors(this.locatedMeasureRepo.contentPanel, null);
-
-        //children
-        //TODO: multiple selection
-        //createSelectInputFromTemplate(this.children, "children", "Children", lyphSelectTemplate).appendTo(editPanel);
-
-        /*
-         layerIdentity
-         materials
-         parents  */
 
         this.editor = editPanel;
     };
@@ -404,12 +393,12 @@ function LyphTemplateRepo(items){
     RepoEditor.call(this, items);
     this.urlExtension = "/lyphTemplates";
 
-    this.layerRepo = new LayerTemplateRepoFull([]);
-    this.locatedMeasureRepo = new LocatedMeasureRepoFull([]);
+    this.layerRepoFull = new LayerTemplateRepoFull([]);
+    this.locatedMeasureRepoFull = new LocatedMeasureRepoFull([]);
 
     this.beforeLoad = function(){
         var repo = this;
-        return RSVP.all([repo.layerRepo.load(repo.url), repo.locatedMeasureRepo.load(repo.url)]);
+        return RSVP.all([repo.layerRepoFull.load(repo.url), repo.locatedMeasureRepoFull.load(repo.url)]);
     };
 
     this.defaultObject = function(){
@@ -515,8 +504,17 @@ function LayerTemplate(obj) {
 
         //materials
         var getOptions = function(){return lyphRepo.getItemList();};
-        Components.createSelect2InputMulti(d.materials, d.materials, "materials", "Materials", getOptions).appendTo(editPanel);
+        var materials = [];
+        if (d.materials){
+            materials = d.materials.map(function(id){
+                var obj = {id: id};
+                var lyph = lyphRepo.getItemByID(id);
+                if (lyph) obj.caption = lyph.getHeaderTitle();
+                return obj;
+            })
+        }
 
+        Components.createSelect2InputMulti(materials, "materials", "Materials", getOptions).appendTo(editPanel);
         this.editor = editPanel;
     };
 
@@ -529,10 +527,13 @@ function LayerTemplate(obj) {
             newObj.thickness.min = parseInt(Components.getInputValue(this.editor, "min"), 10);
             newObj.thickness.max = parseInt(Components.getInputValue(this.editor, "max"), 10);
             var materials = Components.getInputValue(this.editor, "materials");
-            if (materials)
-                newObj.materials = materials.map(function(d){return parseInt(d, 10);});
-            else
+            if (!materials)
                 newObj.materials = [];
+            else {
+                newObj.materials = materials.map(function(d){
+                    return parseInt(d, 10);
+                });
+            }
             return newObj;
         }
         return null;
@@ -545,8 +546,9 @@ function LayerTemplateRepo(items, parent){
     this.urlExtension = "/layerTemplates";
 
     this.setParent = function(parent){
-        this.parent = parent;
-        this.items.forEach(function(d){
+        var repo = this;
+        repo.parent = parent;
+        repo.items.forEach(function(d){
             d.lyphTemplate = parent.id;
         })
     };
@@ -659,8 +661,9 @@ function LocatedMeasureRepo(items, parent){
     this.urlExtension = "/locatedMeasures";
 
     this.setParent = function(parent){
-        this.parent = parent;
-        this.items.forEach(function(d){
+        var repo = this;
+        repo.parent = parent;
+        repo.items.forEach(function(d){
             d.lyphTemplate = parent.id;
         })
     };

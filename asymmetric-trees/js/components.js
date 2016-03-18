@@ -135,43 +135,15 @@ var Components = (function() {
         }
     };
 
-    my.createSelect2Input = function(defaultValue, defaultOption, id, caption, getOptions){
+    my.createSelect2Input = function(defaultValue, id, caption, getOptions){
         var selectPanel = $('<div class="input-control select" style="width: 100%">');
         var select = $('<select style="width: 100%">');
         select.attr("id", id);
         select.appendTo(selectPanel);
-        var option = $('<option>').val(defaultValue);
-        option.html(defaultOption);
+        var option = $('<option>').val(defaultValue.id);
+        option.html(defaultValue.caption);
         option.appendTo(select);
-        select.select2({placeholder: "Select " + id, allowClear: true, val: defaultValue});
-        var filled = false;
-        select.on("select2:open", function(){
-            if (!filled){
-                appendOptions(select, getOptions)
-                filled = true;
-            }
-        });
-        var label = $('<label class="block">');
-        label.html(caption).appendTo(selectPanel);
-        return selectPanel;
-    };
-
-    my.createSelect2InputMulti = function(defaultValues, defaultOptions, id, caption, getOptions){
-        var selectPanel = $('<div class="input-control select" style="width: 100%">');
-        var select = $('<select multiple="multiple" style="width: 100%">');
-        select.attr("id", id);
-        select.appendTo(selectPanel);
-        var selected = defaultValues;
-        if (!selected) selected = [];
-        else
-            for (var i = 0; i < defaultValues.length; i++){
-                var option = $('<option>').val(defaultValues[i].id);
-                if (defaultOptions.length > i)
-                    option.html(defaultOptions[i].caption);
-                else option.html(defaultValues[i].caption);
-                option.appendTo(select);
-            }
-        select.select2({placeholder: "Select " + id, allowClear: true, val: selected});
+        select.select2({placeholder: "Select " + id, allowClear: true, val: defaultValue.id});
         var filled = false;
         select.on("select2:open", function(){
             if (!filled){
@@ -181,6 +153,37 @@ var Components = (function() {
         });
         var label = $('<label class="block">');
         label.html(caption).appendTo(selectPanel);
+        return selectPanel;
+    };
+
+    my.createSelect2InputMulti = function(defaultValues, id, caption, getOptions){
+        var selectPanel = $('<div class="input-control select" style="width: 100%">');
+        var select = $('<select multiple="multiple" style="width: 100%">');
+        select.attr("id", id);
+        select.appendTo(selectPanel);
+        select.select2({placeholder: "Select " + id, allowClear: true});
+        var filled = false;
+        select.on("select2:open", function(){
+            if (!filled){
+                appendOptions(select, getOptions);
+                filled = true;
+            }
+        });
+        var label = $('<label class="block">');
+        label.html(caption).appendTo(selectPanel);
+
+        if (defaultValues){
+            var selected = defaultValues.map(function(d){ return d.id;});
+            for (var i = 0; i < defaultValues.length; i++){
+                var option = $('<option>').val(defaultValues[i].id);
+                if (defaultValues[i].caption)
+                    option.html(defaultValues[i].caption);
+                else option.html(defaultValues[i].id);
+                option.appendTo(select);
+            }
+            my.setInputValue(selectPanel, id, selected);
+        }
+
         return selectPanel;
     };
 

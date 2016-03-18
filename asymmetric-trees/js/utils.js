@@ -9,8 +9,7 @@ Array.prototype.remove = function(from, to) {
 };
 
 function isArray(obj) {
-    return (typeof obj !== 'undefined' &&
-    obj && obj.constructor === Array);
+    return (typeof obj !== 'undefined' && obj && obj.constructor === Array);
 }
 
 function logError(obj){
@@ -48,6 +47,8 @@ Object.defineProperty(Array.prototype, "equals", {enumerable: false});
 Object.preserves = function( obj1, obj2 ) {
     if ( obj1 === obj2 ) return true;
     if ( ! ( obj1 instanceof Object ) || ! ( obj2 instanceof Object ) ) return false;
+    if (isArray(obj1) || isArray(obj2)) return obj1.equals(obj2);
+
     if ( obj1.constructor !== obj2.constructor ) return false;
 
     for ( var p in obj2 ) {

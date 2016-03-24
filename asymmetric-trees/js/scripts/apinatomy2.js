@@ -1351,7 +1351,7 @@ var ApiNATOMY2 = (function(){
         this.getJSON = function () {
             var obj = {};
             for (var prop in this.jsonEntity) {
-                if (!this[prop]) continue;
+                if (this[prop] == undefined) continue;
                 if (prop === "id") continue; //do not copy id to the JSON object that will be committed
 
                 if (typeof this[prop] !== "object") {
@@ -1557,8 +1557,8 @@ var ApiNATOMY2 = (function(){
                 if (isOk) {
                     return;
                 } else {
-                    //console.dir(d.getJSON());
-                    //console.dir(newObj);
+                    console.dir(d.getJSON());
+                    console.dir(newObj);
                 }
 
                 var updateHeader = function (d) {
@@ -2765,7 +2765,7 @@ var ApiNATOMY2 = (function(){
                     circles.filter(function(d){return d != circle}).classed("selected", false).style("stroke", "steelblue");
                     circle.classed("selected", !circle.classed("selected"));
                     circle.style("stroke", "red");
-                    if (onClick) onClick(lyphRepo.getItemByID(node.template));
+                    if (onClick) onClick(node.level);
                 }
 
                 var node = svgCanonicalModel.selectAll("g").data(nodes).enter();

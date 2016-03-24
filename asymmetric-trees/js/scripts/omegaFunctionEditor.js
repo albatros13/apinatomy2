@@ -102,7 +102,7 @@
     var myLayout = new GoldenLayout( config );
 
     var lyphRepo, treeRepo;
-    var selectedLyph, selectedTree;
+    var selectedTree, selectedLyph, selectedTreeLevel;
     var svgTree, svgTreePlots, divLyphTemplate, svgSampleTree;
 
     var treeVP = new ApiNATOMY2.VisualParameters({
@@ -150,13 +150,13 @@
             treeVP.size = {width: container.width - dx, height: container.height - dy};
             svgTree = d3.select('#treeDefinition');
             if (selectedTree)
-                selectedTree.draw(svgTree, treeVP, onSelectLyph);
+                selectedTree.draw(svgTree, treeVP, onSelectTreeLevel);
         });
         container.on( 'resize', function(){
             if (container.width < minWidth || container.height < minHeight) return;
             treeVP.size = {width: container.width - dx, height: container.height - dy};
             if (selectedTree)
-                selectedTree.draw(svgTree, treeVP, onSelectLyph);
+                selectedTree.draw(svgTree, treeVP, onSelectTreeLevel);
         });
     });
 
@@ -214,12 +214,32 @@
         syncSelectedTree(true);
     }
 
-    function onSelectLyph(d){
-        if (d && (selectedLyph != d)){
-            selectedLyph = d;
-            syncSelectedLyph();
+    function onSelectTreeLevel(d){
+        if (!d) return;
+        if (d.layerRepo){
+            if (selectedLyph != d){
+                selectedLyph = d;
+                syncSelectedLyph();
+            }
+        } else {
+            //node selected
+            if (selectedTreeLevel != d){
+                if (selectedTreeLevel && selectedTreeLevel.isActive()){
+                    selectedTreeLevel.header.removeClass("active");
+                    if (selectedTreeLevel.editor) selectedTreeLevel.editor.hide();
+                }
+                if (d.header) {
+                    d.header.addClass("active");
+                    if (!d.editor)
+                        d.createEditor(d.header)
+                    else
+                        d.editor.show();
+                }
+                selectedTreeLevel = d;
+            }
         }
     }
+
 
     function syncSelectedLyph(){
         if (selectedLyph){
@@ -229,7 +249,7 @@
 
     function syncSelectedTree(isGenerateSample){
         if (selectedTree){
-            selectedTree.draw(svgTree, treeVP, onSelectLyph);
+            selectedTree.draw(svgTree, treeVP, onSelectTreeLevel);
             selectedTree.drawPlots(svgTreePlots, treePlotsVP, null);
             var treeSample;
             if (isGenerateSample)

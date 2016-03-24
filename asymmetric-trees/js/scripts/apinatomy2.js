@@ -2198,43 +2198,6 @@ var ApiNATOMY2 = (function(){
 
             return lyphSvg;
         };
-
-        //Draw lyph base, layers and layer names
-        this.draw = function(svg, vp, onClick) {
-            var lyph = this;
-            svg.selectAll('rect').remove();
-            svg.selectAll('text').remove();
-            var baseLineThickness = 5;
-            var drawBaseLine = function(){
-                svg.append("rect")
-                    .style("fill", "black")
-                    .attr("x", vp.margin.x)
-                    .attr("y", vp.margin.y)
-                    .attr("width", vp.margin.x + vp.scale.width)
-                    .attr("height", baseLineThickness);
-            };
-
-            //Base axis
-            drawBaseLine();
-            //Layers
-            var goodLayers = lyph.layerRepo.getValidItems();
-            if (!goodLayers) return;
-            vp.margin.y += baseLineThickness;
-            this.drawIcon(svg, vp, onClick);
-
-            var prev = vp.margin.y;
-            //LayerTemplate titles
-            svg.selectAll("chart")
-                .data(goodLayers)
-                .enter().append("text")
-                .attr("x", function () {return vp.margin.x + vp.scale.width / 2;})
-                .attr("y", function (d) {
-                    prev += d.getThickness() * vp.scale.height;
-                    return prev - d.getThickness() * vp.scale.height / 2;})
-                .text(function(d) {
-                    return d.id ? d.id + " - " + d.name : d.name;});
-            vp.margin.y -= baseLineThickness;
-        }
     }
 
     function LyphTemplateRepo(items){
@@ -2715,7 +2678,7 @@ var ApiNATOMY2 = (function(){
                 if (goodLevels){
                     for (var i = 0 ; i < goodLevels.length; i++){
                         var level = goodLevels[i];
-                        data.name = "#" + (i + 1) + " (" + root.id +")";
+                        data.name = "#" + (i + 1) + " (" + level.id +")";
                         data.color = root.color;
                         data.level = level;
                         data.children = [{}];
@@ -2791,7 +2754,7 @@ var ApiNATOMY2 = (function(){
 
                 tree.links(nodes).forEach(function(d){
                     vpIcon.margin = {
-                        x: (d.source.x + d.target.x) / 2 + 5,
+                        x: (d.source.x + d.target.x) / 2 - 20,
                         y: (d.source.y + d.target.y) / 2 - 10};
 
                     if (Math.abs(d.source.x - d.target.x) > Math.abs(d.source.y - d.target.y))
@@ -2805,6 +2768,12 @@ var ApiNATOMY2 = (function(){
                             var lyph = lyphRepo.getItemByID(lyphTemplateID);
                             if (lyph)
                                 lyph.drawIcon(svgCanonicalModel, vpIcon, onLyphClickHandler);
+                                svgCanonicalModel.append("text").text(lyph.id)
+                                    .attr("dx", -25)
+                                    .attr("dy", 10)
+                                    .attr("text-anchor", "right")
+                                    .attr("transform",
+                                    "translate(" + vpIcon.margin.x + "," + vpIcon.margin.y + ")");
                         }
                     }
                 });
@@ -3253,7 +3222,7 @@ var ApiNATOMY2 = (function(){
                         link = new TreeSampleLink(lyphTemplate, cm.color);
                 }
 
-                var label = "#" + (depth + 1) + " (" + level.tree + ")";
+                var label = "#" + (depth + 1) + " (" + level.id + ")";
                 if ((depth + 1) >= goodLevels.length) label = "";
                 var node = new TreeSampleNode(level.tree + "_" + nodeIndex++, label, parent, [], depth, link);
                 if (depth < goodLevels.length - 1) {

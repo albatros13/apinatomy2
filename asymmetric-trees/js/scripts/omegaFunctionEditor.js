@@ -23,6 +23,7 @@
                 {
                     type: 'component',
                     componentName: 'CanonicalTreeRepo',
+                    title: "Canonical trees",
                     width: 60,
                     showPopoutIcon: false,
                     componentState: {
@@ -46,11 +47,9 @@
                                             height: 50,
                                             componentState: {
                                                 label: 'Tree definition',
-                                                content: '<div class="treeDefinition">' +
-                                                '<div class="table" style="margin: 15px;"></div>' +
-                                                '<svg class="tree" style="min-width: 500px; min-height: 500px;"></svg>' +
+                                                content: '<div id="treeDefinition">' +
+                                                    '<svg id = "tree"></svg>' +
                                                 '</div>'
-
                                             }
                                         },
                                         {
@@ -59,9 +58,8 @@
                                             height: 50,
                                             componentState: {
                                                 label: 'Tree statistics',
-                                                content: '<div class="treePlots">' +
-                                                '<div class="table" style="margin: 15px;"></div>' +
-                                                '<svg class="tree" style="min-width: 500px; min-height: 500px;"></svg>' +
+                                                content: '<div id="treePlots">' +
+                                                    '<svg id = "plots"></svg>' +
                                                 '</div>'
                                             }
                                         }
@@ -73,21 +71,21 @@
                                         {
                                             type: 'component',
                                             componentName: 'TreeSample',
+                                            title: "Tree sample",
                                             componentState: {
                                                 label: 'Tree sample',
-                                                content: '<svg class="treeSample" ' +
-                                                'style="min-width: 500px; min-height: 500px;"></svg>'
+                                                content: '<svg id="treeSample"></svg>'
                                             }
                                         },
                                         {
                                             type: 'component',
                                             componentName: 'LyphTemplate',
+                                            title: "Lyph template",
                                             showPopoutIcon: false,
                                             width: 25,
                                             componentState: {
                                                 content:
-                                                '<div id="lyphTreemap" class="lyphTreemap"></div>' +
-                                                '<svg class="lyph" style="width: 300px; height: 300px;"></svg>',
+                                                '<div id="lyphTreemap"></div>',
                                                 label: 'LyphTemplate viewer'
                                             }
                                         }
@@ -103,119 +101,143 @@
 
     var myLayout = new GoldenLayout( config );
 
-    myLayout.registerComponent( 'Tree', function( container, componentState ){
-        container.getElement().html(componentState.content);
-    });
+    var lyphRepo, treeRepo;
+    var selectedLyph, selectedTree;
+    var svgTree, svgTreePlots, divLyphTemplate, svgSampleTree;
 
-    myLayout.registerComponent( 'Parameters', function( container, componentState ){
-        container.getElement().html(componentState.content);
-    });
+    var treeVP = new ApiNATOMY2.VisualParameters({
+        scale: {width: 20, height: 20},
+        size: {width: 500, height: 300},
+        margin: {x: 20, y: 40}});
+
+    var treePlotsVP = new ApiNATOMY2.VisualParameters({
+        scale: {width: 20, height: 20},
+        size: {width: 500, height: 300},
+        margin: {x: 20, y: 60}});
+
+    var svgLyphTemplateVP = new ApiNATOMY2.VisualParameters({
+        scale: {width: 200, height: 30},
+        size: {width: 500, height: 300},
+        margin: {x: 20, y: 20}});
+
+    var svgTreeSampleVP = new ApiNATOMY2.VisualParameters({
+        scale: {width: 20, height: 30},
+        size: {width: 500, height: 300},
+        margin: {x: 20, y: 20}});
+
+    var dx = 20, dy = 20, minWidth = 300, minHeight = 300;
 
     myLayout.registerComponent( 'CanonicalTreeRepo', function( container, componentState ){
         container.getElement().html(componentState.content);
-    });
-
-    myLayout.registerComponent( 'TreeSample', function( container, componentState ){
-        container.getElement().html(componentState.content);
-    });
-
-    myLayout.registerComponent( 'LyphTemplate', function( container, componentState ){
-        container.getElement().html(componentState.content);
-    });
-
-    myLayout.init();
-    myLayout.on("initialised", function(){
-        var windowSize = {width: myLayout.width * 0.4 - 20, height: myLayout.height / 2 - 20};
-        initEditor(windowSize);
-    });
-
-    function initEditor (windowSize) {
-
-        var lyphRepo = new ApiNATOMY2.LyphTemplateRepo([]);
-        var treeRepo = new ApiNATOMY2.CanonicalTreeRepo([], lyphRepo);
-
-        //TreeViewer
-        var svgTree = d3.select('.treeDefinition');
-        var treeVP = new ApiNATOMY2.VisualParameters({
-            scale: {width: 20, height: 20},
-            size: windowSize,
-            margin: {x: 20, y: 50}});
-
-        //PlotViewer
-        var svgTreePlots = d3.select('.treePlots');
-        var treePlotsVP = new ApiNATOMY2.VisualParameters({
-            scale: {width: 20, height: 20},
-            size: windowSize,
-            margin: {x: 20, y: 50}});
-
-        //LyphViewer
-        var divLyphTemplate  = d3.select('.lyphTreemap');
-        var svgLyphTemplateVP = new ApiNATOMY2.VisualParameters({
-            scale: {width: 200, height: 30},
-            size: windowSize,
-            margin: {x: 20, y: 20}});
-
-        //TreeSampleViewer
-        var svgTreeSampleVP = new ApiNATOMY2.VisualParameters({
-            scale: {width: 20, height: 30},
-            size: windowSize,
-            margin: {x: 20, y: 20}});
-        var svgSampleTree  = d3.select('.treeSample');
-
-
-        var selectedTree = null;
-        var selectedLyph = null;
-        var selectedLevelSample = null;
-
-        var onSelectTree = function(d){
-            selectedTree = d;
-            syncSelectedTree(true);
-        };
-
-        var onSelectTreeSampleNode = function(d){
-            if (selectedLevelSample != d){
-                selectedLevelSample = d;
-            }
-        };
-
-        var onSelectLyph = function(d){
-            if (d && (selectedLyph != d)){
-                selectedLyph = d;
-                syncSelectedLyph();
-            }
-        };
-
-        (function(){
+        container.on( 'open', function() {
+            lyphRepo = new ApiNATOMY2.LyphTemplateRepo([]);
+            treeRepo = new ApiNATOMY2.CanonicalTreeRepo([], lyphRepo);
             lyphRepo.load("http://open-physiology.org:8889")
                 .then(function(){
                     return treeRepo.load("http://open-physiology.org:8889");
                 });
-
             treeRepo.createEditors($('#treeRepo'), onSelectTree);
             if (treeRepo.items){
                 selectedTree = treeRepo.items[0];
                 syncSelectedTree(true);
             }
-        })();
+        })
+    });
 
-        function syncSelectedLyph(){
-            if (selectedLyph){
-                selectedLyph.drawAsTreemap(divLyphTemplate, svgLyphTemplateVP, null);
-            }
-        }
-
-        function syncSelectedTree(isGenerateSample){
-            if (selectedTree){
+    myLayout.registerComponent( 'Tree', function( container, componentState ){
+        container.getElement().html(componentState.content);
+        container.on( 'open', function() {
+            treeVP.size = {width: container.width - dx, height: container.height - dy};
+            svgTree = d3.select('#treeDefinition');
+            if (selectedTree)
                 selectedTree.draw(svgTree, treeVP, onSelectLyph);
+        });
+        container.on( 'resize', function(){
+            if (container.width < minWidth || container.height < minHeight) return;
+            treeVP.size = {width: container.width - dx, height: container.height - dy};
+            if (selectedTree)
+                selectedTree.draw(svgTree, treeVP, onSelectLyph);
+        });
+    });
+
+    myLayout.registerComponent( 'Parameters', function( container, componentState ){
+        container.getElement().html(componentState.content);
+        container.on( 'open', function() {
+            treePlotsVP.size = {width: container.width - dx, height: container.height - dy};
+            svgTreePlots = d3.select('#treePlots');
+            if (selectedTree){
                 selectedTree.drawPlots(svgTreePlots, treePlotsVP, null);
-                var treeSample = null;
-                if (isGenerateSample)
-                    treeSample = selectedTree.generate();
-                else
-                    treeSample = selectedTree.getSample();
-                if (treeSample)
-                    treeSample.draw(svgSampleTree, svgTreeSampleVP, onSelectTreeSampleNode);
             }
+        });
+    });
+
+    myLayout.registerComponent( 'TreeSample', function( container, componentState ){
+        container.getElement().html(componentState.content);
+        container.on( 'open', function() {
+            svgTreeSampleVP.size = {width: container.width - dx, height: container.height - dy};
+            svgSampleTree = d3.select('#treeSample');
+            if (selectedTree) {
+                var treeSample = selectedTree.getSample();
+                if (treeSample)
+                    treeSample.draw(svgSampleTree, svgTreeSampleVP, null);
+            }
+        });
+        container.on( 'resize', function(){
+            if (container.width < minWidth || container.height < minHeight) return;
+            svgTreeSampleVP.size = {width: container.width - dx, height: container.height - dy};
+            svgSampleTree = d3.select('#treeSample');
+            if (selectedTree) {
+                var treeSample = selectedTree.getSample();
+                if (treeSample)
+                    treeSample.draw(svgSampleTree, svgTreeSampleVP, null);
+            }
+        });
+    });
+
+    myLayout.registerComponent( 'LyphTemplate', function( container, componentState ){
+        container.getElement().html(componentState.content);
+        container.on( 'open', function() {
+            divLyphTemplate = d3.select('#lyphTreemap');
+            svgLyphTemplateVP.size = {width: container.width - dx, height: container.height - dy};
+        });
+        container.on( 'resize', function(){
+            if (container.width < minWidth || container.height < minHeight) return;
+            svgLyphTemplateVP.size = {width: container.width - dx, height: container.height - dy};
+            syncSelectedLyph();
+        });
+    });
+
+    myLayout.init();
+
+    function onSelectTree(d){
+        selectedTree = d;
+        syncSelectedTree(true);
+    }
+
+    function onSelectLyph(d){
+        if (d && (selectedLyph != d)){
+            selectedLyph = d;
+            syncSelectedLyph();
+        }
+    }
+
+    function syncSelectedLyph(){
+        if (selectedLyph){
+            selectedLyph.drawAsTreemap(divLyphTemplate, svgLyphTemplateVP, null);
+        }
+    }
+
+    function syncSelectedTree(isGenerateSample){
+        if (selectedTree){
+            selectedTree.draw(svgTree, treeVP, onSelectLyph);
+            selectedTree.drawPlots(svgTreePlots, treePlotsVP, null);
+            var treeSample;
+            if (isGenerateSample)
+                treeSample = selectedTree.generate();
+            else
+                treeSample = selectedTree.getSample();
+            if (treeSample)
+                treeSample.draw(svgSampleTree, svgTreeSampleVP, null);
         }
     }
 })();

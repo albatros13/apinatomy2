@@ -21,6 +21,7 @@
                 {
                     type: 'component',
                     componentName: 'LyphTemplateRepo',
+                    title: "Lyph templates",
                     showPopoutIcon: false,
                     width: 60,
                     componentState: {
@@ -34,6 +35,7 @@
                         {
                             type: 'component',
                             componentName: 'LyphTemplate',
+                            title: "Lyph template",
                             showPopoutIcon: false,
                             width: 25,
                             componentState: {
@@ -50,56 +52,53 @@
 
     var myLayout = new GoldenLayout(config);
 
+    var lyphRepo, divLyphTemplate, selectedLyph, selectedLayer;
+
+    var svgLyphTemplateVP = new ApiNATOMY2.VisualParameters({
+         scale: {width: 200, height: 30},
+          size: {width: 500, height: 500},
+        margin: {x: 20, y: 20}});
+
     myLayout.registerComponent('LyphTemplateRepo', function (container, componentState) {
         container.getElement().html(componentState.content);
+        container.on( 'open', function() {
+            lyphRepo = new ApiNATOMY2.LyphTemplateRepo([]);
+            lyphRepo.load("http://open-physiology.org:8889");
+            lyphRepo.createEditors($('#lyphRepo'), onSelectLyph);
+            if (lyphRepo.items) {
+                selectedLyph = lyphRepo.items[0];
+                syncSelectedLyph();
+            }
+        })
     });
 
     myLayout.registerComponent('LyphTemplate', function (container, componentState) {
         container.getElement().html(componentState.content);
+        var dx = 20, dy = 20;
+        container.on( 'open', function(){
+            divLyphTemplate  = d3.select('.lyphTreemap');
+            svgLyphTemplateVP.size = {width: container.width - dx, height: container.height - dy};
+        });
+        container.on( 'resize', function(){
+            svgLyphTemplateVP.size = {width: container.width - dx, height: container.height - dy};
+            syncSelectedLyph();
+        });
     });
 
     myLayout.init();
 
-    myLayout.on("initialised", function(){
-        var windowSize = {width: myLayout.width * 0.4 - 20, height: myLayout.height - 20};
-        initEditor(windowSize);
-    });
+    function onSelectLyph(d){
+        selectedLyph = d;
+        syncSelectedLyph();
+    }
 
-    function initEditor (windowSize) {
+    function onSelectLayer(d){
+        selectedLayer = d;
+    }
 
-        var lyphRepo = new ApiNATOMY2.LyphTemplateRepo([]);
-        var divLyphTemplate  = d3.select('.lyphTreemap');
-
-        var svgLyphTemplateVP = new ApiNATOMY2.VisualParameters({
-            scale: {width: 200, height: 30},
-            size: windowSize,
-            margin: {x: 20, y: 20}});
-
-        var selectedLyph = null;
-        var selectedLayer = null;
-
-        var onSelectLyph = function(d){
-            selectedLyph = d;
-            syncSelectedLyph();
-        };
-
-        var onSelectLayer = function(d){
-            selectedLayer = d;
-        };
-
-        (function(){
-            lyphRepo.load("http://open-physiology.org:8889");
-            lyphRepo.createEditors($('#lyphRepo'), onSelectLyph);
-            if (lyphRepo.items){
-                selectedLyph = lyphRepo.items[0];
-                syncSelectedLyph();
-            }
-        })();
-
-        function syncSelectedLyph(){
-            if (selectedLyph){
-                selectedLyph.drawAsTreemap(divLyphTemplate, svgLyphTemplateVP, onSelectLayer);
-            }
+    function syncSelectedLyph(){
+        if (selectedLyph){
+            selectedLyph.drawAsTreemap(divLyphTemplate, svgLyphTemplateVP, onSelectLayer);
         }
     }
 })();

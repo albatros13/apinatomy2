@@ -169,7 +169,7 @@ var ApiNATOMY2 = (function(){
             this.jsonEntity = Object.create(vpPrototype);
             for (var prop in obj)
                 if (obj.hasOwnProperty(prop)) this[prop] = obj[prop];
-        }
+        };
 
         my.treemap = function(tree, canvas, vp, onClick){
             var width = vp.size.width,
@@ -210,7 +210,7 @@ var ApiNATOMY2 = (function(){
                     .style("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
                     .style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
             }
-        }
+        };
 
         my.verticalDistrChart = function(svg, vp, dataset, caption, onClick){
             var barChart = my.verticalBarChart(svg, vp, dataset, caption, onClick);
@@ -238,7 +238,7 @@ var ApiNATOMY2 = (function(){
                 .attr("stroke", "black")
                 .attr("stroke-width", 1)
                 .attr("fill", "none");
-        }
+        };
 
         my.horizontalDistrChart = function(svg, vp, dataset, caption, onClick){
             var barChart = my.horizontalBarChart(svg, vp, dataset, caption, onClick);
@@ -266,7 +266,7 @@ var ApiNATOMY2 = (function(){
                 .attr("stroke", "black")
                 .attr("stroke-width", 1)
                 .attr("fill", "none");
-        }
+        };
 
         my.verticalBarChart = function(svg, vp, dataset, caption, onClick){
             var barChart = svg.append("g").attr("class", "barChart")
@@ -330,7 +330,7 @@ var ApiNATOMY2 = (function(){
                 })
                 .on("click", onClick);
             return barChart;
-        }
+        };
 
         my.horizontalBarChart = function(svg, vp, dataset, caption, onClick){
             var barChart = svg.append("g").attr('class', 'barChart')
@@ -520,7 +520,7 @@ var ApiNATOMY2 = (function(){
 
         my.createPreloader = function(){
             return $('<div data-role="preloader" data-type="metro"></div>');
-        }
+        };
 
         /*Select*/
         my.createSelectInput = function(value, id, caption, options){
@@ -1554,7 +1554,12 @@ var ApiNATOMY2 = (function(){
             if (res.length == 0) {
                 Object.removeFunctions(newObj);
                 var isOk = d.preservesJSON(newObj);
-                if (isOk) return;
+                if (isOk) {
+                    return;
+                } else {
+                    //console.dir(d.getJSON());
+                    //console.dir(newObj);
+                }
 
                 var updateHeader = function (d) {
                     if (d.header) {
@@ -2077,12 +2082,10 @@ var ApiNATOMY2 = (function(){
                 var newObj = {validate: this.validate};
                 newObj.name = Components.getInputValue(this.editor, "name");
                 newObj.fmaID = Components.getInputValue(this.editor, "fmaID");
-                //newObj.materialIn = parseInt(Components.getInputValue(this.editor, "materialIn"), 10);
                 if (this.radius)
                     newObj.radius = this.radius.getEditorObject();
                 if (this.length)
                     newObj.length = this.length.getEditorObject();
-
                 return newObj;
             }
             return null;
@@ -2684,6 +2687,15 @@ var ApiNATOMY2 = (function(){
         //////////////////////////////////////////////////////////////////////////////////
         //Visualization
         //////////////////////////////////////////////////////////////////////////////////
+        function displayHeader(svg, caption){
+            svg.append("text")
+                .attr("class", "treeTitle")
+                .attr("x", 10)
+                .attr("y", 20)
+                .attr("text-anchor", "left")
+                .style("font-size", "14px")
+                .text(caption);
+        }
 
         this.drawCanonicalModel = function(svg, vp, onClick){
             var canonicalTree = this;
@@ -2813,151 +2825,122 @@ var ApiNATOMY2 = (function(){
 
             var tree = d3.layout.tree()
                 .separation(function(a, b) { return a.parent === b.parent ? 1 : .5; })
-                .size([vp.size.width, vp.size.height]);
+                .size([vp.size.width - vp.margin.x, vp.size.height - vp.margin.y]);
+
             drawTree(treeData);
         };
 
-        this.drawBranchingFactor = function(svg, vp, onClick){
-            var tree = this;
-            svg.selectAll('.branchingFactor').remove();
-            var barSvg = svg.append("g").attr("class", "branchingFactor");
-
-            var goodLevels = tree.levelRepo.getValidItems();
-            if (goodLevels.length < 1) return {width: 0, height: 0};
-            var branchingFactors = [];
-            var prev = 1;
-
-            for (var i = 0; i < goodLevels.length; i++){
-                var d = goodLevels[i];
-                branchingFactors.push({domain: i + 1,
-                    value: prev,
-                    color: rowColor(i)});
-                prev = prev * d.branchingFactor;
-            }
-            var caption = "Est. edges";
-            var maxValue = branchingFactors[branchingFactors.length - 1].value;
-            if (maxValue > 16){
-                branchingFactors.map(function(d){d.value = Math.log(d.value);});
-                maxValue = Math.log(maxValue);
-                caption += " (log)";
-            }
-            var size  = {
-                width: Math.max(100, maxValue * vp.scale.width),
-                height: (vp.scale.height + 20) * branchingFactors.length
-            };
-            var branchingFactorVP = new Plots.vp({
-                scale  : vp.scale,
-                size   : size,
-                margin : vp.margin,
-                padding: {y:20}
-            });
-            Plots.horizontalBarChart(barSvg, branchingFactorVP, branchingFactors, caption, onClick);
-            return size;
-        };
-
-        this.drawLengthDistribution = function(svg, vp, onClick){
-            svg.selectAll('.length').remove();
-            var barSvg = svg.append("g").attr("class", "length");
-            var scale = {width: 1, height: vp.scale.height}; //width = #px per value
-            var caption = "Length" + ((scale.width != 1)? " (x" + scale.width+ ")" : "");
-            return this.drawDistrChart(barSvg, vp.margin, scale, "length", caption, onClick);
-        };
-
-        this.drawRadiusDistribution = function(svg, vp, onClick){
-            svg.selectAll('.radius').remove();
-            var barSvg = svg.append("g").attr("class", "radius");
-            var scale = {width: 1, height: vp.scale.height}; //width = #px per value
-            var caption = "Radius" + ((scale.width != 1)? " (x" + scale.width+ ")" : "");
-            return this.drawDistrChart(barSvg, vp.margin, scale, "radius", caption, onClick);
-        };
-
-        this.drawDistrChart = function(svg, offset, scale, property, title, onClick){
-            var canonicalTree = this;
-            var lyphRepo = (canonicalTree.repository)? canonicalTree.repository.lyphRepo: null;
-
-            var goodLevels = this.levelRepo.getValidItems();
-            if (goodLevels.length < 1) return {width: 0, height: 0};
-            var displayData = [goodLevels.length];
-            for (var i = 0; i < goodLevels.length; i++){
-                var lyph = lyphRepo.getItemByID(goodLevels[i].template);
-                if (lyph){
-                    var mean = 0;
-                    if (lyph[property]) mean = lyph[property].mean;
-                    var stDev = 0;
-                    if (lyph[property]) stDev = lyph[property].stDev;
-                    if (!(mean && stDev)) {
-                        //TODO derive from min/max
-                    }
-                    displayData[i] = {
-                        domain: i + 1,
-                        value: mean,
-                        variation: stDev,
-                        color: rowColor(i)};
-                }
-            }
-            var size = {
-                width: d3.max(displayData, function (d) {return d.value + d.variation;}) * scale.width,
-                height: (scale.height + 20) * displayData.length
-            };
-            var chartBarVP = new Plots.vp({
-                scale: scale,
-                size: size,
-                margin: offset,
-                padding: {y: 20}
-            });
-            Plots.horizontalDistrChart(svg, chartBarVP, displayData, title, onClick);
-            return size;
-        };
-
-        function displayHeader(svgTree, caption){
-            svgTree.append("text")
-                .attr("class", "treeTitle")
-                .attr("x", 10)
-                .attr("y", 10)
-                .attr("text-anchor", "left")
-                .style("font-size", "14px")
-                .text(caption);
-        }
-
         this.draw = function(svg, vp, onClick){
             svg.selectAll(".treeTitle").remove();
-            var svgTree = svg.select(".tree");
+            var svgTree = svg.select("#tree").attr("width", vp.size.width).attr("height", vp.size.height);
             displayHeader(svgTree, this.id + " - " + this.name);
             //Canonical tree*******************************************************************
             this.drawCanonicalModel(svgTree, vp, onClick);
         };
 
         this.drawPlots = function(svg, vp, onClick){
+            var canonicalTree = this;
             svg.selectAll(".treeTitle").remove();
-            var svgTree = svg.select(".tree");
-            displayHeader(svgTree, this.id + " - " + this.name);
+            var svgPlots = svg.select("#plots")
+                .attr("width", vp.size.width)
+                .attr("height", vp.size.height + 2 * vp.margin.y);
+            displayHeader(svgPlots, this.id + " - " + this.name);
 
             //Tree statistics: accumulate size to shift subsequent plots
-            var size = {width:0, height: 0}, offset = {x: 0, y: vp.margin.y};
+            var size = {width:0, height: 0}, offset = {x: vp.margin.x, y: vp.margin.y};
 
             //Branching factor ***************************************************************
-            offset.x += size.width + vp.margin.x;
-            var branchingFactorVP = new Plots.vp({
-                scale: vp.scale,
-                size: vp.size,
-                margin: offset});
-            size = this.drawBranchingFactor(svgTree, branchingFactorVP, onClick);
+            function drawBranchingFactor(svg, vp, onClick){
+                svg.selectAll('.branchingFactor').remove();
+                var barSvg = svg.append("g").attr("class", "branchingFactor");
+
+                var goodLevels = canonicalTree.levelRepo.getValidItems();
+                if (goodLevels.length < 1) return {width: 0, height: 0};
+                var branchingFactors = [];
+                var prev = 1;
+
+                for (var i = 0; i < goodLevels.length; i++){
+                    var d = goodLevels[i];
+                    branchingFactors.push({domain: i + 1,
+                        value: prev,
+                        color: rowColor(i)});
+                    prev = prev * d.branchingFactor;
+                }
+                var caption = "Est. edges";
+                var maxValue = branchingFactors[branchingFactors.length - 1].value;
+                if (maxValue > 16){
+                    branchingFactors.map(function(d){d.value = Math.log(d.value);});
+                    maxValue = Math.log(maxValue);
+                    caption += " (log)";
+                }
+                var size  = {
+                    width: Math.max(100, maxValue * vp.scale.width),
+                    height: (vp.scale.height + 20) * branchingFactors.length
+                };
+
+                var branchingFactorVP = new Plots.vp({
+                    scale  : vp.scale,
+                    size   : size,
+                    margin : vp.margin,
+                    padding: {y: 20}
+                });
+
+                Plots.horizontalBarChart(barSvg, branchingFactorVP, branchingFactors, caption, onClick);
+                return size;
+            }
+
+            size = drawBranchingFactor(svgPlots, vp, onClick);
+
+            //Distributions *****************************************************************
+            function drawDistrChart(svg, offset, property, onClick){
+                var scale = {width: 1, height: vp.scale.height}; //width = #px per value
+                var title = property + ((scale.width != 1)? " (x" + scale.width+ ")" : "");
+                svg.selectAll('.' + property).remove();
+                var barSvg = svg.append("g").attr("class", property);
+                var lyphRepo = (canonicalTree.repository)? canonicalTree.repository.lyphRepo: null;
+
+                var goodLevels = canonicalTree.levelRepo.getValidItems();
+                if (goodLevels.length < 1) return {width: 0, height: 0};
+                var displayData = [goodLevels.length];
+                for (var i = 0; i < goodLevels.length; i++){
+                    var lyph = lyphRepo.getItemByID(goodLevels[i].template);
+                    if (lyph){
+                        var mean = 0;
+                        if (lyph[property]) mean = lyph[property].mean;
+                        var stDev = 0;
+                        if (lyph[property]) stDev = lyph[property].stDev;
+                        if (!(mean && stDev)) {
+                            //TODO derive from min/max
+                        }
+                        displayData[i] = {
+                            domain: i + 1,
+                            value: mean,
+                            variation: stDev,
+                            color: rowColor(i)};
+                    }
+                }
+                var size = {
+                    width: d3.max(displayData, function (d) {return d.value + d.variation;}) * scale.width,
+                    height: (scale.height + 20) * displayData.length
+                };
+
+                var chartBarVP = new Plots.vp({
+                    scale: scale,
+                    size: size,
+                    margin: offset,
+                    padding: {y: 20}
+                });
+                Plots.horizontalDistrChart(barSvg, chartBarVP, displayData, title, onClick);
+                return size;
+            }
 
             //Length *******************************************************************
             offset.x += Math.max(100, size.width) + vp.margin.x;
-            var lengthDistributionVP = new Plots.vp({
-                scale: vp.scale,
-                size: vp.size,
-                margin: offset});
-            size = this.drawLengthDistribution(svgTree, lengthDistributionVP, onClick);
+            size = drawDistrChart(svgPlots, offset, "length", onClick);
 
             //Width *******************************************************************
             offset.x += Math.max(100, size.width) + vp.margin.x;
-            var radiusDistributionVP = new Plots.vp({
-                scale: vp.scale,
-                size: vp.size,
-                margin: offset});
-            this.drawRadiusDistribution(svgTree, radiusDistributionVP, onClick);
+            drawDistrChart(svgPlots, offset, "radius", onClick);
         }
     }
 
@@ -3295,6 +3278,7 @@ var ApiNATOMY2 = (function(){
         this.root = this.generate();
 
         this.draw = function(svg, vp, onClick) {
+            svg.attr("width", vp.size.width).attr("height", vp.size.height);
             var root = this.root, duration = 400;
             var tree = d3.layout.tree().size([vp.size.width, vp.size.height]);
 

@@ -1008,8 +1008,10 @@ var ApiNATOMY2 = (function(){
             repo.items = repo.items.filter(function(d){ return d.status !== "deleted"});
             repo.enumerateItems(true);
             for (var i = 0; i < repo.items.length; i++){
-                if (repo.items[i].header)
-                    Components.setHeaderTitle(repo.items[i].header, repo.items[i].getHeaderTitle());
+                var d = repo.items[i];
+                if (d.header){
+                    Components.setHeaderTitle(d.header, d.getHeaderTitle());
+                }
             }
             repo.updateContent();
         };
@@ -1263,7 +1265,7 @@ var ApiNATOMY2 = (function(){
                 if (newObj.header) {
                     newObj.header.addClass("active");
                     if (!newObj.editor) newObj.createEditor(newObj.header);
-                    if (newObj.header.onclick) newObj.header.onClick();
+                    if (newObj.header.click) newObj.header.onClick();
                 }
             };
 
@@ -1445,6 +1447,9 @@ var ApiNATOMY2 = (function(){
                         if (d.header) {
                             Components.setHeaderTitle(d.header, d.getHeaderTitle());
                             Components.updatePanelStatus(d.status, d.header);
+                            if (d.isActive && d.header.click) {
+                                d.header.click();
+                            };
                         }
                         if (d.editor)
                             Components.setInputValue(d.editor, "id", d.id);
@@ -2651,6 +2656,7 @@ var ApiNATOMY2 = (function(){
         //Visualization
         //////////////////////////////////////////////////////////////////////////////////
         function displayHeader(svg, caption){
+            svg.selectAll(".treeTitle").remove();
             svg.append("text")
                 .attr("class", "treeTitle")
                 .attr("x", 10)
@@ -2658,7 +2664,7 @@ var ApiNATOMY2 = (function(){
                 .attr("text-anchor", "left")
                 .style("font-size", "14px")
                 .text(caption);
-        }
+        };
 
         this.drawCanonicalModel = function(svg, vp, onClick){
             var canonicalTree = this;
@@ -2800,7 +2806,6 @@ var ApiNATOMY2 = (function(){
         };
 
         this.draw = function(svg, vp, onClick){
-            svg.selectAll(".treeTitle").remove();
             var svgTree = svg.select("#tree").attr("width", vp.size.width).attr("height", vp.size.height);
             displayHeader(svgTree, this.id + " - " + this.name);
             //Canonical tree*******************************************************************
@@ -2809,7 +2814,6 @@ var ApiNATOMY2 = (function(){
 
         this.drawPlots = function(svg, vp, onClick){
             var canonicalTree = this;
-            svg.selectAll(".treeTitle").remove();
             var svgPlots = svg.select("#plots")
                 .attr("width", vp.size.width)
                 .attr("height", vp.size.height + 2 * vp.margin.y);

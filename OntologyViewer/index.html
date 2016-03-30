@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link href="css/app.css" rel="stylesheet"/>
+<link href="lib/jquery-ui/jquery-ui.css" rel="stylesheet" >
+
+<body>
+    <h1 style="top: 0px; max-width: 500px; margin: 0px auto">Ontology viewer</h1>
+    <P style="top: 30px; max-width: 800px; margin: 0px auto">Navigating selected ontology: double click on a graph node to expand the graph</P>
+
+    <div class="box">
+        <h3 style="position: fixed; top: 55px;">Ontology parameters</h3>
+        <h3 style="position: fixed; top: 55px; margin-left: 50%">Relationship graph</h3>
+    </div>
+
+    <div id="parameters" class="panel">
+        <div>
+            <fieldset>
+                <legend>Ontologies</legend>
+                <input type="checkbox" name="ontology" value="fma" checked/>FMA
+                <input type="checkbox" name="ontology" value="cl"/>CellType
+            </fieldset>
+        </div>
+        <div style="padding: 4px;">
+            <button class="parameterButton" id="btnLoad" disabled>Load</button>
+        </div>
+        <br/>
+        <div class="group">
+            <label id="graphInfo" class="graphInfo"></label>
+        </div>
+
+        <h4>Input parameters:</h4>
+
+        <div class="group">
+            <div>
+                <label for="name" class="parameterLabel">Name:</label>
+                <input type="text" id="name" size="200" style="width: 130px;"  value ="Brain"/>
+            </div>
+
+            <div>
+                <label for="ontid" class="parameterLabel">ID:</label>
+                <input type="text" id="ontid" size="200" style="width: 130px;"  value ="FMA_50801"/>
+            </div>
+
+            <div>
+                <label for="radius" class="parameterLabel">Initial radius:</label>
+                <input type="number" id="radius" size="200" style="width: 50px;" min="0" value ="2"/>
+            </div>
+
+            <div>
+                <label for="step" class="parameterLabel">Increment step:</label>
+                <input type="number" id="step" size="200" style="width: 50px;" min="0" value ="1"/>
+            </div>
+        </div>
+        <div style="padding: 4px;">
+            <button class="parameterButton" id="btnClean">Clean</button>
+            <button class="parameterButton" id="btnUpdate">Update</button>
+            <button class="parameterButton" id="btnExtend">Extend</button>
+        </div>
+        <br/>
+
+        <h4>Selected node:</h4>
+
+        <div class="group">
+            <label id="nodeInfo" class="infoLabel"></label>
+        </div>
+
+        <h4>Selected link:</h4>
+
+        <div class="group">
+            <label id="linkInfo" class="infoLabel"></label>
+        </div>
+
+    </div>
+    <div id="svgGraph" class="graph"></div>
+
+    <script src="lib/jquery-1.11.3.min.js"></script>
+    <script src="lib/jquery-ui/jquery-ui.js"></script>
+    <script src="lib/jquery.rdfquery.core.min-1.0.js"></script>
+    <script src="lib/d3.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/ontologyViewer.js"></script>
+
+
+</body>

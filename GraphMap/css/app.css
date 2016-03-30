@@ -1,0 +1,44 @@
+.link{
+    fill: none;
+    stroke-width: 1.5px;
+}
+
+circle {
+    fill: #ccc;
+    stroke: #fff;
+    stroke-width: 1.5px;
+}
+
+.selected{
+    stroke-width: 2px;
+}
+
+circle.selected{
+    stroke: #f00
+}
+
+text {
+    font: 10px sans-serif;
+    pointer-events: none;
+    text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+}
+
+.graph {
+    padding: 5px;
+    border: 1px solid #e3e3e3;
+}
+
+.hull {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 2px;
+    stroke-linejoin: round;
+}
+
+.dashed {
+    stroke-dasharray: "3, 3";
+}
+
+
+
+

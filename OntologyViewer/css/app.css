@@ -1,0 +1,112 @@
+.link{
+    fill: none;
+    stroke-width: 1.5px;
+}
+
+circle {
+    fill: #ccc;
+    stroke: #fff;
+    stroke-width: 1.5px;
+}
+
+.selected{
+    stroke-width: 2px;
+}
+
+circle.selected{
+    stroke: #f00
+}
+
+text {
+    font: 10px sans-serif;
+    pointer-events: none;
+    text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+}
+
+.box {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 70px;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border: 1px solid #e3e3e3;
+}
+
+.panel {
+    position: fixed;
+    top: 115px;
+    max-width: 300px;
+    height: 80vh;
+    background-color: #f5f5f5;
+    border: 1px solid #e3e3e3;
+    padding: 10px;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.05);
+}
+
+.graph {
+    position: fixed;
+    top: 115px;
+    margin-left: 300px;
+    border: 1px solid #e3e3e3;
+    height: 80vh;
+}
+
+.parameterLabel {
+    display: inline-block;
+    width: 120px;
+    text-align: right;
+}
+
+.parameterButton {
+    float: right;
+}
+
+.parameterGroup {
+    padding-left: 150px;
+}
+
+.infoLabel {
+    display: inline-block;
+    width: 260px;
+    font: 12px sans-serif;
+}
+
+div.tooltip {
+    position: absolute;
+    padding: 2px;
+    background-color: #f5f5f5;
+    font: 12px sans-serif;
+    border: 1px solid #666;
+    pointer-events: none;
+}
+
+div.dotted {
+    border: 1px dotted #666;
+    margin: 2px;
+    padding: 2px;
+}
+
+h3 {
+    margin:0;
+    padding:20px;
+    font: 20px sans-serif bold;
+}
+
+h4 {
+    margin:0;
+    padding:6px;
+    font: 16px sans-serif bold;
+}
+
+fieldset {
+    border: 1px ridge #e3e3e3;
+}
+
+div.group {
+    border: 1px ridge #e3e3e3;
+    padding: 10px;
+}
+
+
+

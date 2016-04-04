@@ -1,5 +1,5 @@
 uncus,40,51,52,41
-parahippocampal,41,52,53,42
+parahippocampal,41,52,53,54,43,42
 med occipitotemporal,54,53,58,57,56,55
 lat occipitotemporal,44,55,56,49,48,46
 inf temporal,32,42,43,44,46,45,33
@@ -12,7 +12,7 @@ sup occipital,36,35,38,37
 cuneus,29,37,38,39,30
 sup temporal,24,25,26,13,12
 sup mrg,13,26,27,28,21,14
-sup parietal,21,28,36,37,22
+sup parietal,21,28,36,37,29,22
 precuneus,22,29,30,23
 post-central,15,14,21,22,23,20
 pre-central,16,15,20,19,18,17

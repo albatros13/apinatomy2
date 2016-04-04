@@ -35,10 +35,10 @@ text {
     stroke-linejoin: round;
 }
 
-.dashed {
-    stroke-dasharray: "3, 3";
+polygon {
+    fill: #ccc;
+    stroke: #000;
 }
-
 
 
 

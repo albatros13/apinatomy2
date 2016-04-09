@@ -231,7 +231,7 @@
                 if (d.header) {
                     d.header.addClass("active");
                     if (!d.editor)
-                        d.createEditor(d.header)
+                        d.createEditor(d.header);
                     else
                         d.editor.show();
                 }
@@ -244,6 +244,8 @@
     function syncSelectedLyph(){
         if (selectedLyph){
             selectedLyph.drawAsTreemap(divLyphTemplate, svgLyphTemplateVP, null);
+        } else {
+            if (divLyphTemplate) divLyphTemplate.selectAll("div").remove();
         }
     }
 
@@ -256,8 +258,22 @@
                 treeSample = selectedTree.generate();
             else
                 treeSample = selectedTree.getSample();
-            if (treeSample)
+            if (treeSample){
                 treeSample.draw(svgSampleTree, svgTreeSampleVP, null);
+            } else {
+                if (svgSampleTree) svgSampleTree.selectAll("g").remove();
+            }
+        } else {
+            if (svgTree){
+                svgTree.select(".treeTitle").remove();
+                svgTree.select("#tree").selectAll('g').remove();
+            }
+            if (svgTreePlots){
+                svgTreePlots.select(".treeTitle").remove();
+                svgTreePlots.select("#plots").selectAll('g').remove();
+            }
+            if (svgSampleTree)
+                svgSampleTree.selectAll("g").remove();
         }
     }
 })();

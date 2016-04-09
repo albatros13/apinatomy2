@@ -66,7 +66,7 @@ function Graph(links, nodeAnnotations){
     };
 
     this.reset = function(){
-        visibleNodes = [];
+        visibleNodes = {};
         visibleLinks = [];
     };
 

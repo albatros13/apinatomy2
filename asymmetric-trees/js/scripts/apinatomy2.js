@@ -921,6 +921,35 @@ var ApiNATOMY2 = (function(){
             return null;
         };
 
+        this.getItemByName = function(name){
+            if (this.items)
+                return this.items.find(function(d){ return d.name === name;});
+            return null;
+        };
+
+        this.closeAll = function(){
+            var repo = this;
+            repo.items.forEach(function(d){
+                if (d.isActive()) {
+                    d.header.removeClass("active");
+                    if (d.editor) d.editor.hide();
+                }
+            });
+            repo.selected = null;
+            if (this.onClick) this.onClick(null);
+        };
+
+        this.select = function(item){
+            var repo = this;
+            if (!item || item && (item.id && !repo.getItemByID(item.id)
+                || !item.id && !repo.getItemByID(item.name))){
+                repo.closeAll();
+            } else {
+                if (repo.selected != item){
+                    repo.selected.open();
+                }
+            }
+        };
 
         this.getIndexByID = function(id){
             var repo = this;
@@ -1126,17 +1155,21 @@ var ApiNATOMY2 = (function(){
             if (val.length == 0) {
                 repo.items.forEach(function(d){
                     if (d.header) d.header.show();
-                })
+                });
+                repo.select(repo.selected);
             } else {
                 repo.items.forEach(function(d){
                     if (d.header) d.header.hide();
                 });
-                var selected = repo.items.filter(function(d) {
+                var visible = repo.items.filter(function(d) {
                     return (d.id + d.name.toLowerCase()).search(val.toLowerCase()) >= 0
                 });
-                selected.forEach(function(d){
+                visible.forEach(function(d){
                     if (d.header) d.header.show();
-                })
+                });
+                if (repo.selected && !repo.selected.header.is(":visible")){
+                    repo.select(null);
+                }
             }
         };
 
@@ -1200,7 +1233,6 @@ var ApiNATOMY2 = (function(){
 
         this.updateContent = function() {
             var repo = this;
-            //console.dir("Updating panels for " + repo.urlExtension);
 
             var updateHandler = function( event, ui ) {
                 var oldIndex = ui.item.attr("index");
@@ -1234,6 +1266,7 @@ var ApiNATOMY2 = (function(){
                 d.header.appendTo(repo.itemsPanel);
                 Components.updatePanelStatus(d.status, d.header);
             });
+            repo.select(repo.selected);
         };
 
         this.createHeaders = function(panel, onClick) {
@@ -1241,8 +1274,6 @@ var ApiNATOMY2 = (function(){
             repo.contentPanel = panel;
             repo.onClick = onClick;
             Components.createSearchInput(panel, function(val){return repo.search(val);});
-
-            //repo.updateContent();
             return panel;
         };
 
@@ -1255,18 +1286,8 @@ var ApiNATOMY2 = (function(){
             var onAdd = function () {
                 var newObj = repo.defaultObject();
                 repo.add(newObj);
-                repo.items.forEach(function(d){
-                    if (d.isActive()) {
-                        d.header.removeClass("active");
-                        if (d.editor) d.editor.hide();
-                    }
-                });
                 repo.updateContent();
-                if (newObj.header) {
-                    newObj.header.addClass("active");
-                    if (!newObj.editor) newObj.createEditor(newObj.header);
-                    if (newObj.header.click) newObj.header.onClick();
-                }
+                newObj.open();
             };
 
             var onClean = function () {
@@ -1288,7 +1309,6 @@ var ApiNATOMY2 = (function(){
             var toolbar = Components.createRepoEditToolbar(onAdd, onRestore, onClean, onLoad, onCommit).appendTo(repo.contentPanel);
 
             Components.createSearchInput(toolbar, function(val){return repo.search(val);});
-            //repo.updateContent();
         };
     }
 
@@ -1320,6 +1340,20 @@ var ApiNATOMY2 = (function(){
 
         this.isActive = function(){
             return (this.header && this.header.hasClass("active"));
+        };
+
+        this.open = function(){
+            var item = this;
+            if (item.repository){
+                item.repository.closeAll();
+                item.repository.selected = item;
+            }
+            item.header.addClass("active");
+            if (!item.editor)
+                item.createEditor(item.header);
+            else
+                item.editor.show();
+            if (item.header.click) item.header.click();
         };
 
         this.markAsUpdated = function(){
@@ -1447,9 +1481,8 @@ var ApiNATOMY2 = (function(){
                         if (d.header) {
                             Components.setHeaderTitle(d.header, d.getHeaderTitle());
                             Components.updatePanelStatus(d.status, d.header);
-                            if (d.isActive && d.header.click) {
+                            if (d.isActive && d.header.click)
                                 d.header.click();
-                            };
                         }
                         if (d.editor)
                             Components.setInputValue(d.editor, "id", d.id);
@@ -1559,12 +1592,7 @@ var ApiNATOMY2 = (function(){
             if (res.length == 0) {
                 Object.removeFunctions(newObj);
                 var isOk = d.preservesJSON(newObj);
-                if (isOk) {
-                    return;
-                } else {
-                    console.dir(d.getJSON());
-                    console.dir(newObj);
-                }
+                if (isOk) return;
 
                 var updateHeader = function (d) {
                     if (d.header) {
@@ -2664,7 +2692,7 @@ var ApiNATOMY2 = (function(){
                 .attr("text-anchor", "left")
                 .style("font-size", "14px")
                 .text(caption);
-        };
+        }
 
         this.drawCanonicalModel = function(svg, vp, onClick){
             var canonicalTree = this;
@@ -2808,7 +2836,6 @@ var ApiNATOMY2 = (function(){
         this.draw = function(svg, vp, onClick){
             var svgTree = svg.select("#tree").attr("width", vp.size.width).attr("height", vp.size.height);
             displayHeader(svgTree, this.id + " - " + this.name);
-            //Canonical tree*******************************************************************
             this.drawCanonicalModel(svgTree, vp, onClick);
         };
 

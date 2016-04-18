@@ -745,16 +745,12 @@ var ApiNATOMY2 = (function(){
         my.updatePanelStatus = function(status, panel){
             //ok, tmp, new, updated, deleted
             //Temporal entity
-            if (status !== "tmp" || status !== "deleted")
-                panel.removeClass("alert");
-            if ((status === "tmp" || status === "deleted") && !panel.hasClass("alert"))
-                panel.addClass("alert");
+            if (status !== "tmp" || status !== "deleted") panel.removeClass("alert");
+            if ((status === "tmp" || status === "deleted") && !panel.hasClass("alert")) panel.addClass("alert");
 
             //Modified entity
-            if (status !== "new" && status !== "updated")
-                panel.removeClass("success");
-            if ((status === "new" || status === "updated") && !panel.hasClass("success"))
-                panel.addClass("success");
+            if (status !== "new" && status !== "updated") panel.removeClass("success");
+            if ((status === "new" || status === "updated") && !panel.hasClass("success")) panel.addClass("success");
 
             //Disable editing of deleted element
             if (status === "deleted"){
@@ -2046,21 +2042,23 @@ var ApiNATOMY2 = (function(){
             var ontologyIDPanel = Components.createTextInput(d.fmaID, "fmaID", "Ontology ID").appendTo(editPanel);
             var ontologyIDInput = ontologyIDPanel.find("> input");
 
+            var btn = $('<button id="btnOntology" class="button small-button" style="margin:4px;">');
+            btn.html('<span class="mif-spinner"></span>');
+            btn.appendTo(ontologyIDPanel);
+
             //name
             var namePanel = Components.createTextInput(d.name, "name", "Name").appendTo(editPanel);
             namePanel.attr("style", "width: 100%;");
             var nameInput = namePanel.find("> input");
 
-            var btn = $('<button id="btnOntology" class="button small-button" style="margin: 4px;">');
-            btn.html('<span class="mif-spinner"></span>');
-            btn.appendTo(ontologyIDPanel);
+
 
             btn.on('click', function() {
-                if (d.repository.onShowOntology) {
+                if (d.repository.showOntology) {
                     var ontologyID = $.trim(ontologyIDInput.val());
                     var name = $.trim(nameInput.val());
                     if (ontologyID && name){
-                        d.repository.onShowOntology(ontologyID, name);
+                        d.repository.showOntology(ontologyID, name);
                     }
                 }
             });
@@ -3380,7 +3378,8 @@ var ApiNATOMY2 = (function(){
         CanonicalTree: CanonicalTree,
         CanonicalTreeRepo: CanonicalTreeRepo,
         TreeSample: TreeSample,
-        VisualParameters: Plots.vp
+        VisualParameters: Plots.vp,
+        Components: Components
     }
 }());
 

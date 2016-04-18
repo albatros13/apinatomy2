@@ -109,6 +109,24 @@
                                 '       <label id="nodeInfo" class="infoLabel"></label>' +
                                 '   </fieldset>' +
                                 '</div>' +
+                                '<div style="padding: 4px;">' +
+                                '   <button id="btnAddLyph" class="image-button small-button icon-right parameterButton">' +
+                                '       Add <img src="images/add.png" class="icon"/>' +
+                                '</div>' +
+                                '<br/><br/>' +
+                                '<div>' +
+                                '   <fieldset>' +
+                                '       <legend>Selected lyph template:</legend>' +
+                                '       <label id="iconInfo" class="infoLabel"></label>' +
+                                '   </fieldset>' +
+                                '</div>' +
+                                '<div style="padding: 4px;">' +
+                                '   <button id="btnRemoveLyph" class="image-button small-button icon-right parameterButton">' +
+                                '       Remove <img src="images/remove.png" class="icon"/>' +
+                                '   <button id="btnShowLyph" class="image-button small-button icon-right parameterButton">' +
+                                '       Show <img src="images/lyph.png" class="icon"/>' +
+                                '</div>' +
+                                '<br/><br/>' +
                                 '<div>' +
                                 '   <fieldset>' +
                                 '       <legend>Selected link:</legend>' +
@@ -150,7 +168,7 @@
             lyphRepo = new ApiNATOMY2.LyphTemplateRepo([]);
             lyphRepo.load("http://open-physiology.org:8889");
             lyphRepo.createEditors($('#lyphRepo'), onSelectLyph);
-            lyphRepo.onShowOntology = onShowOntology;
+            lyphRepo.showOntology = onShowOntology;
             if (lyphRepo.items) {
                 selectedLyph = lyphRepo.items[0];
                 syncSelectedLyph();
@@ -176,7 +194,7 @@
         container.getElement().html(componentState.content);
         container.on( 'open', function() {
             OntologyManager.init();
-            OntologyManager.graph.onShowLyph = onShowLyph;
+            OntologyManager.graph.showLyph = onShowLyph;
         });
     });
 
@@ -196,11 +214,11 @@
     }
 
     function onShowLyph(lyph){
-        if (lyphRepo){
+        if (lyphRepo && lyph){
+            lyph.open();
             var windowStack = myLayout.root.contentItems[0];
             var lyphManager = windowStack.contentItems[0];
             windowStack.header.setActiveContentItem(lyphManager);
-            lyph.open();
         }
     }
 

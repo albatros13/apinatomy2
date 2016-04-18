@@ -15,6 +15,9 @@ var OntologyManager = (function(){
     graph.linkClickHandler = function (d){
         $( "#linkInfo").html(getHTMLLinkAnnotation(d));
     };
+    graph.iconClickHandler = function (d){
+        $( "#iconInfo").html(getHTMLIconAnnotation(d));
+    };
 
     function init() {
         $( "#btnUpdate" ).on('click', function() {
@@ -32,6 +35,37 @@ var OntologyManager = (function(){
 
         $( "#btnLoad" ).on('click', function() {
             selectOntologies();
+        });
+
+        $( "#btnAddLyph" ).on('click', function() {
+            if (graph.lyphRepo){
+                console.dir(graph.lyphRepo);
+                //create (tmp)
+                var newObj = graph.lyphRepo.defaultObject();
+                graph.lyphRepo.add(newObj);
+                //update (new)
+                newObj.fmaID = graph.selectedNode.id;
+                newObj.name = graph.selectedNode.label;
+                newObj.status = "new";
+                //update view and open
+                graph.lyphRepo.updateContent();
+                newObj.open();
+                graph.update();
+            }
+        });
+
+        $( "#btnRemoveLyph" ).on('click', function() {
+            if (graph.lyphRepo && graph.selectedLyph){
+                graph.selectedLyph.remove();
+                $( "#iconInfo").html("");
+                graph.update();
+            }
+        });
+
+        $( "#btnShowLyph" ).on('click', function() {
+            if (graph.lyphRepo && graph.showLyph){
+                graph.showLyph(graph.selectedLyph);
+            }
         });
 
         $("input:checkbox[name=ontology]").change(function() {
@@ -83,6 +117,7 @@ var OntologyManager = (function(){
         }
         $( "#nodeInfo").html("");
         $( "#linkInfo").html("");
+        $( "#iconInfo").html("");
     }
 
     function loadOntologyData(ontology){
@@ -185,6 +220,14 @@ var OntologyManager = (function(){
         return "<div>" + res + "</div>";
     }
 
+    function getHTMLIconAnnotation(d){
+        if (!d) return "";
+        var res = d.id;
+        if (d.name) res += ": " + d.name;
+        if (d.fmaID) res += '</br> Ontology ID: ' + d.fmaID;
+        return "<div>" + res + "</div>";
+    }
+
     function getHTMLLinkAnnotation(d){
         if (!d) return "";
         var res = d.type;
@@ -205,17 +248,21 @@ var OntologyManager = (function(){
         this.lyphRepo = null;
         this.rootID = 0;
 
+        this.selectedNode = null;
+        this.selectedLink = null;
+        this.selectedLyph = null;
+
         var graph = this;
 
         var visibleNodes = {};
         var visibleLinks = [];
         var linkTypes = [];
 
+
         var force = d3.layout.force();
         var tooltip = d3.select("body").append("div")
             .attr("class", "tooltip")
             .style("opacity", 0);
-
 
         this.setVisibleLinks = function(linkSet){
             var graph = this;
@@ -416,10 +463,9 @@ var OntologyManager = (function(){
                     tooltip.transition().duration(500).style("opacity", 0);
                 });
 
-
-            var node = svg.append("g").selectAll("circle")
-                .data(force.nodes())
-                .enter().append("circle")
+            var myGroups = svg.append('g').selectAll(".term").data(force.nodes());
+            var myGroupsEnter = myGroups.enter().append("g").attr("class", "term");
+            var node = myGroupsEnter.append("circle")
                 .attr("r", function(d){
                     if (d.radius) return 12;
                     return 7;
@@ -443,28 +489,29 @@ var OntologyManager = (function(){
                     tooltip.transition().duration(500).style("opacity", 0);
                 });
 
-            var icon = null;
+            var icon = myGroupsEnter.append("g").attr("class", "icon");
+
             if (graph.lyphRepo) {
-                var lyphTemplates = graph.lyphRepo.getItemsByOntologyID(graph.rootID);
-                if (lyphTemplates && lyphTemplates.length > 0){
-                    var root = force.nodes().filter(function(d){return d.id == graph.rootID;});
-                    icon = svg.append("g").selectAll(".icons")
-                        .data(root).enter().append("g").attr("class", "icons");
-                    var vpIcon = new ApiNATOMY2.VisualParameters({
-                        scale : {width: 20, height: 4},
-                        size  : {width: 20, height: 20},
-                        margin: {x: 0, y: 0}
-                    });
-                    lyphTemplates.forEach(function(d){
-                        d.drawIcon(icon, vpIcon, graph.onShowLyph);
-                        vpIcon.margin.x += 20;
-                    });
-                }
+                icon.each(function(d){
+                    var lyphTemplates = graph.lyphRepo.getItemsByOntologyID(d.id);
+                    if (lyphTemplates && lyphTemplates.length > 0){
+                        var vpIcon = new ApiNATOMY2.VisualParameters({
+                            scale : {width: 20, height: 4},
+                            size  : {width: 20, height: 20},
+                            margin: {x: 10, y: 10}
+                        });
+                        var iconSvg = d3.select(this).data([d]);
+                        lyphTemplates.forEach(function(d){
+                            if (d.isValid()){
+                                d.drawIcon(iconSvg, vpIcon, iconClickHandler);
+                                vpIcon.margin.x += 20;
+                            }
+                        });
+                    }
+                });
             }
 
-            var text = svg.append("g").selectAll("text")
-                .data(force.nodes())
-                .enter().append("text")
+            var text = myGroupsEnter.append("text")
                 .attr("x", 8)
                 .attr("y", ".31em")
                 .text(function (d) {return (d.label? d.label: d.id);});
@@ -482,6 +529,7 @@ var OntologyManager = (function(){
             }
 
             function nodeClickHandler (node){
+                graph.selectedNode = node;
                 var circle = d3.select(this);
                 var circles = svg.selectAll("circle");
                 var other = circles.filter(function(d){return d != circle;});
@@ -491,6 +539,7 @@ var OntologyManager = (function(){
             }
 
             function linkClickHandler (link){
+                graph.selectedLink = link;
                 var path = d3.select(this);
                 var paths = svg.selectAll("path");
                 var other = paths.filter(function(d){return d != path;});
@@ -499,16 +548,14 @@ var OntologyManager = (function(){
                 if (graph.linkClickHandler) graph.linkClickHandler(link);
             }
 
+            function iconClickHandler(lyph){
+                graph.selectedLyph = lyph;
+                if (graph.iconClickHandler) graph.iconClickHandler(lyph);
+            }
+
             function tick() {
                 link.attr("d", linkArc);
-                node.attr("transform", transform);
-                text.attr("transform", transform);
-
-                if (icon){
-                    icon.attr("transform", function (d) {
-                        return "translate(" + (d.x + 10) + "," + (d.y + 10) + ")";
-                    });
-                }
+                myGroups.attr("transform", transform);
             }
 
             function linkArc(d) {

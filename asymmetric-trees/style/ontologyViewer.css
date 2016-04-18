@@ -3,14 +3,14 @@
     stroke-width: 1.5px;
 }
 
+.selected{
+    stroke-width: 2px;
+}
+
 circle {
     fill: #ccc;
     stroke: #fff;
     stroke-width: 1.5px;
-}
-
-.selected{
-    stroke-width: 2px;
 }
 
 circle.selected{
@@ -33,17 +33,15 @@ text {
 }
 
 .parameterLabel {
-    display: inline-block;
-    width: 120px;
-    text-align: right;
+    float:left;
+    width:50%;
+    margin-right:0.5em;
+    padding-top:0.2em;
+    text-align:right;
 }
 
 .parameterButton {
     float: right;
-}
-
-.parameterGroup {
-    padding-left: 150px;
 }
 
 .infoLabel {
@@ -67,26 +65,20 @@ div.dotted {
     padding: 2px;
 }
 
-h3 {
-    margin:0;
-    padding:20px;
-    font: 20px sans-serif bold;
-}
-
-h4 {
-    margin:0;
-    padding:6px;
-    font: 16px sans-serif bold;
-}
-
 fieldset {
     border: 1px ridge #e3e3e3;
+    font: 12px sans-serif bold;
 }
 
 div.group {
     border: 1px ridge #e3e3e3;
     padding: 10px;
 }
+
+legend{
+    font-weight:bold;
+}
+
 
 
 

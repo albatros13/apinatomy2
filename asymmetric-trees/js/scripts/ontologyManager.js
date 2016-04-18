@@ -1,25 +1,22 @@
 var OntologyManager = (function(){
 
-    function initParameters() {
-        var links = [];
-        var nodeAnnotations = [];
-        var resources = {
-            fma: {relations: "resources/fmaParts.txt", annotations: "resources/fmaNames.txt", prefix: "FMA"},
-            cl: {relations: "resources/cl-basicRelations.txt", annotations: "resources/cl-basicNames.txt", prefix: "CL"}
-        };
+    var links = [];
+    var nodeAnnotations = [];
+    var resources = {
+        fma: {relations: "resources/fmaParts.txt", annotations: "resources/fmaNames.txt", prefix: "FMA"},
+        cl: {relations: "resources/cl-basicRelations.txt", annotations: "resources/cl-basicNames.txt", prefix: "CL"}
+    };
 
-        var graph = new Graph(links, nodeAnnotations);
-        var nodeInfo = $( "#nodeInfo");
-        var linkInfo = $( "#linkInfo");
-        var graphInfo = $( "#graphInfo");
+    var graph = new Graph(links, nodeAnnotations);
 
-        graph.nodeClickHandler = function(d){
-            nodeInfo.html(getHTMLNodeAnnotation(d));
-        };
-        graph.linkClickHandler = function (d){
-            linkInfo.html(getHTMLLinkAnnotation(d));
-        };
+    graph.nodeClickHandler = function(d){
+        $( "#nodeInfo").html(getHTMLNodeAnnotation(d));
+    };
+    graph.linkClickHandler = function (d){
+        $( "#linkInfo").html(getHTMLLinkAnnotation(d));
+    };
 
+    function init() {
         $( "#btnUpdate" ).on('click', function() {
             updateView(true);
         });
@@ -37,97 +34,6 @@ var OntologyManager = (function(){
             selectOntologies();
         });
 
-        function updateView(reset){
-            var root =  $('#ontid').val();
-            if (root.length == 0) return;
-            var radius = $("#radius").val();
-            if (!radius) radius = 2;
-            var step = $("#step").val();
-            if (!step) step = 1;
-            graph.incrementStep = step;
-            if (reset){
-                graph.createSubGraph(root, radius);
-            } else {
-                graph.expandSubGraph(root, radius);
-            }
-            nodeInfo.html("");
-            linkInfo.html("");
-        }
-
-        function loadOntologyData(ontology){
-            var file = resources[ontology].relations;
-            $.ajax({
-                url: file,
-                success: function(data) {
-                    var lines = data.split('\n');
-                    for(var i = 0; i < lines.length; i++){
-                        var line = lines[i];
-                        var terms = line.split(' ');
-                        if (terms.length >= 3){
-                            var link = {source: extractID(terms[1]), target: extractID(terms[2]),
-                                type: terms[0].trim(), ontology: ontology};
-                            links.push(link);
-                        }
-                    }
-                    resources[ontology].included = true;
-                    graphInfo.html("Loaded relations: " + graph.links.length);
-                    if (!resources[ontology].annotated)
-                        loadNodeAnnotations(ontology);
-                }
-            });
-        }
-
-        function loadNodeAnnotations(ontology){
-            var file = resources[ontology].annotations;
-            $.ajax({
-                url: file,
-                success: function(data) {
-                    var lines = data.split('\n');
-                    for(var i = 0; i < lines.length; i++){
-                        var line = lines[i];
-                        var endOfURI = line.indexOf(' ');
-                        if (endOfURI > -1){
-                            var URI = line.substring(0, endOfURI);
-                            var id = extractID(line.substring(0, endOfURI));
-                            nodeAnnotations[id] = {label: line.substring(endOfURI + 1), URI: URI}
-                        }
-                    }
-                    resources[ontology].annotated = true;
-                },
-                complete: function(){
-                    updateView(true);
-                }
-            });
-        }
-
-        function selectOntologies(){
-            var toRemove = [];
-            var paramPanel = $("#ontologyParameters");
-            var checkBoxes = paramPanel.find("input:checkbox[name=ontology]");
-            checkBoxes.each(function(){
-                var ontology = $(this).val();
-                if (this.checked){
-                    if (!resources[ontology].included){
-                        loadOntologyData(ontology);
-                    }
-                }
-                else {
-                    if (resources[ontology].included){
-                        toRemove.push(ontology);
-                        resources[ontology].included = false;
-                    }
-                }
-            });
-            if (toRemove.length > 0) {
-                links = links.filter(function(d){
-                    return toRemove.indexOf(d.ontology) < 0;
-                });
-                graph.links = links;
-                graphInfo.html("Loaded relations: " + graph.links.length);
-            }
-            $( "#btnLoad").prop("disabled", true);
-        }
-
         $("input:checkbox[name=ontology]").change(function() {
             $( "#btnLoad").prop("disabled", false);
         });
@@ -136,7 +42,7 @@ var OntologyManager = (function(){
 
         $(function() {
             var result = null;
-            $( "#name" ).autocomplete({
+            $( "#ontname" ).autocomplete({
                 source: function( request, response ) {
                     $.ajax({
                         url: "http://open-physiology.org:5052/autocomplete-case-insensitive/" + request.term,
@@ -160,6 +66,104 @@ var OntologyManager = (function(){
                 }
             });
         });
+    }
+
+    function updateView(reset){
+        var root =  $('#ontid').val();
+        if (root.length == 0) return;
+        var radius = $("#radius").val();
+        if (!radius) radius = 2;
+        var step = $("#step").val();
+        if (!step) step = 1;
+        graph.incrementStep = step;
+        if (reset){
+            graph.createSubGraph(root, radius);
+        } else {
+            graph.expandSubGraph(root, radius);
+        }
+        $( "#nodeInfo").html("");
+        $( "#linkInfo").html("");
+    }
+
+    function loadOntologyData(ontology){
+        var file = resources[ontology].relations;
+        $.ajax({
+            url: file,
+            success: function(data) {
+                var lines = data.split('\n');
+                for(var i = 0; i < lines.length; i++){
+                    var line = lines[i];
+                    var terms = line.split(' ');
+                    if (terms.length >= 3){
+                        var link = {source: extractID(terms[1]), target: extractID(terms[2]),
+                            type: terms[0].trim(), ontology: ontology};
+                        links.push(link);
+                    }
+                }
+                resources[ontology].included = true;
+                $( "#graphInfo").html("Loaded relations: " + graph.links.length);
+                if (!resources[ontology].annotated)
+                    loadNodeAnnotations(ontology);
+            }
+        });
+    }
+
+    function loadNodeAnnotations(ontology){
+        var file = resources[ontology].annotations;
+        $.ajax({
+            url: file,
+            success: function(data) {
+                var lines = data.split('\n');
+                for(var i = 0; i < lines.length; i++){
+                    var line = lines[i];
+                    var endOfURI = line.indexOf(' ');
+                    if (endOfURI > -1){
+                        var URI = line.substring(0, endOfURI);
+                        var id = extractID(line.substring(0, endOfURI));
+                        nodeAnnotations[id] = {label: line.substring(endOfURI + 1), URI: URI}
+                    }
+                }
+                resources[ontology].annotated = true;
+            },
+            complete: function(){
+                updateView(true);
+            }
+        });
+    }
+
+    function selectOntologies(){
+        var toRemove = [];
+        var paramPanel = $("#ontologyParameters");
+        var checkBoxes = paramPanel.find("input:checkbox[name=ontology]");
+        checkBoxes.each(function(){
+            var ontology = $(this).val();
+            if (this.checked){
+                if (!resources[ontology].included){
+                    loadOntologyData(ontology);
+                }
+            }
+            else {
+                if (resources[ontology].included){
+                    toRemove.push(ontology);
+                    resources[ontology].included = false;
+                }
+            }
+        });
+        if (toRemove.length > 0) {
+            links = links.filter(function(d){
+                return toRemove.indexOf(d.ontology) < 0;
+            });
+            graph.links = links;
+            $( "#graphInfo").html("Loaded relations: " + graph.links.length);
+        }
+        $( "#btnLoad").prop("disabled", true);
+    }
+
+
+    function showTerm(value, name){
+        $('#ontid').val(value);
+        $('#ontname').val(name);
+        updateView(true);
     }
 
     function extractID(url){
@@ -198,6 +202,8 @@ var OntologyManager = (function(){
         this.links = links;
         this.nodeAnnotations = nodeAnnotations;
         this.incrementStep = 1;
+        this.lyphRepo = null;
+        this.rootID = 0;
 
         var graph = this;
 
@@ -206,6 +212,10 @@ var OntologyManager = (function(){
         var linkTypes = [];
 
         var force = d3.layout.force();
+        var tooltip = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
 
         this.setVisibleLinks = function(linkSet){
             var graph = this;
@@ -269,6 +279,7 @@ var OntologyManager = (function(){
 
         this.createSubGraph = function(rootID, radius){
             this.reset();
+            this.rootID = rootID;
             var selectedLinks = breadthSearch(graph.links, rootID, radius);
             this.setVisibleLinks(selectedLinks);
             if (visibleNodes[rootID]) visibleNodes[rootID].radius = radius;
@@ -353,8 +364,8 @@ var OntologyManager = (function(){
         ///////////////////////////////
         this.update = function() {
 
-            var w = 1000; //vp.size.width;
-            var h = 500; //vp.size.height;
+            var w = 1000;
+            var h = 500;
 
             var svg = d3.select("#ontologyGraph").attr("width", w).attr("height", h);
             svg.selectAll('g').remove();
@@ -416,8 +427,9 @@ var OntologyManager = (function(){
                 .attr("class", function(d){
                     if (d.radius) return "expanded";
                     return "";
-                })
-                .on('dblclick', nodeDblClickHandler)
+                });
+
+            node.on('dblclick', nodeDblClickHandler)
                 .on('click', nodeClickHandler)
                 .call(force.drag);
 
@@ -430,6 +442,25 @@ var OntologyManager = (function(){
                 .on("mouseout", function() {
                     tooltip.transition().duration(500).style("opacity", 0);
                 });
+
+            var icon = null;
+            if (graph.lyphRepo) {
+                var lyphTemplates = graph.lyphRepo.getItemsByOntologyID(graph.rootID);
+                if (lyphTemplates && lyphTemplates.length > 0){
+                    var root = force.nodes().filter(function(d){return d.id == graph.rootID;});
+                    icon = svg.append("g").selectAll(".icons")
+                        .data(root).enter().append("g").attr("class", "icons");
+                    var vpIcon = new ApiNATOMY2.VisualParameters({
+                        scale : {width: 20, height: 4},
+                        size  : {width: 20, height: 20},
+                        margin: {x: 0, y: 0}
+                    });
+                    lyphTemplates.forEach(function(d){
+                        d.drawIcon(icon, vpIcon, graph.onShowLyph);
+                        vpIcon.margin.x += 20;
+                    });
+                }
+            }
 
             var text = svg.append("g").selectAll("text")
                 .data(force.nodes())
@@ -472,6 +503,12 @@ var OntologyManager = (function(){
                 link.attr("d", linkArc);
                 node.attr("transform", transform);
                 text.attr("transform", transform);
+
+                if (icon){
+                    icon.attr("transform", function (d) {
+                        return "translate(" + (d.x + 10) + "," + (d.y + 10) + ")";
+                    });
+                }
             }
 
             function linkArc(d) {
@@ -493,11 +530,11 @@ var OntologyManager = (function(){
                 return "translate(" + d.x + "," + d.y + ")";
             }
         }
-
     }
 
     return {
-        initParameters: initParameters,
-        Graph: Graph
+        init: init,
+        showTerm: showTerm,
+        graph: graph
     }
 }());

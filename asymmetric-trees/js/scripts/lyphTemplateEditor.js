@@ -63,23 +63,25 @@
                                 content: '<div id="ontologyParameters" class="ontologyParameters">' +
                                 '<div>' +
                                 '   <fieldset>' +
-                                '       <legend>Ontologies</legend>' +
-                                '       <input type="checkbox" name="ontology" value="fma" checked/>FMA' +
-                                '       <input type="checkbox" name="ontology" value="cl"/>CellType' +
+                                '       <legend>Ontologies:</legend>' +
+                                '       <input type="checkbox" name="ontology" value="fma" checked>FMA </input>' +
+                                '       <input type="checkbox" name="ontology" value="cl">CellType </input>' +
                                 '   </fieldset>' +
                                 '</div>' +
                                 '<div style="padding: 4px;">' +
-                                '   <button class="parameterButton" id="btnLoad" disabled>Load</button>' +
+                                '   <button id="btnLoad" class="image-button small-button icon-right parameterButton">' +
+                                '   Load <span class="icon mif-download"></span>' +
                                 '</div>' +
-                                '<br/><br/>' +
+                                '</br></br>' +
                                 '<div class="group">' +
-                                '   <label id="graphInfo" class="graphInfo"></label>' +
+                                '   <label id="graphInfo"></label>' +
                                 '</div>' +
-                                '<h4>Input parameters:</h4>' +
-                                '<div class="group">' +
+                                '<div>' +
+                                '   <fieldset>' +
+                                '   <legend>Input parameters:</legend>' +
                                 '   <div>' +
                                 '       <label for="name" class="parameterLabel">Name:</label>' +
-                                '       <input type="text" id="name" size="200" style="width: 130px;"  value ="Brain"/>' +
+                                '       <input type="text" id="ontname" size="200" style="width: 130px;"  value ="Brain"/>' +
                                 '   </div>' +
                                 '   <div>' +
                                 '       <label for="ontid" class="parameterLabel">ID:</label>' +
@@ -93,20 +95,25 @@
                                 '       <label for="step" class="parameterLabel">Increment step:</label>' +
                                 '       <input type="number" id="step" size="200" style="width: 50px;" min="0" value ="1"/>' +
                                 '   </div>' +
+                                '   </fieldset>' +
                                 '</div>' +
                                 '<div style="padding: 4px;">' +
-                                '   <button class="parameterButton" id="btnClean">Clean</button>' +
-                                '   <button class="parameterButton" id="btnUpdate">Update</button>' +
-                                '   <button class="parameterButton" id="btnExtend">Extend</button>' +
+                                '   <button class="image-button small-button icon-right parameterButton" id="btnClean">Clear <img src="images/removeAll.png" class="icon"></span> </button>' +
+                                '   <button class="image-button small-button icon-right parameterButton" id="btnUpdate">Update <span class="icon mif-redo"></button>' +
+                                '   <button class="image-button small-button icon-right parameterButton" id="btnExtend">Extend  <span class="icon mif-enlarge"></button>' +
                                 '</div>' +
-                                '<br/>' +
-                                '<h4>Selected node:</h4>' +
-                                '<div class="group">' +
-                                '   <label id="nodeInfo" class="infoLabel"></label>' +
+                                '<br/><br/>' +
+                                '<div>' +
+                                '   <fieldset>' +
+                                '       <legend>Selected node:</legend>' +
+                                '       <label id="nodeInfo" class="infoLabel"></label>' +
+                                '   </fieldset>' +
                                 '</div>' +
-                                '<h4>Selected link:</h4>' +
-                                '<div class="group">' +
-                                '   <label id="linkInfo" class="infoLabel"></label>' +
+                                '<div>' +
+                                '   <fieldset>' +
+                                '       <legend>Selected link:</legend>' +
+                                '       <label id="linkInfo" class="infoLabel"></label>' +
+                                '   </fieldset>' +
                                 '</div>' +
                                 '</div>',
                                 label: 'Ontology parameters'
@@ -143,10 +150,12 @@
             lyphRepo = new ApiNATOMY2.LyphTemplateRepo([]);
             lyphRepo.load("http://open-physiology.org:8889");
             lyphRepo.createEditors($('#lyphRepo'), onSelectLyph);
+            lyphRepo.onShowOntology = onShowOntology;
             if (lyphRepo.items) {
                 selectedLyph = lyphRepo.items[0];
                 syncSelectedLyph();
             }
+            OntologyManager.graph.lyphRepo = lyphRepo;
         })
     });
 
@@ -166,7 +175,8 @@
     myLayout.registerComponent('OntologyParameters', function (container, componentState) {
         container.getElement().html(componentState.content);
         container.on( 'open', function() {
-           OntologyManager.initParameters();
+            OntologyManager.init();
+            OntologyManager.graph.onShowLyph = onShowLyph;
         });
     });
 
@@ -175,6 +185,24 @@
     });
 
     myLayout.init();
+
+    function onShowOntology(ontologyID, name){
+        if (ontologyID && name){
+            OntologyManager.showTerm(ontologyID, name);
+            var windowStack = myLayout.root.contentItems[0];
+            var ontologyManager = windowStack.contentItems[1];
+            windowStack.header.setActiveContentItem(ontologyManager);
+        }
+    }
+
+    function onShowLyph(lyph){
+        if (lyphRepo){
+            var windowStack = myLayout.root.contentItems[0];
+            var lyphManager = windowStack.contentItems[0];
+            windowStack.header.setActiveContentItem(lyphManager);
+            lyph.open();
+        }
+    }
 
     function onSelectLyph(d){
         selectedLyph = d;

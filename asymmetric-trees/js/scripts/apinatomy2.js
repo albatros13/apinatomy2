@@ -600,6 +600,7 @@ var ApiNATOMY2 = (function(){
             return selectPanel;
         };
 
+
         /*Special inputs*/
         my.createSearchInput = function(toolbar, search){
             $('<div class="v-divider">').appendTo(toolbar);
@@ -2050,6 +2051,20 @@ var ApiNATOMY2 = (function(){
             namePanel.attr("style", "width: 100%;");
             var nameInput = namePanel.find("> input");
 
+            var btn = $('<button id="btnOntology" class="button small-button" style="margin: 4px;">');
+            btn.html('<span class="mif-spinner"></span>');
+            btn.appendTo(ontologyIDPanel);
+
+            btn.on('click', function() {
+                if (d.repository.onShowOntology) {
+                    var ontologyID = $.trim(ontologyIDInput.val());
+                    var name = $.trim(nameInput.val());
+                    if (ontologyID && name){
+                        d.repository.onShowOntology(ontologyID, name);
+                    }
+                }
+            });
+
             function extractID(url){
                 var delimeterPos;
                 if (url.indexOf("fma#") > 0)
@@ -2239,6 +2254,12 @@ var ApiNATOMY2 = (function(){
 
         this.layerRepoFull = new LayerTemplateRepoFull([]);
         this.locatedMeasureRepoFull = new LocatedMeasureRepoFull([]);
+
+        this.getItemsByOntologyID = function(ontologyID){
+            if (ontologyID && this.items)
+                return this.items.filter(function(d){ return d.fmaID == ontologyID;});
+            return null;
+        };
 
         this.beforeLoad = function(){
             var repo = this;

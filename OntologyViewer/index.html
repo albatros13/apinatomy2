@@ -15,9 +15,10 @@
     <div id="parameters" class="panel">
         <div>
             <fieldset>
-                <legend>Ontologies</legend>
-                <input type="checkbox" name="ontology" value="fma" checked/>FMA
+                <legend>Resources</legend>
+                <input type="checkbox" name="ontology" value="fma"/>FMA
                 <input type="checkbox" name="ontology" value="cl"/>CellType
+                <input type="checkbox" name="ontology" value="brain" checked/>Brain FMA
             </fieldset>
         </div>
         <div style="padding: 4px;">
@@ -26,6 +27,9 @@
         <br/>
         <div class="group">
             <label id="graphInfo" class="graphInfo"></label>
+            <fieldset id="linkTypes">
+                <legend>Link types</legend>
+            </fieldset>
         </div>
 
         <h4>Input parameters:</h4>
@@ -33,12 +37,12 @@
         <div class="group">
             <div>
                 <label for="name" class="parameterLabel">Name:</label>
-                <input type="text" id="name" size="200" style="width: 130px;"  value ="Brain"/>
+                <input type="text" id="name" size="200" style="width: 130px;"  value ="Basal amygdaloid nucleus"/>
             </div>
 
             <div>
                 <label for="ontid" class="parameterLabel">ID:</label>
-                <input type="text" id="ontid" size="200" style="width: 130px;"  value ="FMA_50801"/>
+                <input type="text" id="ontid" size="200" style="width: 130px;"  value ="FMA_68855"/>
             </div>
 
             <div>
@@ -77,7 +81,6 @@
     <script src="lib/jquery-ui/jquery-ui.js"></script>
     <script src="lib/jquery.rdfquery.core.min-1.0.js"></script>
     <script src="lib/d3.js"></script>
-    <script src="js/utils.js"></script>
     <script src="js/ontologyViewer.js"></script>
 
 

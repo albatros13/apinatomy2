@@ -29,7 +29,7 @@
                     componentState: {
                         label: 'Trees',
                         content:
-                            '<div id="treeRepo" class="treeRepo"></div>'
+                            '<div id="treeRepo"></div>'
                     }
                 },
                 {
@@ -47,9 +47,7 @@
                                             height: 50,
                                             componentState: {
                                                 label: 'Tree definition',
-                                                content: '<div id="treeDefinition">' +
-                                                    '<svg id = "tree"></svg>' +
-                                                '</div>'
+                                                content: '<div id="treeDefinition"><svg id = "tree"></svg></div>'
                                             }
                                         },
                                         {
@@ -58,9 +56,7 @@
                                             height: 50,
                                             componentState: {
                                                 label: 'Tree statistics',
-                                                content: '<div id="treePlots">' +
-                                                    '<svg id = "plots"></svg>' +
-                                                '</div>'
+                                                content: '<div id="treePlots"><svg id = "plots"></svg></div>'
                                             }
                                         }
                                     ]
@@ -84,9 +80,8 @@
                                             showPopoutIcon: false,
                                             width: 25,
                                             componentState: {
-                                                content:
-                                                '<div id="lyphTreemap"></div>',
-                                                label: 'LyphTemplate viewer'
+                                                label: 'LyphTemplate viewer',
+                                                content: '<div id="lyphTreemap"></div>'
                                             }
                                         }
                                     ]

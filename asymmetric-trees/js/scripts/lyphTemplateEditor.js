@@ -33,20 +33,35 @@
                             width: 60,
                             componentState: {
                                 label: 'Lyphs',
-                                content: '<div id="lyphRepo" class="lyphRepo"></div>'
+                                content: '<div id="lyphRepo"></div>'
                             }
                         },
                         {
-                            type: 'component',
-                            componentName: 'LyphTemplate',
-                            title: "Lyph template",
-                            showPopoutIcon: false,
-                            width: 40,
-                            componentState: {
-                                content: '<div id="lyphTreemap" class="lyphTreemap"></div>' +
-                                '<svg class="lyph" style="width: 300px; height: 300px;"></svg>',
-                                label: 'LyphTemplate viewer'
-                            }
+                            type: 'stack',
+                            content: [
+                                {
+                                    type: 'component',
+                                    componentName: 'LyphTemplate',
+                                    title: "Lyph template",
+                                    showPopoutIcon: false,
+                                    width: 40,
+                                    componentState: {
+                                        content: '<div id="lyphTreemap"></div>',
+                                        label: 'LyphTemplate viewer'
+                                    }
+                                },
+                                {
+                                    type: 'component',
+                                    componentName: 'LyphHierarchy',
+                                    title: "Lyph template hierarchy",
+                                    showPopoutIcon: false,
+                                    width: 40,
+                                    componentState: {
+                                        content: '<svg id="lyphHierarchy"></svg>',
+                                        label: 'LyphTemplate hierarchy'
+                                    }
+                                }
+                            ]
                         }
                     ]
                 },
@@ -117,13 +132,13 @@
                                 '<div>' +
                                 '   <fieldset>' +
                                 '       <legend>Selected lyph template:</legend>' +
-                                '       <label id="iconInfo" class="infoLabel"></label>' +
+                                '       <label id="lyphInfo" class="infoLabel"></label>' +
                                 '   </fieldset>' +
                                 '</div>' +
                                 '<div style="padding: 4px;">' +
-                                '   <button id="btnRemoveLyph" class="image-button small-button icon-right parameterButton">' +
+                                '   <button id="btnRemoveLyph" class="image-button small-button icon-right parameterButton" disabled>' +
                                 '       Remove <img src="images/remove.png" class="icon"/>' +
-                                '   <button id="btnShowLyph" class="image-button small-button icon-right parameterButton">' +
+                                '   <button id="btnShowLyph" class="image-button small-button icon-right parameterButton" disabled>' +
                                 '       Show <img src="images/lyph.png" class="icon"/>' +
                                 '</div>' +
                                 '<br/><br/>' +
@@ -155,11 +170,16 @@
 
     var myLayout = new GoldenLayout(config);
 
-    var lyphRepo, divLyphTemplate, selectedLyph, selectedLayer;
+    var lyphRepo, divLyphTemplate, selectedLyph, selectedLayer,
+        svgLyphHierarchy;
 
     var svgLyphTemplateVP = new ApiNATOMY2.VisualParameters({
          scale: {width: 200, height: 30},
           size: {width: 500, height: 500},
+        margin: {x: 20, y: 20}});
+
+    var lyphHierarchyVP = new ApiNATOMY2.VisualParameters({
+        size: {width: 500, height: 500},
         margin: {x: 20, y: 20}});
 
     myLayout.registerComponent('LyphTemplateRepo', function (container, componentState) {
@@ -181,7 +201,7 @@
         container.getElement().html(componentState.content);
         var dx = 20, dy = 20;
         container.on( 'open', function(){
-            divLyphTemplate  = d3.select('.lyphTreemap');
+            divLyphTemplate  = d3.select('#lyphTreemap');
             svgLyphTemplateVP.size = {width: container.width - dx, height: container.height - dy};
         });
         container.on( 'resize', function(){
@@ -189,6 +209,20 @@
             syncSelectedLyph();
         });
     });
+
+    myLayout.registerComponent('LyphHierarchy', function (container, componentState) {
+        container.getElement().html(componentState.content);
+        var dx = 20, dy = 20;
+        container.on( 'open', function(){
+            svgLyphHierarchy  = d3.select('#lyphHierarchy');
+            lyphHierarchyVP.size = {width: container.width - dx, height: container.height - dy};
+        });
+        container.on( 'resize', function(){
+            lyphHierarchyVP.size = {width: container.width - dx, height: container.height - dy};
+            //syncSelectedLyph();
+        });
+    });
+
 
     myLayout.registerComponent('OntologyParameters', function (container, componentState) {
         container.getElement().html(componentState.content);

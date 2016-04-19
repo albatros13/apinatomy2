@@ -59,7 +59,7 @@ var ApiNATOMY2 = (function(){
         for ( var p in obj ) {
             if (typeof obj[p] === "function")
                 delete obj[p];
-            if ( typeof( obj[ p ] ) == "object" ) Object.removeFunctions(obj[p]);
+            if ( typeof( obj[ p ] ) === "object" ) Object.removeFunctions(obj[p]);
         }
     };
 
@@ -69,6 +69,20 @@ var ApiNATOMY2 = (function(){
 
     function logError(obj){
         console.dir(obj);
+    }
+
+    function createObjects(propertySet, classType){
+        if (propertySet){
+            for (var i = 0; i < propertySet.length; i++){
+                var newItem = propertySet[i];
+                if (typeof newItem === "object"){//JSON prototypes
+                    if (typeof newItem !== classType.class) newItem = new classType(newItem)
+                } else {//Identifiers (when pre-loaded from server)
+                    if (typeof newItem === "number") newItem = new classType({id: newItem});
+                }
+                propertySet[i] = newItem;
+            }
+        }
     }
 
     var rowColor = function(i){
@@ -100,8 +114,6 @@ var ApiNATOMY2 = (function(){
             materials    : null,
             lyphTemplate : 0,   //parent id
             position     : 0
-            //lyphIdentity (Array[integer], optional),
-            //instantiations (Array[integer], optional)
         };
 
         my.locatedMeasure = {
@@ -116,18 +128,15 @@ var ApiNATOMY2 = (function(){
             id              : 0,
             name            : "",
             fmaID           : "",
+            cocomacID       : "",
             layers          : null,
-            //materialInLyphs : null,
-            //children        : null,
-            //instantiations  : null,
-            //layerIdentity   : null, //Pointer to a layer
-            //materials       : null, //Any lyph template
-            //parents         : null, //Any lyph template
-            //materialIn      : null, //Array
             locatedMeasures : null,
-            length: null,
-            radius : null,
-
+            children        : null,
+            parent          : null,
+            subTemplates    : null,
+            superTemplates  : null,
+            length          : null,
+            radius          : null
         };
 
         my.canonicalTreeLevel = {
@@ -557,12 +566,12 @@ var ApiNATOMY2 = (function(){
             option.html(defaultValue.caption);
             option.appendTo(select);
             select.select2({placeholder: "Select " + id, allowClear: true, val: defaultValue.id});
-            var filled = false;
+            //var filled = false;
             select.on("select2:open", function(){
-                if (!filled){
+                //if (!filled){
                     appendOptions(select, getOptions);
-                    filled = true;
-                }
+                //    filled = true;
+                //}
             });
             var label = $('<label class="block">');
             label.html(caption).appendTo(selectPanel);
@@ -575,12 +584,12 @@ var ApiNATOMY2 = (function(){
             select.attr("id", id);
             select.appendTo(selectPanel);
             select.select2({placeholder: "Select " + id, allowClear: true});
-            var filled = false;
+            //var filled = false;
             select.on("select2:open", function(){
-                if (!filled){
+                //if (!filled){
                     appendOptions(select, getOptions);
-                    filled = true;
-                }
+                //    filled = true;
+                //}
             });
             var label = $('<label class="block">');
             label.html(caption).appendTo(selectPanel);
@@ -962,6 +971,19 @@ var ApiNATOMY2 = (function(){
 
         this.getItemList = function(){
             return this.getValidItems().map(function(d) {return {id: d.id, caption: d.getHeaderTitle()};});
+        };
+
+        this.getHeaderTitlesByIDs = function(idSet){
+            var repo = this;
+            if (idSet){
+                return idSet.map(function(id){
+                    var title = {id: id};
+                    var obj = repo.getItemByID(id);
+                    if (obj) title.caption = obj.getHeaderTitle();
+                    return title;
+                })
+            }
+            return [];
         };
 
         this.isModified = function(){
@@ -1455,10 +1477,6 @@ var ApiNATOMY2 = (function(){
 
             function sendPostRequest() {
                 var jsonObj = d.getJSON();
-
-                console.dir("Committing object:");
-                console.dir(jsonObj);
-
                 var data = JSON.stringify(jsonObj);
                 if ((d.status === "updated") && d.id) requestURL += d.id;
                 console.dir(requestURL);
@@ -1601,6 +1619,7 @@ var ApiNATOMY2 = (function(){
                 };
 
                 d.setJSON(newObj);
+
                 updateHeader(d);
 
                 if (d.isOrdered() && d.repository){
@@ -1890,7 +1909,7 @@ var ApiNATOMY2 = (function(){
     };
 
     Distribution.isDistribution = function(obj){
-        if (obj.type && (obj.type === "Uniform" || obj.type === "Normal")) return true;
+        if (obj && obj.type && (obj.type === "Uniform" || obj.type === "Normal")) return true;
         return false;
     };
 
@@ -1917,37 +1936,11 @@ var ApiNATOMY2 = (function(){
                     this.radius = new Distribution(obj.radius);
             }
 
-            var newItem;
-            if (obj.layers) {
-                for (var i = 0; i < obj.layers.length; i++) {
-                    newItem = obj.layers[i];
-                    if (typeof newItem === "object") {
-                        //JSON prototypes
-                        if (typeof newItem !== LayerTemplate.class)
-                            newItem = new LayerTemplate(newItem)
-                    } else {
-                        //Identifiers (when pre-loaded from server)
-                        if (typeof newItem === "number")
-                            newItem = new LayerTemplate({id: newItem});
-                    }
-                    this.layers[i] = newItem;
-                }
-            }
-            if (obj.locatedMeasures) {
-                for (i = 0; i < obj.locatedMeasures.length; i++) {
-                    newItem = obj.locatedMeasures[i];
-                    if (typeof newItem === "object") {
-                        //JSON prototypes
-                        if (typeof newItem !== LocatedMeasure.class)
-                            newItem = new LocatedMeasure(newItem)
-                    } else {
-                        //Identifiers (when pre-loaded from server)
-                        if (typeof newItem === "number")
-                            newItem = new LocatedMeasure({id: newItem});
-                    }
-                    this.locatedMeasures[i] = newItem;
-                }
-            }
+            createObjects(obj.layers, LayerTemplate);
+            createObjects(obj.locatedMeasures, LocatedMeasure);
+            createObjects(obj.superTemplates, LyphTemplate);
+            createObjects(obj.subTemplates, LyphTemplate);
+
         }
 
         this.layerRepo = new LayerTemplateRepo(this.layers, this);
@@ -2017,6 +2010,8 @@ var ApiNATOMY2 = (function(){
 
         this.validate = function(){
             var d = this;
+            var lyphRepo = null;
+
             if (!d.name)
                 return "LyphTemplate name is not defined";
             var res = "";
@@ -2028,6 +2023,43 @@ var ApiNATOMY2 = (function(){
                 res = d.radius.validate();
                 if (res.length > 0 ) return res;
             }
+
+            function traverse(root, property, data){
+                if (!root) return;
+                if (!root[property]) return;
+                root[property].forEach(function(id){
+                    data.push(id);
+                    if (d.repository){
+                        var obj = d.repository.getItemByID(id);
+                        if (obj) traverse(obj, property, data);
+                    }
+                });
+            }
+
+            var ancestors = [];
+            var descendants = [];
+            if (d.superTemplates){
+                traverse(d, "superTemplates", ancestors);
+                if (ancestors.indexOf(d.id) > -1)
+                    return "Lyph template super-templates cannot include current lyph template";
+            }
+            if (d.subTemplates){
+                traverse(d, "subTemplates", descendants);
+                if (descendants.indexOf(d.id) > -1)
+                    return "Lyph template sub-templates cannot include current lyph template";
+            }
+            if (ancestors.length > 0 && descendants.length > 0){
+                for (var i = 0; i < ancestors.length; i++){
+                    var parent = ancestors[i];
+                    if (descendants.indexOf(parent) > -1){
+                        return "Lyph template sub-templates cannot include its super-templates: (id: " + parent + ")";
+                    }
+                }
+            }
+            //delete auxilliary fields needed for validation of object copy in the editor
+            delete d.repository;
+            delete d.id;
+
             return "";
         };
 
@@ -2042,6 +2074,9 @@ var ApiNATOMY2 = (function(){
             var ontologyIDPanel = Components.createTextInput(d.fmaID, "fmaID", "Ontology ID").appendTo(editPanel);
             var ontologyIDInput = ontologyIDPanel.find("> input");
 
+            //cocomacID
+            Components.createTextInput(d.cocomacID, "cocomacID", "Cocomac ID").appendTo(editPanel);
+
             var btn = $('<button id="btnOntology" class="button small-button" style="margin:4px;">');
             btn.html('<span class="mif-spinner"></span>');
             btn.appendTo(ontologyIDPanel);
@@ -2050,8 +2085,6 @@ var ApiNATOMY2 = (function(){
             var namePanel = Components.createTextInput(d.name, "name", "Name").appendTo(editPanel);
             namePanel.attr("style", "width: 100%;");
             var nameInput = namePanel.find("> input");
-
-
 
             btn.on('click', function() {
                 if (d.repository.showOntology) {
@@ -2101,6 +2134,15 @@ var ApiNATOMY2 = (function(){
                 });
             });
 
+            //Super-templates
+            var superTemplates = d.repository.getHeaderTitlesByIDs(d.superTemplates);
+            var getOptions = function(){return d.repository.getItemList();};
+            Components.createSelect2InputMulti(superTemplates, "superTemplates", "Super-templates", getOptions).appendTo(editPanel);
+
+            //Sub-templates
+            var subTemplates = d.repository.getHeaderTitlesByIDs(d.subTemplates);
+            Components.createSelect2InputMulti(subTemplates, "subTemplates", "Sub-templates", getOptions).appendTo(editPanel);
+
             //Length distribution
             var lengthHeader = Distribution.createContentPanel(editPanel, "Length");
             d.createOptionalObjectPanel(Components.createContentPanel(lengthHeader), "length",
@@ -2122,16 +2164,26 @@ var ApiNATOMY2 = (function(){
             this.editor = editPanel;
         };
 
-
         this.getEditorObject = function(){
             if (this.editor){
-                var newObj = {validate: this.validate};
+                //'id' and 'repository' are needed for validation
+                var newObj = {id: this.id, validate: this.validate, repository: this.repository};
                 newObj.name = Components.getInputValue(this.editor, "name");
                 newObj.fmaID = Components.getInputValue(this.editor, "fmaID");
+                newObj.cocomacID = Components.getInputValue(this.editor, "cocomacID");
                 if (this.radius)
                     newObj.radius = this.radius.getEditorObject();
                 if (this.length)
                     newObj.length = this.length.getEditorObject();
+
+                var superTemplates = Components.getInputValue(this.editor, "superTemplates");
+                if (!superTemplates) newObj.superTemplates = [];
+                else newObj.superTemplates = superTemplates.map(function(d){return parseInt(d, 10);});
+
+                var subTemplates = Components.getInputValue(this.editor, "subTemplates");
+                if (!subTemplates) newObj.subTemplates = [];
+                else newObj.subTemplates = subTemplates.map(function(d){return parseInt(d, 10);});
+
                 return newObj;
             }
             return null;
@@ -2269,7 +2321,7 @@ var ApiNATOMY2 = (function(){
             proto.status = "tmp";
             proto.repository = this;
             return new LyphTemplate(proto);
-        }
+        };
     }
 
     /************************************/
@@ -2285,21 +2337,8 @@ var ApiNATOMY2 = (function(){
         if (obj){
             for (var prop in obj)
                 this[prop] = obj[prop];
-            if (obj.materials){
-                for (var i = 0; i < obj.materials.length; i++){
-                    var newItem = obj.materials[i];
-                    if (typeof newItem === "object"){
-                        //JSON prototypes
-                        if (typeof newItem !== LyphTemplate.class)
-                            newItem = new LyphTemplate(newItem)
-                    } else {
-                        //Identifiers (when pre-loaded from server)
-                        if (typeof newItem === "number")
-                            newItem = new LyphTemplate({id: newItem});
-                    }
-                    this.materials[i] = newItem;
-                }
-            }
+
+            createObjects(obj.materials, LyphTemplate);
         }
 
         this.getThickness = function(){
@@ -2326,6 +2365,7 @@ var ApiNATOMY2 = (function(){
                     ") is larger than max value (" + d.thickness.max + ")";
             if (d.materials){
                 var data = [];
+
                 var getDescendants = function(root){//root = layer
                     if (!root) return;
                     if (!root.materials) return;
@@ -2367,24 +2407,18 @@ var ApiNATOMY2 = (function(){
             Components.createNumberInput(minValue, "min", "Min", 1, 10, 1).appendTo(cell1);
             Components.createNumberInput (maxValue, "max", "Max", 1, 10, 1).appendTo(cell1);
 
-            //materials
+            var lyphRepo = null;
+            if (d.repository && d.repository.parent && d.repository.parent.repository)
+                lyphRepo = d.repository.parent.repository;
 
+            //materials
+            var getOptions = function(){
+                if (lyphRepo) return lyphRepo.getItemList();
+                return [];
+            };
             var materials = [];
-            var getOptions = function(){return []};
-            if (d.repository && d.repository.parent){
-                var lyphRepo = d.repository.parent.repository;
-                if (lyphRepo) {
-                    getOptions = function(){return lyphRepo.getItemList();};
-                    if (d.materials){
-                        materials = d.materials.map(function(id){
-                            var obj = {id: id};
-                            var lyph = lyphRepo.getItemByID(id);
-                            if (lyph) obj.caption = lyph.getHeaderTitle();
-                            return obj;
-                        })
-                    }
-                }
-            }
+            if (lyphRepo)
+                materials = d.repository.parent.repository.getHeaderTitlesByIDs(d.materials);
 
             Components.createSelect2InputMulti(materials, "materials", "Materials", getOptions).appendTo(editPanel);
             this.editor = editPanel;
@@ -2398,14 +2432,11 @@ var ApiNATOMY2 = (function(){
                 newObj.thickness = {min: 1, max: 1};
                 newObj.thickness.min = parseInt(Components.getInputValue(this.editor, "min"), 10);
                 newObj.thickness.max = parseInt(Components.getInputValue(this.editor, "max"), 10);
+
                 var materials = Components.getInputValue(this.editor, "materials");
-                if (!materials)
-                    newObj.materials = [];
-                else {
-                    newObj.materials = materials.map(function(d){
-                        return parseInt(d, 10);
-                    });
-                }
+                if (!materials) newObj.materials = [];
+                else newObj.materials = materials.map(function(d){return parseInt(d, 10);});
+
                 return newObj;
             }
             return null;
@@ -2597,21 +2628,8 @@ var ApiNATOMY2 = (function(){
         if (obj) { //for nested objects, create classes from JSON objects or identifiers
             for (var prop in obj)
                 this[prop] = obj[prop];
-            if (obj.levels) {
-                for (var i = 0; i < obj.levels.length; i++) {
-                    var newItem = obj.levels[i];
-                    if (typeof newItem === "object") {
-                        //JSON prototypes
-                        if (typeof newItem !== CanonicalTreeLevel.class)
-                            newItem = new CanonicalTreeLevel(newItem)
-                    } else {
-                        //identifiers (when pre-loaded from server)
-                        if (typeof newItem === "number")
-                            newItem = new CanonicalTreeLevel({id: newItem});
-                    }
-                    this.levels[i] = newItem;
-                }
-            }
+
+            createObjects(obj.levels, CanonicalTreeLevel);
         }
 
         this.levelRepo = new CanonicalTreeLevelRepo(this.levels, this);
@@ -2992,21 +3010,8 @@ var ApiNATOMY2 = (function(){
         if (obj){
             for (var prop in obj)
                 this[prop] = obj[prop];
-            if (obj.connectedTrees){
-                for (var i = 0; i < obj.connectedTrees.length; i++){
-                    var newItem = obj.connectedTrees[i];
-                    if (typeof newItem === "object"){
-                        //JSON prototypes
-                        if (typeof newItem !== CanonicalTree.class)
-                            newItem = new CanonicalTree(newItem)
-                    } else {
-                        //Identifiers (when pre-loaded from server)
-                        if (typeof newItem === "number")
-                            newItem = new CanonicalTree({id: newItem});
-                    }
-                    this.connectedTrees[i] = newItem;
-                }
-            }
+
+            createObjects(obj.connectedTrees, CanonicalTree);
         }
 
         this.getHeaderTitle = function(){
@@ -3092,6 +3097,8 @@ var ApiNATOMY2 = (function(){
             //skipProbability
             Components.createNumberInput(d.skipProbability, "skipProbability", "Skip probability", 0, 1, 0.1).appendTo(editPanel);
             //LyphTemplate
+
+
             var getOptions = function(){
                 if (lyphRepo) return lyphRepo.getItemList();
                 return [];
@@ -3106,21 +3113,13 @@ var ApiNATOMY2 = (function(){
             Components.createSelect2Input(template, "template", "LyphTemplate", getOptions).appendTo(editPanel);
 
             //materials
-            var getOptions = function(){
-                if (treeRepo)
-                    return treeRepo.getItemList();
+            var getTreeOptions = function(){
+                if (treeRepo) return treeRepo.getItemList();
                 return [];
             };
             var connectedTrees = [];
-            if (d.connectedTrees && treeRepo) {
-                connectedTrees = d.connectedTrees.map(function (id) {
-                    var obj = {id: id};
-                    var tree = treeRepo.getItemByID(id);
-                    if (tree) obj.caption = tree.getHeaderTitle();
-                    return obj;
-                });
-            }
-            Components.createSelect2InputMulti(connectedTrees, "connectedTrees", "Connected trees", getOptions).appendTo(editPanel);
+            if (treeRepo) connectedTrees = treeRepo.getHeaderTitlesByIDs(d.connectedTrees);
+            Components.createSelect2InputMulti(connectedTrees, "connectedTrees", "Connected trees", getTreeOptions).appendTo(editPanel);
 
             this.editor = editPanel;
         };

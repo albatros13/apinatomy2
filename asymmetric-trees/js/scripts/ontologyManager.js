@@ -16,7 +16,9 @@ var OntologyManager = (function(){
         $( "#linkInfo").html(getHTMLLinkAnnotation(d));
     };
     graph.iconClickHandler = function (d){
-        $( "#iconInfo").html(getHTMLIconAnnotation(d));
+        $( "#lyphInfo").html(getHTMLIconAnnotation(d));
+        $( "#btnShowLyph").prop("disabled", false);
+        $( "#btnRemoveLyph").prop("disabled", false);
     };
 
     function init() {
@@ -39,8 +41,6 @@ var OntologyManager = (function(){
 
         $( "#btnAddLyph" ).on('click', function() {
             if (graph.lyphRepo){
-                console.dir(graph.lyphRepo);
-                //create (tmp)
                 var newObj = graph.lyphRepo.defaultObject();
                 graph.lyphRepo.add(newObj);
                 //update (new)
@@ -57,7 +57,9 @@ var OntologyManager = (function(){
         $( "#btnRemoveLyph" ).on('click', function() {
             if (graph.lyphRepo && graph.selectedLyph){
                 graph.selectedLyph.remove();
-                $( "#iconInfo").html("");
+                $( "#lyphInfo").html("");
+                $( "#btnShowLyph").prop("disabled", true);
+                $( "#btnRemoveLyph").prop("disabled", true);
                 graph.update();
             }
         });
@@ -117,7 +119,7 @@ var OntologyManager = (function(){
         }
         $( "#nodeInfo").html("");
         $( "#linkInfo").html("");
-        $( "#iconInfo").html("");
+        $( "#lyphInfo").html("");
     }
 
     function loadOntologyData(ontology){
@@ -292,7 +294,7 @@ var OntologyManager = (function(){
 
         function breadthSearch(linkSet, nodeID, radius){
             if (radius == 0) return [];
-            var selectedLinks = [];
+            var newLinks = [];
 
             var traverse = function(rootID, hop){
                 var queue = linkSet.filter(function(d){
@@ -306,7 +308,7 @@ var OntologyManager = (function(){
 
                 if (!queue) return;
                 queue.forEach(function(d){
-                    if (selectedLinks.indexOf(d) < 0) selectedLinks.push(d);
+                    if (newLinks.indexOf(d) < 0) newLinks.push(d);
                     if ((hop + 1) < radius){
                         var newRootID = "";
                         if (d.target.id && d.target.id != rootID) newRootID = d.target.id;
@@ -321,23 +323,23 @@ var OntologyManager = (function(){
             };
             traverse(nodeID, 0);
 
-            return selectedLinks;
+            return newLinks;
         }
 
         this.createSubGraph = function(rootID, radius){
             this.reset();
             this.rootID = rootID;
-            var selectedLinks = breadthSearch(graph.links, rootID, radius);
-            this.setVisibleLinks(selectedLinks);
+            var newLinks = breadthSearch(graph.links, rootID, radius);
+            this.setVisibleLinks(newLinks);
             if (visibleNodes[rootID]) visibleNodes[rootID].radius = radius;
             this.update();
         };
 
         this.expandSubGraph = function(rootID, radius){
-            var selectedLinks = breadthSearch(graph.links, rootID, radius);
+            var newLinks = breadthSearch(graph.links, rootID, radius);
             var toAdd = [];
-            for (var i = 0; i < selectedLinks.length; i++){
-                var link = selectedLinks[i];
+            for (var i = 0; i < newLinks.length; i++){
+                var link = newLinks[i];
                 var exists = false;
                 for (var j = 0; j < visibleLinks.length; j++){
                     var d = visibleLinks[j];

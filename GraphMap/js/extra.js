@@ -2,6 +2,9 @@
  * Created by Natallia on 4/2/2016.
  */
 
+//<div id="svgVoronoi" class="graph"></div>
+
+
 var rowColor = function(i){
     var CSS_COLORS = [
         "#1f77b4", "#ff7f0e","#2ca02c","#d62728","#9467bd",
@@ -253,3 +256,96 @@ this.scaleDistances = function (scaleFactor){
         }
     }
 };
+
+
+/*
+ console.dir(graph.nodes);
+ d3.entries(subGraph.nodes).forEach(function(entry){
+ graph.nodes[entry.key] = (entry.value);
+ });
+ subGraph.links.forEach(function(d){
+ graph.links.push(d);
+ });
+ console.dir(graph.nodes);
+ graph.draw(svg, vp, showContent);
+ */
+
+/*
+ var part = graph.nodeMaps[partName];
+ if (part){
+ var coords = [];
+ for (var i = 0; i < part.length; i++) {
+ var node = graph.nodes[part[i]];
+ coords.push({x: node.x, y: node.y});
+ }
+ // var center = getPolygonCenter(coords);
+ adjustBoundaries(partContent.graph, coords, rect);
+ }*/
+
+
+function adjustBoundaries(subGraph, coords, shift){
+    subGraph.links.forEach(function(link){
+        var source = {x: link.source.x + shift.x, y: link.source.y + shift.y};
+        var target = {x: link.target.x + shift.x, y: link.target.y + shift.y};
+        var inside = pointInPolygon(source, coords);
+        if (!inside){
+            var line = {source: source, target: target};
+            var res = getBoundaryPoint(line, coords);
+            if (res && res.onLine1 && res.onLine2){
+                link.source.x = res.x - shift.x;
+                link.source.y = res.y - shift.y;
+
+                graph.svg.selectAll(".test_" + link.source.id).remove();
+                graph.svg.append("circle").attr("class", "test_" + link.source.id)
+                    .attr("cx", res.x)
+                    .attr("cy", res.y)
+                    .attr("r", 3)
+                    .style("stroke", "red")
+                    .style("fill", "red");
+            }
+        }
+    });
+}
+
+
+/*
+ graph.svg.selectAll(".test_" + link.source.id).remove();
+ graph.svg.append("circle").attr("class", "test_" + link.source.id)
+ .attr("cx", link.source.x)
+ .attr("cy", link.source.y)
+ .attr("r", 2)
+ .style("stroke", "red")
+ .style("fill", "red");*/
+
+
+/*
+ graph.svg.selectAll(".test_" + link.target.id).remove();
+ graph.svg.append("circle").attr("class", "test_" + link.target.id)
+ .attr("cx", link.target.x)
+ .attr("cy", link.target.y)
+ .attr("r", 2)
+ .style("stroke", "green")
+ .style("fill", "green");*/
+
+
+/*graph.force.linkStrength(function (link){
+ var arrays = d3.values(graph.selected);
+ var merged = [].concat.apply([], arrays);
+ if (merged.indexOf(link.source.id) > -1)
+ return 0.1;
+ return 1;
+ });*/
+
+/*
+if (graph.parent) {
+     if (graph.parentGraph){
+         var arrays = d3.keys(graph.parentGraph.selected);
+         var merged = [].concat.apply([], arrays);
+         if (merged.indexOf(graph.parent.id) == -1){
+             return -100;
+         }
+     }
+    return - 200;
+}
+*/
+

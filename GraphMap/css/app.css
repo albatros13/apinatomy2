@@ -3,6 +3,11 @@
     stroke-width: 1.5px;
 }
 
+.solution{
+    stroke-width: 6px;
+    opacity: 0.6;
+}
+
 circle {
     fill: #ccc;
     stroke: #fff;
@@ -14,6 +19,14 @@ circle {
 }
 
 circle.selected{
+    stroke: #f00
+}
+
+rect.selected{
+    stroke: #f00
+}
+
+path.selected{
     stroke: #f00
 }
 

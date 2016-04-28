@@ -81,6 +81,7 @@
                                 '       <legend>Ontologies:</legend>' +
                                 '       <input type="checkbox" name="ontology" value="fma" checked>FMA </input>' +
                                 '       <input type="checkbox" name="ontology" value="cl">CellType </input>' +
+                                '       <input type="checkbox" name="ontology" value="brain"/>Brain FMA</input>' +
                                 '   </fieldset>' +
                                 '</div>' +
                                 '<div style="padding: 4px;">' +
@@ -90,6 +91,9 @@
                                 '</br></br>' +
                                 '<div class="group">' +
                                 '   <label id="graphInfo"></label>' +
+                                '   <fieldset id="linkTypes">' +
+                                '       <legend>Link types</legend>' +
+                                '   </fieldset>' +
                                 '</div>' +
                                 '<div>' +
                                 '   <fieldset>' +
@@ -214,12 +218,14 @@
         container.getElement().html(componentState.content);
         var dx = 20, dy = 20;
         container.on( 'open', function(){
-            svgLyphHierarchy  = d3.select('#lyphHierarchy');
             lyphHierarchyVP.size = {width: container.width - dx, height: container.height - dy};
+            svgLyphHierarchy  = d3.select('#lyphHierarchy');
+            syncSelectedLyphHierarchy();
         });
         container.on( 'resize', function(){
             lyphHierarchyVP.size = {width: container.width - dx, height: container.height - dy};
-            //syncSelectedLyph();
+            svgLyphHierarchy  = d3.select('#lyphHierarchy');
+            syncSelectedLyphHierarchy();
         });
     });
 
@@ -229,6 +235,9 @@
         container.on( 'open', function() {
             OntologyManager.init();
             OntologyManager.graph.showLyph = onShowLyph;
+        });
+        container.on( 'resize', function(){
+            //
         });
     });
 
@@ -259,6 +268,7 @@
     function onSelectLyph(d){
         selectedLyph = d;
         syncSelectedLyph();
+        syncSelectedLyphHierarchy();
     }
 
     function onSelectLayer(d){
@@ -272,6 +282,15 @@
             if (divLyphTemplate) divLyphTemplate.selectAll("div").remove();
         }
     }
+
+    function syncSelectedLyphHierarchy(){
+        if (selectedLyph){
+            selectedLyph.drawHierarchy(svgLyphHierarchy, lyphHierarchyVP, null);
+        } else {
+            if (svgLyphHierarchy ) svgLyphHierarchy .selectAll("g").remove();
+        }
+    }
+
 })();
 
 

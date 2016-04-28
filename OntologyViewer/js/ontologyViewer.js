@@ -416,10 +416,10 @@ var ontologyViewer = function () {
                 .start();
 
             svg.append("defs").selectAll("marker")
-                .data(d3.values(graph.visibleLinkTypes))      // Different link/path types can be defined here
+                .data(d3.entries(graph.visibleLinkTypes))      // Different link/path types can be defined here
                 .enter().append("marker")    // This section adds in the arrows
-                .attr("id", function(d){return ('marker' + d);})
-                .attr('fill', function(d) {return d.color;})
+                .attr("id", function(d){return ('marker' + d.key);})
+                .attr('fill', function(d) {return d.value.color;})
                 .attr("viewBox", "0 -5 10 10")
                 .attr("refX", 12)
                 .attr("refY", 0)

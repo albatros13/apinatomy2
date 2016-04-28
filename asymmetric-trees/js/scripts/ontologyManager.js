@@ -2,9 +2,14 @@ var OntologyManager = (function(){
 
     var links = [];
     var nodeAnnotations = [];
+    var linkTypes = {};
+
+    var allLinks = links;
+
     var resources = {
-        fma: {relations: "resources/fmaParts.txt", annotations: "resources/fmaNames.txt", prefix: "FMA"},
-        cl: {relations: "resources/cl-basicRelations.txt", annotations: "resources/cl-basicNames.txt", prefix: "CL"}
+        fma: {relations: "resources/fmaParts.txt", annotations: "resources/fmaNames.txt"},
+        cl: {relations: "resources/cl-basicRelations.txt", annotations: "resources/cl-basicNames.txt"},
+        brain: {relations: "resources/fmaBrainGraph.txt", annotations: "resources/fmaNames.txt"}
     };
 
     var graph = new Graph(links, nodeAnnotations);
@@ -74,8 +79,6 @@ var OntologyManager = (function(){
             $( "#btnLoad").prop("disabled", false);
         });
 
-        selectOntologies();
-
         $(function() {
             var result = null;
             $( "#ontname" ).autocomplete({
@@ -97,11 +100,13 @@ var OntologyManager = (function(){
                     var index = result.Results.indexOf(ui.item.value);
                     if (index >= 0){
                         var value = result.IRIs[index][0].iri;
-                        $('#ontid').val(extractID(value));
+                        $('#ontid').val(ApiNATOMY2.Utils.extractID(value));
                     }
                 }
             });
         });
+
+        selectOntologies();
     }
 
     function updateView(reset){
@@ -122,6 +127,35 @@ var OntologyManager = (function(){
         $( "#lyphInfo").html("");
     }
 
+    function updateLinkTypes(){
+        linkTypes = {};
+        graph.links.forEach(function(link){
+            if (!linkTypes[link.type])
+                linkTypes[link.type] = 0;
+            else linkTypes[link.type] += 1;
+        });
+        $("#linkTypes").html("<legend>Link types</legend>");
+
+        for (var key in linkTypes){
+            var input = $('<input type="checkbox" name="linkType" value="' + key + '" checked>' + key + " " + "</input>");
+            input.appendTo($("#linkTypes"));
+            graph.visibleLinkTypes[key] = {color: ApiNATOMY2.Utils.rowColor(d3.keys(linkTypes).indexOf(key))};
+        }
+
+        $('input:checkbox[name=linkType]').click (function(){
+            var linkType = $(this).val();
+            if (this.checked){
+                var toAdd = allLinks.filter(function(link){return link.type == linkType;});
+                graph.links = graph.links.concat(toAdd);
+                graph.visibleLinkTypes[linkType] = {color: ApiNATOMY2.Utils.rowColor(d3.keys(linkTypes).indexOf(linkType))};
+            } else {
+                graph.links = graph.links.filter(function(link){return link.type != linkType;});
+                delete graph.visibleLinkTypes[linkType];
+            }
+            updateView(true);
+        });
+    }
+
     function loadOntologyData(ontology){
         var file = resources[ontology].relations;
         $.ajax({
@@ -132,13 +166,15 @@ var OntologyManager = (function(){
                     var line = lines[i];
                     var terms = line.split(' ');
                     if (terms.length >= 3){
-                        var link = {source: extractID(terms[1]), target: extractID(terms[2]),
+                        var link = {source: ApiNATOMY2.Utils.extractID(terms[1]), target: ApiNATOMY2.Utils.extractID(terms[2]),
                             type: terms[0].trim(), ontology: ontology};
                         links.push(link);
                     }
                 }
                 resources[ontology].included = true;
                 $( "#graphInfo").html("Loaded relations: " + graph.links.length);
+                allLinks = links.slice(0, links.length);
+                updateLinkTypes();
                 if (!resources[ontology].annotated)
                     loadNodeAnnotations(ontology);
             }
@@ -156,7 +192,7 @@ var OntologyManager = (function(){
                     var endOfURI = line.indexOf(' ');
                     if (endOfURI > -1){
                         var URI = line.substring(0, endOfURI);
-                        var id = extractID(line.substring(0, endOfURI));
+                        var id = ApiNATOMY2.Utils.extractID(line.substring(0, endOfURI));
                         nodeAnnotations[id] = {label: line.substring(endOfURI + 1), URI: URI}
                     }
                 }
@@ -169,10 +205,9 @@ var OntologyManager = (function(){
     }
 
     function selectOntologies(){
+        links = allLinks;
         var toRemove = [];
-        var paramPanel = $("#ontologyParameters");
-        var checkBoxes = paramPanel.find("input:checkbox[name=ontology]");
-        checkBoxes.each(function(){
+        $("input:checkbox[name=ontology]").each(function(){
             var ontology = $(this).val();
             if (this.checked){
                 if (!resources[ontology].included){
@@ -186,32 +221,24 @@ var OntologyManager = (function(){
                 }
             }
         });
-        if (toRemove.length > 0) {
+        if (toRemove.length > 0){
             links = links.filter(function(d){
-                return toRemove.indexOf(d.ontology) < 0;
+                return (toRemove.indexOf(d.ontology) < 0);
             });
-            graph.links = links;
-            $( "#graphInfo").html("Loaded relations: " + graph.links.length);
+            allLinks = allLinks.filter(function(d){
+                return (toRemove.indexOf(d.ontology) < 0);
+            });
         }
+        graph.links = links;
+        $( "#graphInfo").html("Loaded relations: " + graph.links.length);
+        updateLinkTypes();
         $( "#btnLoad").prop("disabled", true);
     }
-
 
     function showTerm(value, name){
         $('#ontid').val(value);
         $('#ontname').val(name);
         updateView(true);
-    }
-
-    function extractID(url){
-        var delimeterPos;
-        if (url.indexOf("fma#") > 0)
-            delimeterPos = url.indexOf("fma#") + 4;
-        else if (url.indexOf("gene_ontology#") > 0)
-            delimeterPos = url.indexOf("gene_ontology") + "gene_ontology#".length;
-        else
-            delimeterPos = url.lastIndexOf("/") +1;
-        return url.substring(delimeterPos).trim();
     }
 
     function getHTMLNodeAnnotation(d){
@@ -238,17 +265,11 @@ var OntologyManager = (function(){
         return "<div>" + res + "</div>";
     }
 
-    var CSS_COLOR_NAMES = ["Black","Blue","BlueViolet","Brown", "Chocolate",
-        "DarkBlue","DarkCyan", "DarkGrey","DarkGreen","DarkKhaki","DarkMagenta",
-        "DarkOliveGreen","Darkorange", "DarkRed","DarkSalmon","DarkSeaGreen","DarkSlateBlue",
-        "DarkSlateGray","DarkSlateGrey","DarkTurquoise","DarkViolet","DeepPink","DeepSkyBlue"];
-
     function Graph(links, nodeAnnotations){
         this.links = links;
         this.nodeAnnotations = nodeAnnotations;
         this.incrementStep = 1;
         this.lyphRepo = null;
-        this.rootID = 0;
 
         this.selectedNode = null;
         this.selectedLink = null;
@@ -258,32 +279,38 @@ var OntologyManager = (function(){
 
         var visibleNodes = {};
         var visibleLinks = [];
-        var linkTypes = [];
+        this.visibleLinkTypes = {};
 
+        this.vp = {size: {width: 1000, height: 500}};
 
         var force = d3.layout.force();
         var tooltip = d3.select("body").append("div")
             .attr("class", "tooltip")
             .style("opacity", 0);
 
+        this.getVisibleLinks = function(){
+            return visibleLinks;
+        };
+
         this.setVisibleLinks = function(linkSet){
             var graph = this;
-            visibleLinks = linkSet;
-            linkTypes = [];
-            visibleLinks.forEach(function(link) {
-                ["source", "target"].forEach(function(prop){
-                    if (link[prop].id) link[prop] = link[prop].id;
-                    var obj = {id: link[prop]};
-                    var annotation = graph.nodeAnnotations[link[prop]];
-                    if (annotation){
-                        obj.label = annotation.label;
-                        obj.URI = annotation.URI;
-                    }
-                    link[prop] = visibleNodes[link[prop]] ||
-                        (visibleNodes[link[prop]] = obj);
-
-                });
-                if (linkTypes.indexOf(link.type) < 0) linkTypes.push(link.type);
+            visibleNodes = {};
+            visibleLinks = [];
+            linkSet.forEach(function(link) {
+                if (graph.visibleLinkTypes[link.type]) {
+                    ["source", "target"].forEach(function(prop){
+                        if (link[prop].id) link[prop] = link[prop].id;
+                        var obj = {id: link[prop]};
+                        var annotation = graph.nodeAnnotations[link[prop]];
+                        if (annotation){
+                            obj.label = annotation.label;
+                            obj.URI = annotation.URI;
+                        }
+                        link[prop] = visibleNodes[link[prop]] ||
+                            (visibleNodes[link[prop]] = obj);
+                        visibleLinks.push(link);
+                    });
+                }
             });
         };
 
@@ -412,11 +439,11 @@ var OntologyManager = (function(){
 
         ///////////////////////////////
         this.update = function() {
-
-            var w = 1000;
-            var h = 500;
+            var w = graph.vp.size.width;
+            var h = graph.vp.size.height;
 
             var svg = d3.select("#ontologyGraph").attr("width", w).attr("height", h);
+
             svg.selectAll('g').remove();
             svg.selectAll("defs").remove();
 
@@ -430,10 +457,10 @@ var OntologyManager = (function(){
                 .start();
 
             svg.append("defs").selectAll("marker")
-                .data(linkTypes)      // Different link/path types can be defined here
+                .data(d3.entries(graph.visibleLinkTypes))      // Different link/path types can be defined here
                 .enter().append("marker")    // This section adds in the arrows
-                .attr("id", function(d){return ('marker' + d);})
-                .attr('fill', function(d, i) {return CSS_COLOR_NAMES [i % CSS_COLOR_NAMES.length];})
+                .attr("id", function(d){return ('marker' + d.key);})
+                .attr('fill', function(d) {return d.value.color;})
                 .attr("viewBox", "0 -5 10 10")
                 .attr("refX", 12)
                 .attr("refY", 0)
@@ -448,7 +475,7 @@ var OntologyManager = (function(){
                 .data(force.links())
                 .enter().append("path")
                 .style("stroke", function (d) {
-                    return CSS_COLOR_NAMES [linkTypes.indexOf(d.type) % CSS_COLOR_NAMES.length];
+                    return graph.visibleLinkTypes[d.type].color;
                 })
                 .attr("marker-end", function (d) {
                     return "url(#marker" + d.type +")";
@@ -550,8 +577,13 @@ var OntologyManager = (function(){
                 if (graph.linkClickHandler) graph.linkClickHandler(link);
             }
 
-            function iconClickHandler(lyph){
+            function iconClickHandler(lyph, lyphGroup){
                 graph.selectedLyph = lyph;
+                var lyphGroups = svg.selectAll(".lyph");
+                var other = lyphGroups.filter(function(d){return d != lyphGroup});
+                other.classed("selected", false).style("outline", "");
+                lyphGroup.classed("selected", true);
+                lyphGroup.style("outline", "thin solid red");
                 if (graph.iconClickHandler) graph.iconClickHandler(lyph);
             }
 

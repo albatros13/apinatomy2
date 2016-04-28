@@ -4,7 +4,56 @@
 /************************************/
 var ApiNATOMY2 = (function(){
 
-    Array.prototype.remove = function(from, to) {
+    var Utils = (function() {
+        function isArray(obj) {
+            return (typeof obj !== 'undefined' && obj && obj.constructor === Array);
+        }
+
+        function logError(obj) {
+            console.dir(obj);
+        }
+
+        function extractID(url) {
+            var delimeterPos;
+            if (url.indexOf("fma#") > 0)
+                delimeterPos = url.indexOf("fma#") + 4;
+            else if (url.indexOf("gene_ontology#") > 0)
+                delimeterPos = url.indexOf("gene_ontology") + "gene_ontology#".length;
+            else
+                delimeterPos = url.lastIndexOf("/") + 1;
+            return url.substring(delimeterPos).trim();
+        }
+
+        var CSS_COLORS = [
+            "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd",
+            "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf",
+            "#3366cc", "#dc3912", "#ff9900", "#109618", "#990099",
+            "#0099c6", "#dd4477", "#66aa00", "#b82e2e", "#316395",
+            "#994499", "#22aa99", "#aaaa11", "#6633cc", "#e67300",
+            "#8b0707", "#651067", "#329262", "#5574a6", "#3b3eac"];
+
+        var rowColor = function (i) {
+            return CSS_COLORS [i % CSS_COLORS.length];
+        };
+
+        return {
+            isArray: isArray,
+            logError: logError,
+            extractID: extractID,
+            rowColor: rowColor
+        }
+    })();
+
+    Array.prototype.toStr = function (){
+        if (this.length == 0) return "[]";
+        var str = "[";
+        for (var i = 0; i < this.length - 1; i++)
+            str += this[i] + ", ";
+        str += this[this.length - 1];
+        return str + "]";
+    };
+
+    Array.prototype.remove = function (from, to) {
         var rest = this.slice((to || from) + 1 || this.length);
         this.length = from < 0 ? this.length + from : from;
         return this.push.apply(this, rest);
@@ -16,7 +65,7 @@ var ApiNATOMY2 = (function(){
         if (this.length != array.length)
             return false;
 
-        for (var i = 0, l=this.length; i < l; i++) {
+        for (var i = 0, l = this.length; i < l; i++) {
             if (this[i] instanceof Array && array[i] instanceof Array) {
                 if (!this[i].equals(array[i]))
                     return false;
@@ -32,50 +81,42 @@ var ApiNATOMY2 = (function(){
     Object.defineProperty(Array.prototype, "equals", {enumerable: false});
 
     //Checks if obj2 preserves properties of obj1 (unassigned properties in obj2 are allowed)
-    Object.preserves = function( obj1, obj2 ) {
-        if ( obj1 === obj2 ) return true;
-        if ( ! ( obj1 instanceof Object ) || ! ( obj2 instanceof Object ) ) return false;
-        if (isArray(obj1) || isArray(obj2)) return obj1.equals(obj2);
+    Object.preserves = function (obj1, obj2) {
+        if (obj1 === obj2) return true;
+        if (!( obj1 instanceof Object ) || !( obj2 instanceof Object )) return false;
+        if (Utils.isArray(obj1) || Utils.isArray(obj2)) return obj1.equals(obj2);
 
-        if ( obj1.constructor !== obj2.constructor ) return false;
+        if (obj1.constructor !== obj2.constructor) return false;
 
-        for ( var p in obj2 ) {
-            if (!obj2.hasOwnProperty( p )) continue;
-            if (!obj1.hasOwnProperty( p )) return false; //new property set
-            if ( obj1[ p ] === obj2[ p ] ) continue;
-            if ( ! Object.preserves( obj1[ p ],  obj2[ p ] ) ) return false;
+        for (var p in obj2) {
+            if (!obj2.hasOwnProperty(p)) continue;
+            if (!obj1.hasOwnProperty(p)) return false; //new property set
+            if (obj1[p] === obj2[p]) continue;
+            if (!Object.preserves(obj1[p], obj2[p])) return false;
         }
         return true;
     };
 
-    Object.removeProp = function(obj, prop){
+    Object.removeProp = function (obj, prop) {
         delete obj[prop];
-        for ( var p in obj ) {
-            if ( typeof( obj[ p ] ) == "object" ) Object.removeProp(obj[p], prop);
+        for (var p in obj) {
+            if (typeof( obj[p] ) == "object") Object.removeProp(obj[p], prop);
         }
     };
 
-    Object.removeFunctions = function(obj){
-        for ( var p in obj ) {
+    Object.removeFunctions = function (obj) {
+        for (var p in obj) {
             if (typeof obj[p] === "function")
                 delete obj[p];
-            if ( typeof( obj[ p ] ) === "object" ) Object.removeFunctions(obj[p]);
+            if (typeof( obj[p] ) === "object") Object.removeFunctions(obj[p]);
         }
     };
 
-    function isArray(obj) {
-        return (typeof obj !== 'undefined' && obj && obj.constructor === Array);
-    }
-
-    function logError(obj){
-        console.dir(obj);
-    }
-
-    function createObjects(propertySet, classType){
-        if (propertySet){
-            for (var i = 0; i < propertySet.length; i++){
+    function createObjects(propertySet, classType) {
+        if (propertySet) {
+            for (var i = 0; i < propertySet.length; i++) {
                 var newItem = propertySet[i];
-                if (typeof newItem === "object"){//JSON prototypes
+                if (typeof newItem === "object") {//JSON prototypes
                     if (typeof newItem !== classType.class) newItem = new classType(newItem)
                 } else {//Identifiers (when pre-loaded from server)
                     if (typeof newItem === "number") newItem = new classType({id: newItem});
@@ -85,16 +126,7 @@ var ApiNATOMY2 = (function(){
         }
     }
 
-    var rowColor = function(i){
-        var CSS_COLORS = [
-            "#1f77b4", "#ff7f0e","#2ca02c","#d62728","#9467bd",
-            "#8c564b","#e377c2","#7f7f7f", "#bcbd22", "#17becf",
-            "#3366cc", "#dc3912", "#ff9900", "#109618", "#990099",
-            "#0099c6", "#dd4477", "#66aa00", "#b82e2e", "#316395",
-            "#994499", "#22aa99", "#aaaa11", "#6633cc", "#e67300",
-            "#8b0707", "#651067", "#329262", "#5574a6", "#3b3eac"];
-        return CSS_COLORS [i % CSS_COLORS.length];
-    };
+
 
     var Entities = (function(){
         var my = {};
@@ -128,7 +160,7 @@ var ApiNATOMY2 = (function(){
             id              : 0,
             name            : "",
             fmaID           : "",
-            cocomacID       : "",
+            cocomacIDs       : null,
             layers          : null,
             locatedMeasures : null,
             children        : null,
@@ -558,7 +590,10 @@ var ApiNATOMY2 = (function(){
         };
 
         my.createSelect2Input = function(defaultValue, id, caption, getOptions){
-            var selectPanel = $('<div class="input-control select" style="width: 100%">');
+            var selectPanel = $('<div class="input-control select" data-role="select" style="width: 100%">');
+            var label = $('<label class="block">');
+            label.html(caption).appendTo(selectPanel);
+
             var select = $('<select style="width: 100%">');
             select.attr("id", id);
             select.appendTo(selectPanel);
@@ -566,33 +601,33 @@ var ApiNATOMY2 = (function(){
             option.html(defaultValue.caption);
             option.appendTo(select);
             select.select2({placeholder: "Select " + id, allowClear: true, val: defaultValue.id});
-            //var filled = false;
+            var filled = false;
             select.on("select2:open", function(){
-                //if (!filled){
+                if (!filled){
                     appendOptions(select, getOptions);
-                //    filled = true;
-                //}
+                    filled = true;
+                }
             });
-            var label = $('<label class="block">');
-            label.html(caption).appendTo(selectPanel);
             return selectPanel;
         };
 
         my.createSelect2InputMulti = function(defaultValues, id, caption, getOptions){
-            var selectPanel = $('<div class="input-control select" style="width: 100%">');
-            var select = $('<select multiple="multiple" style="width: 100%">');
-            select.attr("id", id);
-            select.appendTo(selectPanel);
-            select.select2({placeholder: "Select " + id, allowClear: true});
-            //var filled = false;
-            select.on("select2:open", function(){
-                //if (!filled){
-                    appendOptions(select, getOptions);
-                //    filled = true;
-                //}
-            });
+            var selectPanel = $('<div class="input-control select" data-role="select" style="width: 100%">');
             var label = $('<label class="block">');
             label.html(caption).appendTo(selectPanel);
+
+            var select = $('<select multiple="multiple" style="width: 100%">');
+            select.attr("id", id);
+            select.select2({placeholder: "Select " + id, allowClear: true});
+            var filled = false;
+            select.on("select2:open", function(){
+                if (!filled){
+                    appendOptions(select, getOptions);
+                    filled = true;
+                }
+            });
+
+            select.appendTo(selectPanel);
 
             if (defaultValues){
                 var selected = defaultValues.map(function(d){ return d.id;});
@@ -603,7 +638,8 @@ var ApiNATOMY2 = (function(){
                     else option.html(defaultValues[i].id);
                     option.appendTo(select);
                 }
-                my.setInputValue(selectPanel, id, selected);
+                select.val(selected).trigger("change");
+                //selectPanel.attr("style", "height: 200px");
             }
 
             return selectPanel;
@@ -797,7 +833,6 @@ var ApiNATOMY2 = (function(){
 
         my.createContentPanel = function(panel){
             var contentPanel = $('<div class="content">');
-            //contentPanel.attr("data-role", "panel");
             contentPanel.appendTo(panel);
             return contentPanel;
         };
@@ -1125,7 +1160,7 @@ var ApiNATOMY2 = (function(){
             };
 
             return repo.beforeLoad()
-                .then(load, logError);
+                .then(load, Utils.logError);
         };
 
         this.loadDependent = function(requestURL){
@@ -1166,7 +1201,7 @@ var ApiNATOMY2 = (function(){
             };
 
             return repo.beforeLoad()
-                .then(load, logError);
+                .then(load, Utils.logError);
         };
 
         this.search = function(val){
@@ -1215,20 +1250,10 @@ var ApiNATOMY2 = (function(){
             }
         };
 
-        this.printItems = function(label){
-            var repo = this;
-            var str = label;
-            repo.items.forEach(function(d) {
-                str += d.name + " ";
-            });
-            console.dir(str);
-        };
-
         this.reorderItems = function(oldIndex, newIndex){
             var repo = this;
             var d = repo.items[oldIndex];
             if (!d) return;
-            //repo.printItems("Old order: ");
             repo.removeAt(oldIndex);
             repo.addAt(d, newIndex);
             if (d.isOrdered()) {
@@ -1247,7 +1272,6 @@ var ApiNATOMY2 = (function(){
                     d.repository.sort();
                 }
             }
-            //repo.printItems("New order: ");
         };
 
         this.updateContent = function() {
@@ -1415,7 +1439,7 @@ var ApiNATOMY2 = (function(){
                     if (this[prop].id)        //nested object with "id" - commit its identifier only
                         obj[prop] = this[prop].id;
                     else {
-                        if (isArray(this[prop])) {
+                        if (Utils.isArray(this[prop])) {
                             if (this[prop][0] && this[prop][0].id)
                                 obj[prop] = this[prop].map(function(d){ return d.id});
                             else
@@ -1644,7 +1668,7 @@ var ApiNATOMY2 = (function(){
                     if (typeof d[prop] !== "object")
                         Components.setInputValue(d.editor, prop, d[prop]);
                     else {
-                        if (isArray(d[prop])) {//Note: for nested repositories the editor field wont be found
+                        if (Utils.isArray(d[prop])) {//Note: for nested repositories the editor field wont be found
                             Components.setInputValue(d.editor, prop, d[prop]);
                             continue;
                         }
@@ -1913,9 +1937,6 @@ var ApiNATOMY2 = (function(){
         return false;
     };
 
-    /************************************/
-    /*LyphTemplate*/
-    /************************************/
     function LyphTemplate(obj){
         Editor.call(this);
         this.jsonEntity = Object.create(Entities.lyphTemplate);
@@ -1938,8 +1959,6 @@ var ApiNATOMY2 = (function(){
 
             createObjects(obj.layers, LayerTemplate);
             createObjects(obj.locatedMeasures, LocatedMeasure);
-            createObjects(obj.superTemplates, LyphTemplate);
-            createObjects(obj.subTemplates, LyphTemplate);
 
         }
 
@@ -2008,7 +2027,7 @@ var ApiNATOMY2 = (function(){
                 d.updateContent();
         };
 
-        this.validate = function(){
+        this.validate = function() {
             var d = this;
             var lyphRepo = null;
 
@@ -2021,41 +2040,70 @@ var ApiNATOMY2 = (function(){
             }
             if (d.radius) {
                 res = d.radius.validate();
-                if (res.length > 0 ) return res;
+                if (res.length > 0) return res;
             }
 
-            function traverse(root, property, data){
+            function traverse(root, property, data) {
                 if (!root) return;
                 if (!root[property]) return;
-                root[property].forEach(function(id){
-                    data.push(id);
-                    if (d.repository){
-                        var obj = d.repository.getItemByID(id);
-                        if (obj) traverse(obj, property, data);
-                    }
-                });
-            }
-
-            var ancestors = [];
-            var descendants = [];
-            if (d.superTemplates){
-                traverse(d, "superTemplates", ancestors);
-                if (ancestors.indexOf(d.id) > -1)
-                    return "Lyph template super-templates cannot include current lyph template";
-            }
-            if (d.subTemplates){
-                traverse(d, "subTemplates", descendants);
-                if (descendants.indexOf(d.id) > -1)
-                    return "Lyph template sub-templates cannot include current lyph template";
-            }
-            if (ancestors.length > 0 && descendants.length > 0){
-                for (var i = 0; i < ancestors.length; i++){
-                    var parent = ancestors[i];
-                    if (descendants.indexOf(parent) > -1){
-                        return "Lyph template sub-templates cannot include its super-templates: (id: " + parent + ")";
+                var children = root[property];
+                if (typeof children == "number") children = [root[property]];
+                for (var i = 0; i< children.length; i++){
+                    var id = children[i];
+                    if (data.indexOf(id) < 0){
+                        data.push(id);
+                        if (d.repository) {
+                            var obj = d.repository.getItemByID(id);
+                            if (obj) traverse(obj, property, data);
+                        }
                     }
                 }
             }
+
+            if (d.superTemplates) {
+                var superTemplates = [];
+                traverse(d, "superTemplates", superTemplates);
+                if (superTemplates.indexOf(d.id) > -1)
+                    return "Lyph template super-templates cannot include current lyph template: " + superTemplates.toStr();
+            }
+
+            if (d.subTemplates) {
+                var subTemplates = [];
+                traverse(d, "subTemplates", subTemplates);
+                if (subTemplates.indexOf(d.id) > -1)
+                    return "Lyph template sub-templates cannot include current lyph template: " + subTemplates.toStr();
+            }
+
+            if (d.superTemplates && d.subTemplates){
+                for (var i = 0; i < superTemplates.length; i++) {
+                    if (subTemplates.indexOf(superTemplates[i]) > -1) {
+                        return "Lyph template sub-templates cannot include its super-templates: (id: " + superTemplates[i] + ")";
+                    }
+                }
+            }
+
+            if (d.parent){
+                var parents = [];
+                traverse(d, "parent", parents);
+                if (parents.indexOf(d.id) > -1)
+                    return "Lyph template ancestors cannot include current lyph template: " + parents.toStr();
+            }
+
+            if (d.children){
+                var children = [];
+                traverse(d, "children", children);
+                if (children.indexOf(d.id) > -1)
+                    return "Lyph template descendants cannot include current lyph template: " + children.toStr();
+            }
+
+            if (d.parent && d.children){
+                for (i = 0; i < parents.length; i++){
+                    if (children.indexOf(parents[i]) > -1){
+                        return "Lyph template descendants cannot include its ancestors: (id: " + parents[i] + ")";
+                    }
+                }
+            }
+
             //delete auxilliary fields needed for validation of object copy in the editor
             delete d.repository;
             delete d.id;
@@ -2073,9 +2121,6 @@ var ApiNATOMY2 = (function(){
             //fmaID
             var ontologyIDPanel = Components.createTextInput(d.fmaID, "fmaID", "Ontology ID").appendTo(editPanel);
             var ontologyIDInput = ontologyIDPanel.find("> input");
-
-            //cocomacID
-            Components.createTextInput(d.cocomacID, "cocomacID", "Cocomac ID").appendTo(editPanel);
 
             var btn = $('<button id="btnOntology" class="button small-button" style="margin:4px;">');
             btn.html('<span class="mif-spinner"></span>');
@@ -2095,17 +2140,6 @@ var ApiNATOMY2 = (function(){
                     }
                 }
             });
-
-            function extractID(url){
-                var delimeterPos;
-                if (url.indexOf("fma#") > 0)
-                    delimeterPos = url.indexOf("fma#") + 4;
-                else if (url.indexOf("gene_ontology#") > 0)
-                    delimeterPos = url.indexOf("gene_ontology") + "gene_ontology#".length;
-                else
-                    delimeterPos = url.lastIndexOf("/") + 1 ;
-                return url.substring(delimeterPos).trim();
-            }
 
             $(function() {
                 var result = null;
@@ -2128,11 +2162,27 @@ var ApiNATOMY2 = (function(){
                         var index = result.Results.indexOf(ui.item.value);
                         if (index >= 0){
                             var value = result.IRIs[index][0].iri;
-                            ontologyIDInput.val(extractID(value));
+                            ontologyIDInput.val(Utils.extractID(value));
                         }
                     }
                 });
             });
+
+            //cocomacIDs
+            function getCocomacOptions(){
+                return d3.entries(d.repository.cocomacList).map(function(entry){
+                    return {id: entry.key, caption: entry.key + ": " + entry.value};
+                });
+            }
+
+            var cocomacIDs = [];
+            if (d.cocomacIDs){
+                cocomacIDs = d.cocomacIDs.map(function(id){
+                    return {id: id, caption: d.repository.cocomacList[id]};
+                });
+            }
+
+            Components.createSelect2InputMulti(cocomacIDs, "cocomacIDs", "Cocomac IDs", getCocomacOptions).appendTo(editPanel);
 
             //Super-templates
             var superTemplates = d.repository.getHeaderTitlesByIDs(d.superTemplates);
@@ -2142,6 +2192,19 @@ var ApiNATOMY2 = (function(){
             //Sub-templates
             var subTemplates = d.repository.getHeaderTitlesByIDs(d.subTemplates);
             Components.createSelect2InputMulti(subTemplates, "subTemplates", "Sub-templates", getOptions).appendTo(editPanel);
+
+            //Parent
+            var parent = {id: ""};
+            if (d.parent) {
+                parent.id = d.parent;
+                var lyph = d.repository.getItemByID(d.parent);
+                if (lyph) parent.caption = lyph.getHeaderTitle();
+            }
+            Components.createSelect2Input(parent, "parent", "Parent", getOptions).appendTo(editPanel);
+
+            //Children
+            var children = d.repository.getHeaderTitlesByIDs(d.children);
+            Components.createSelect2InputMulti(children, "children", "Children", getOptions).appendTo(editPanel);
 
             //Length distribution
             var lengthHeader = Distribution.createContentPanel(editPanel, "Length");
@@ -2170,19 +2233,26 @@ var ApiNATOMY2 = (function(){
                 var newObj = {id: this.id, validate: this.validate, repository: this.repository};
                 newObj.name = Components.getInputValue(this.editor, "name");
                 newObj.fmaID = Components.getInputValue(this.editor, "fmaID");
-                newObj.cocomacID = Components.getInputValue(this.editor, "cocomacID");
                 if (this.radius)
                     newObj.radius = this.radius.getEditorObject();
                 if (this.length)
                     newObj.length = this.length.getEditorObject();
 
-                var superTemplates = Components.getInputValue(this.editor, "superTemplates");
-                if (!superTemplates) newObj.superTemplates = [];
-                else newObj.superTemplates = superTemplates.map(function(d){return parseInt(d, 10);});
+                newObj.cocomacIDs = Components.getInputValue(this.editor, "cocomacIDs");
 
                 var subTemplates = Components.getInputValue(this.editor, "subTemplates");
                 if (!subTemplates) newObj.subTemplates = [];
                 else newObj.subTemplates = subTemplates.map(function(d){return parseInt(d, 10);});
+
+                var superTemplates = Components.getInputValue(this.editor, "superTemplates");
+                if (!superTemplates) newObj.superTemplates = [];
+                else newObj.superTemplates = superTemplates.map(function(d){return parseInt(d, 10);});
+
+                newObj.parent = parseInt(Components.getInputValue(this.editor, "parent"), 10);
+
+                var children = Components.getInputValue(this.editor, "children");
+                if (!children) newObj.children = [];
+                else newObj.children = children.map(function(d){return parseInt(d, 10);});
 
                 return newObj;
             }
@@ -2195,7 +2265,7 @@ var ApiNATOMY2 = (function(){
             if (!lyph.layerRepo) return;
             var lyphRepo = lyph.repository;
 
-            var prepareTreemapData = function(root, data){
+            var prepareData = function(root, data){
                 if (!root) return;
                 if (!data.children) data.children = [];
                 var goodLayers = [];
@@ -2213,7 +2283,7 @@ var ApiNATOMY2 = (function(){
                                 var material = layer.materials[j];
                                 var materialObj = lyphRepo.getItemByID(material);
                                 if (materialObj)
-                                    prepareTreemapData(materialObj, child);
+                                    prepareData(materialObj, child);
                             }
                         }
                         data.children.push(child);
@@ -2222,7 +2292,7 @@ var ApiNATOMY2 = (function(){
             };
 
             var tree = {};
-            prepareTreemapData(lyph, tree);
+            prepareData(lyph, tree);
             canvas.selectAll('div').remove();
             canvas.append("div")
                 .style("height", "10px")
@@ -2238,12 +2308,13 @@ var ApiNATOMY2 = (function(){
             var goodLayers = lyph.layerRepo.getValidItems();
 
             function onLyphClick(){
-                var group = d3.select(this);
-                var groups = svg.selectAll(".lyph");
-                groups.filter(function(d){return d != group}).classed("selected", false).style("outline", "");
-                group.classed("selected", !group.classed("selected"));
-                group.style("outline", "thin solid red");
-                if (onClick) onClick(lyph);
+                var lyphGroup = d3.select(this);
+                var lyphGroups = svg.selectAll(".lyph");
+                var other = lyphGroups.filter(function(d){return d != lyphGroup});
+                other.classed("selected", false).style("outline", "");
+                lyphGroup.classed("selected", !lyphGroup.classed("selected"));
+                lyphGroup.style("outline", "thin solid red");
+                if (onClick) onClick(lyph, lyphGroup);
             }
 
             var lyphSvg = svg.append("g").attr("class", "lyph").on("click", onLyphClick);
@@ -2254,10 +2325,9 @@ var ApiNATOMY2 = (function(){
             }
             Plots.assignHint(lyphSvg, formatData);
 
-            var rect;
             if (!goodLayers || (goodLayers.length == 0)) {
                 //Draw empty box
-                rect = lyphSvg.append("rect")
+                var rect = lyphSvg.append("rect")
                     .attr("x", vp.margin.x)
                     .attr("y", vp.margin.y);
                 if (vp.orientation === "vertical"){
@@ -2269,11 +2339,11 @@ var ApiNATOMY2 = (function(){
                 }
 
             } else {
+                var prev = 0;
                 rect = lyphSvg.selectAll("rect")
                     .data(goodLayers)
                     .enter().append("rect")
                     .style("fill", function (d) {return d.color;});
-                var prev;
                 if (vp.orientation === "vertical"){
                     prev = vp.margin.x;
                     rect.attr("height", function () {return vp.scale.width;})
@@ -2285,6 +2355,7 @@ var ApiNATOMY2 = (function(){
 
                 } else {
                     prev = vp.margin.y;
+
                     rect.attr("width", function () {return vp.scale.width;})
                         .attr("height", function (d) {return d.getThickness() * vp.scale.height;})
                         .attr("x", vp.margin.x)
@@ -2296,6 +2367,113 @@ var ApiNATOMY2 = (function(){
 
             return lyphSvg;
         };
+
+        //Draw hierarchy
+        this.drawHierarchy = function(svg, vp, onClick){
+            var lyph = this;
+            var lyphRepo = lyph.repository;
+            if (!lyphRepo) return;
+
+            svg.selectAll("g").remove();
+            svg.attr("width", vp.size.width).attr("height", vp.size.height);
+
+            function prepareData(root, property, data, depth){
+                if (!root) return;
+                if (!root[property] || root[property].length == 0) return;
+                if (!data.children) data.children = [];
+                depth = depth + 1;
+                root[property].forEach(function(id){
+                    var obj = lyphRepo.getItemByID(id);
+                    if (obj){
+                        var child = {id: obj.id, lyph: obj};
+                        data.children.push(child);
+                        if (obj) prepareData(obj, property, child, depth);
+                    }
+                });
+            }
+
+            var ancestors = {id: lyph.id, lyph: lyph};
+            var depth1 = 1;
+            prepareData(lyph, "superTemplates", ancestors, depth1);
+
+            var descendants = {id: lyph.id, lyph: lyph};
+            var depth2 = 1;
+            prepareData(lyph, "subTemplates", descendants, depth2);
+
+            var delta = 20;
+
+            var superVp = {
+                size: {width: vp.size.width, height: vp.size.height / 2},
+                orientation: "reversed",
+                margin: {x: delta, y: delta}
+            };
+
+            var subVp = {
+                size: {width: vp.size.width, height: vp.size.height / 2},
+                margin: {x: delta, y: vp.size.height / 2 + delta}
+            };
+
+            drawTree(svg, superVp, ancestors);
+            drawTree(svg, subVp, descendants);
+
+            function drawTree(svg, vp, treeData){
+                var treeSvg = svg.append("g").attr("width", vp.size.width).attr("height", vp.size.height)
+                    .attr("transform", function(){ return "translate(" + vp.margin.x + "," + vp.margin.y + ")";});
+
+                var cluster = d3.layout.cluster()
+                    .size([vp.size.width - 2 * delta, vp.size.height - 2 * delta]);
+
+                var diagonal = d3.svg.diagonal()
+                    .projection(function(d) {
+                        if (vp.orientation == "reversed")
+                            return [d.x, vp.size.height - d.y];
+                        return [d.x, d.y]; });
+
+                var nodes = cluster.nodes(treeData),
+                    links = cluster.links(nodes);
+
+                var link = treeSvg.selectAll(".link")
+                    .data(links)
+                    .enter().append("path")
+                    .attr("class", "link")
+                    .attr("d", diagonal);
+
+                var vpIcon = new ApiNATOMY2.VisualParameters({
+                    scale : {width: 20, height: 4},
+                    size  : {width: 20, height: 20},
+                    margin: {x: 0, y: 0}
+                });
+
+                var node = treeSvg.selectAll(".node")
+                    .data(nodes)
+                    .enter()
+                    .append("g")
+                    .attr("class", "node")
+                    .attr("transform", transform)
+                    .each(drawIcon);
+
+                var text = treeSvg.selectAll("text")
+                    .data(nodes)
+                    .enter().append("text")
+                    .attr("dx", -5)
+                    .attr("dy", 3)
+                    .style("text-anchor", "end")
+                    .attr("transform", transform)
+                    .text(function(d) { return d.id; });
+
+                function drawIcon(d){
+                    if (d.lyph){
+                        var iconSvg = d3.select(this);
+                        d.lyph.drawIcon(iconSvg, vpIcon, null);
+                    }
+                }
+
+                function transform(d) {
+                    if (vp.orientation == "reversed") return "translate(" + d.x + "," + (vp.size.height - d.y) + ")";
+                    return "translate(" + d.x + "," + d.y + ")";
+                }
+            }
+        }
     }
 
     function LyphTemplateRepo(items){
@@ -2305,6 +2483,30 @@ var ApiNATOMY2 = (function(){
         this.layerRepoFull = new LayerTemplateRepoFull([]);
         this.locatedMeasureRepoFull = new LocatedMeasureRepoFull([]);
 
+        this.cocomacList = {};
+
+        this.loadCocomacList = function(){
+            var repo = this;
+            var file = "resources/cocomacID-Names.txt";
+            $.ajax({
+                url: file,
+                success: function (data) {
+                    var lines = data.split('\n');
+                    for (var i = 0; i < lines.length; i++) {
+                        var terms = lines[i].split(",");
+                        if (terms.length >= 2) {
+                            var id = terms[1].trim();
+                            var name = terms[0].trim();
+                            if (!repo.cocomacList[id]) {
+                                repo.cocomacList[id] = name;
+                            }
+                        }
+                    }
+                }
+            });
+        };
+
+
         this.getItemsByOntologyID = function(ontologyID){
             if (ontologyID && this.items)
                 return this.items.filter(function(d){ return d.fmaID == ontologyID;});
@@ -2313,7 +2515,7 @@ var ApiNATOMY2 = (function(){
 
         this.beforeLoad = function(){
             var repo = this;
-            return RSVP.all([repo.layerRepoFull.load(repo.url), repo.locatedMeasureRepoFull.load(repo.url)]);
+            return RSVP.all([repo.loadCocomacList(), repo.layerRepoFull.load(repo.url), repo.locatedMeasureRepoFull.load(repo.url)]);
         };
 
         this.defaultObject = function(){
@@ -2324,9 +2526,6 @@ var ApiNATOMY2 = (function(){
         };
     }
 
-    /************************************/
-    /*LayerTemplate*/
-    /************************************/
     function LayerTemplate(obj) {
         Editor.call(this);
         this.jsonEntity = Object.create(Entities.layerTemplate);
@@ -2338,7 +2537,7 @@ var ApiNATOMY2 = (function(){
             for (var prop in obj)
                 this[prop] = obj[prop];
 
-            createObjects(obj.materials, LyphTemplate);
+            //createObjects(obj.materials, LyphTemplate);
         }
 
         this.getThickness = function(){
@@ -2509,10 +2708,6 @@ var ApiNATOMY2 = (function(){
         };
     }
 
-    /************************************/
-    /* Located measures */
-    /************************************/
-
     function LocatedMeasure(obj){
         Editor.call(this);
         this.jsonEntity = Object.create(Entities.locatedMeasure);
@@ -2615,9 +2810,6 @@ var ApiNATOMY2 = (function(){
         };
     }
 
-    /**********************************/
-    /*Omega-function (tree)*/
-    /**********************************/
     function CanonicalTree(obj) {
         Editor.call(this);
         this.jsonEntity = Object.create(Entities.canonicalTree);
@@ -2806,7 +2998,7 @@ var ApiNATOMY2 = (function(){
 
                 var circle = node.append("circle")
                     .attr("r", function(d) { return (d.children)? radius: 0;})
-                    .style("fill", function(d, i) {return rowColor(i);})
+                    .style("fill", function(d, i) {return Utils.rowColor(i);})
                     .attr("transform", function(d) {return "translate(" + d.x + "," + d.y + ")"; })
                     .on("click", onNodeClickHandler);
 
@@ -2900,7 +3092,7 @@ var ApiNATOMY2 = (function(){
                     var d = goodLevels[i];
                     branchingFactors.push({domain: i + 1,
                         value: prev,
-                        color: rowColor(i)});
+                        color: Utils.rowColor(i)});
                     prev = prev * d.branchingFactor;
                 }
                 var caption = "Est. edges";
@@ -2953,7 +3145,7 @@ var ApiNATOMY2 = (function(){
                             domain: i + 1,
                             value: mean,
                             variation: stDev,
-                            color: rowColor(i)};
+                            color: Utils.rowColor(i)};
                     }
                 }
                 var size = {
@@ -2999,9 +3191,6 @@ var ApiNATOMY2 = (function(){
         }
     }
 
-    /**********************************/
-    /*Tree level*/
-    /**********************************/
     function CanonicalTreeLevel(obj) {
         Editor.call(this);
         this.jsonEntity = Object.create(Entities.canonicalTreeLevel);
@@ -3011,7 +3200,7 @@ var ApiNATOMY2 = (function(){
             for (var prop in obj)
                 this[prop] = obj[prop];
 
-            createObjects(obj.connectedTrees, CanonicalTree);
+            //createObjects(obj.connectedTrees, CanonicalTree);
         }
 
         this.getHeaderTitle = function(){
@@ -3096,9 +3285,8 @@ var ApiNATOMY2 = (function(){
             Components.createNumberInput(d.branchingFactor, "branchingFactor", "Branching factor", 1, 2, 0.1).appendTo(editPanel);
             //skipProbability
             Components.createNumberInput(d.skipProbability, "skipProbability", "Skip probability", 0, 1, 0.1).appendTo(editPanel);
+
             //LyphTemplate
-
-
             var getOptions = function(){
                 if (lyphRepo) return lyphRepo.getItemList();
                 return [];
@@ -3191,9 +3379,6 @@ var ApiNATOMY2 = (function(){
         };
     }
 
-    /************************************/
-    /*Generated tree sample*/
-    /************************************/
     function TreeSampleNode(id, name, parent, children, depth, link){
         this.id = id;
         this.name = name;
@@ -3334,7 +3519,7 @@ var ApiNATOMY2 = (function(){
 
                 nodeUpdate.select("circle")
                     .attr("r", function (d) {return !d.children? 0: 5;})
-                    .style("fill", function (d) {return rowColor(d.depth);});
+                    .style("fill", function (d) {return Utils.rowColor(d.depth);});
 
                 node.exit().transition()
                     .duration(duration)
@@ -3378,7 +3563,8 @@ var ApiNATOMY2 = (function(){
         CanonicalTreeRepo: CanonicalTreeRepo,
         TreeSample: TreeSample,
         VisualParameters: Plots.vp,
-        Components: Components
+        Components: Components,
+        Utils: Utils
     }
 }());
 

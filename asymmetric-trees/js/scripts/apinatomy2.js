@@ -2469,8 +2469,8 @@ var ApiNATOMY2 = (function(){
                 }
 
                 function transform(d) {
-                    if (vp.orientation == "reversed") return "translate(" + d.x + "," + (vp.size.height - d.y) + ")";
-                    return "translate(" + d.x + "," + d.y + ")";
+                    if (vp.orientation == "reversed") return "translate(" + (d.x - 10) + "," + (vp.size.height - d.y) + ")";
+                    return "translate(" + (d.x - 10) + "," + d.y + ")";
                 }
             }
         }

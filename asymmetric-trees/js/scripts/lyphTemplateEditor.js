@@ -60,7 +60,19 @@
                                         content: '<svg id="lyphHierarchy"></svg>',
                                         label: 'LyphTemplate hierarchy'
                                     }
+                                },
+                                {
+                                    type: 'component',
+                                    componentName: 'LyphPartonomy',
+                                    title: "Lyph template partonomy",
+                                    showPopoutIcon: false,
+                                    width: 40,
+                                    componentState: {
+                                        content: '<svg id="lyphPartonomy"></svg>',
+                                        label: 'LyphTemplate partonomy'
+                                    }
                                 }
+
                             ]
                         }
                     ]
@@ -175,16 +187,22 @@
     var myLayout = new GoldenLayout(config);
 
     var lyphRepo, divLyphTemplate, selectedLyph, selectedLayer,
-        svgLyphHierarchy;
+        svgLyphHierarchy, svgLyphPartonomy;
 
-    var svgLyphTemplateVP = new ApiNATOMY2.VisualParameters({
+    var dx = 20, dy = 20;
+
+    var svgLyphTemplateVP = {
          scale: {width: 200, height: 30},
           size: {width: 500, height: 500},
-        margin: {x: 20, y: 20}});
+        margin: {x: dx, y: dy}};
 
-    var lyphHierarchyVP = new ApiNATOMY2.VisualParameters({
+    var lyphHierarchyVP = {
         size: {width: 500, height: 500},
-        margin: {x: 20, y: 20}});
+        margin: {x: dx, y: dy}};
+
+    var lyphPartonomyVP = {
+        size: {width: 500, height: 500},
+        margin: {x: dx, y: dy}};
 
     myLayout.registerComponent('LyphTemplateRepo', function (container, componentState) {
         container.getElement().html(componentState.content);
@@ -203,7 +221,6 @@
 
     myLayout.registerComponent('LyphTemplate', function (container, componentState) {
         container.getElement().html(componentState.content);
-        var dx = 20, dy = 20;
         container.on( 'open', function(){
             divLyphTemplate  = d3.select('#lyphTreemap');
             svgLyphTemplateVP.size = {width: container.width - dx, height: container.height - dy};
@@ -216,7 +233,6 @@
 
     myLayout.registerComponent('LyphHierarchy', function (container, componentState) {
         container.getElement().html(componentState.content);
-        var dx = 20, dy = 20;
         container.on( 'open', function(){
             lyphHierarchyVP.size = {width: container.width - dx, height: container.height - dy};
             svgLyphHierarchy  = d3.select('#lyphHierarchy');
@@ -229,6 +245,20 @@
         });
     });
 
+    myLayout.registerComponent('LyphPartonomy', function (container, componentState) {
+        container.getElement().html(componentState.content);
+        container.on( 'open', function(){
+            lyphPartonomyVP.size = {width: container.width - dx, height: container.height - dy};
+            svgLyphPartonomy  = d3.select('#lyphPartonomy');
+            syncSelectedLyphPartonomy();
+        });
+        container.on( 'resize', function(){
+            lyphPartonomyVP.size = {width: container.width - dx, height: container.height - dy};
+            svgLyphPartonomy  = d3.select('#lyphPartonomy');
+            syncSelectedLyphPartonomy();
+        });
+    });
+
 
     myLayout.registerComponent('OntologyParameters', function (container, componentState) {
         container.getElement().html(componentState.content);
@@ -236,13 +266,16 @@
             OntologyManager.init();
             OntologyManager.graph.showLyph = onShowLyph;
         });
-        container.on( 'resize', function(){
-            //
-        });
     });
 
     myLayout.registerComponent('OntologyGraph', function (container, componentState) {
         container.getElement().html(componentState.content);
+        container.on( 'resize', function(){
+            if (OntologyManager.graph){
+                OntologyManager.graph.vp.size = {width: container.width - dx, height: container.height - dy};
+                OntologyManager.graph.update();
+            }
+        });
     });
 
     myLayout.init();
@@ -269,6 +302,7 @@
         selectedLyph = d;
         syncSelectedLyph();
         syncSelectedLyphHierarchy();
+        syncSelectedLyphPartonomy();
     }
 
     function onSelectLayer(d){
@@ -288,6 +322,14 @@
             selectedLyph.drawHierarchy(svgLyphHierarchy, lyphHierarchyVP, null);
         } else {
             if (svgLyphHierarchy ) svgLyphHierarchy .selectAll("g").remove();
+        }
+    }
+
+    function syncSelectedLyphPartonomy(){
+        if (selectedLyph){
+            selectedLyph.drawPartonomy(svgLyphPartonomy, lyphPartonomyVP, null);
+        } else {
+            if (svgLyphPartonomy) svgLyphPartonomy.selectAll("g").remove();
         }
     }
 

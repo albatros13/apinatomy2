@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lyph template partonomy</title>
+    <script src="js/lib/jquery.js"></script>
+    <script src="js/lib/rsvp.js"></script>
+    <script src="js/lib/d3.js"></script>
+</head>
+<body>
+    <script src="js/scripts/apinatomy2.js"></script>
+
+    <style>
+        td, th {
+            border: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even){background-color: #f2f2f2}
+
+        tr:hover {background-color: #ddd;}
+
+        th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            background-color: steelblue;
+            color: white;
+        }
+    </style>
+
+    <button style="float:right;" id="btnExport">Export</button>
+
+    <table id="partonomyTable">
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>FMA ID</th>
+            <th>Cocomac IDs</th>
+        </tr>
+
+    </table>
+
+    <script>
+        var nodes = {};
+        var links = [];
+        var data = [];
+
+        var lyphRepo = new ApiNATOMY2.LyphTemplateRepo([]);
+
+        lyphRepo.load("http://open-physiology.org:8889")
+           .then(function(){
+               createPartonomyGraph();
+           });
+
+        function printList(array){
+            if (!array) return "";
+            var str = "";
+            for (var i = 0; i < array.length; i++)
+                str += array[i] + ((i < array.length - 1)? ", ": "");
+            return str;
+        }
+
+        function saveTextAsFile(textToWrite){
+            var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
+            var fileNameToSaveAs = "output.txt";
+            var downloadLink = document.createElement("a");
+            downloadLink.download = fileNameToSaveAs;
+            downloadLink.innerHTML = "Download File";
+            if (window.webkitURL != null)
+                downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+            downloadLink.click();
+        }
+
+
+        $( "#btnExport" ).on('click', function() {
+            exportTable();
+        });
+
+        function exportTable(){
+            var printContents = "";
+            for (var i = 0; i < data.length; i++){
+                var rowData = data[i];
+                var str = rowData.id + "\t" + rowData.name + "\t" + rowData.fmaID + "\t" + printList(rowData.cocomacIDs) + "\n";
+                printContents += str;
+            }
+            saveTextAsFile(printContents);
+        }
+
+        function sort(array){
+            return array.sort(function(a,b){
+                return b.id - a.id;
+            });
+        }
+
+        function createPartonomyGraph() {
+            var visited = [];
+            var links = [];
+
+            var traverse = function(root){
+                if (!root) return;
+                if (!root.children && !root.parents) return;
+                visited.push(root.id);
+
+                var source = {id: root.id, name: root.name, fmaID: root.fmaID, cocomacIDs: root.cocomacIDs};
+                if (!nodes[root.id]) nodes[root.id] = source;
+
+                var queue = root.children.map(function(d){return {id: d, relation: "child"};});
+                if (root.parents) queue = queue.concat(root.parents.map(function(d){ return {id: d, relation: "parent"};}));
+                for (var i = 0; i < queue.length; i++){
+                    var id = queue[i].id;
+                    if (visited.indexOf(id) < 0){
+                        var obj = lyphRepo.getItemByID(id);
+                        if (obj){
+                            var target =  {id: obj.id, name: obj.name, fmaID: obj.fmaID, cocomacIDs: obj.cocomacIDs};
+                            if (queue[i].relation == "child")
+                                links.push({source: source, target: target});
+                            else
+                                links.push({source: target, target: source});
+                            if (!nodes[id]) nodes[id] = target;
+                            traverse(obj);
+                        }
+                        visited.push(id);
+                    }
+                }
+            };
+
+            var root = lyphRepo.getItemByID(4574);
+            if (root) traverse(root);
+            data = sort(d3.values(nodes));
+            drawTable();
+        }
+
+        function drawTable() {
+            for (var i = 0; i < data.length; i++)
+                drawRow(data[i]);
+        }
+
+        function drawRow(rowData) {
+            if (!rowData.id) return;
+            var row = $("<tr />");
+            $("#partonomyTable").append(row);
+            row.append($("<td>" + rowData.id + "</td>"));
+            row.append($("<td>" + rowData.name + "</td>"));
+            row.append($("<td>" + rowData.fmaID + "</td>"));
+            row.append($("<td>" + printList(rowData.cocomacIDs) + "</td>"));
+        }
+    </script>
+</body>
+</html>

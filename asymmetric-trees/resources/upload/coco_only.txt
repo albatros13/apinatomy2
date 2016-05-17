@@ -71,7 +71,7 @@ cocomac_1881
 cocomac_1881
 cocomac_1881
 cocomac_254
-cocomac_476UBERON_0014595
+cocomac_476 UBERON_0014595
 cocomac_476
 cocomac_476
 cocomac_476
@@ -108,9 +108,9 @@ cocomac_1248
 cocomac_1248
 cocomac_1248
 cocomac_1248
-cocomac_1294UBERON_0023416
-cocomac_1294UBERON_0023415
-cocomac_1294UBERON_0023417
+cocomac_1294 UBERON_0023416
+cocomac_1294 UBERON_0023415
+cocomac_1294 UBERON_0023417
 cocomac_1294
 cocomac_1169
 cocomac_1169
@@ -149,9 +149,9 @@ cocomac_889
 cocomac_638
 cocomac_638
 cocomac_638
-cocomac_1335UBERON_0023416
-cocomac_1335UBERON_0023415
-cocomac_1335UBERON_0023417
+cocomac_1335 UBERON_0023416
+cocomac_1335 UBERON_0023415
+cocomac_1335 UBERON_0023417
 cocomac_1335
 cocomac_665
 cocomac_665
@@ -181,9 +181,9 @@ cocomac_1024
 cocomac_570
 cocomac_1390
 cocomac_1390
-cocomac_1291UBERON_0023416
-cocomac_1291UBERON_0023415
-cocomac_1291UBERON_0023417
+cocomac_1291 UBERON_0023416
+cocomac_1291 UBERON_0023415
+cocomac_1291 UBERON_0023417
 cocomac_1291
 cocomac_1291
 cocomac_1291
@@ -197,7 +197,7 @@ cocomac_90
 cocomac_90
 cocomac_90
 cocomac_90
-cocomac_1618UBERON_0014595
+cocomac_1618 UBERON_0014595
 cocomac_1618
 cocomac_616
 cocomac_616
@@ -239,7 +239,7 @@ cocomac_2201
 cocomac_2201
 cocomac_2201
 cocomac_1043
-cocomac_1043UBERON_0014595
+cocomac_1043 UBERON_0014595
 cocomac_1043
 cocomac_1043
 cocomac_1518
@@ -287,7 +287,7 @@ cocomac_1407
 cocomac_1407
 cocomac_673
 cocomac_673
-cocomac_673UBERON_0014595
+cocomac_673 UBERON_0014595
 cocomac_673
 cocomac_673
 cocomac_673
@@ -329,7 +329,7 @@ cocomac_1724
 cocomac_1724
 cocomac_1724
 cocomac_1724
-cocomac_1724UBERON_0035028
+cocomac_1724 UBERON_0035028
 cocomac_1724
 cocomac_1718
 cocomac_1718
@@ -386,9 +386,9 @@ cocomac_139
 cocomac_139
 cocomac_139
 cocomac_139
-cocomac_1442UBERON_0023416
-cocomac_1442UBERON_0023415
-cocomac_1442UBERON_0023417
+cocomac_1442 UBERON_0023416
+cocomac_1442 UBERON_0023415
+cocomac_1442 UBERON_0023417
 cocomac_920
 cocomac_920
 cocomac_920
@@ -413,9 +413,9 @@ cocomac_399
 cocomac_1299
 cocomac_1932
 cocomac_1932
-cocomac_1617UBERON_0023416
-cocomac_1617UBERON_0023415
-cocomac_1617UBERON_0023417
+cocomac_1617 UBERON_0023416
+cocomac_1617 UBERON_0023415
+cocomac_1617 UBERON_0023417
 cocomac_1378
 cocomac_1378
 cocomac_1378
@@ -445,7 +445,7 @@ cocomac_2113
 cocomac_2113
 cocomac_2113
 cocomac_1194
-cocomac_1355UBERON_0014595
+cocomac_1355 UBERON_0014595
 cocomac_1355
 cocomac_404
 cocomac_404
@@ -537,7 +537,7 @@ cocomac_1521
 cocomac_1698
 cocomac_1698
 cocomac_583
-cocomac_1446UBERON_0023416
+cocomac_1446 UBERON_0023416
 cocomac_1110
 cocomac_1110
 cocomac_1110
@@ -555,7 +555,7 @@ cocomac_1719
 cocomac_1719
 cocomac_1719
 cocomac_1719
-cocomac_535UBERON_0023417
+cocomac_535 UBERON_0023417
 cocomac_682
 cocomac_682
 cocomac_682
@@ -661,7 +661,7 @@ cocomac_1715
 cocomac_1585
 cocomac_1551
 cocomac_1551
-cocomac_1551UBERON_0014595
+cocomac_1551 UBERON_0014595
 cocomac_1842
 cocomac_1842
 cocomac_1842
@@ -682,7 +682,7 @@ cocomac_1103
 cocomac_1103
 cocomac_1103
 cocomac_466
-cocomac_466UBERON_0023415
+cocomac_466 UBERON_0023415
 cocomac_466
 cocomac_466
 cocomac_466
@@ -827,8 +827,8 @@ cocomac_499
 cocomac_499
 cocomac_499
 cocomac_1528
-cocomac_2335UBERON_0035028
-cocomac_2335UBERON_0035027
+cocomac_2335 UBERON_0035028
+cocomac_2335 UBERON_0035027
 cocomac_1843
 cocomac_1843
 cocomac_1843
@@ -838,7 +838,7 @@ cocomac_2023
 cocomac_997
 cocomac_1601
 cocomac_474
-cocomac_474UBERON_0014595
+cocomac_474 UBERON_0014595
 cocomac_474
 cocomac_474
 cocomac_474
@@ -878,7 +878,7 @@ cocomac_132
 cocomac_800
 cocomac_800
 cocomac_800
-cocomac_317UBERON_0014595
+cocomac_317 UBERON_0014595
 cocomac_317
 cocomac_317
 cocomac_317
@@ -887,19 +887,19 @@ cocomac_2093
 cocomac_1435
 cocomac_1435
 cocomac_1435
-cocomac_1435UBERON_0023416
-cocomac_1435UBERON_0023415
-cocomac_1435UBERON_0023417
+cocomac_1435 UBERON_0023416
+cocomac_1435 UBERON_0023415
+cocomac_1435 UBERON_0023417
 cocomac_1019
 cocomac_1019
 cocomac_1434
 cocomac_1434
 cocomac_1434
-cocomac_1434UBERON_0023416
-cocomac_1434UBERON_0023415
-cocomac_1434UBERON_0023417
+cocomac_1434 UBERON_0023416
+cocomac_1434 UBERON_0023415
+cocomac_1434 UBERON_0023417
 cocomac_841 and Ferry (2003) area 13b"
-cocomac_1087UBERON_0023416
+cocomac_1087 UBERON_0023416
 cocomac_1087
 cocomac_392
 cocomac_392
@@ -970,7 +970,7 @@ cocomac_1379
 cocomac_306
 cocomac_2345
 cocomac_2345
-cocomac_2345UBERON_2000185
+cocomac_2345 UBERON_2000185
 cocomac_2345
 cocomac_2068
 cocomac_2068
@@ -990,7 +990,7 @@ cocomac_1404
 cocomac_1404
 cocomac_1404
 cocomac_1404
-cocomac_1404UBERON_0023415
+cocomac_1404 UBERON_0023415
 cocomac_307
 cocomac_307
 cocomac_307
@@ -1113,13 +1113,13 @@ cocomac_491
 cocomac_443
 cocomac_443
 cocomac_443
-cocomac_1972UBERON_0023417
+cocomac_1972 UBERON_0023417
 cocomac_1972
 cocomac_1972
 cocomac_2306
 cocomac_1381
 cocomac_1381
-cocomac_1732UBERON_0023417
+cocomac_1732 UBERON_0023417
 cocomac_829
 cocomac_829
 cocomac_829
@@ -1167,7 +1167,7 @@ cocomac_2371
 cocomac_2371
 cocomac_2371
 cocomac_2371
-cocomac_2371UBERON_0014595
+cocomac_2371 UBERON_0014595
 cocomac_1164
 cocomac_1164
 cocomac_1164
@@ -1271,8 +1271,8 @@ cocomac_1245
 cocomac_1245
 cocomac_1245
 cocomac_1245
-cocomac_2336UBERON_0035028
-cocomac_2336UBERON_0035027
+cocomac_2336 UBERON_0035028
+cocomac_2336 UBERON_0035027
 cocomac_1873
 cocomac_1873
 cocomac_1864 and Ferry (2003) prefrontal cortical partition scheme region"
@@ -1331,7 +1331,7 @@ cocomac_465
 cocomac_1531
 cocomac_1531
 cocomac_1531
-cocomac_1531UBERON_0014595
+cocomac_1531 UBERON_0014595
 cocomac_227
 cocomac_227
 cocomac_774
@@ -1343,12 +1343,12 @@ cocomac_1298
 cocomac_2305
 cocomac_2305
 cocomac_1586
-cocomac_1292UBERON_0023416
-cocomac_1292UBERON_0023415
-cocomac_1292UBERON_0023417
+cocomac_1292 UBERON_0023416
+cocomac_1292 UBERON_0023415
+cocomac_1292 UBERON_0023417
 cocomac_1292
 cocomac_30
-cocomac_30UBERON_0014595
+cocomac_30 UBERON_0014595
 cocomac_30
 cocomac_834
 cocomac_1236
@@ -1395,7 +1395,7 @@ cocomac_1172
 cocomac_1172
 cocomac_1172
 cocomac_1172
-cocomac_1172UBERON_0014595
+cocomac_1172 UBERON_0014595
 cocomac_85
 cocomac_85
 cocomac_85
@@ -1461,10 +1461,10 @@ cocomac_1170
 cocomac_1170
 cocomac_1170
 cocomac_1170
-cocomac_1501UBERON_0014595
+cocomac_1501 UBERON_0014595
 cocomac_1501
 cocomac_1501
-cocomac_2376UBERON_0014595
+cocomac_2376 UBERON_0014595
 cocomac_2376
 cocomac_2376
 cocomac_1496
@@ -1506,8 +1506,8 @@ cocomac_237
 cocomac_600
 cocomac_2375
 cocomac_2375
-cocomac_2375UBERON_0014595
-cocomac_1583UBERON_0023416
+cocomac_2375 UBERON_0014595
+cocomac_1583 UBERON_0023416
 cocomac_1583
 cocomac_1152
 cocomac_1152
@@ -1525,7 +1525,7 @@ cocomac_1594
 cocomac_584
 cocomac_504
 cocomac_1039
-cocomac_1039UBERON_0014595
+cocomac_1039 UBERON_0014595
 cocomac_1039
 cocomac_1039
 cocomac_1085
@@ -1536,7 +1536,7 @@ cocomac_1085
 cocomac_1085
 cocomac_1085
 cocomac_1085
-cocomac_1085UBERON_0023415
+cocomac_1085 UBERON_0023415
 cocomac_1649 and Ferry (2003) prefrontal cortical partition scheme region"
 cocomac_1649
 cocomac_1649
@@ -1571,7 +1571,7 @@ cocomac_1049
 cocomac_853
 cocomac_1977
 cocomac_1977
-cocomac_830UBERON_0014595
+cocomac_830 UBERON_0014595
 cocomac_830
 cocomac_830
 cocomac_1075
@@ -1640,7 +1640,7 @@ cocomac_1212
 cocomac_1212
 cocomac_1212
 cocomac_1212
-cocomac_1212UBERON_0035028
+cocomac_1212 UBERON_0035028
 cocomac_1212
 cocomac_1839
 cocomac_1839
@@ -1704,7 +1704,7 @@ cocomac_1882
 cocomac_1882
 cocomac_1882
 cocomac_1473
-cocomac_1473UBERON_0023415
+cocomac_1473 UBERON_0023415
 cocomac_1473
 cocomac_1473
 cocomac_1473
@@ -1727,11 +1727,11 @@ cocomac_2129
 cocomac_667
 cocomac_667
 cocomac_667
-cocomac_1651UBERON_0023416
+cocomac_1651 UBERON_0023416
 cocomac_1651
 cocomac_2291
 cocomac_2291
-cocomac_1447UBERON_0023416
+cocomac_1447 UBERON_0023416
 cocomac_1029
 cocomac_1029
 cocomac_1029
@@ -1777,8 +1777,8 @@ cocomac_493
 cocomac_493
 cocomac_493
 cocomac_891
-cocomac_1578UBERON_0035028
-cocomac_1578UBERON_0035027
+cocomac_1578 UBERON_0035028
+cocomac_1578 UBERON_0035027
 cocomac_526
 cocomac_569
 cocomac_671
@@ -1820,7 +1820,7 @@ cocomac_1081
 cocomac_1081
 cocomac_1081
 cocomac_1081 and Ferry (2003) prefrontal cortical partition scheme region"
-cocomac_1081UBERON_0023416
+cocomac_1081 UBERON_0023416
 cocomac_1081
 cocomac_441
 cocomac_441
@@ -1876,7 +1876,7 @@ cocomac_1803
 cocomac_1171
 cocomac_1171
 cocomac_1171
-cocomac_1171UBERON_0014595
+cocomac_1171 UBERON_0014595
 cocomac_811
 cocomac_811
 cocomac_811
@@ -1935,9 +1935,9 @@ cocomac_1734
 cocomac_1734
 cocomac_1734
 cocomac_1652
-cocomac_72UBERON_0023416
-cocomac_72UBERON_0023415
-cocomac_72UBERON_0023417
+cocomac_72 UBERON_0023416
+cocomac_72 UBERON_0023415
+cocomac_72 UBERON_0023417
 cocomac_72
 cocomac_1955
 cocomac_1955
@@ -1957,7 +1957,7 @@ cocomac_1949
 cocomac_1949
 cocomac_1949
 cocomac_1949
-cocomac_1949UBERON_0014595
+cocomac_1949 UBERON_0014595
 cocomac_1949
 cocomac_1949
 cocomac_1949
@@ -1966,7 +1966,7 @@ cocomac_1949
 cocomac_1949
 cocomac_1949
 cocomac_1949
-cocomac_1745UBERON_0023416
+cocomac_1745 UBERON_0023416
 cocomac_1745
 cocomac_2214
 cocomac_2214
@@ -2035,7 +2035,7 @@ cocomac_628
 cocomac_628
 cocomac_782
 cocomac_810
-cocomac_475UBERON_0014595
+cocomac_475 UBERON_0014595
 cocomac_475
 cocomac_475
 cocomac_475
@@ -2091,7 +2091,7 @@ cocomac_669
 cocomac_669
 cocomac_2224
 cocomac_2224
-cocomac_1293UBERON_0023416
-cocomac_1293UBERON_0023415
-cocomac_1293UBERON_0023417
+cocomac_1293 UBERON_0023416
+cocomac_1293 UBERON_0023415
+cocomac_1293 UBERON_0023417
 cocomac_1293

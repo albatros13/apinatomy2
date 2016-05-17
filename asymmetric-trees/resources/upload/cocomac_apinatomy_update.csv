@@ -1,0 +1,243 @@
+4632,Pre-Supplementary Motor Area,cocomac:1531, cocomac:1517
+4631,Supplementary Motor Area,cocomac:1086,cocomac:1516,cocomac:2282,cocomac:1530,cocomac:386,cocomac:315,cocomac:1489,cocomac:1640,cocomac:1034,cocomac:1646,cocomac:1574,cocomac:1645,
+4630,Lateral aspect of dorsal region of superior frontal gyrus
+4629,Medial aspect of dorsal region of superior frontal gyrus,cocomac:1739,cocomac:1073,
+4628,Subcallosal area
+4627,Ventral region of superior frontal gyrus,cocomac:1740
+4625,Ventral region of inferior frontal gyrus,cocomac:1081
+4624,Dorsal region of superior frontal gyrus,cocomac:1071
+4623,Dorsal region of inferior frontal gyrus,cocomac:1071,cocomac:1085,
+4621,Anterior region of superior parietal lobule
+4620,Anterior region of inferior parietal lobule
+4619,Posterior region of superior parietal lobule,cocomac:1885,cocomac:607,cocomac:398,
+4618,Posterior region of inferior parietal lobule,cocomac:1885,cocomac:1924,cocomac:1021,cocomac:1488,cocomac:398,cocomac:617,cocomac:618,cocomac:619,cocomac:620
+4614,Hemisphere of cerebellar lobule x
+4613,Hemisphere of cerebellar lobule ix
+4612,Hemisphere of cerebellar lobule viii
+4611,Hemisphere of cerebellar lobule vii crus ii
+4610,Hemisphere of cerebellar lobule vii crus i
+4609,Hemisphere of cerebellar lobule vi
+4608,Hemisphere of cerebellar lobule v
+4607,Hemisphere of cerebellar lobule iv
+4606,Hemisphere of cerebellar lobule iii
+4605,Hemisphere of cerebellar lobule ii
+4604,Hemisphere of cerebellar lobule i
+4603,Vermis of cerebellar lobule x
+4602,Vermis of cerebellar lobule ix
+4601,Vermis of cerebellar lobule viii
+4600,Vermis of cerebellar lobule vii crus ii
+4599,Vermis of cerebellar lobule vii crus i
+4598,Vermis of cerebellar lobule vi
+4597,Vermis of cerebellar lobule v
+4596,Vermis of cerebellar lobule iv
+4595,Vermis of cerebellar lobule iii
+4594,Vermis of cerebellar lobule ii
+4593,Vermis of cerebellar lobule i,cocomac:2201
+4592,Inferior occipital gyrus,cocomac:1715,cocomac:1716,
+4591,Superior parietal lobule,cocomac:46,cocomac:2043,cocomac:1067,cocomac:1484,cocomac:399,cocomac:820,cocomac:385,cocomac:400,cocomac:1500,cocomac:443,cocomac:421,cocomac:785,cocomac:515,cocomac:422,cocomac:1065,cocomac:1884,cocomac:2211,cocomac:2218,cocomac:606,cocomac:441,cocomac:613,
+4590,Inferior parietal lobule,cocomac:1064,cocomac:2043,cocomac:1484,cocomac:399,cocomac:609,cocomac:394,cocomac:385,cocomac:400,cocomac:1500,cocomac:421,cocomac:785,cocomac:515,cocomac:422,cocomac:1065,cocomac:1884,cocomac:2211,cocomac:47,cocomac:606,cocomac:613,
+4589,Superior occipital gyrus,cocomac:398
+4588,Cuneus
+4587,Gyrus rectus,cocomac:1077
+4586,Orbital gyrus,cocomac:916,cocomac:1566,cocomac:1074,cocomac:1078,cocomac:1568,cocomac:1076,cocomac:48,cocomac:841,cocomac:1567,cocomac:1075,cocomac:51,cocomac:1589,cocomac:166,cocomac:1077
+4585,Hemispheric region of posterior cerebellar lobe
+4584,Hemispheric region of flocculonodular cerebellar lobe
+4583,Hemispheric region of anterior cerebellar lobe
+4582,Vermis of anterior lobe of cerebellum
+4581,Vermis of flocculonodular lobe of cerebellum
+4580,Flocculonodular lobe of cerebellum,cocomac:2102
+4579,Anterior lobe of cerebellum
+4577,Cerebellar hemisphere
+4575,Cerebellum
+4574,Intracranial regions
+4573,Non-neocortical gray matter
+4572,Neocortex of Hemisphere
+4535,Nucleus emboliformis cerebelle,cocomac:2068,cocomac:2166
+4266,Posterior parietal area,cocomac:1832, cocomac:821,cocomac:796
+4264,Posterior insula,cocomac:433,cocomac:1938,cocomac:884,cocomac:275,cocomac:539,cocomac:1939,cocomac:276,cocomac:885,cocomac:1058
+4254,Anterior insula,cocomac:432,cocomac:274,cocomac:1937,cocomac:881,cocomac:1597,cocomac:853,cocomac:1985,cocomac:833,cocomac:834,cocomac:835,cocomac:836,cocomac:837,cocomac:1986,cocomac:538,cocomac:1565
+4097,Cingulate cortex,cocomac:2268,cocomac:698,cocomac:1881,cocomac:1882,cocomac:1470,cocomac:1147,cocomac:1639,cocomac:1547,cocomac:2302,cocomac:2303,cocomac:1634,cocomac:1652,cocomac:2301,cocomac:2268,cocomac:698
+3834,Striatum
+3825,Inferior parietal lobule,cocomac:1064
+3812,Vermis of cerebellum,cocomac:2133
+3808,Limen of insula
+3798,Uncus,cocomac:2192,cocomac:843,
+3786,Subiculum,cocomac:2115, cocomac:1422, cocomac:21, cocomac:654,cocomac:300,cocomac:2016,cocomac:312,cocomac:2017,cocomac:313,cocomac:2018,cocomac:2019,cocomac:842,cocomac:2020,cocomac:314,cocomac:843,cocomac:1418,cocomac:28,cocomac:850,cocomac:1423,cocomac:1424
+3783,CA3 field,cocomac:24,cocomac:2004,cocomac:2005,cocomac:2006,cocomac:2007,cocomac:2008,cocomac:2009
+3782,CA2 field,cocomac:305,cocomac:1999,cocomac:2000,cocomac:2001,cocomac:2002,cocomac:2003
+3781,CA1 field,cocomac:122,cocomac:23,cocomac:2361,cocomac:2362,cocomac:2363,cocomac:2364,cocomac:2365,cocomac:2366,cocomac:157,cocomac:1275,cocomac:158,cocomac:159,cocomac:160,cocomac:161,cocomac:2021,cocomac:2022,cocomac:1996,cocomac:1997,cocomac:1998,
+3750,Fastigial nucleus,cocomac:2070,cocomac:2166
+3749,Globose nucleus,cocomac:2072,cocomac:2166
+3726,Capsule of red nucleus
+3719,Magnocellular part of red nucleus,cocomac:1687
+3718,Parvocellular part of red nucleus,cocomac:1688
+3717,Pedunculopontine tegmental nucleus,cocomac:1476
+3697,Entorhinal area,cocomac:1532, cocomac:1487, cocomac:1150, cocomac:194, cocomac:16,cocomac:195,cocomac:196,cocomac:197,cocomac:199,cocomac:200,cocomac:198,cocomac:201,cocomac:202,cocomac:22,cocomac:655,cocomac:2224,cocomac:2223,cocomac:658,cocomac:659
+3696,Dentate nucleus,cocomac:2066,cocomac:2166
+3695,Vermis of posterior lobe of cerebellum
+3694,Posterior lobe of cerebellum
+3678,Posterior part of middle frontal gyrus,cocomac:1071,cocomac:1085,
+3677,Anterior part of middle frontal gyrus,cocomac:1081
+3666,Medial part of basal amygdaloid nucleus,cocomac:2143, cocomac:1445, cocomac:5
+3665,Lateral part of basal amygdaloid nucleus,cocomac:1444, cocomac:4
+3664,Basal amygdaloid nucleus,cocomac:1441, cocomac:1727, cocomac:127, cocomac:102, cocomac:107, cocomac:2270
+3616,Posterior parahippocampal gyrus
+3614,Suprachiasmatic nucleus,cocomac:2120
+3613,Claustrum,cocomac:1514, cocomac:271, cocomac:572
+3612,Insula,cocomac:2153, cocomac:1216, cocomac:1057,cocomac:2197,cocomac:1588,cocomac:1819,cocomac:1615,cocomac:886,
+3599,Substantia nigra pars reticulata,cocomac:1680, cocomac:1200, cocomac:939,cocomac:2125
+3598,Substantia nigra pars compacta,cocomac:1199, cocomac:2124, cocomac:1678, cocomac:938
+3594,Isthmus of cingulate gyrus
+3593,Hippocampus,cocomac:1515, cocomac:17, cocomac:130, cocomac:70,cocomac:1877,cocomac:1878,cocomac:1288,cocomac:1712,cocomac:1713,cocomac:2174,cocomac:2175,cocomac:1168,cocomac:112,cocomac:1281,cocomac:454,cocomac:2011,cocomac:2012,cocomac:2013,cocomac:2014,cocomac:70,cocomac:1515,cocomac:17,cocomac:10,cocomac:121,cocomac:122,
+3591,Presubiculum,cocomac:20, cocomac:288, cocomac:582, cocomac:808, cocomac:1415,cocomac:309,cocomac:310,cocomac:1415,cocomac:808,cocomac:288,cocomac:340
+3826,Parasubiculum,cocomac:1193, cocomac:26, cocomac:455, cocomac:1414,cocomac:917
+3590,Periamygdaloid area
+3589,Prepyriform area,cocomac:2304, cocomac:31
+3588,Accessory medullary lamina of globus pallidus
+3587,Medial medullary lamina of globus pallidus,cocomac:2205
+3586,Lateral medullary lamina of globus pallidus,cocomac:2204
+3581,Cingulate gyrus
+3578,Red nucleus,cocomac:2083
+3577,Midbrain reticular formation,cocomac:1689,cocomac:2114,cocomac:2179,cocomac:2107,cocomac:2113,cocomac:2178,cocomac:2177,cocomac:2180
+3573,Substantia nigra,cocomac:1198
+3569,Posterior nucleus of hypothalamus,cocomac:2055, cocomac:1965
+3568,Posterior periventricular nucleus of hypothalamus,cocomac:2189
+3567,Supramammillary nucleus,cocomac:1967,cocomac:1266
+3564,Medial mammillary nucleus,cocomac:2308,cocomac:2309,cocomac:2310,cocomac:2311,
+3563,Lateral mammillary nucleus,cocomac:2210, cocomac:2307, cocomac:318
+3561,Lateral hypothalamic nucleus
+3560,Lateral tuberal nucleus,cocomac:1695
+3559,Tuberomammillary nucleus,cocomac:1267
+3558,Dorsomedial nucleus of hypothalamus,cocomac:1253, cocomac:2169
+3557,Arcuate nucleus of hypothalamus,cocomac:1974, cocomac:2199
+3556,Tuber cinereum,cocomac:2130,cocomac:1971
+3554,Median preoptic nucleus,cocomac:2105,cocomac:2075,cocomac:963,
+3553,Paraventricular nucleus of hypothalamus,cocomac:1685, cocomac:1667
+3552,Anterior nucleus of hypothalamus,cocomac:1969, cocomac:2158
+3551,Supraoptic nucleus,cocomac:2126, cocomac:641
+3550,Preoptic area
+3555,Lateral preoptic nucleus,cocomac:2065
+3549,Submedial nucleus,cocomac:1350, cocomac:2350, cocomac:2123,cocomac:251
+3548,Suprageniculate nucleus,cocomac:143,cocomac:242,cocomac:741,
+3547,Posterior nucleus of thalamus,cocomac:2098, cocomac:372, cocomac:1982, cocomac:234
+3546,Limitans nucleus,cocomac:718, cocomac:575, cocomac:2206, cocomac:559, cocomac:469
+3545,Magnocellular nucleus of medial geniculate body,cocomac:259, cocomac:1549
+3544,Ventral nucleus of medial geniculate body
+3543,Dorsal nucleus of medial geniculate body
+3542,Ventral nucleus of lateral geniculate body,cocomac:2185, cocomac:1014, cocomac:257
+3541,Dorsal nucleus of lateral geniculate body,cocomac:256, cocomac:558, cocomac:467
+3540,Medial geniculate body,cocomac:2186, cocomac:1201, cocomac:369, cocomac:258, cocomac:576, cocomac:715,cocomac:763,cocomac:565,cocomac:562,cocomac:2347,cocomac:2188,cocomac:1551,cocomac:1550,cocomac:1548,cocomac:132,cocomac:1232,cocomac:1204,cocomac:1165,
+3538,Lateral geniculate body,cocomac:1336, cocomac:2184, cocomac:133, cocomac:704, cocomac:2269,cocomac:762,cocomac:639,cocomac:574,cocomac:2342,cocomac:2269,cocomac:1669,cocomac:1668,cocomac:1655,cocomac:1164,cocomac:1162,cocomac:1161,cocomac:1160,cocomac:1159,cocomac:1158,cocomac:1157,cocomac:1154,cocomac:1013,cocomac:1012,cocomac:1011,
+3537,Principal part of ventral posteromedial nucleus
+3536,Parvicellular part of ventral posteromedial nucleus,cocomac:781
+3535,Caudal part of ventral posterolateral nucleus
+3534,Oral part of ventral posterolateral nucleus,cocomac:749, cocomac:1403
+3533,Ventral posteromedial nucleus,cocomac:366, cocomac:752
+3532,Ventral posterolateral nucleus,cocomac:2138, cocomac:751
+3531,Ventral posteroinferior nucleus,cocomac:364
+3530,Area X
+3529,Pars postrema of ventral lateral nucleus,cocomac:779
+3528,Medial part of ventral lateral nucleus,cocomac:777
+3527,Oral part of ventral lateral nucleus
+3526,Caudal part of ventral lateral nucleus
+3525,Magnocellular part of ventral anterior nucleus
+3524,Parvicellular part of ventral anterior nucleus
+3523,Ventromedial nucleus of hypothalamus,cocomac:1949
+3522,Ventral posterior nucleus,cocomac:1128
+3521,Ventral lateral nucleus,cocomac:2352, cocomac:124, cocomac:2136
+3520,Ventral anterior nucleus,cocomac:123
+3519,Inferior pulvinar nucleus,cocomac:2109, cocomac:730, cocomac:149, cocomac:567, cocomac:769, cocomac:1563, cocomac:2354
+3518,Medial pulvinar nucleus,cocomac:734, cocomac:561, cocomac:771, cocomac:140
+3517,Lateral pulvinar nucleus,cocomac:770, cocomac:731, cocomac:2110, cocomac:137, cocomac:1564, cocomac:560
+3516,Oral pulvinar nucleus,cocomac:370, cocomac:2112, cocomac:772
+3515,Pulvinar,cocomac:141, cocomac:2082,cocomac:1725,cocomac:2265,cocomac:352,cocomac:353,cocomac:354,cocomac:355,cocomac:371,cocomac:567,cocomac:624
+3514,Lateral posterior nucleus,cocomac:470, cocomac:713
+3513,Lateral dorsal nucleus,cocomac:113, cocomac:712
+3512,Central dorsal nucleus,cocomac:542
+3511,Lateral nuclear group of thalamus,cocomac:219
+3510,Paracentral nucleus,cocomac:232, cocomac:550, cocomac:723, cocomac:930
+3509,Central medial nucleus,cocomac:236, cocomac:783, cocomac:759, cocomac:2346
+3508,Central lateral nucleus,cocomac:356, cocomac:2150, cocomac:247, cocomac:2149, cocomac:758
+3507,Parafascicular nucleus,cocomac:2349, cocomac:724, cocomac:118
+3506,Centromedian nucleus,cocomac:2154, cocomac:225
+3505,Rostral intralaminar nuclear group
+3504,Parvicellular part of medial dorsal nucleus
+3503,Magnocellular part of medial dorsal nucleus
+3502,Paralaminar part of medial dorsal nucleus,cocomac:546
+3501,Medial nuclear group of thalamus,cocomac:114, cocomac:719
+3500,Subfascicular nucleus,cocomac:1704
+3499,Rhomboidal nucleus,cocomac:241
+3498,Anterodorsal nucleus,cocomac:213, cocomac:737, cocomac:540
+3494,Reuniens nucleus,cocomac:120, cocomac:1928
+3487,Dorsal longitudinal fasciculus of hypothalamus
+3485,Ventral supraoptic decussation
+3484,Capsule of medial geniculate body
+3483,Subthalamic nucleus,cocomac:2085, cocomac:1693, cocomac:740, cocomac:1509, cocomac:940
+3482,Pineal body,cocomac:2173
+3481,Lateral hypothalamic region,cocomac:1257, cocomac:2167,cocomac:1970
+3480,Posterior hypothalamic region,cocomac:2148
+3479,Intermediate hypothalamic region
+3478,Anterior hypothalamic region
+3477,Paratenial nucleus,cocomac:119, cocomac:229, cocomac:2348
+3476,Thalamic reticular nucleus,cocomac:1993, cocomac:142, cocomac:1104, cocomac:240, cocomac:1270
+3475,Paraventricular nucleus of thalamus,cocomac:115, cocomac:2103, cocomac:773, cocomac:1342
+3474,Anteroventral nucleus,cocomac:757
+3473,Posterior nuclear group of thalamus
+3472,Anteromedial nucleus,cocomac:765, cocomac:747, cocomac:117
+3471,Metathalamus
+3470,Ventral nuclear group of thalamus
+3469,Intralaminar nuclear group of thalamus,cocomac:543
+3468,Midline nuclear group of thalamus,cocomac:110
+3467,Anterior nuclear group of thalamus,cocomac:125, cocomac:214
+3466,Epithalamus
+3465,Hypothalamus,cocomac:1619, cocomac:1614,cocomac:2187,cocomac:1695,cocomac:1603,cocomac:1962,cocomac:1263,cocomac:317
+3464,Thalamus,cocomac:1062,cocomac:113,cocomac:1151,cocomac:1166,cocomac:1205,cocomac:123,cocomac:124,cocomac:1264,cocomac:1269,cocomac:1348,cocomac:1579,cocomac:1580,cocomac:1582,cocomac:1583,cocomac:215,cocomac:2367,cocomac:363,cocomac:367,cocomac:465,cocomac:774,cocomac:782,cocomac:930
+3463,Diencephalon
+3461,Opercular part of inferior frontal gyrus,cocomac:450,cocomac:2051,cocomac:306,
+3460,Triangular part of inferior frontal gyrus
+3455,Orbital part of inferior frontal gyrus
+3441,Posterior cingulate gyrus,cocomac:1106,cocomac:882,cocomac:817,cocomac:818,cocomac:608,cocomac:1114,cocomac:435,cocomac:1544,cocomac:2330,cocomac:2329,cocomac:1702,
+3440,Dentate gyrus of hippocampal formation,cocomac:192, cocomac:1417
+3438,Parahippocampal gyrus,cocomac:2183,cocomac:1082,cocomac:2031,cocomac:1194,cocomac:1323,cocomac:1324,cocomac:1325
+3437,Anterior cingulate gyrus,cocomac:1105,cocomac:53,cocomac:162,cocomac:173,cocomac:1123,cocomac:883,cocomac:1543
+3436,Posterior transverse temporal gyrus
+3434,Anterior transverse temporal gyrus
+3433,Fusiform gyrus,cocomac:1111
+3432,Middle temporal gyrus
+3431,Inferior temporal gyrus
+3430,Superior temporal gyrus,cocomac:1243,cocomac:402
+3429,Lingual gyrus
+3428,Precuneus,cocomac:1983,cocomac:1066,
+3426,Angular gyrus
+3425,Supramarginal gyrus,cocomac:440,cocomac:819,cocomac:610,cocomac:612,cocomac:866,cocomac:1925,cocomac:1922
+3424,Postcentral gyrus,cocomac:872
+3423,Precentral gyrus,cocomac:1518,cocomac:814,
+3422,Straight gyrus
+3420,Nucleus accumbens,cocomac:2054, cocomac:944, cocomac:2104,cocomac:945,cocomac:956,
+3415,Lateral occipital gyrus,cocomac:1715,cocomac:1716,cocomac:1488,cocomac:398,cocomac:617,cocomac:618,cocomac:619,cocomac:620
+3409,Claustral amygdaloid area
+3408,Intercalated amygdaloid nucleus,cocomac:1440, cocomac:2198, cocomac:71
+3407,Accessory basal amygdaloid nucleus,cocomac:209, cocomac:128, cocomac:1728, cocomac:1726, cocomac:2, cocomac:1295
+3406,Lateral amygdaloid nucleus,cocomac:1042, cocomac:1730, cocomac:109, cocomac:1334, cocomac:647, cocomac:3, cocomac:35, cocomac:1436
+3405,Nucleus of lateral olfactory tract,cocomac:1326, cocomac:77,cocomac:78,cocomac:79,cocomac:80,cocomac:1438,cocomac:1439,
+3404,Cortical amygdaloid nucleus,cocomac:1433, cocomac:473, cocomac:2144, cocomac:1368
+3403,Anterior amygdaloid area,cocomac:59, cocomac:1616, cocomac:1430, cocomac:471, cocomac:1
+3402,Inferior frontal gyrus
+3401,Middle frontal gyrus
+3400,Superior frontal gyrus
+3399,Tail of caudate nucleus,cocomac:1005,cocomac:1141,cocomac:959,cocomac:1142,cocomac:1143,cocomac:1144,cocomac:1146,cocomac:960,cocomac:961,cocomac:962,cocomac:211
+3398,Body of caudate nucleus,cocomac:1129,cocomac:978,cocomac:984,cocomac:985,cocomac:986,cocomac:987,cocomac:988,cocomac:946,cocomac:947,cocomac:948
+3397,Head of caudate nucleus,cocomac:1004,cocomac:949,cocomac:950,cocomac:951,cocomac:952,cocomac:953,cocomac:954,cocomac:955,cocomac:957,cocomac:958,cocomac:2371,cocomac:2372,cocomac:2373,cocomac:2374,cocomac:2375,cocomac:2376,cocomac:2370
+3395,Amygdala,cocomac:1877,cocomac:1878,cocomac:2035,cocomac:1251,cocomac:2145,cocomac:11,cocomac:989,cocomac:98,cocomac:8,cocomac:1236,cocomac:323,cocomac:9,cocomac:87,cocomac:329,cocomac:1296,cocomac:1297,cocomac:1298,cocomac:1299,cocomac:1300,cocomac:1302,cocomac:1288,cocomac:1712,cocomac:1713,cocomac:1315,cocomac:477,cocomac:1328,cocomac:1287,cocomac:64,cocomac:65,cocomac:66,cocomac:333,cocomac:103,cocomac:295,cocomac:1289,cocomac:1290,cocomac:1301,cocomac:1312,cocomac:1322,cocomac:1331,cocomac:1332,cocomac:1333,cocomac:1303,cocomac:1304,cocomac:1305,cocomac:1306,cocomac:1307,cocomac:1950,cocomac:334,cocomac:320,cocomac:321,cocomac:1280,cocomac:1327,cocomac:322,cocomac:846,cocomac:847,cocomac:61,cocomac:62,cocomac:2277,cocomac:13,cocomac:1308,cocomac:1309,cocomac:1310,cocomac:1311,cocomac:1313,cocomac:1314,cocomac:548,cocomac:1317,cocomac:1318,cocomac:1319,cocomac:1320,cocomac:1321,cocomac:643,cocomac:1729,cocomac:1622,cocomac:1883,cocomac:15,cocomac:454,cocomac:2011,cocomac:2012,cocomac:2013,cocomac:2014,cocomac:72,cocomac:291,cocomac:1335,cocomac:1291,cocomac:1292,cocomac:1293,cocomac:1294,cocomac:1617,cocomac:324,cocomac:325,cocomac:326,cocomac:327,cocomac:1329,cocomac:292,cocomac:293,cocomac:294,cocomac:74,cocomac:75,cocomac:76,cocomac:1618,cocomac:1731,cocomac:6,cocomac:2132,cocomac:1512,cocomac:2122,cocomac:2147,cocomac:2208,cocomac:849,cocomac:100,cocomac:331,cocomac:332,cocomac:7,cocomac:2356,cocomac:97,cocomac:96,cocomac:95,cocomac:328,cocomac:1918,cocomac:1917,cocomac:1916,cocomac:90,cocomac:85,cocomac:89,cocomac:88,cocomac:86,cocomac:93,cocomac:92,cocomac:91,cocomac:84,cocomac:330,cocomac:94,cocomac:83,cocomac:82,cocomac:289,cocomac:290,cocomac:68,cocomac:10,cocomac:660,cocomac:266,cocomac:104,cocomac:270,cocomac:60,cocomac:1262,cocomac:1044,cocomac:1043,cocomac:1040,cocomac:1039,cocomac:926,cocomac:1432,cocomac:12,cocomac:108,cocomac:14,cocomac:1431,cocomac:1446,cocomac:1434,cocomac:73,cocomac:1442,cocomac:1437,cocomac:163,cocomac:1443,cocomac:81,cocomac:1447,cocomac:1435
+3394,Medial globus pallidus,cocomac:2357,cocomac:1196,cocomac:1901,
+3393,Lateral globus pallidus,cocomac:1006,cocomac:2358,cocomac:1195,cocomac:1902,
+3392,Globus pallidus,cocomac:928, cocomac:1167, cocomac:1681,cocomac:1197
+3391,Putamen,cocomac:1598,cocomac:101,cocomac:1590,cocomac:210
+3389,Temporal lobe
+3388,Frontal lobe
+3386,Caudate nucleus,cocomac:1684,cocomac:459,
+4633,Genu of caudate nucleus,cocomac:1131,cocomac:1132,cocomac:1133,cocomac:1134,cocomac:1135,cocomac:1136,cocomac:1137,cocomac:1138,cocomac:1139,cocomac:1140
+3329,Thalamic complex
+4634,Rostral putamen,cocomac:1102,cocomac:974,cocomac:975,cocomac:976,cocomac:977,cocomac:979,cocomac:980,cocomac:981,cocomac:982,cocomac:983
+4635,Middle putamen,cocomac:1100,cocomac:964,cocomac:965,cocomac:966,cocomac:968,cocomac:969,cocomac:970,cocomac:971,cocomac:972,cocomac:973
+4636,Caudal putamen,cocomac:1090,cocomac:1091,cocomac:1092,cocomac:1093,cocomac:1094,cocomac:1095,cocomac:1096,cocomac:1097,cocomac:1098,cocomac:1099

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lyph template partonomy graph</title>
+    <link href="style/partonomyGraph.css" rel="stylesheet"/>
+
+    <link href="js/lib/jquery-ui/jquery-ui.css" rel="stylesheet" >
+
+    <script src="js/lib/jquery-1.11.3.min.js"></script>
+    <script src="js/lib/jquery-ui/jquery-ui.js"></script>
+    <script src="js/lib/jquery.rdfquery.core.min-1.0.js"></script>
+    <script src="js/lib/d3.js"></script>
+    <script src="js/lib/rsvp.js"></script>
+</head>
+<body>
+    <script src="js/scripts/apinatomy2.js"></script>
+
+    <button style="position:fixed; top:10px; right:10px" id="btnExport">Export graph</button>
+    <button style="position:fixed; top:10px; right:100px"  id="btnExportDerived">Export weighted graph</button>
+    <!--<button style="float:right" id="btnExportReduced">Export reduced weighted graph</button>-->
+    <div id="svgGraph"></div>
+
+    <script src="js/scripts/partonomy/relationGraph.js"></script>
+    <script src="js/scripts/partonomy/steiner.js"></script>
+    <script src="js/scripts/partonomy/loadRelations.js"></script>
+
+    <script>
+        lyphRepo.load("http://open-physiology.org:8889")
+            .then(function(){
+               createPartonomyGraph();
+            }).then(function() {
+                loadBrainConnectivityLinks()
+                    .then(function () {
+                        //     loadSelectedIndices([1418, 4736, 1438, 1439]);
+                        relationGraph.init(nodes, links);
+                        relationGraph.draw();
+                    })
+            });
+
+        $( "#btnExport" ).on('click', function() {
+            exportGraph();
+        });
+
+        $( "#btnExportDerived" ).on('click', function() {
+            exportFullDerivedGraph();
+        });
+
+//        $( "#btnExportReduced" ).on('click', function() {
+//            exportReducedDerivedGraph();
+//        });
+
+        function exportGraph(){
+            var printContents = "";
+            printContents +=
+                    "Source"   + "\t" +
+                    "Target"   + "\t" +
+                    "Relation" + "\n";
+            for (var i = 0; i < links.length; i++){
+                var rowData = links[i];
+                printContents +=
+                        rowData.source.id + ": " + rowData.source.name + "\t" +
+                        rowData.target.id + ": " + rowData.target.name + "\t" +
+                        rowData.relation +
+                        ((rowData.relation == "CONNECTIVITY")?
+                            " ("+ rowData.count + " = "+ rowData.cocomac + " + " + (rowData.human / 10) + ")\n" : "\n");
+            }
+            saveTextAsFile(printContents, "partonomyGraph");
+        }
+
+        function exportFullDerivedGraph(){
+            var derivedLinks = relationGraph.graph.getFullDerivedGraph();
+            var printContents = "";
+            printContents +=
+                    "Source"   + "\t" +
+                    "Target"   + "\t" +
+                    "Relation" + "\n";
+            for (var i = 0; i < derivedLinks.length; i++){
+                var rowData = derivedLinks[i];
+                printContents +=
+                        rowData.from.id + ": " + rowData.from.name + "\t" +
+                        rowData.to.id + ": " + rowData.to.name + "\t" +
+                        rowData.weight + "\n";
+            }
+            saveTextAsFile(printContents, "weightedGraph");
+        }
+
+        //function exportReducedDerivedGraph(){}
+
+    </script>
+</body>
+</html>

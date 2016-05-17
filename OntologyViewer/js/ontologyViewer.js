@@ -159,14 +159,17 @@ var ontologyViewer = function () {
                 }
             }
         });
-        if (toRemove.length > 0) {
+        if (toRemove.length > 0){
             links = links.filter(function(d){
-                return toRemove.indexOf(d.ontology) < 0;
+                return (toRemove.indexOf(d.ontology) < 0);
             });
-            updateLinkTypes();
+            allLinks = allLinks.filter(function(d){
+                return (toRemove.indexOf(d.ontology) < 0);
+            });
         }
         graph.links = links;
         graphInfo.html("Loaded relations: " + graph.links.length);
+        updateLinkTypes();
         $( "#btnLoad").prop("disabled", true);
     }
 
@@ -450,7 +453,6 @@ var ontologyViewer = function () {
                 .on("mouseout", function() {
                     tooltip.transition().duration(500).style("opacity", 0);
                 });
-
 
             var node = svg.append("g").selectAll("circle")
                 .data(force.nodes())

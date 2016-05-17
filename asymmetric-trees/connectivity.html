@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lyph template connectivity</title>
+    <script src="js/lib/jquery.js"></script>
+    <script src="js/lib/rsvp.js"></script>
+    <script src="js/lib/d3.js"></script>
+</head>
+<body>
+    <script src="js/scripts/apinatomy2.js"></script>
+
+    <style>
+        td, th {
+            border: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even){background-color: #f2f2f2}
+
+        tr:hover {background-color: #ddd;}
+
+        th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            background-color: steelblue;
+            color: white;
+        }
+    </style>
+
+    <button style="float:right;" id="btnExport">Export</button>
+
+    <table id="connectivityTable">
+        <tr>
+            <th>Node 1</th>
+            <th>Node 2</th>
+        </tr>
+
+    </table>
+
+    <script>
+        var nodes = {};
+        var connectivityLinks = [];
+
+        var lyphRepo = new ApiNATOMY2.LyphTemplateRepo([]);
+
+        lyphRepo.load("http://open-physiology.org:8889")
+           .then(function(){
+               createPartonomyGraph();
+           });
+
+        function printList(array){
+            if (!array) return "";
+            var str = "";
+            for (var i = 0; i < array.length; i++)
+                str += array[i] + ((i < array.length - 1)? ", ": "");
+            return str;
+        }
+
+        function saveTextAsFile(textToWrite){
+            var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
+            var fileNameToSaveAs = "output.txt";
+            var downloadLink = document.createElement("a");
+            downloadLink.download = fileNameToSaveAs;
+            downloadLink.innerHTML = "Download File";
+            if (window.webkitURL != null)
+                downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+            downloadLink.click();
+        }
+
+        $( "#btnExport" ).on('click', function() {
+            exportTable();
+        });
+
+        function exportTable(){
+            var printContents = "";
+            for (var i = 0; i < connectivityLinks.length; i++){
+                var rowData = connectivityLinks[i];
+                var str = rowData.source + "\t" + rowData.target + "\n";
+                printContents += str;
+            }
+            saveTextAsFile(printContents);
+        }
+
+        function sort(array){
+            return array.sort(function(a,b){
+                return b.id - a.id;
+            });
+        }
+
+        function createPartonomyGraph() {
+            var visited = [];
+
+            var traverse = function(root){
+                if (!root) return;
+                if (!root.children && !root.parents) return;
+                visited.push(root.id);
+
+                var source = {id: root.id, name: root.name, fmaID: root.fmaID, cocomacIDs: root.cocomacIDs};
+                if (!nodes[root.id]) nodes[root.id] = source;
+
+                var queue = root.children.map(function(d){return {id: d, relation: "child"};});
+                if (root.parents) queue = queue.concat(root.parents.map(function(d){ return {id: d, relation: "parent"};}));
+                for (var i = 0; i < queue.length; i++){
+                    var id = queue[i].id;
+                    if (visited.indexOf(id) < 0){
+                        var obj = lyphRepo.getItemByID(id);
+                        if (obj){
+                            var target =  {id: obj.id, name: obj.name, fmaID: obj.fmaID, cocomacIDs: obj.cocomacIDs};
+                            if (!nodes[id]) nodes[id] = target;
+                            traverse(obj);
+                        }
+                        visited.push(id);
+                    }
+                }
+            };
+
+            var root = lyphRepo.getItemByID(4574);
+            if (root) traverse(root);
+
+            loadBrainConnectivityLinks()
+        }
+
+        function loadBrainConnectivityLinks(){
+            var file = "resources/upload/cocomac_connectivity_v4.txt";
+            $.ajax({
+                url: file,
+                success: function (response) {
+                    var lines = response.split('\n');
+                    for (var i = 0; i < lines.length; i++) {
+                        var line = lines[i];
+                        var terms = line.split(',');
+                        if (terms.length >= 2) {
+                            var ccLink = {source: terms[0].trim(), target: terms[1].trim()};
+                            var sources = d3.entries(nodes).filter(function (entry) {
+                                return (entry.value.cocomacIDs && entry.value.cocomacIDs.indexOf(ccLink.source) > 0);
+                            });
+                            if (sources && sources.length > 0) {
+                                var targets = d3.entries(nodes).filter(function (entry) {
+                                    return (entry.value.cocomacIDs && entry.value.cocomacIDs.indexOf(ccLink.target) > 0);
+                                });
+                                if (targets && targets.length > 0) {
+                                    sources.forEach(function (source) {
+                                        targets.forEach(function (target) {
+                                            if (ccLink.source != ccLink.target){
+                                                var node1 = ccLink.source + " (#" + source.key + ")";
+                                                var node2 = ccLink.target + " (#" + target.key + ")";
+                                                var link = {source: node1, target: node2};
+                                                connectivityLinks.push(link);
+                                            }
+                                        });
+                                    })
+                                }
+                            }
+                        }
+                    }
+                    drawTable();
+                }
+            });
+        }
+
+        function drawTable() {
+            for (var i = 0; i < connectivityLinks.length; i++){
+                drawRow(connectivityLinks[i]);
+            }
+        }
+
+        function drawRow(rowData) {
+            var row = $("<tr />");
+            $("#connectivityTable").append(row);
+            row.append($("<td>" + rowData.source + "</td>"));
+            row.append($("<td>" + rowData.target + "</td>"));
+        }
+    </script>
+</body>
+</html>

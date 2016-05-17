@@ -16,6 +16,13 @@ var OntologyManager = (function(){
 
     graph.nodeClickHandler = function(d){
         $( "#nodeInfo").html(getHTMLNodeAnnotation(d));
+        if (graph.selectedNode && graph.lyphRepo){
+            var existing = graph.lyphRepo.getItemsByOntologyID(graph.selectedNode.id);
+            if (!existing || existing.length == 0) {
+                $( "#btnAddLyph").prop("disabled", false);
+            }
+            else $( "#btnAddLyph").prop("disabled", true);
+        }
     };
     graph.linkClickHandler = function (d){
         $( "#linkInfo").html(getHTMLLinkAnnotation(d));
@@ -65,6 +72,7 @@ var OntologyManager = (function(){
                 $( "#lyphInfo").html("");
                 $( "#btnShowLyph").prop("disabled", true);
                 $( "#btnRemoveLyph").prop("disabled", true);
+                $( "#btnAddLyph").prop("disabled", false);
                 graph.update();
             }
         });
@@ -377,14 +385,13 @@ var OntologyManager = (function(){
                         break;
                     }
                 }
-                if (!exists) {
-                    toAdd.push(link);
-                }
+                if (!exists) toAdd.push(link);
             }
-            if (toAdd.length >0) {
-                toAdd.forEach(function (d) {
-                    visibleLinks.push(d);
-                });
+            if (toAdd.length > 0) {
+                visibleLinks = visibleLinks.concat(toAdd);
+                //toAdd.forEach(function (d) {
+                //    visibleLinks.push(d);
+                //});
                 this.setVisibleLinks(visibleLinks);
             }
             if (visibleNodes[rootID]) visibleNodes[rootID].radius = radius;
@@ -524,16 +531,16 @@ var OntologyManager = (function(){
                 icon.each(function(d){
                     var lyphTemplates = graph.lyphRepo.getItemsByOntologyID(d.id);
                     if (lyphTemplates && lyphTemplates.length > 0){
-                        var vpIcon = new ApiNATOMY2.VisualParameters({
+                        var vpIcon = {
                             scale : {width: 20, height: 4},
                             size  : {width: 20, height: 20},
                             margin: {x: 10, y: 10}
-                        });
+                        };
                         var iconSvg = d3.select(this).data([d]);
                         lyphTemplates.forEach(function(d){
                             if (d.isValid()){
                                 d.drawIcon(iconSvg, vpIcon, iconClickHandler);
-                                vpIcon.margin.x += 20;
+                                vpIcon.margin.x += 21;
                             }
                         });
                     }

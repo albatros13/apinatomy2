@@ -7,6 +7,8 @@ var relationGraph = function () {
 
     var graph = new RelationGraph({}, []);
 
+    //graph.load("resources/graph/brain_nodes_partonomy.txt", "resources/graph/brain_edges.txt","resources/graph/fmaNames.txt")
+    //graph.load("resources/graph/brain_nodes.txt", "resources/graph/brain_edges.txt","resources/graph/fmaNames.txt")
     graph.load("resources/graph/brain_nodes_example.txt", "resources/graph/brain_edges_example.txt")
         .then(
             function(){
@@ -15,15 +17,51 @@ var relationGraph = function () {
 
     $(document).keypress(function(e) {
         if(e.which == 13) {
-            graph.connectParts();
+            graph.connectIndices();
         }
     });
+
+    function getWeight(d){
+        var count= 1;
+        if (d.count) count = d.count;
+        if (d.relation == "CORRELATION") return 0;
+        if (d.relation == "CONNECTIVITY") return 1000 / count;
+        return 1 / count;
+    }
+
+    function getHTMLNodeAnnotation(d){
+        if (!d) return "";
+        var res = d.id;
+        if (d.label) res += ": " + d.label;
+        if (d.URI) res += '</br>' + d.URI;
+        return "<div>" + res + "</div>";
+    }
+
+    function getHTMLLinkAnnotation(d){
+        if (!d) return "";
+        var res = d.relation;
+        res += "<div  class='dotted'>" + getHTMLNodeAnnotation(d.source) + "</div>";
+        res += "<div  class='dotted'>" + getHTMLNodeAnnotation(d.target) + "</div>";
+        res += "Weight: " + getWeight(d);
+        return "<div>" + res + "</div>";
+    }
+
+    function extractID(url) {
+        var delimeterPos;
+        if (url.indexOf("fma#") > 0)
+            delimeterPos = url.indexOf("fma#") + 4;
+        else if (url.indexOf("gene_ontology#") > 0)
+            delimeterPos = url.indexOf("gene_ontology") + "gene_ontology#".length;
+        else
+            delimeterPos = url.lastIndexOf("/") + 1;
+        return url.substring(delimeterPos).trim();
+    }
 
     function RelationGraph(nodes, links){
         this.nodes = nodes;
         this.links = links;
         this.root = null;
-        this.selected = [];
+        this.selected = {};
         this.solution = [];
 
         var directedLinkTypes = ["PARTONOMY", "CORRELATION"];
@@ -35,7 +73,11 @@ var relationGraph = function () {
 
         var graph = this;
 
-        this.load = function(file1, file2) {
+        var tooltip = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
+        this.load = function(file1, file2, file3) {
             function loadLinks() {
                 return new RSVP.Promise(function(resolve, reject){
                     $.ajax({
@@ -48,11 +90,13 @@ var relationGraph = function () {
                                     var sourceID = terms[0].trim();
                                     var targetID = terms[1].trim();
                                     var relation = terms[2].trim();
-                                    var link = {
-                                        source: graph.nodes[sourceID], target: graph.nodes[targetID],
-                                        relation: relation
-                                    };
-                                    graph.links.push(link);
+                                    if (graph.nodes[sourceID] && graph.nodes[targetID]){
+                                        var link = {
+                                            source: graph.nodes[sourceID], target: graph.nodes[targetID],
+                                            relation: relation
+                                        };
+                                        graph.links.push(link);
+                                    }
                                 }
                             });
                             resolve(data);
@@ -73,8 +117,11 @@ var relationGraph = function () {
                             lines.forEach(function(line){
                                 var terms = line.split(',');
                                 var id = terms[0].trim();
+                                var type = "REGION";
+                                if (terms.length > 1)
+                                    type = terms[1].trim();
                                 if (!graph.nodes[id])
-                                    graph.nodes[id] = {id: id, type: terms[1].trim()};
+                                    graph.nodes[id] = {id: id, type: type};
                             });
                             resolve(data);
                         },
@@ -84,7 +131,35 @@ var relationGraph = function () {
                     });
                 });
             }
-            return loadNodes().then(loadLinks);
+
+            function loadNodeAnnotations(){
+                return new RSVP.Promise(function (resolve, reject) {
+                    if (!file3) resolve();
+                    $.ajax({
+                        url: file3,
+                        success: function (data) {
+                            var lines = data.split('\n');
+                            for (var i = 0; i < lines.length; i++) {
+                                var line = lines[i];
+                                var endOfURI = line.indexOf(' ');
+                                if (endOfURI > -1) {
+                                    var URI = line.substring(0, endOfURI);
+                                    var id = extractID(line.substring(0, endOfURI));
+                                    if (graph.nodes[id]) {
+                                        graph.nodes[id].label = line.substring(endOfURI + 1);
+                                        graph.nodes[id].URI = URI;
+                                    }
+                                }
+                            }
+                            resolve(data);
+                        },
+                        error: function (jqXhr, textStatus, errorThrown) {
+                            reject({jqXhr: jqXhr, textStatus: textStatus, errorThrown: errorThrown});
+                        }
+                    });
+                });
+            }
+            return loadNodes().then(loadLinks).then(loadNodeAnnotations);
         };
 
         this.reset = function(){
@@ -118,8 +193,12 @@ var relationGraph = function () {
                 svg.attr("transform", "translate(" + vp.x + "," + vp.y + ")");
 
             graph.force.size([vp.width, vp.height])
-                .charge(-300)
-                .linkDistance(50);
+                .charge(-100)
+                .linkDistance(50)
+                .linkStrength(function(link){
+                    if (link.relation == "PARTONOMY") return 1.0;
+                    return 0.5;
+                });
 
             graph.force.nodes(d3.values(graph.nodes)).links(graph.links);
 
@@ -146,6 +225,17 @@ var relationGraph = function () {
                     return "url(#marker" + d.relation + ")";
                 });
 
+            link.on("mouseover", function(d) {
+                    tooltip.transition().duration(200).style("opacity", .9);
+                    tooltip.html(getHTMLLinkAnnotation(d))
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+                })
+                .on("mouseout", function() {
+                    tooltip.transition().duration(500).style("opacity", 0);
+                });
+
+
             var solution = svg.append("g").selectAll("path")
                 .data(graph.force.links().filter(function(d){return inSolution(d);}))
                 .enter().append("path")
@@ -166,6 +256,16 @@ var relationGraph = function () {
                     return "";})
                // .on('dblclick', regionDblClickHandler)
                 .call(graph.force.drag);
+
+            region.on("mouseover", function(d) {
+                    tooltip.transition().duration(200).style("opacity", .9);
+                    tooltip.html(getHTMLNodeAnnotation(d))
+                        .style("left", (d3.event.pageX + 10) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+                })
+                .on("mouseout", function() {
+                    tooltip.transition().duration(500).style("opacity", 0);
+                });
 
             var index = svg.append("g").selectAll("path")
                 .data(graph.force.nodes().filter(function(d){ return d.type == "INDEX";}))
@@ -190,6 +290,7 @@ var relationGraph = function () {
 
             function update(e) {
                 var k = 6 * e.alpha;
+                //var k = 0;
 
                 link.attr("d", function(d){
                     // Push sources up and targets down to form a weak tree.
@@ -207,10 +308,11 @@ var relationGraph = function () {
                     var dx = (d.target.x - d.source.x),
                         dy = (d.target.y - d.source.y),
                         dr = Math.sqrt(dx * dx + dy * dy);
-                    var ratio = (dr - 10) / dr;
-                    dx *= (1 - ratio);
-                    dy *= (1 - ratio);
-                    //return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+                    if (dr > 0){
+                        var ratio = Math.abs(dr - 10) / dr;
+                        dx *= (1 - ratio);
+                        dy *= (1 - ratio);
+                    }
                     return "M" + d.source.x + ' ' + d.source.y + " L" + (d.target.x  - dx) + ' ' + (d.target.y - dy);
 
                     //return "M" + d.source.x + ' ' + d.source.y + " L" + d.target.x + ' ' + d.target.y;
@@ -226,46 +328,44 @@ var relationGraph = function () {
             }
         };
 
-        this.connectParts = function(){
-            // enter pressed
-            var nodes = d3.values(graph.nodes);
-            var edges = graph.links.map(function(d){return {
-                from: d.source, to: d.target,
-                weight: (d.relation == "CONNECTIVITY")? 0.5: (d.relation =="CORRELATION")? 0: 1}});
-            graph.links.forEach(function(d){
-                if (d.relation == "CONNECTIVITY")
-                    edges.push({from: d.target, to: d.source, weight: 0.5});
-            });
-            var required = d3.values(graph.selected);
-            if (required.length > 0){
-                graph.solution = steiner(nodes, edges, required);
-                console.dir(graph.solution);
-                graph.draw(graph.svg, graph.vp);
-            }
-        };
-
         this.connectIndices = function(){
-            // enter pressed
-            var nodes = d3.values(graph.nodes);
-            var edges = [];
-            graph.links.forEach(function(d){
-                if (d.relation == "PARTONOMY")
-                    edges.push({from: d.source, to: d.target, weight: 1});
-                if (d.relation == "CONNECTIVITY"){
-                    edges.push({from: d.source, to: d.target, weight: 0.5});
-                    edges.push({from: d.target, to: d.source, weight: 1.5});
-                }
-                if (d.relation == "CORRELATION"){
-                    if (graph.selected[d.source.id]){
-                        edges.push({from: d.source, to: d.target, weight: 0});
-                        edges.push({from: d.target, to: d.source, weight: 0});
-                    }
-                }
-            });
             var required = d3.values(graph.selected);
             if (required.length > 0){
-                graph.solution = steiner(nodes, edges, required);
-                console.dir(graph.solution);
+                var edges = [];
+                var visited = [];
+
+                var traverse = function(source){
+                    var queue = graph.links.filter(function(d){
+                        return ((d.source.id == source.id) && (d.relation == "PARTONOMY"))
+                        || ((d.source.id == source.id) && (d.relation == "CONNECTIVITY"))
+                        || ((d.target.id == source.id) && (d.relation == "CONNECTIVITY"));
+                    });
+                    visited.push(source.id);
+
+                    for (var i = 0; i < queue.length; i++){
+                        var target = queue[i].target;
+                        if (target.id == source.id) target = queue[i].source;
+                        if (visited.indexOf(target.id) < 0) {
+                            edges.push({from: source, to: target, weight: getWeight(queue[i])});
+                            traverse(target);
+                        }
+                        visited.push(target.id);
+                    }
+                };
+
+                var nextToSelected = graph.links.filter(function(d){return graph.selected[d.source.id]
+                    && (d.relation == "CORRELATION");});
+                nextToSelected.forEach(function(d) {
+                    edges.push({from: d.source, to: d.target, weight: getWeight(d)});
+                    edges.push({from: d.target, to: d.source, weight: getWeight(d)});
+                });
+
+                var selectedParts = nextToSelected.map(function(d){return d.target;});
+                selectedParts.forEach(function(d){
+                    traverse(d);
+                });
+
+                graph.solution = steiner(edges, required);
                 graph.draw(graph.svg, graph.vp);
             }
         };
@@ -273,18 +373,6 @@ var relationGraph = function () {
         function transform(d) {
             return "translate(" + d.x + "," + d.y + ")";
         }
-
-        /*
-        function regionDblClickHandler (node){
-            var rect = d3.select(this);
-            rect.classed("selected", !rect.classed("selected"));
-            if (!graph.selected[node.id]){
-                graph.selected[node.id] = node;
-            } else {
-                delete graph.selected[node.id];
-            }
-            graph.reset();
-        }*/
 
         function indexDblClickHandler (node){
             var triangle = d3.select(this);

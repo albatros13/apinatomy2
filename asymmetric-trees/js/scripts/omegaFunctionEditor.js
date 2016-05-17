@@ -100,25 +100,25 @@
     var selectedTree, selectedLyph, selectedTreeLevel;
     var svgTree, svgTreePlots, divLyphTemplate, svgSampleTree;
 
-    var treeVP = new ApiNATOMY2.VisualParameters({
+    var treeVP = {
         scale: {width: 20, height: 20},
         size: {width: 500, height: 300},
-        margin: {x: 20, y: 40}});
+        margin: {x: 20, y: 40}};
 
-    var treePlotsVP = new ApiNATOMY2.VisualParameters({
+    var treePlotsVP = {
         scale: {width: 20, height: 20},
         size: {width: 500, height: 300},
-        margin: {x: 20, y: 60}});
+        margin: {x: 20, y: 60}};
 
-    var svgLyphTemplateVP = new ApiNATOMY2.VisualParameters({
+    var svgLyphTemplateVP = {
         scale: {width: 200, height: 30},
         size: {width: 500, height: 300},
-        margin: {x: 20, y: 20}});
+        margin: {x: 20, y: 20}};
 
-    var svgTreeSampleVP = new ApiNATOMY2.VisualParameters({
+    var svgTreeSampleVP = {
         scale: {width: 20, height: 30},
         size: {width: 500, height: 300},
-        margin: {x: 20, y: 20}});
+        margin: {x: 20, y: 20}};
 
     var dx = 20, dy = 20, minWidth = 300, minHeight = 300;
 

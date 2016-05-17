@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Index path table</title>
+    <link href="js/lib/jquery-ui/jquery-ui.css" rel="stylesheet" >
+    <link href="js/lib/select2/css/select2.css" rel="stylesheet">
+
+
+    <script src="js/lib/jquery-1.11.3.min.js"></script>
+    <script src="js/lib/jquery-ui/jquery-ui.js"></script>
+    <script src="js/lib/jquery.rdfquery.core.min-1.0.js"></script>
+    <script src="js/lib/metro-ui/js/metro.js"></script>
+    <script src="js/lib/select2/js/select2.js"></script>
+    <script src="js/lib/d3.js"></script>
+    <script src="js/lib/rsvp.js"></script>
+</head>
+<body>
+    <script src="js/scripts/apinatomy2.js"></script>
+
+    <script src="js/scripts/partonomy/relationGraph.js"></script>
+    <script src="js/scripts/partonomy/steiner.js"></script>
+    <script src="js/scripts/partonomy/loadRelations.js"></script>
+
+
+    <style>
+        td, th {
+            border: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even){background-color: #f2f2f2}
+
+        tr:hover {background-color: #ddd;}
+
+        th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            background-color: steelblue;
+            color: white;
+        }
+
+        .Row {
+            display: table;
+            width: 100%; /*Optional*/
+            table-layout: fixed; /*Optional*/
+            border-spacing: 10px; /*Optional*/
+        }
+        .Column {
+            display: table-cell;
+        }
+    </style>
+
+
+    <div id="parameterPanel" class="Row">
+        <div id="sourcePanel" class="Column"></div>
+        <div id="targetPanel" class="Column"></div>
+    </div>
+    <button style="float:right" id="btnSubmit">Submit</button>
+    <button style="float:right" id="btnExport">Export</button>
+
+    <table id="pathTable">
+        <tr>
+            <th>Source (Index)</th>
+            <th>Target (Index)</th>
+            <th>Path</th>
+            <th>Score</th>
+        </tr>
+    </table>
+
+    <script>
+        var data = [];
+
+        var lyphRepo = new ApiNATOMY2.LyphTemplateRepo([]);
+
+        lyphRepo.load("http://open-physiology.org:8889")
+                .then(
+                        createPartonomyGraph)
+                .then(
+                        loadBrainConnectivityLinks)
+                .then(
+                        loadIndices)
+                .then(
+                        function(){
+                            createParameterPanel();
+                            relationGraph.init(nodes, links);
+                        }
+                );
+
+        var sourcePanel = $('#sourcePanel');
+        var targetPanel = $('#targetPanel');
+
+        function createParameterPanel(){
+            var getOptions = function(){
+                if (clinicalIndexRepo)
+                    return clinicalIndexRepo.getItemList();
+                return [];
+            };
+
+            ApiNATOMY2.Components.createSelect2Input({id: ""}, "source", "Source", getOptions).appendTo(sourcePanel);
+            ApiNATOMY2.Components.createSelect2Input({id: ""}, "target", "Target", getOptions).appendTo(targetPanel);
+        }
+
+        $( "#btnSubmit" ).on('click', function() {
+            findIndexPaths(true);
+        });
+
+        var sourceIndexID = 0;
+        var targetIndexID = 0;
+
+        function findIndexPaths(){
+            $("#pathTable td").parent().remove();
+            data = [];
+            var selected = {};
+            sourceIndexID = parseInt(ApiNATOMY2.Components.getInputValue(sourcePanel, "source"), 10);
+            targetIndexID = parseInt(ApiNATOMY2.Components.getInputValue(targetPanel, "target"), 10);
+
+            if (sourceIndexID == targetIndexID){
+                $.Notify({
+                    caption: "Error",
+                    content: "Source and target indices should be different!",
+                    type: 'alert',
+                    keepOpen: true
+                });
+                return;
+            }
+
+            selected["i" + sourceIndexID] = clinicalIndexRepo.getItemByID(sourceIndexID);
+            selected["i" + targetIndexID] = clinicalIndexRepo.getItemByID(targetIndexID);
+
+            relationGraph.graph.selected = selected;
+            var reducedLinks = relationGraph.graph.getDerivedGraph(true);
+
+            var sourceLinks = links.filter(function(link){ return link.source.id == ("i" + sourceIndexID);});
+            var targetLinks = links.filter(function(link){ return link.source.id == ("i" + targetIndexID);});
+
+            var sourceNodes = sourceLinks.map(function(link){ return link.target;});
+            var targetNodes = targetLinks.map(function(link){ return link.target;});
+
+            sourceNodes.forEach(function(source){
+                targetNodes.forEach(function(target){
+                    if ((source.id != target.id)){
+                        var path = dijkstra(reducedLinks, source, target);
+                        var pathIDs = path.edges.map(function(link){
+                            return {text: link.to.id + ": " + nodes[link.to.id].name + " - "
+                            + link.from.id + ": " + nodes[link.from.id].name + " (" + link.weight + ")", relation: link.relation};
+                        });
+                        var rowData = {
+                            source: source.id,
+                            target: target.id,
+                            path: pathIDs,
+                            score: Math.round(100 * path.score) / 100};
+                        data.push(rowData);
+                    }
+                });
+            });
+            sort(data, "score");
+            drawTable();
+        }
+
+        function drawTable() {
+            for (var i = 0; i < data.length; i++)
+                drawRow(data[i]);
+        }
+
+        function formatPath(array, lineSeparator){
+            if (!array) return "";
+            if (!lineSeparator) lineSeparator = "\n";
+            var str = "";
+            for (var i = 0; i < array.length; i++){
+                var line = array[i].text + lineSeparator;
+                if (array[i].relation == "PARTONOMY")
+                    line = "<strong>" + line + "</strong>";
+                line = (i + 1) + ") " + line;
+                str += line;
+            }
+            return str;
+        }
+
+        function drawRow(rowData) {
+            var row = $("<tr />");
+            $("#pathTable").append(row);
+            row.append($("<td>" + rowData.source + ": " + nodes[rowData.source].name + "</td>"));
+            row.append($("<td>" + rowData.target + ": " + nodes[rowData.target].name + "</td>"));
+            row.append($("<td>" + formatPath(rowData.path, '</BR>') + "</td>"));
+            row.append($("<td>" + rowData.score + "</td>"));
+        }
+
+        $( "#btnExport" ).on('click', function() {
+            exportTable();
+        });
+
+        function exportTable(){
+            var printContents = "";
+            printContents +=
+                    "Source" + "\t" +
+                    "Target" + "\t" +
+                    "Path"   + "\t" +
+                    "Score"  + "\n";
+            for (var i = 0; i < data.length; i++){
+                var rowData = data[i];
+                printContents +=
+                        rowData.source + "\t" +
+                        rowData.target + "\t" +
+                        printList(rowData.path.map(function(d){return d.text;}), "; ") + "\t" +
+                        rowData.score + "\n";
+            }
+            saveTextAsFile(printContents, "path_" + sourceIndexID + "-" + targetIndexID);
+        }
+
+    </script>
+</body>
+</html>

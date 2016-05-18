@@ -80,7 +80,7 @@
                 printContents +=
                         rowData.from.id + ": " + rowData.from.name + "\t" +
                         rowData.to.id + ": " + rowData.to.name + "\t" +
-                        rowData.weight + "\n";
+                        (Math.round(100 * rowData.weight) / 100) + "\n";
             }
             saveTextAsFile(printContents, "weightedGraph");
         }

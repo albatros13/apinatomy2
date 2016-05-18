@@ -71,6 +71,7 @@
 
     <script>
         var data = [];
+        var weightedLinks = [];
 
         var lyphRepo = new ApiNATOMY2.LyphTemplateRepo([]);
 
@@ -83,8 +84,9 @@
                         loadIndices)
                 .then(
                         function(){
-                            createParameterPanel();
                             relationGraph.init(nodes, links);
+                            weightedLinks = relationGraph.graph.getFullDerivedGraph(true);
+                            createParameterPanel();
                         }
                 );
 
@@ -112,7 +114,7 @@
         function findIndexPaths(){
             $("#pathTable td").parent().remove();
             data = [];
-            var selected = {};
+            //var selected = {};
             sourceIndexID = parseInt(ApiNATOMY2.Components.getInputValue(sourcePanel, "source"), 10);
             targetIndexID = parseInt(ApiNATOMY2.Components.getInputValue(targetPanel, "target"), 10);
 
@@ -126,11 +128,10 @@
                 return;
             }
 
-            selected["i" + sourceIndexID] = clinicalIndexRepo.getItemByID(sourceIndexID);
-            selected["i" + targetIndexID] = clinicalIndexRepo.getItemByID(targetIndexID);
+            //selected["i" + sourceIndexID] = clinicalIndexRepo.getItemByID(sourceIndexID);
+            //selected["i" + targetIndexID] = clinicalIndexRepo.getItemByID(targetIndexID);
 
-            relationGraph.graph.selected = selected;
-            var reducedLinks = relationGraph.graph.getDerivedGraph(true);
+            //relationGraph.graph.selected = selected;
 
             var sourceLinks = links.filter(function(link){ return link.source.id == ("i" + sourceIndexID);});
             var targetLinks = links.filter(function(link){ return link.source.id == ("i" + targetIndexID);});
@@ -141,7 +142,7 @@
             sourceNodes.forEach(function(source){
                 targetNodes.forEach(function(target){
                     if ((source.id != target.id)){
-                        var path = dijkstra(reducedLinks, source, target);
+                        var path = dijkstra(weightedLinks, source, target);
                         var pathIDs = path.edges.map(function(link){
                             return {text: link.to.id + ": " + nodes[link.to.id].name + " - "
                             + link.from.id + ": " + nodes[link.from.id].name + " (" + link.weight + ")", relation: link.relation};

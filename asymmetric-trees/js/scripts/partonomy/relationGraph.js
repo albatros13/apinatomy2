@@ -48,7 +48,7 @@ var relationGraph = function () {
         var count= 1;
         if (d.count) count = d.count;
         if (d.relation == "CORRELATION") return 0;
-        if (d.relation == "CONNECTIVITY") return Math.round(1000000 / count) / 100;
+        if (d.relation == "CONNECTIVITY") return (Math.round(1000000 / count) / 100);
         return 1;
     }
 
@@ -111,8 +111,8 @@ var relationGraph = function () {
                 svg.attr("transform", "translate(" + vp.x + "," + vp.y + ")");
 
             graph.force.size([vp.width, vp.height])
-                .charge(-100)
-                .linkDistance(20)
+                .charge(-150)
+                .linkDistance(30)
                 .linkStrength(function(link){
                     if (link.relation == "PARTONOMY") return 1.0;
                     return 0.5;
@@ -196,6 +196,16 @@ var relationGraph = function () {
                 .on('dblclick', indexDblClickHandler)
                 .call(graph.force.drag);
 
+            index.on("mouseover", function(d) {
+                    tooltip.transition().duration(200).style("opacity", .9);
+                    tooltip.html(getHTMLNodeAnnotation(d))
+                        .style("left", (d3.event.pageX + 10) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+                })
+                .on("mouseout", function() {
+                    tooltip.transition().duration(500).style("opacity", 0);
+                });
+
             var text = svg.append("g").selectAll("text")
                 .data(graph.force.nodes())
                 .enter().append("text")
@@ -248,12 +258,13 @@ var relationGraph = function () {
         this.connectNodes = function(){
             var required = d3.values(graph.selected);
             if (required.length > 0){
-                var edges = graph.getDerivedGraph();
+                var edges = graph.getFullDerivedGraph();
                 graph.solution = steiner(edges, required).edges;
                 graph.draw(graph.svg, graph.vp);
             }
         };
 
+        //TODO: fix
         this.getDerivedGraph = function(excludeCorrelations){
             var edges = [];
             var visited = [];
@@ -271,12 +282,13 @@ var relationGraph = function () {
                     if (target.id == source.id) target = queue[i].source;
                     if (visited.indexOf(target.id) < 0) {
                         edges.push({from: source, to: target, weight: getWeight(queue[i]), relation: queue[i].relation});
-                        var danglingParents = graph.links.filter(function(d){
+                        /*var danglingParents = graph.links.filter(function(d){
                             return (d.source.id != source.id) && (d.target.id == target.id)
                                 && (d.relation == "PARTONOMY") && d.source.dangling;});
                         danglingParents.forEach(function(link){
                             edges.push({from: link.target, to: link.source, weight: getWeight(link), relation: link.relation});
-                        });
+                            traverse(link.source);
+                        });*/
 
                         traverse(target);
                     }
@@ -306,9 +318,9 @@ var relationGraph = function () {
              graph.links.forEach(function(d){
                  if (d.relation == "PARTONOMY"){
                      edges.push({from: d.source, to: d.target, weight: getWeight(d), relation: d.relation});
-                     if (d.source.dangling){
-                         edges.push({from: d.target, to: d.source, weight: getWeight(d), relation: d.relation});
-                     }
+                     //if (d.source.dangling){
+                     //    edges.push({from: d.target, to: d.source, weight: getWeight(d), relation: d.relation});
+                     //}
                  } else {
                      if (d.relation == "CONNECTIVITY"){
                          edges.push({from: d.source, to: d.target, weight: getWeight(d), relation: d.relation});

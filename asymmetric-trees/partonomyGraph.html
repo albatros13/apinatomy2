@@ -28,14 +28,16 @@
     <script>
         lyphRepo.load("http://open-physiology.org:8889")
             .then(function(){
-               createPartonomyGraph();
-            }).then(function() {
+                locatedMeasureRepo = lyphRepo.locatedMeasureRepoFull;
+                createPartonomyGraph();
                 loadBrainConnectivityLinks()
-                    .then(function () {
-                        //     loadSelectedIndices([1418, 4736, 1438, 1439]);
-                        relationGraph.init(nodes, links);
-                        relationGraph.draw();
-                    })
+                    .then(loadIndices)
+                        .then(
+                            function () {
+                                createCorrelationLinks();
+                                relationGraph.init(nodes, links);
+                                relationGraph.draw();
+                            })
             });
 
         $( "#btnExport" ).on('click', function() {

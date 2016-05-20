@@ -6,7 +6,6 @@
     <link href="js/lib/jquery-ui/jquery-ui.css" rel="stylesheet" >
     <link href="js/lib/select2/css/select2.css" rel="stylesheet">
 
-
     <script src="js/lib/jquery-1.11.3.min.js"></script>
     <script src="js/lib/jquery-ui/jquery-ui.js"></script>
     <script src="js/lib/jquery.rdfquery.core.min-1.0.js"></script>
@@ -49,12 +48,14 @@
         }
         .Column {
             display: table-cell;
+            vertical-align: bottom;
         }
     </style>
 
 
     <div id="parameterPanel" class="Row">
         <div id="sourcePanel" class="Column"></div>
+        <div id="swapPanel" class="Column" style="width: 30px;"></div>
         <div id="targetPanel" class="Column"></div>
     </div>
     <button style="float:right" id="btnSubmit">Submit</button>
@@ -76,45 +77,63 @@
         var lyphRepo = new ApiNATOMY2.LyphTemplateRepo([]);
 
         lyphRepo.load("http://open-physiology.org:8889")
-                .then(
-                        createPartonomyGraph)
-                .then(
-                        loadBrainConnectivityLinks)
-                .then(
-                        loadIndices)
-                .then(
-                        function(){
-                            relationGraph.init(nodes, links);
-                            weightedLinks = relationGraph.graph.getFullDerivedGraph(true);
-                            createParameterPanel();
-                        }
-                );
+            .then(function(){
+                locatedMeasureRepo = lyphRepo.locatedMeasureRepoFull;
+                createPartonomyGraph();
+                loadBrainConnectivityLinks()
+                    .then(loadIndices)
+                    .then(
+                            function(){
+                                createCorrelationLinks();
+                                relationGraph.init(nodes, links);
+                                weightedLinks = relationGraph.graph.getFullDerivedGraph(true);
+                                createParameterPanel();
+                            }
+                    );
+        });
 
         var sourcePanel = $('#sourcePanel');
         var targetPanel = $('#targetPanel');
+        var swapPanel = $('#swapPanel');
 
         function createParameterPanel(){
             var getOptions = function(){
                 if (clinicalIndexRepo)
-                    return clinicalIndexRepo.getItemList();
+                    //return clinicalIndexRepo.getItemList();
+                    return clinicalIndexRepo.getItemList().filter(function(item){
+                        return item.caption && (item.caption.indexOf("NP") > -1) && (item.caption.indexOf("MDS") > -1);});
                 return [];
             };
 
             ApiNATOMY2.Components.createSelect2Input({id: ""}, "source", "Source", getOptions).appendTo(sourcePanel);
             ApiNATOMY2.Components.createSelect2Input({id: ""}, "target", "Target", getOptions).appendTo(targetPanel);
+
+            var btn = $('<button id="btnSwap" class="button small-button">');
+            btn.html('<img src="images/swap.png" style="width:18px;"/>');
+            btn.on("click", swapSourceAndTarget);
+            btn.appendTo(swapPanel);
+        }
+
+        function swapSourceAndTarget(){
+            var sourceVal = parseInt(ApiNATOMY2.Components.getInputValue(sourcePanel, "source"), 10);
+            var targetVal = parseInt(ApiNATOMY2.Components.getInputValue(targetPanel, "target"), 10);
+            ApiNATOMY2.Components.setInputValue(sourcePanel, "source", targetVal);
+            ApiNATOMY2.Components.setInputValue(targetPanel, "target", sourceVal);
         }
 
         $( "#btnSubmit" ).on('click', function() {
-            findIndexPaths(true);
+            $("#pathTable td").parent().remove();
+            setTimeout(function() {
+                findIndexPaths(true);
+            }, 0);
         });
 
         var sourceIndexID = 0;
         var targetIndexID = 0;
 
         function findIndexPaths(){
-            $("#pathTable td").parent().remove();
             data = [];
-            //var selected = {};
+            var selected = {};
             sourceIndexID = parseInt(ApiNATOMY2.Components.getInputValue(sourcePanel, "source"), 10);
             targetIndexID = parseInt(ApiNATOMY2.Components.getInputValue(targetPanel, "target"), 10);
 
@@ -128,10 +147,11 @@
                 return;
             }
 
-            //selected["i" + sourceIndexID] = clinicalIndexRepo.getItemByID(sourceIndexID);
-            //selected["i" + targetIndexID] = clinicalIndexRepo.getItemByID(targetIndexID);
+            selected["i" + sourceIndexID] = clinicalIndexRepo.getItemByID(sourceIndexID);
+            selected["i" + targetIndexID] = clinicalIndexRepo.getItemByID(targetIndexID);
 
-            //relationGraph.graph.selected = selected;
+            relationGraph.graph.selected = selected;
+            //weightedLinks = relationGraph.graph.getDerivedGraph(true); //TODO: TEST
 
             var sourceLinks = links.filter(function(link){ return link.source.id == ("i" + sourceIndexID);});
             var targetLinks = links.filter(function(link){ return link.source.id == ("i" + targetIndexID);});
@@ -148,12 +168,18 @@
                             + link.from.id + ": " + nodes[link.from.id].name + " (" + link.weight + ")", relation: link.relation};
                         });
                         var rowData = {
-                            source: source.id,
-                            target: target.id,
+                            source: source,
+                            target: target,
                             path: pathIDs,
                             score: Math.round(100 * path.score) / 100};
-                        data.push(rowData);
+                    } else {
+                        rowData = {
+                            source: source,
+                            target: target,
+                            path: [],
+                            score: 0};
                     }
+                    data.push(rowData);
                 });
             });
             sort(data, "score");
@@ -180,10 +206,26 @@
         }
 
         function drawRow(rowData) {
+            function addLink(p, parent){
+                if (p){
+                    var icon = $('<a href="' + p.uri + '" title = "' + p.title + '" target="_blank">')
+                            .html('<img src="images/pubmed.png" style="width:16px; height: 16px;"/>');
+                    icon.attr("style", "float:right; top:2px; right: 2px;");
+                    parent.prepend(icon);
+                }
+            }
+
             var row = $("<tr />");
             $("#pathTable").append(row);
-            row.append($("<td>" + rowData.source + ": " + nodes[rowData.source].name + "</td>"));
-            row.append($("<td>" + rowData.target + ": " + nodes[rowData.target].name + "</td>"));
+            var c1 = (rowData.source.correlations[sourceIndexID])? " [" + rowData.source.correlations[sourceIndexID ].id + "]": "";
+            var c2 = (rowData.target.correlations[targetIndexID])? " [" + rowData.target.correlations[targetIndexID].id + "]": "";
+
+            var col1 = $("<td>" + rowData.source.id + ": " + rowData.source.name + c1 + "</td>");
+            var col2 = $("<td>" +rowData.target.id + ": " + rowData.target.name + c2 + "</td>");
+            addLink(rowData.source.publications[sourceIndexID], col1);
+            addLink(rowData.target.publications[targetIndexID], col2);
+            row.append(col1);
+            row.append(col2);
             row.append($("<td>" + formatPath(rowData.path, '</BR>') + "</td>"));
             row.append($("<td>" + rowData.score + "</td>"));
         }
@@ -201,9 +243,13 @@
                     "Score"  + "\n";
             for (var i = 0; i < data.length; i++){
                 var rowData = data[i];
+                var p1 = (rowData.source.publications[sourceIndexID])?
+                    " (" + rowData.source.publications[sourceIndexID].uri + ")": "";
+                var p2 = (rowData.target.publications[targetIndexID])?
+                    " (" + rowData.target.publications[[targetIndexID]].uri + ")": "";
                 printContents +=
-                        rowData.source + "\t" +
-                        rowData.target + "\t" +
+                        rowData.source.id + ": " + rowData.source.name + p1 + "\t" +
+                        rowData.target.id + ": " + rowData.target.name + p2 + "\t" +
                         printList(rowData.path.map(function(d){return d.text;}), "; ") + "\t" +
                         rowData.score + "\n";
             }

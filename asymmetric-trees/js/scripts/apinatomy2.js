@@ -1990,7 +1990,7 @@ var ApiNATOMY2 = (function(){
             var d = this;
             this.subRepos.forEach(function(subRepo){
                 d[subRepo].url = url;
-                d[subRepo].setParent(this);
+                d[subRepo].setParent(d);
                 d[subRepo].commit();
             });
         };

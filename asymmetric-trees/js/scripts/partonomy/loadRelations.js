@@ -7,6 +7,8 @@ var links = [];
 var lyphRepo = new ApiNATOMY2.LyphTemplateRepo([]);
 var clinicalIndexRepo = new ApiNATOMY2.ClinicalIndexRepo([]);
 var correlationRepo = new ApiNATOMY2.CorrelationRepo([]);
+var publicationRepo = new ApiNATOMY2.PublicationRepo([]);
+var locatedMeasureRepo = new ApiNATOMY2.LocatedMeasureRepo([]);
 
 function loadBrainConnectivityLinks(){
     function loadCocomacLinks(){
@@ -152,7 +154,7 @@ function loadSelectedIndices(indices) {
             correlationRepo.load("http://open-physiology.org:8889")
                 .then(function () {
                     correlationRepo.clinicalIndexRepo = clinicalIndexRepo;
-                    correlationRepo.locatedMeasureRepo = lyphRepo.locatedMeasureRepoFull;
+                    correlationRepo.locatedMeasureRepo = locatedMeasureRepo;
                     clinicalIndexRepo.correlationRepo = correlationRepo;
 
                     indices.forEach(function (indexID) {
@@ -209,7 +211,6 @@ function generateSampleIndices(){
 
 function createPartonomyGraph() {
     console.dir("Creating partonomy graph");
-
     var visited = [];
 
     var traverse = function(root){
@@ -232,7 +233,10 @@ function createPartonomyGraph() {
                     if (queue[i].relation == "child")
                         links.push({source: nodes[root.id], target: nodes[id], relation: "PARTONOMY"});
                     else{
-                        nodes[id].dangling = true;
+                        // var parent = lyphRepo.getItemByID(id);
+                        //if (parent && (!parent.parents || (parent.parents.length == 0))){
+                        //    nodes[id].dangling = true;
+                        //}
                         links.push({source: nodes[id], target: nodes[root.id], relation: "PARTONOMY"});
                     }
                     traverse(obj);
@@ -240,54 +244,74 @@ function createPartonomyGraph() {
                 visited.push(id);
             }
         }
-
     };
-
-    return new RSVP.Promise(function(resolve, reject) {
-        var root = lyphRepo.getItemByID(4574);
-        if (root) traverse(root);
-        resolve(true);
-    })
+    var root = lyphRepo.getItemByID(4574);
+    if (root) traverse(root);
 }
 
 function loadIndices() {
     console.dir("Loading indices");
-    return clinicalIndexRepo.load("http://open-physiology.org:8889")
-        .then(function () {
-            correlationRepo.load("http://open-physiology.org:8889")
-                .then(function () {
-                    correlationRepo.clinicalIndexRepo = clinicalIndexRepo;
-                    correlationRepo.locatedMeasureRepo = lyphRepo.locatedMeasureRepoFull;
-                    clinicalIndexRepo.correlationRepo = correlationRepo;
-
-                    clinicalIndexRepo.items.forEach(function (index) {
-                        var node = {id: "i" + index.id, name: index.title, type: "INDEX"};
-                        nodes[node.id] = node;
-
-                        if (index && index.correlations) {
-                            index.correlations.forEach(function(correlationID){
-                                var correlation = correlationRepo.getItemByID(correlationID);
-                                if (correlation && correlation.locatedMeasures){
-                                    correlation.locatedMeasures.forEach(function(locatedMeasureID){
-                                        var locatedMeasure = correlationRepo.locatedMeasureRepo.getItemByID(locatedMeasureID);
-                                        if (locatedMeasure){
-                                            var lyphTypeID = locatedMeasure.lyphTemplate;
-                                            if (nodes[lyphTypeID]){
-                                                var link = {source: node, target: nodes[lyphTypeID], relation: "CORRELATION"};
-                                                var existing = links.filter(function(d){
-                                                    return (d.source.id == link.source.id) && (d.target.id == link.target.id);
-                                                });
-                                                if (existing.length == 0)
-                                                    links.push(link);
-                                            }
-                                        }
-                                    });
-                                }
+    return new RSVP.Promise(function (resolve, reject) {
+        clinicalIndexRepo.load("http://open-physiology.org:8889")
+            .then(function () {
+                correlationRepo.load("http://open-physiology.org:8889").then(
+                    function () {
+                        publicationRepo.load("http://open-physiology.org:8889")
+                            .then(function () {
+                                correlationRepo.clinicalIndexRepo = clinicalIndexRepo;
+                                correlationRepo.locatedMeasureRepo = lyphRepo.locatedMeasureRepoFull;
+                                clinicalIndexRepo.correlationRepo = correlationRepo;
+                                resolve(true);
                             });
+                    })
+            })
+    });
+}
+
+function createCorrelationLinks(){
+    console.dir("Creating correlation links");
+    var selectedIndices = clinicalIndexRepo.items.filter(
+        function (index) {
+            return (index.title && (index.title.indexOf("NP") > -1) &&  (index.title.indexOf("MDS") > -1));
+        });
+
+    selectedIndices.forEach(function(index){
+        var node = {id: "i" + index.id, name: index.title, type: "INDEX"};
+        nodes[node.id] = node;
+        if (index.correlations) {
+            index.correlations.forEach(function(correlationID){
+                var correlation = correlationRepo.getItemByID(correlationID);
+                if (correlation && correlation.locatedMeasures) {
+                    var publication = null;
+                    if (correlation.publication)
+                        publication = publicationRepo.getItemByID(correlation.publication);
+                    correlation.locatedMeasures.forEach(function (locatedMeasureID) {
+                        var locatedMeasure = correlationRepo.locatedMeasureRepo.getItemByID(locatedMeasureID);
+                        if (locatedMeasure) {
+                            var lyphTypeID = locatedMeasure.lyphTemplate;
+                            var target = nodes[lyphTypeID];
+                            if (target) {
+                                if (!target.publications) target.publications = {};
+                                if (!target.correlations) target.correlations = {};
+                                target.publications[index.id] = publication;
+                                target.correlations[index.id] = correlation;
+                                var link = {
+                                    source: node,
+                                    target: target,
+                                    relation: "CORRELATION"
+                                };
+                                var existing = links.filter(function (d) {
+                                    return (d.source.id == link.source.id) && (d.target.id == link.target.id);
+                                });
+                                if (existing.length == 0)
+                                    links.push(link);
+                            }
                         }
                     });
-                });
-        })
+                }
+            });
+        }
+    });
 }
 
 function saveTextAsFile(textToWrite, fileNameToSaveAs){

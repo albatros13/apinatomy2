@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Correlation table</title>
+    <link href="js/lib/jquery-ui/jquery-ui.css" rel="stylesheet" >
+    <link href="js/lib/select2/css/select2.css" rel="stylesheet">
+
+    <script src="js/lib/jquery-1.11.3.min.js"></script>
+    <script src="js/lib/jquery-ui/jquery-ui.js"></script>
+    <script src="js/lib/jquery.rdfquery.core.min-1.0.js"></script>
+    <script src="js/lib/metro-ui/js/metro.js"></script>
+    <script src="js/lib/select2/js/select2.js"></script>
+    <script src="js/lib/d3.js"></script>
+    <script src="js/lib/rsvp.js"></script>
+</head>
+<body>
+    <script src="js/scripts/apinatomy2.js"></script>
+
+    <script src="js/scripts/partonomy/relationGraph.js"></script>
+    <script src="js/scripts/partonomy/steiner.js"></script>
+    <script src="js/scripts/partonomy/loadRelations.js"></script>
+
+
+    <style>
+        td, th {
+            border: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even){background-color: #f2f2f2}
+
+        tr:hover {background-color: #ddd;}
+
+        th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            background-color: steelblue;
+            color: white;
+        }
+
+        .Row {
+            display: table;
+            width: 100%; /*Optional*/
+            table-layout: fixed; /*Optional*/
+            border-spacing: 10px; /*Optional*/
+        }
+        .Column {
+            display: table-cell;
+            vertical-align: bottom;
+        }
+    </style>
+
+    <button style="float:right" id="btnExport">Export</button>
+
+    <table id="correlationTable">
+        <tr>
+            <th>Correlation</th>
+            <th>Publication</th>
+            <th>Clinical Index & Located Measures</th>
+        </tr>
+    </table>
+
+    <script>
+        var dataMap = {};
+        var data = [];
+
+        var lyphRepo = new ApiNATOMY2.LyphTemplateRepo([]);
+        lyphRepo.load("http://open-physiology.org:8889")
+            .then(loadIndices).then(printCorrelations);
+
+        function printCorrelations(){
+            var selectedIndices = clinicalIndexRepo.items.filter(
+                    function (index) {
+                        return (index.title && (index.title.indexOf("NP") > -1) &&  (index.title.indexOf("MDS") > -1));
+                    });
+
+            selectedIndices.forEach(function(index){
+                if (index.correlations) {
+                    index.correlations.forEach(function(correlationID){
+                        var correlation = correlationRepo.getItemByID(correlationID);
+                        if (correlation) {
+                            if (correlation.publication) {
+                                var publication = publicationRepo.getItemByID(correlation.publication);
+                                if (publication){
+                                    var rowData = dataMap[correlation.id];
+                                    if (!rowData){
+                                        rowData = {
+                                            id: correlation.id,
+                                            publication: {id: publication.id, title: publication.title, uri: publication.uri},
+                                            clinicalIndices: {},
+                                            locatedMeasures: {}
+                                        };
+                                        dataMap[correlation.id] = rowData;
+                                    }
+                                    correlation.clinicalIndices.forEach(function (clinicalIndex) {
+                                        var clinicalIndex = clinicalIndexRepo.getItemByID(clinicalIndex);
+                                        if (clinicalIndex){
+                                            rowData.clinicalIndices[clinicalIndex.id] =
+                                                    clinicalIndex.id + ": " + clinicalIndex.title;
+                                        }
+                                    });
+                                    if (correlation.locatedMeasures){
+                                        correlation.locatedMeasures.forEach(function (locatedMeasureID) {
+                                            var locatedMeasure = lyphRepo.locatedMeasureRepoFull.getItemByID(locatedMeasureID);
+                                            if (locatedMeasure){
+                                                var lyphInfo = "";
+                                                if (locatedMeasure.lyphTemplate){
+                                                    var lyphTemplate = lyphRepo.getItemByID(locatedMeasure.lyphTemplate);
+                                                    if (lyphTemplate)
+                                                        lyphInfo += " - " + lyphTemplate.id + ": " + lyphTemplate.name;
+                                                }
+                                                rowData.locatedMeasures[locatedMeasure.id] =
+                                                        locatedMeasure.id + ": " + locatedMeasure.quality + lyphInfo;
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                            else
+                                console.dir("Correlation without publication: " + correlation.id);
+                        }
+                    });
+                }
+            });
+            data = d3.values(dataMap);
+            sort(data, "id");
+            drawTable();
+        }
+
+        function drawTable() {
+            for (var i = 0; i < data.length; i++)
+                drawRow(data[i]);
+        }
+
+        function drawRow(rowData) {
+            function addLink(p, parent){
+                if (p){
+                    var icon = $('<a href="' + p.uri + '" title = "' + p.uri + '" target="_blank">')
+                            .html('<img src="images/pubmed.png" style="width:16px; height: 16px;"/>');
+                    icon.attr("style", "float:right; top:2px; right: 2px;");
+                    parent.prepend(icon);
+                }
+            }
+            var row = $("<tr />");
+            $("#correlationTable").append(row);
+            var col1 = $("<td>" + rowData.id + "</td>");
+            var col2 = $("<td>" + rowData.publication.id + ": " + rowData.publication.title + "</td>");
+            var col3 = $("<td>" + printList(d3.values(rowData.clinicalIndices), "</BR>")
+                    + "</BR>" + printList(d3.values(rowData.locatedMeasures), "</BR>") + "</td>");
+
+            addLink(rowData.publication, col2);
+            row.append(col1);
+            row.append(col2);
+            row.append(col3);
+        }
+
+        $( "#btnExport" ).on('click', function() {
+            exportTable();
+        });
+
+        function exportTable(){
+            var printContents = "";
+            printContents +=
+                    "Correlation" + "\t" +
+                    "Publication" + "\t" +
+                    "Clinical Index & Located Measures" + "\n";
+            for (var i = 0; i < data.length; i++){
+                var rowData = data[i];
+                printContents +=
+                        rowData.id + "\t" +
+                        rowData.publication.id + ": " + rowData.publication.uri + "\t" +
+                        printList(d3.values(rowData.clinicalIndices), "; ") + " & " +
+                        printList(d3.values(rowData.locatedMeasures), "; ") + "\n";
+            }
+            saveTextAsFile(printContents, "correlations");
+        }
+
+    </script>
+</body>
+</html>

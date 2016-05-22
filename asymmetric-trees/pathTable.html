@@ -137,16 +137,6 @@
             sourceIndexID = parseInt(ApiNATOMY2.Components.getInputValue(sourcePanel, "source"), 10);
             targetIndexID = parseInt(ApiNATOMY2.Components.getInputValue(targetPanel, "target"), 10);
 
-            if (sourceIndexID == targetIndexID){
-                $.Notify({
-                    caption: "Error",
-                    content: "Source and target indices should be different!",
-                    type: 'alert',
-                    keepOpen: true
-                });
-                return;
-            }
-
             selected["i" + sourceIndexID] = clinicalIndexRepo.getItemByID(sourceIndexID);
             selected["i" + targetIndexID] = clinicalIndexRepo.getItemByID(targetIndexID);
 

@@ -96,7 +96,7 @@
         container.on( 'open', function() {
             publicationRepo = new ApiNATOMY2.PublicationRepo([], correlationRepo);
             publicationRepo.load("http://open-physiology.org:8889");
-            publicationRepo.createEditors($('#publicationRepo'), null);
+            publicationRepo.createHeaders($('#publicationRepo'), null);
         })
     });
 
@@ -105,7 +105,7 @@
         container.on( 'open', function() {
             clinicalIndexRepo = new ApiNATOMY2.ClinicalIndexRepo([], correlationRepo);
             clinicalIndexRepo.load("http://open-physiology.org:8889");
-            clinicalIndexRepo.createEditors($('#clinicalIndexRepo'), null);
+            clinicalIndexRepo.createHeaders($('#clinicalIndexRepo'), null);
         })
     });
 
@@ -123,7 +123,7 @@
         container.on( 'open', function() {
             lyphRepo = new ApiNATOMY2.LyphTemplateRepo([]);
             lyphRepo.load("http://open-physiology.org:8889");
-            lyphRepo.createEditors($('#lyphRepo'), null);
+            lyphRepo.createHeaders($('#lyphRepo'), null);
         })
     });
 
@@ -136,7 +136,7 @@
                 locatedMeasureRepo = new ApiNATOMY2.LocatedMeasureRepo([]);
                 locatedMeasureRepo.load("http://open-physiology.org:8889");
             }
-            locatedMeasureRepo.createEditors($('#locatedMeasureRepo'), null);
+            locatedMeasureRepo.createHeaders($('#locatedMeasureRepo'), null);
         })
     });
     myLayout.init();

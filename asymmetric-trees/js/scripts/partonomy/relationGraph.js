@@ -14,7 +14,7 @@ var relationGraph = function () {
     }
 
     $(document).keypress(function(e) {
-        if(e.which == 13) {
+        if (e.which == 13) {
             graph.connectNodes();
         }
     });
@@ -35,15 +35,6 @@ var relationGraph = function () {
         return str;
     }
 
-    function getHTMLNodeAnnotation(d){
-        if (!d) return "";
-        var res = d.id;
-        if (d.name) res += ": " + d.name;
-        if (d.fmaID) res += '</br>' + d.fmaID;
-        if (d.cocomacIDs) res += '</br>' + printList(d.cocomacIDs);
-        return "<div>" + res + "</div>";
-    }
-
     function getWeight(d){
         var count= 1;
         if (d.count) count = d.count;
@@ -52,11 +43,22 @@ var relationGraph = function () {
         return 1;
     }
 
-    function getHTMLLinkAnnotation(d){
+    function getHTMLNodeAnnotation(d, excludeCocomac){
+        if (!d) return "";
+        var res = d.id;
+        if (d.name) res += ": " + d.name;
+        if (d.fmaID) res += '</br>' + d.fmaID;
+        if (d.cocomacIDs && !excludeCocomac)
+            res += '</br>' + printList(d.cocomacIDs);
+        if (d.rate) res += '</br>Index rate: ' + d.rate + " (" + d.numSelected + " / " + d.numIndex + ") ";
+        return "<div>" + res + "</div>";
+    }
+
+    function getHTMLLinkAnnotation(d, excludeCocomac){
         if (!d) return "";
         var res = d.relation;
-        res += "<div  class='dotted'>" + getHTMLNodeAnnotation(d.source) + "</div>";
-        res += "<div  class='dotted'>" + getHTMLNodeAnnotation(d.target) + "</div>";
+        res += "<div  class='dotted'>" + getHTMLNodeAnnotation(d.source, excludeCocomac) + "</div>";
+        res += "<div  class='dotted'>" + getHTMLNodeAnnotation(d.target, excludeCocomac) + "</div>";
         res += "Weight: " + getWeight(d);
         return "<div>" + res + "</div>";
     }
@@ -66,6 +68,7 @@ var relationGraph = function () {
         this.links = links;
         this.selected = {};
         this.solution = [];
+        this.rateCorrelations = false;
 
         var directedLinkTypes = ["PARTONOMY", "CORRELATION"];
         var linkColors = {"PARTONOMY": "#ccc", "CORRELATION": "green", "CONNECTIVITY": "hotPink"};
@@ -101,6 +104,27 @@ var relationGraph = function () {
             return false;
         }
 
+        function shadeColor(color, rate) {
+
+            var R = parseInt(color.substring(1,3),16);
+            var G = parseInt(color.substring(3,5),16);
+            var B = parseInt(color.substring(5,7),16);
+
+            R = parseInt(R * (1 + rate));
+            G = parseInt(G * (1 + rate));
+            B = parseInt(B * (1 + rate));
+
+            R = (R<255)?R:255;
+            G = (G<255)?G:255;
+            B = (B<255)?B:255;
+
+            var RR = ((R.toString(16).length==1)?"0"+R.toString(16):R.toString(16));
+            var GG = ((G.toString(16).length==1)?"0"+G.toString(16):G.toString(16));
+            var BB = ((B.toString(16).length==1)?"0"+B.toString(16):B.toString(16));
+
+            return "#"+RR+GG+BB;
+        }
+
         this.draw = function(svg, vp) {
             graph.svg = svg;
             graph.vp = vp;
@@ -111,9 +135,10 @@ var relationGraph = function () {
                 svg.attr("transform", "translate(" + vp.x + "," + vp.y + ")");
 
             graph.force.size([vp.width, vp.height])
-                .charge(-150)
-                .linkDistance(30)
+                .charge((graph.rateCorrelations)? -300: -150)
+                .linkDistance((graph.rateCorrelations)? 200: 30)
                 .linkStrength(function(link){
+                    if (graph.rateCorrelations){return 1.0;}
                     if (link.relation == "PARTONOMY") return 1.0;
                     return 0.5;
                 });
@@ -145,7 +170,34 @@ var relationGraph = function () {
 
             link.on("mouseover", function(d) {
                     tooltip.transition().duration(200).style("opacity", .9);
-                    tooltip.html(getHTMLLinkAnnotation(d))
+                    tooltip.html(getHTMLLinkAnnotation(d, graph.rateCorrelations))
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+                })
+                .on("mouseout", function() {
+                    tooltip.transition().duration(500).style("opacity", 0);
+                });
+
+            var publication = svg.append("g").selectAll("a")
+                .data(graph.force.links().filter(
+                    function(d){
+                        return (d.relation == "CORRELATION") && d.target.publications[d.source.indexID];
+                    })
+                )
+                .enter()
+                .append("a")
+                .attr("xlink:href", function(d){return d.target.publications[d.source.indexID].uri;})
+                .attr("target", "_blank")
+                .append("image")
+                .attr("xlink:href", "images/pubmed.png")
+                .attr("width", "16px")
+                .attr("height", "16px");
+
+
+            publication.on("mouseover", function(d) {
+                    var p = d.target.publications[d.source.indexID];
+                    tooltip.transition().duration(200).style("opacity", .9);
+                    tooltip.html(p.title)
                         .style("left", (d3.event.pageX) + "px")
                         .style("top", (d3.event.pageY - 28) + "px");
                 })
@@ -163,10 +215,10 @@ var relationGraph = function () {
             var region = svg.append("g").selectAll("rect")
                 .data(graph.force.nodes().filter(function(d){ return d.type == "REGION";}))
                 .enter().append("rect")
-                .attr("width", 20)
-                .attr("height", 20)
-                .attr("x", -10)
-                .attr("y", -10)
+                .attr("width", 24)
+                .attr("height", 24)
+                .attr("x", -12)
+                .attr("y", -12)
                 .attr("fill", "#eee")
                 .attr("stroke", "#000")
                 .attr("class", function(d){
@@ -176,7 +228,7 @@ var relationGraph = function () {
 
             region.on("mouseover", function(d) {
                     tooltip.transition().duration(200).style("opacity", .9);
-                    tooltip.html(getHTMLNodeAnnotation(d))
+                    tooltip.html(getHTMLNodeAnnotation(d, graph.rateCorrelations))
                         .style("left", (d3.event.pageX + 10) + "px")
                         .style("top", (d3.event.pageY - 28) + "px");
                 })
@@ -187,7 +239,7 @@ var relationGraph = function () {
             var index = svg.append("g").selectAll("path")
                 .data(graph.force.nodes().filter(function(d){ return d.type == "INDEX";}))
                 .enter().append("path")
-                .attr("d", "M -10 7 L 0 -7 L 10 7 L -10 7")
+                .attr("d", "M -14 10 L 0 -10 L 14 10 L -14 10")
                 .attr("fill", "green")
                 .attr("stroke", "#000")
                 .attr("class", function(d){
@@ -198,7 +250,7 @@ var relationGraph = function () {
 
             index.on("mouseover", function(d) {
                     tooltip.transition().duration(200).style("opacity", .9);
-                    tooltip.html(getHTMLNodeAnnotation(d))
+                    tooltip.html(getHTMLNodeAnnotation(d, graph.rateCorrelations))
                         .style("left", (d3.event.pageX + 10) + "px")
                         .style("top", (d3.event.pageY - 28) + "px");
                 })
@@ -211,13 +263,19 @@ var relationGraph = function () {
                 .enter().append("text")
                 .attr("y", 4)
                 .style("text-anchor", "middle")
-                .text(function (d) {return d.id;});
+                .text(function (d) {
+                    if (graph.rateCorrelations) {
+                        if (d.type == "INDEX") return d.name.substring(0, d.name.indexOf(" "));
+                        return d.name;
+                    }
+                    return d.id;
+                });
 
             graph.force.on("tick", update).start();
 
             function update(e) {
-                var k = 6 * e.alpha;
-                //var k = 0;
+                //var k = 6 * e.alpha;
+                var k = 0;
 
                 link.attr("d", function(d){
                     // Push sources up and targets down to form a weak tree.
@@ -249,9 +307,24 @@ var relationGraph = function () {
                     return "M" + d.source.x + ' ' + d.source.y + " L" + d.target.x + ' ' + d.target.y;
                 });
 
+                publication.attr("transform", function(d){
+                    var x = (d.source.x + d.target.x) / 2,
+                        y = (d.source.y + d.target.y) / 2;
+                    return "translate(" + x +  "," + y + ")";
+                });
+
                 region.attr("transform", transform);
                 index.attr("transform", transform);
                 text.attr("transform", transform);
+
+                if (graph.rateCorrelations && graph.maxSelected && (graph.maxSelected > 1)){
+                    region.attr("fill", function(d){
+                        var value = 224;
+                        if (d.numSelected)
+                            value = Math.round(224 * (1 - (d.numSelected - 1) / (graph.maxSelected - 1)));
+                        return "rgb(" + 224 + ", " + value + ", " + value + ")";
+                    })
+                }
             }
         };
 
@@ -263,6 +336,25 @@ var relationGraph = function () {
                 graph.draw(graph.svg, graph.vp);
             }
         };
+
+
+        /*
+        this.rateCorrelatedNodes = function(){
+            for (var key in graph.nodes){
+                var node = graph.nodes[key];
+                if (node.type == "REGION"){
+                    var selectedLinks = graph.links.filter(
+                        function(link){
+                            return (link.target.id == key) && graph.selected[link.source.id];
+                        }
+                    );
+                    node.numSelected = selectedLinks.length;
+                    if (node.numIndex)
+                        node.rate = Math.round(100 * node.numSelected / node.numIndex) / 100;
+                    else node.rate = 0;
+                }
+            }
+        };*/
 
         //TODO: fix
         this.getDerivedGraph = function(excludeCorrelations){

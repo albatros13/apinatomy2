@@ -96,6 +96,18 @@
         var targetPanel = $('#targetPanel');
         var swapPanel = $('#swapPanel');
 
+        $( "#btnSubmit" ).on('click', function() {
+            $("#pathTable td").parent().remove();
+            setTimeout(function() {
+                findIndexPaths(true);
+            }, 0);
+        });
+
+        $( "#btnExport" ).on('click', function() {
+            exportTable();
+        });
+
+
         function createParameterPanel(){
             var getOptions = function(){
                 if (clinicalIndexRepo)
@@ -120,13 +132,6 @@
             ApiNATOMY2.Components.setInputValue(sourcePanel, "source", targetVal);
             ApiNATOMY2.Components.setInputValue(targetPanel, "target", sourceVal);
         }
-
-        $( "#btnSubmit" ).on('click', function() {
-            $("#pathTable td").parent().remove();
-            setTimeout(function() {
-                findIndexPaths(true);
-            }, 0);
-        });
 
         var sourceIndexID = 0;
         var targetIndexID = 0;
@@ -219,10 +224,6 @@
             row.append($("<td>" + formatPath(rowData.path, '</BR>') + "</td>"));
             row.append($("<td>" + rowData.score + "</td>"));
         }
-
-        $( "#btnExport" ).on('click', function() {
-            exportTable();
-        });
 
         function exportTable(){
             var printContents = "";

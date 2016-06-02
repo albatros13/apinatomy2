@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lyph template partonomy graph</title>
+    <link href="style/partonomyGraph.css" rel="stylesheet"/>
+
+    <link href="js/lib/jquery-ui/jquery-ui.css" rel="stylesheet" >
+
+    <script src="js/lib/jquery-1.11.3.min.js"></script>
+    <script src="js/lib/jquery-ui/jquery-ui.js"></script>
+    <script src="js/lib/jquery.rdfquery.core.min-1.0.js"></script>
+    <script src="js/lib/d3.js"></script>
+    <script src="js/lib/rsvp.js"></script>
+</head>
+<body>
+    <script src="js/scripts/apinatomy2.js"></script>
+
+    <div class="box">
+        <h4 style="position: fixed; top: 0px;">Select Clinical Indices</h4>
+        <h4 style="position: fixed; top: 0px; margin-left: 50%">Correlation Graph</h4>
+    </div>
+
+    <button style="position:fixed; top:10px; right:10px" id="btnExport">Export graph</button>
+
+    <div id="indexList" class="list"></div>
+    <div id="svgGraph" class="graph"></div>
+
+    <button style="position:fixed; bottom:10px; left:310px" id="btnSelect">Create graph</button>
+
+    <script src="js/scripts/partonomy/relationGraph.js"></script>
+    <script src="js/scripts/partonomy/steiner.js"></script>
+    <script src="js/scripts/partonomy/loadRelations.js"></script>
+
+    <script>
+        var mdsNodes = {};
+        var mdsLinks = [];
+        lyphRepo.load("http://open-physiology.org:8889")
+            .then(function(){
+                locatedMeasureRepo = lyphRepo.locatedMeasureRepoFull;
+                createPartonomyGraph();
+                loadBrainConnectivityLinks()
+                    .then(
+                            loadIndices()
+                        .then(
+                            function () {
+                                createIndexPanel();
+                                createCorrelationLinks();
+
+                                for (var key in nodes){
+                                    var node = nodes[key];
+                                    if (node.type == "INDEX"){
+                                        mdsNodes[key] = node;
+                                    } else {
+                                        var mdsCorrelations = links.filter(function(link){
+                                            return (link.target.id == node.id) && (link.relation == "CORRELATION");});
+                                        if (mdsCorrelations.length > 0){
+                                            mdsNodes[key] = node;
+                                            mdsNodes[key].numIndex = mdsCorrelations.length;
+                                        }
+                                    }
+                                }
+                                mdsLinks = links.filter(function(link){
+                                    return mdsNodes[link.source.id] && mdsNodes[link.target.id];});
+                            })
+                    )
+            });
+
+        $( "#btnExport" ).on('click', function() {
+            exportGraph();
+        });
+
+        $( "#btnSelect" ).on('click', function() {
+            updateGraph();
+        });
+
+        function createIndexPanel(){
+            var indexList = $('#indexList');
+            var selectedIndices = clinicalIndexRepo.items.filter(
+                function (index) {
+                    return (index.title && (index.title.indexOf("NP") > -1) &&  (index.title.indexOf("MDS") > -1));
+                });
+            selectedIndices.forEach(function(index){
+                var label = $('<label>');
+                label.html('<input id="' + index.id + '" type="checkbox" value="' + index.id + '">' +
+                        '<label for="' + index.id + '">' + index.title + '</label>');
+                label.appendTo(indexList);
+                $('<br>').appendTo(indexList);
+            });
+        }
+
+        function updateGraph(){
+            function getMaxOfArray(numArray) {
+                return Math.max.apply(null, numArray);
+            }
+
+            function updateIndexGraph(nodes, links){
+                relationGraph.init(nodes, links);
+                relationGraph.graph.rateCorrelations = true;
+                relationGraph.graph.reset();
+                relationGraph.draw();
+            }
+
+            var checkBoxes = $("input:checkbox");
+            var selectedIndices = {};
+            checkBoxes.each(function(){
+                var id = $(this).val();
+                if (this.checked) selectedIndices[id] = id;
+            });
+
+            var selectedNodes = {};
+            for (var key in mdsNodes){
+                var node = mdsNodes[key];
+                if ((node.type == "INDEX") && node.indexID && selectedIndices[node.indexID]){
+                    selectedNodes[key] = node;
+                } else {
+                    var mdsCorrelations = mdsLinks.filter(function(link){
+                        return (link.target.id == key) && (link.relation == "CORRELATION") && selectedIndices[link.source.indexID];});
+                    if (mdsCorrelations.length > 0){
+                        selectedNodes[key] = node;
+                        node.numSelected = mdsCorrelations.length;
+                        if (node.numIndex)
+                            node.rate = Math.round(100 * node.numSelected / node.numIndex) / 100;
+                        else node.rate = 0;
+                    }
+                }
+            }
+
+            var selectedLinks = mdsLinks.filter(function(link){
+                return selectedNodes[link.source.id] && selectedNodes[link.target.id];});
+
+            var numSelected =  (d3.values(selectedNodes).filter(function(d){return d.type == "REGION"}))
+                    .map(function(d){return d.numSelected;});
+            relationGraph.graph.maxSelected = getMaxOfArray(numSelected);
+
+            updateIndexGraph(selectedNodes, selectedLinks);
+        }
+
+        function exportGraph(){
+            var printContents = "";
+            printContents +=
+                    "Source"   + "\t" +
+                    "Target"   + "\t" +
+                    "Relation" + "\n";
+            for (var i = 0; i < mdsLinks.length; i++){
+                var rowData = mdsLinks[i];
+                var rate = "";
+                if (rowData.relation == "CORRELATION"){
+                    var numSelected = "_";
+                    if (rowData.target.numSelected)
+                        numSelected = rowData.target.numSelected;
+                    if (rowData.target.numIndex)
+                        rate = " (" + numSelected + " / " + rowData.target.numIndex + ")";
+                }
+                printContents +=
+                        rowData.source.id + ": " + rowData.source.name + "\t" +
+                        rowData.target.id + ": " + rowData.target.name + rate + "\t" +
+                        rowData.relation + "\n";
+            }
+            saveTextAsFile(printContents, "indexGraph");
+        }
+
+    </script>
+</body>
+</html>

@@ -48,10 +48,6 @@
             exportFullDerivedGraph();
         });
 
-//        $( "#btnExportReduced" ).on('click', function() {
-//            exportReducedDerivedGraph();
-//        });
-
         function exportGraph(){
             var printContents = "";
             printContents +=
@@ -87,7 +83,50 @@
             saveTextAsFile(printContents, "weightedGraph");
         }
 
-        //function exportReducedDerivedGraph(){}
+        function exportWeightDistributions(){
+            data = [];
+
+            var selectedIndices = clinicalIndexRepo.items.filter(
+                    function (index) {
+                        return (index.title && (index.title.indexOf("NP") > -1) &&  (index.title.indexOf("MDS") > -1));
+                    });
+
+
+            var min = 0, max = 0;
+            selectedIndices.forEach(function(source){
+                selectedIndices.forEach(function(target){
+                    var selected = {};
+                    selected["i" + source.id] = source;
+                    selected["i" + target.id] = target;
+                    relationGraph.graph.selected = selected;
+
+                    var sourceLinks = links.filter(function(link){ return link.source.id == ("i" + source.id);});
+                    var targetLinks = links.filter(function(link){ return link.source.id == ("i" + target.id);});
+                    var sourceNodes = sourceLinks.map(function(link){ return link.target;});
+                    var targetNodes = targetLinks.map(function(link){ return link.target;});
+
+                    sourceNodes.forEach(function(source){
+                        targetNodes.forEach(function(target){
+                            var score = 0;
+                            if ((source.id != target.id)){
+                                var path = dijkstra(weightedLinks, source, target);
+                                score = Math.round(100 * path.score) / 100;
+                            }
+                            //skip 0 and infinity?
+                            data.push(score);
+                            if (score > max) max = score;
+                            if (score < min) min = score;
+                        });
+                    });
+                });
+            });
+            data.sort(function(a,b){
+                return a - b;
+            });
+            console.dir(data);
+            //var distribution = {};
+            //for (var i = 0; i < data.length; i++){}
+        }
 
     </script>
 </body>

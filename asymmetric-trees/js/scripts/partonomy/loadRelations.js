@@ -148,67 +148,6 @@ function loadBrainConnectivityLinks(){
     return loadCocomacLinks().then(loadHumanLinks);
 }
 
-function loadSelectedIndices(indices) {
-    return clinicalIndexRepo.load("http://open-physiology.org:8889")
-        .then(function () {
-            correlationRepo.load("http://open-physiology.org:8889")
-                .then(function () {
-                    correlationRepo.clinicalIndexRepo = clinicalIndexRepo;
-                    correlationRepo.locatedMeasureRepo = locatedMeasureRepo;
-                    clinicalIndexRepo.correlationRepo = correlationRepo;
-
-                    indices.forEach(function (indexID) {
-                        var index = clinicalIndexRepo.getItemByID(indexID);
-                        var node = {id: "i" + indexID, name: "i" + indexID, type: "INDEX"};
-                        nodes[node.id] = node;
-
-                        if (index && index.correlations) {
-                            index.correlations.forEach(function(correlationID){
-                                var correlation = correlationRepo.getItemByID(correlationID);
-                                if (correlation && correlation.locatedMeasures){
-                                    correlation.locatedMeasures.forEach(function(locatedMeasureID){
-                                        var locatedMeasure = correlationRepo.locatedMeasureRepo.getItemByID(locatedMeasureID);
-                                        if (locatedMeasure){
-                                            var lyphTypeID = locatedMeasure.lyphTemplate;
-                                            if (nodes[lyphTypeID]){
-                                                var link = {source: nodes[node.id], target: nodes[lyphTypeID], relation: "CORRELATION"};
-                                                var existing = links.filter(function(d){
-                                                    return (d.source.id == link.source.id) && (d.target.id == link.target.id);
-                                                });
-                                                if (existing.length == 0)
-                                                    links.push(link);
-                                            }
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    });
-                });
-        })
-}
-
-function generateSampleIndices(){
-    var count = 20;
-    var maxGroup = 3;
-    var keys = d3.keys(nodes);
-    for (var i = 0; i < count; i++){
-        var node = {id: "i" + (i + 1), name: "i" + (i + 1), fmaID: "", cocomacIDs: [], type: "INDEX"};
-        nodes[node.id] = node;
-        var numLinks = getRandomInt(1, maxGroup);
-        for (var j = 0; j < numLinks; j++){
-            var index = getRandomInt(1, keys.length);
-            var key = keys[index];
-            var link = {source: nodes[node.id], target: nodes[key], relation: "CORRELATION"};
-            links.push(link);
-        }
-    }
-
-    function getRandomInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-}
-
 function createPartonomyGraph() {
     console.dir("Creating partonomy graph");
     var visited = [];
@@ -276,7 +215,7 @@ function createCorrelationLinks(){
         });
 
     selectedIndices.forEach(function(index){
-        var node = {id: "i" + index.id, name: index.title, type: "INDEX"};
+        var node = {id: "i" + index.id, indexID: index.id, name: index.title, type: "INDEX"};
         nodes[node.id] = node;
         if (index.correlations) {
             index.correlations.forEach(function(correlationID){

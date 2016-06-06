@@ -1,13 +1,18 @@
 var infinity = Number.MAX_SAFE_INTEGER;
 
 var steiner = function(edges, required){
+    if (!edges) return;
     var nodes = extractNodes(edges);
 
     var smt = [];
     for (var i = 0; i < required.length; i++){
         for (var j = 0; j < required.length; j++){
             if (i != j){
-                var path = shortestPath(nodes, edges, required[i], required[j]);
+                var n1 = required[i].name;
+                var n2 = required[j].name;
+                var colorID = n1 + "_" + n2;
+                if (n2 < n1) colorID = n2  + "_" + n1;
+                var path = shortestPath(nodes, edges, required[i], required[j], generateColor(colorID));
                 for (var k = 0; k < path.length; k++){
                     var inSolution = smt.find(function(d){
                         return (d== path[k]);
@@ -20,9 +25,9 @@ var steiner = function(edges, required){
     return {edges: smt, score: getScore(smt)};
 };
 
-var dijkstra = function(edges, source, target){
+var dijkstra = function(edges, source, target, linkColor){
     var nodes = extractNodes(edges);
-    var path = shortestPath(nodes, edges, source, target);
+    var path = shortestPath(nodes, edges, source, target, linkColor);
 
     return {edges: path, score: getScore(path)};
 };
@@ -50,8 +55,7 @@ function extractNodes(edges){
 }
 
 //Dijkstra
-function shortestPath(nodes, edges, start, end){
-    //console.dir(start.id + " - " + end.id);
+function shortestPath(nodes, edges, start, end, linkColor){
 
     for (var key in nodes){
         nodes[key].distance = infinity;
@@ -101,6 +105,7 @@ function shortestPath(nodes, edges, start, end){
     while (last.predecessor && (last.id != start.id)){
         var link = edges.find(function(edge){
             return (edge.from.id == last.predecessor.id) && (edge.to.id == last.id);});
+        link.color = linkColor;
         path.push(link);
         last = last.predecessor;
     }
@@ -111,3 +116,17 @@ function shortestPath(nodes, edges, start, end){
     }
     return path;
 }
+
+function generateColor(str) { // java String#hashCode
+    var hash = 0;
+    for (var i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    var r = (hash & 0xFF0000) >> 16;
+    var g = (hash & 0x00FF00) >> 8;
+    var b = hash & 0x0000FF;
+    return "rgba(" + r + "," + g + "," + b + "," + 0.6 + ")";
+}
+
+
+

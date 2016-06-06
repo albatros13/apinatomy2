@@ -27,18 +27,13 @@ var relationGraph = function () {
         graph.draw(svg, vp);
     });
 
-    function printList(array){
-        if (!array) return "";
-        var str = "";
-        for (var i = 0; i < array.length; i++)
-            str += array[i] + ((i < array.length - 1)? ", ": "");
-        return str;
-    }
+
+    var correlationWeight = 1000000000;
 
     function getWeight(d){
         var count= 1;
         if (d.count) count = d.count;
-        if (d.relation == "CORRELATION") return 0;
+        if (d.relation == "CORRELATION") return correlationWeight;
         if (d.relation == "CONNECTIVITY") return (Math.round(1000000 / count) / 100);
         return 1;
     }
@@ -69,6 +64,7 @@ var relationGraph = function () {
         this.selected = {};
         this.solution = [];
         this.rateCorrelations = false;
+        this.hideConnectivity = false;
 
         var directedLinkTypes = ["PARTONOMY", "CORRELATION"];
         var linkColors = {"PARTONOMY": "#ccc", "CORRELATION": "green", "CONNECTIVITY": "hotPink"};
@@ -86,6 +82,7 @@ var relationGraph = function () {
         this.reset = function(){
             var update = graph.solution.length > 0;
             graph.solution = [];
+            //graph.links.forEach(function(link){delete link["color"];});
             if (update) graph.draw(graph.svg, graph.vp);
         };
 
@@ -99,30 +96,10 @@ var relationGraph = function () {
                         return (e.from == d.target) && (e.to == d.source);
                     });
                 }
+                if (res) d.color = res.color;
                 return res;
             }
             return false;
-        }
-
-        function shadeColor(color, rate) {
-
-            var R = parseInt(color.substring(1,3),16);
-            var G = parseInt(color.substring(3,5),16);
-            var B = parseInt(color.substring(5,7),16);
-
-            R = parseInt(R * (1 + rate));
-            G = parseInt(G * (1 + rate));
-            B = parseInt(B * (1 + rate));
-
-            R = (R<255)?R:255;
-            G = (G<255)?G:255;
-            B = (B<255)?B:255;
-
-            var RR = ((R.toString(16).length==1)?"0"+R.toString(16):R.toString(16));
-            var GG = ((G.toString(16).length==1)?"0"+G.toString(16):G.toString(16));
-            var BB = ((B.toString(16).length==1)?"0"+B.toString(16):B.toString(16));
-
-            return "#"+RR+GG+BB;
         }
 
         this.draw = function(svg, vp) {
@@ -138,7 +115,10 @@ var relationGraph = function () {
                 .charge((graph.rateCorrelations)? -300: -150)
                 .linkDistance((graph.rateCorrelations)? 200: 30)
                 .linkStrength(function(link){
-                    if (graph.rateCorrelations){return 1.0;}
+                    if (graph.rateCorrelations){
+                        if (link.relation == "CONNECTIVITY") return 0;
+                        return 1.0;
+                    }
                     if (link.relation == "PARTONOMY") return 1.0;
                     return 0.5;
                 });
@@ -161,9 +141,13 @@ var relationGraph = function () {
                 .attr("d", "M0,-5L10,0L0,5");
 
             var link = svg.append("g").selectAll("path")
-                .data(graph.force.links())
+                .data(graph.force.links().filter(
+                    function(d){return (!graph.hideConnectivity || (d.relation != "CONNECTIVITY")); })
+                )
                 .enter().append("path")
-                .attr("stroke", function(d){return linkColors[d.relation];})
+                .attr("stroke", function(d){
+                    return linkColors[d.relation];
+                })
                 .attr("marker-end", function (d) {
                     return "url(#marker" + d.relation + ")";
                 });
@@ -209,8 +193,13 @@ var relationGraph = function () {
             var solution = svg.append("g").selectAll("path")
                 .data(graph.force.links().filter(function(d){return inSolution(d);}))
                 .enter().append("path")
-                .attr("stroke", function(d){return linkColors[d.relation];})
-                .attr("class", "solution");
+                .attr("stroke", function(d){
+                    if (graph.rateCorrelations && d.color) return d.color;
+                    return linkColors[d.relation];
+                })
+                .attr("class", "solution")
+                .style("opacity", function(){
+                    if (!graph.rateCorrelations) return 1.0; return 0.6;});
 
             var region = svg.append("g").selectAll("rect")
                 .data(graph.force.nodes().filter(function(d){ return d.type == "REGION";}))
@@ -337,26 +326,8 @@ var relationGraph = function () {
             }
         };
 
-
-        /*
-        this.rateCorrelatedNodes = function(){
-            for (var key in graph.nodes){
-                var node = graph.nodes[key];
-                if (node.type == "REGION"){
-                    var selectedLinks = graph.links.filter(
-                        function(link){
-                            return (link.target.id == key) && graph.selected[link.source.id];
-                        }
-                    );
-                    node.numSelected = selectedLinks.length;
-                    if (node.numIndex)
-                        node.rate = Math.round(100 * node.numSelected / node.numIndex) / 100;
-                    else node.rate = 0;
-                }
-            }
-        };*/
-
         //TODO: fix
+
         this.getDerivedGraph = function(excludeCorrelations){
             var edges = [];
             var visited = [];
@@ -374,14 +345,6 @@ var relationGraph = function () {
                     if (target.id == source.id) target = queue[i].source;
                     if (visited.indexOf(target.id) < 0) {
                         edges.push({from: source, to: target, weight: getWeight(queue[i]), relation: queue[i].relation});
-                        /*var danglingParents = graph.links.filter(function(d){
-                            return (d.source.id != source.id) && (d.target.id == target.id)
-                                && (d.relation == "PARTONOMY") && d.source.dangling;});
-                        danglingParents.forEach(function(link){
-                            edges.push({from: link.target, to: link.source, weight: getWeight(link), relation: link.relation});
-                            traverse(link.source);
-                        });*/
-
                         traverse(target);
                     }
                     visited.push(target.id);
@@ -410,9 +373,6 @@ var relationGraph = function () {
              graph.links.forEach(function(d){
                  if (d.relation == "PARTONOMY"){
                      edges.push({from: d.source, to: d.target, weight: getWeight(d), relation: d.relation});
-                     //if (d.source.dangling){
-                     //    edges.push({from: d.target, to: d.source, weight: getWeight(d), relation: d.relation});
-                     //}
                  } else {
                      if (d.relation == "CONNECTIVITY"){
                          edges.push({from: d.source, to: d.target, weight: getWeight(d), relation: d.relation});
@@ -447,8 +407,17 @@ var relationGraph = function () {
         }
     }
 
+    function printList(array){
+        if (!array) return "";
+        var str = "";
+        for (var i = 0; i < array.length; i++)
+            str += array[i] + ((i < array.length - 1)? ", ": "");
+        return str;
+    }
+
     return {
         init: init,
+        correlationWeight: correlationWeight,
         draw: draw,
         graph: graph
     }

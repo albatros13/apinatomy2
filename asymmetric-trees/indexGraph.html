@@ -7,6 +7,7 @@
 
     <link href="js/lib/jquery-ui/jquery-ui.css" rel="stylesheet" >
 
+
     <script src="js/lib/jquery-1.11.3.min.js"></script>
     <script src="js/lib/jquery-ui/jquery-ui.js"></script>
     <script src="js/lib/jquery.rdfquery.core.min-1.0.js"></script>
@@ -16,25 +17,67 @@
 <body>
     <script src="js/scripts/apinatomy2.js"></script>
 
-    <div class="box">
-        <h4 style="position: fixed; top: 0px;">Select Clinical Indices</h4>
-        <h4 style="position: fixed; top: 0px; margin-left: 50%">Correlation Graph</h4>
+    <style>
+        body {
+            font-family: "Trebuchet MS", "Helvetica", "Arial",  "Verdana", "sans-serif";
+            font-size: 62.5%;
+        }
+
+        td, th {
+            border: 1px solid #ddd;
+            text-align: left;
+            padding: 2px;
+        }
+
+        tr:nth-child(even){background-color: #f2f2f2}
+
+        tr:hover {background-color: #ddd;}
+
+        th {
+            padding-top: 2px;
+            padding-bottom: 2px;
+            background-color: steelblue;
+            color: white;
+        }
+    </style>
+
+    <div id="tabs" style="max-width:350px; height:620px;">
+        <ul>
+            <li><a href="#tabs-1">Clinical indices</a></li>
+            <li><a href="#tabs-2">Path table</a></li>
+        </ul>
+        <div id="tabs-1" style="height:560px; overflow-y: auto;">
+        </div>
+        <div id="tabs-2" style="height:560px; overflow-y: auto;">
+            <table id="pathTable">
+                <tr>
+                    <th>Source</th>
+                    <th>Target</th>
+                    <th>Path</th>
+                    <th>Score</th>
+                </tr>
+            </table>
+        </div>
     </div>
 
     <button style="position:fixed; top:10px; right:10px" id="btnExport">Export graph</button>
-
-    <div id="indexList" class="list"></div>
     <div id="svgGraph" class="graph"></div>
 
-    <button style="position:fixed; bottom:10px; left:310px" id="btnSelect">Create graph</button>
+    <button style="position:fixed; bottom:10px; left:360px" id="btnSelect">Create graph</button>
+    <label style="position:fixed; bottom:10px; left:450px"><input type="checkbox" id="drawPaths" checked/>Show shortest paths</label>
+    <label style="position:fixed; bottom:10px; left:570px"><input type="checkbox" id="showConnectivity"/>Show connectivity links</label>
 
     <script src="js/scripts/partonomy/relationGraph.js"></script>
     <script src="js/scripts/partonomy/steiner.js"></script>
     <script src="js/scripts/partonomy/loadRelations.js"></script>
 
     <script>
+        $( "#tabs" ).tabs();
+        relationGraph.graph.hideConnectivity = true;
+
         var mdsNodes = {};
         var mdsLinks = [];
+
         lyphRepo.load("http://open-physiology.org:8889")
             .then(function(){
                 locatedMeasureRepo = lyphRepo.locatedMeasureRepoFull;
@@ -71,22 +114,152 @@
         });
 
         $( "#btnSelect" ).on('click', function() {
-            updateGraph();
+            $("#pathTable td").parent().remove();
+            setTimeout(function() {
+                updateGraph();
+            }, 0);
         });
 
         function createIndexPanel(){
-            var indexList = $('#indexList');
+            var indexList = $('#tabs-1');
             var selectedIndices = clinicalIndexRepo.items.filter(
                 function (index) {
                     return (index.title && (index.title.indexOf("NP") > -1) &&  (index.title.indexOf("MDS") > -1));
                 });
             selectedIndices.forEach(function(index){
                 var label = $('<label>');
-                label.html('<input id="' + index.id + '" type="checkbox" value="' + index.id + '">' +
+                label.html('<input id="' + index.id + '" type="checkbox" name="index" value="' + index.id + '">' +
                         '<label for="' + index.id + '">' + index.title + '</label>');
                 label.appendTo(indexList);
                 $('<br>').appendTo(indexList);
             });
+        }
+
+
+        $("#drawPaths").change(function() {
+            $("#pathTable td").parent().remove();
+            setTimeout(function() {
+                drawShortestPaths();
+            }, 0);
+        });
+
+        $("#showConnectivity").change(function() {
+            relationGraph.graph.hideConnectivity = !relationGraph.graph.hideConnectivity; //$("#showConnectivity").checked;
+            relationGraph.draw();
+        });
+
+
+        function showShortestPathTable(){
+            function formatName(node){
+                if (node.type == "INDEX") return node.name.substring(0, node.name.indexOf(" "));
+                return node.name;
+            }
+
+            function getLink(p){
+                if (p){
+                    return '<a href="' + p.uri + '" title = "' + p.title + '" target="_blank"' +
+                            ' style = "float:right; top:2px; right: 2px;">' +
+                            '<img src="images/pubmed.jpg" style="width:16px; height: 16px;"/>' +
+                            '</a>';
+                }
+                return "";
+            }
+
+            data = [];
+            var colorMap = {};
+            var edges = relationGraph.graph.getFullDerivedGraph();
+            var required = d3.values(relationGraph.graph.selected);
+            if (required.length == 0) return;
+            for (var i = 0; i < required.length; i++){
+                for (var j = 0; j < required.length; j++){
+                    if (i != j){
+                        var n1 = required[i].name;
+                        var n2 = required[j].name;
+                        var colorID = n1 + "_" + n2;
+                        if (n2 < n1) colorID = n2  + "_" + n1;
+                        if (!colorMap[colorID])
+                            colorMap[colorID] = generateColor(colorID);
+                        var path = dijkstra(edges, required[i], required[j], colorMap[colorID]);
+                        var pathIDs = path.edges.map(function(link){
+                            var info = "";
+                            var source = nodes[link.to.id];
+                            var target = nodes[link.from.id];
+                            if ((source.type != "INDEX") && (target.type != "INDEX")){
+                                info = " (" + link.weight + ")";
+                            } else {
+                                var p;
+                                if (source.type == "INDEX") {
+                                    if (source.indexID)
+                                        p = target.publications[source.indexID];
+                                } else {
+                                    if (target.indexID)
+                                        p = source.publications[target.indexID];
+                                }
+                                info = getLink(p);
+                            }
+                            return {text: formatName(source) + " - " + formatName(target) + info, relation: link.relation};
+                        });
+                        var adjustedScore = "inf";
+                        if (path.score < infinity){
+                            adjustedScore = path.score - 2 * relationGraph.correlationWeight;
+                            adjustedScore = Math.round(100 * adjustedScore) / 100;
+                        }
+                        var rowData = {
+                            color: colorMap[colorID],
+                            source: required[i],
+                            target: required[j],
+                            path: pathIDs,
+                            score: adjustedScore};
+                        data.push(rowData);
+                    }
+                }
+            }
+            drawTable(data);
+
+            function drawTable(data) {
+                for (var i = 0; i < data.length; i++)
+                    drawRow(data[i]);
+            }
+
+            function formatPath(array, lineSeparator){
+                if (!array) return "";
+                if (!lineSeparator) lineSeparator = "\n";
+                var str = "";
+                for (var i = 0; i < array.length; i++){
+                    var line = array[i].text + lineSeparator;
+                    if (array[i].relation == "PARTONOMY")
+                        line = "<strong>" + line + "</strong>";
+                    line = (i + 1) + ") " + line;
+                    str += line;
+                }
+                return str;
+            }
+
+            function drawRow(rowData) {
+                var row = $("<tr />");
+                row.attr("style", "background-color: " + rowData.color);
+                $("#pathTable").append(row);
+                row.append($("<td>" + formatName(rowData.source) + "</td>"));
+                row.append($("<td>" + formatName(rowData.target) + "</td>"));
+                row.append($("<td>" + formatPath(rowData.path, '</BR>') + "</td>"));
+                row.append($("<td>" + rowData.score + "</td>"));
+            }
+        }
+
+        function drawShortestPaths(){
+            var chbxShowPath = $("#drawPaths");
+            relationGraph.graph.selected = {};
+            if (chbxShowPath[0].checked) {
+                for (var key in relationGraph.graph.nodes){
+                    var node = relationGraph.graph.nodes[key];
+                    if (node.type == "INDEX")
+                        relationGraph.graph.selected[node.id] = node;
+                }
+                relationGraph.graph.connectNodes();
+            } else {
+                relationGraph.graph.reset();
+            }
+            showShortestPathTable();
         }
 
         function updateGraph(){
@@ -99,9 +272,10 @@
                 relationGraph.graph.rateCorrelations = true;
                 relationGraph.graph.reset();
                 relationGraph.draw();
+                drawShortestPaths();
             }
 
-            var checkBoxes = $("input:checkbox");
+            var checkBoxes = $("input:checkbox[name=index]");
             var selectedIndices = {};
             checkBoxes.each(function(){
                 var id = $(this).val();

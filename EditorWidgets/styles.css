@@ -1,0 +1,45 @@
+body {
+  margin: 2em;
+}
+
+.icon {
+  height: 2.025rem;
+  width: 2.025rem;
+  padding: .325rem;
+}
+
+.accordion-toggle:hover{
+  outline: none;
+  text-decoration: none;
+}
+
+.accordion-toggle:focus{
+  outline: none;
+  text-decoration: none;
+}
+
+.panel-body{
+  padding: 4px;
+}
+
+.list-group-item{
+  padding: 0px;
+}
+
+.panel-heading:hover{
+   background-color: #e3d2d2;
+ }
+
+.panel-content{
+  padding: 4px;
+  border: 1px solid #ccc;
+}
+
+.input-control{
+  padding: 4px;
+  display: inline-block;
+}
+
+.input-control label {
+  display: block;
+}

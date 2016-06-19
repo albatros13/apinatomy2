@@ -1,0 +1,41 @@
+/**
+ * Created by Natallia on 6/15/2016.
+ */
+"use strict";
+var EditItem = (function () {
+    function EditItem(item) {
+        this.item = item;
+    }
+    return EditItem;
+}());
+exports.EditItem = EditItem;
+var RestoreService = (function () {
+    function RestoreService() {
+    }
+    RestoreService.prototype.setItem = function (item) {
+        this.originalItem = item;
+        this.currentItem = this.clone(item);
+    };
+    RestoreService.prototype.getItem = function () {
+        return this.currentItem;
+    };
+    RestoreService.prototype.restoreItem = function () {
+        this.currentItem = this.originalItem;
+        return this.getItem();
+    };
+    RestoreService.prototype.clone = function (obj) {
+        var objCopy = {};
+        for (var key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                //if (typeof obj === "object"){
+                //  objCopy[key] = this.clone(obj[key]);
+                //} else {
+                objCopy[key] = obj[key];
+            }
+        }
+        return objCopy;
+    };
+    return RestoreService;
+}());
+exports.RestoreService = RestoreService;
+//# sourceMappingURL=service.restore.js.map

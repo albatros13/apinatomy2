@@ -38,8 +38,35 @@ body {
 .input-control{
   padding: 4px;
   display: inline-block;
+  vertical-align:top;
 }
 
 .input-control label {
   display: block;
 }
+
+fieldset {
+  border: 1px ridge #e3e3e3;
+  padding: 4px;
+}
+
+legend{
+  font: inherit;
+  font-weight: bold;
+  padding: 4px;
+  margin-bottom: 0px;
+  border: 0;
+  width: auto;
+}
+
+
+
+.repo-template{
+  min-width: 200px;
+  width: 100%;
+}
+
+input[type=number] {
+  text-align:right;
+}
+

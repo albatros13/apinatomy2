@@ -3,21 +3,22 @@
  */
 import {Injectable} from '@angular/core';
 
-export interface IUniformDistribution{
+export interface IDistribution{}
+
+export interface IUniformDistribution extends IDistribution{
   min: number;
   max: number;
 }
 
-export interface IBoundedNormalDistribution{
+export interface IBoundedNormalDistribution extends IUniformDistribution{
   mean: number;
   std: number;
-  min: number;
-  max: number;
 }
 
 export interface IValueDistribution{
-  quality: IQuality;
-  type?: IUniformDistribution | IBoundedNormalDistribution;
+  quality?: IQuality;
+  type?: DistributionType;
+  distribution?: IDistribution;
 }
 
 export interface IExternalResource{
@@ -38,22 +39,14 @@ export interface IType extends IResource{
   supertypes?: Array<IResource>;
 }
 
-export interface ITemplate<T> extends IResource{
-  valueDistribution: IValueDistribution;
-  cardinalityBase: number;
-  type: T;
-}
-
-export interface IPublication extends IResource{
-}
+export interface IPublication extends IResource{}
+export interface IClinicalIndex extends IResource{}
 
 export interface ICorrelation extends IResource{
   publication: IPublication;
-  locatedMeasurables?: Array<ITemplate<IMeasurableType>>;
+  locatedMeasurables?: Array<IMeasurableTemplate>;
   clinicalIndices?: Array<IClinicalIndex>;
 }
-
-export interface IClinicalIndex extends IResource{}
 
 export interface IMaterialType extends IType{
   materials?: Array<IMaterialType>;
@@ -67,19 +60,19 @@ export interface IBorderType extends IType{
 }
 
 export interface IGroupType extends IType{
-  elements: Array<ITemplate<IType>>;
+  elements: Array<ITemplate>;
 }
 
 export interface IOmegaTreeType extends IGroupType{
-  root: Array<ITemplate<IBorderType>>;
+  root: Array<IBorderTemplate>;
 }
 
 export interface IProcessType extends IType{
   transportPhenomenon: TransportPhenomenon;
   materials?: Array<IMaterialType>;
-  measurables?: Array<ITemplate<IMeasurableType>>;
-  source: ITemplate<INodeType>;
-  target: ITemplate<INodeType>;
+  measurables?: Array<IMeasurableTemplate>;
+  source: INodeTemplate;
+  target: INodeTemplate;
 }
 
 export interface IMeasurableType extends IType{
@@ -88,8 +81,8 @@ export interface IMeasurableType extends IType{
 }
 
 export interface ICausalityType extends IType{
-  cause: ITemplate<IMeasurableType>;
-  effect: ITemplate<IMeasurableType>;
+  cause: IMeasurableTemplate;
+  effect: IMeasurableTemplate;
 }
 
 export interface ILyphType extends IMaterialType{
@@ -98,67 +91,128 @@ export interface ILyphType extends IMaterialType{
   inheritsParts?: Array<ILyphType>;
   inheritsMeasurables?: Array<ILyphType>;
 
-  layers?: Array<ITemplate<ILyphType>>;
-  patches?: Array<ITemplate<ILyphType>>;
-  parts?: Array<ITemplate<ILyphType>>;
+  layers?: Array<ILyphTemplate>;
+  patches?: Array<ILyphTemplate>;
+  parts?: Array<ILyphTemplate>;
 
-  measurables?: Array<ITemplate<IMeasurableType>>;
-  processes?: Array<ITemplate<IProcessType>>;
-  nodes?: Array<ITemplate<INodeType>>;
-  innerBorder?: ITemplate<IBorderType>;
-  outerBorder?: ITemplate<IBorderType>;
+  measurables?: Array<IMeasurableTemplate>;
+  processes?: Array<IProcessTemplate>;
+  nodes?: Array<INodeTemplate>;
+  innerBorder?: IBorderTemplate;
+  outerBorder?: IBorderTemplate;
 }
 
 export interface ICylindricalLyphType extends ILyphType{
   inheritsSegments?: Array<ICylindricalLyphType>;
-  segments?: Array<ITemplate<ICylindricalLyphType>>;
-  minusBorder?: ITemplate<IBorderType>;
-  plusBorder?: ITemplate<IBorderType>;
+  segments?: Array<ICylindricalLyphTemplate>;
+  minusBorder?: IBorderTemplate;
+  plusBorder?: IBorderTemplate;
 }
 
 ///////////////////////////////////////////////////////
 
-enum Status{
-  New, Updated, Deleted, Valid
+export enum Status {
+  New     = <any>"New",
+  Updated = <any>"Updated",
+  Deleted = <any>"Deleted",
+  Valid   = <any>"Valid"
 }
 
-enum TransportPhenomenon{
-  diffusion, advection
+export enum TransportPhenomenon {
+  diffusion = <any>"diffusion",
+  advection = <any>"advection"
+}
+
+export enum DistributionType {
+  Uniform       = <any>"Uniform",
+  BoundedNormal = <any>"BoundedNormal"
+}
+
+export enum SideType {
+  open       = <any>"open",
+  closed     = <any>"closed"
 }
 
 ///////////////////////////////////////////////////////
 
-export class UniformDistribution implements IUniformDistribution{
+export interface ITemplate extends IResource{
+  type: IType;
+}
+
+export interface INodeTemplate extends ITemplate{
+  type: INodeType;
+}
+
+export interface IBorderTemplate extends ITemplate{
+  type: IBorderType;
+}
+
+export interface IGroupTemplate extends ITemplate{
+  type: IGroupType;
+}
+
+export interface IOmegaTreeType extends IGroupType {
+  type: IOmegaTreeType;
+}
+
+export interface IProcessTemplate extends ITemplate{
+  type: IProcessType;
+}
+
+export interface IMeasurableTemplate extends ITemplate{
+  type: IMeasurableType;
+}
+
+export interface ICausalityType extends ITemplate{
+  type: ICausalityType;
+}
+
+export interface ILyphTemplate extends ITemplate{
+  type: ILyphType;
+  length: number|IValueDistribution;
+}
+
+export interface ICylindricalLyphTemplate extends ILyphTemplate{
+  type: ICylindricalLyphType;
+}
+
+///////////////////////////////////////////////////////
+
+export class Distribution{
+  constructor(obj: IDistribution = {}){}
+}
+
+export class UniformDistribution extends Distribution implements IUniformDistribution{
   public min: number;
   public max: number;
 
   constructor(obj: IUniformDistribution = {min:0, max: 0}){
+    super();
     this.min = obj.min;
     this.max = obj.max;
   }
 }
 
-export class BoundedNormalDistribution implements IBoundedNormalDistribution{
+export class BoundedNormalDistribution extends UniformDistribution implements IBoundedNormalDistribution{
   public mean: number = 0;
   public std: number = 0;
-  public min: number = 0;
-  public max: number = 0;
 
   constructor(obj: IBoundedNormalDistribution = {mean: 0, std: 0, min:0, max: 0}){
-    this.min = obj.min;
+    super(obj);
     this.max = obj.max;
     this.std = obj.std;
-    this.mean = obj.mean;
   }
 }
 
 export class ValueDistribution implements IValueDistribution{
   public quality: IQuality;
-  public type: UniformDistribution | BoundedNormalDistribution;
+  public type: DistributionType;
+  public distribution: IDistribution;
 
-  constructor(obj: IValueDistribution = {quality: ""}){
+  constructor(obj: IValueDistribution = {type: DistributionType.Uniform, distribution: new UniformDistribution()}){
     this.quality = obj.quality;
     this.type = obj.type;
+    this.distribution = obj.distribution;
   }
 }
 
@@ -179,17 +233,14 @@ export class Resource implements IResource{
   }
 }
 
-export class Template<T> extends Resource implements ITemplate<T>{
-  public valueDistribution: IValueDistribution;
-  public cardinalityBase: any;
-  public type: T;
+export class LyphTemplate extends Resource implements ILyphTemplate{
+  public length: number | IValueDistribution = 0;
+  public type: IType;
 
-  constructor(
-    obj: ITemplate<T> = {id: 0, name: "New template", valueDistribution: {quality: ""},
-      cardinalityBase: 1, type: null}){
+  constructor(obj: ILyphTemplate = {id: 0, name: "New template", type: null, length: 0}){
     super(obj);
-    this.valueDistribution = obj.valueDistribution;
-    this.cardinalityBase = obj.cardinalityBase;
+    this.type = obj.type;
+    this.length = obj.length;
   }
 }
 
@@ -227,15 +278,15 @@ export class LyphType extends MaterialType implements ILyphType{
   public inheritsParts: Array<ILyphType> = [];
   public inheritsMeasurables: Array<ILyphType> = [];
 
-  public layers: Array<ITemplate<ILyphType>> = [];
-  public patches: Array<ITemplate<ILyphType>> = [];
-  public parts: Array<ITemplate<ILyphType>> = [];
+  public layers: Array<ILyphTemplate> = [];
+  public patches: Array<ILyphTemplate> = [];
+  public parts: Array<ILyphTemplate> = [];
 
-  public measurables: Array<ITemplate<IMeasurableType>> = [];
-  public processes: Array<ITemplate<IProcessType>> = [];
-  public nodes: Array<ITemplate<INodeType>> = [];
-  public innerBorder: ITemplate<IBorderType> = null;
-  public outerBorder: ITemplate<IBorderType> = null;
+  public measurables: Array<IMeasurableTemplate> = [];
+  public processes: Array<IProcessTemplate> = [];
+  public nodes: Array<INodeTemplate> = [];
+  public innerBorder: IBorderTemplate = null;
+  public outerBorder: IBorderTemplate = null;
 
   constructor(obj: ILyphType = {id: 0, name: "New lyph type"}){
     super(obj);
@@ -258,9 +309,9 @@ export class LyphType extends MaterialType implements ILyphType{
 
 export class CylindricalLyphType extends LyphType implements ICylindricalLyphType{
   public inheritsSegments: Array<ICylindricalLyphType> = [];
-  public segments: Array<ITemplate<ICylindricalLyphType>> = [];
-  public minusBorder: ITemplate<IBorderType> = null;
-  public plusBorder: ITemplate<IBorderType> = null;
+  public segments: Array<ICylindricalLyphTemplate> = [];
+  public minusBorder: IBorderTemplate = null;
+  public plusBorder: IBorderTemplate = null;
 
   constructor(obj: ICylindricalLyphType = {id: 0, name: "New cylindrical lyph type"}){
     super(obj);
@@ -273,15 +324,38 @@ export class CylindricalLyphType extends LyphType implements ICylindricalLyphTyp
 
 ///////////////////////////////////////////////////////
 
+//TODO: Replace data for testing with user story
+
 @Injectable()
 export class LyphTypeProvider {
-  public items: Array<ILyphType> = [
-    {id: 1, name: "Head", equivalence: [{id: "cocomac1"}, {id: "cocomac2"}]},
-    {id: 2, name: "Heart", supertypes: [{id: 1, name: "Head"}]},
+  private head = new LyphType({id: 1, name: "Head", equivalence: [{id: "cocomac1"}, {id: "cocomac2"}]});
+  private testLayer: ILyphTemplate =
+    new LyphTemplate({id: 10, name: "Head", type: this.head, length: 5});
+
+  public items: Array<ILyphType> = [this.head,
+    {id: 2, name: "Heart", supertypes: [{id: 1, name: "Head"}], layers: [this.testLayer]},
     {id: 3, name: "Arm"}];
 
   constructor(){}
 }
+
+@Injectable()
+export class MaterialTypeProvider {
+  public items: Array<IType> = new LyphTypeProvider().items;
+  private glucose = new MaterialType({id: 4, name: "Glucose"});
+
+  constructor(){
+    this.items.push(this.glucose);
+  }
+}
+
+@Injectable()
+export class TypeProvider {
+  public items: Array<IType> = new MaterialTypeProvider().items;
+
+  constructor(){}
+}
+
 
 @Injectable()
 export class PublicationProvider {
@@ -292,3 +366,4 @@ export class PublicationProvider {
 
   constructor(){}
 }
+

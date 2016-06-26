@@ -14,7 +14,8 @@
     'ng2-select':                 'node_modules/ng2-select',
     'ng2-bootstrap':              'node_modules/ng2-bootstrap',
     'ng2-nvd3':                   'node_modules/ng2-nvd3',
-    'ng2-dnd':                    'node_modules/ng2-dnd'
+    'ng2-dnd':                    'node_modules/ng2-dnd',
+    'ng2-radio-group':            'node_modules/ng2-radio-group'
   };
 
   // packages tells the System loader how to load when no filename and/or no extension
@@ -25,7 +26,8 @@
     'ng2-select':                 { defaultExtension: 'js' },
     'ng2-bootstrap':              { defaultExtension: 'js' },
     'ng2-nvd3':                   { defaultExtension: 'js' },
-    'ng2-dnd':                    { defaultExtension:  'js'}
+    'ng2-dnd':                    { defaultExtension:  'js'},
+    'ng2-radio-group':            { main: 'index.js', defaultExtension: 'js' }
   };
 
   var ngPackageNames = [

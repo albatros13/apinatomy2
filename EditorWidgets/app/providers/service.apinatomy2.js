@@ -18,48 +18,66 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  */
 var core_1 = require('@angular/core');
 ///////////////////////////////////////////////////////
-var Status;
 (function (Status) {
-    Status[Status["New"] = 0] = "New";
-    Status[Status["Updated"] = 1] = "Updated";
-    Status[Status["Deleted"] = 2] = "Deleted";
-    Status[Status["Valid"] = 3] = "Valid";
-})(Status || (Status = {}));
-var TransportPhenomenon;
+    Status[Status["New"] = "New"] = "New";
+    Status[Status["Updated"] = "Updated"] = "Updated";
+    Status[Status["Deleted"] = "Deleted"] = "Deleted";
+    Status[Status["Valid"] = "Valid"] = "Valid";
+})(exports.Status || (exports.Status = {}));
+var Status = exports.Status;
 (function (TransportPhenomenon) {
-    TransportPhenomenon[TransportPhenomenon["diffusion"] = 0] = "diffusion";
-    TransportPhenomenon[TransportPhenomenon["advection"] = 1] = "advection";
-})(TransportPhenomenon || (TransportPhenomenon = {}));
+    TransportPhenomenon[TransportPhenomenon["diffusion"] = "diffusion"] = "diffusion";
+    TransportPhenomenon[TransportPhenomenon["advection"] = "advection"] = "advection";
+})(exports.TransportPhenomenon || (exports.TransportPhenomenon = {}));
+var TransportPhenomenon = exports.TransportPhenomenon;
+(function (DistributionType) {
+    DistributionType[DistributionType["Uniform"] = "Uniform"] = "Uniform";
+    DistributionType[DistributionType["BoundedNormal"] = "BoundedNormal"] = "BoundedNormal";
+})(exports.DistributionType || (exports.DistributionType = {}));
+var DistributionType = exports.DistributionType;
+(function (SideType) {
+    SideType[SideType["open"] = "open"] = "open";
+    SideType[SideType["closed"] = "closed"] = "closed";
+})(exports.SideType || (exports.SideType = {}));
+var SideType = exports.SideType;
 ///////////////////////////////////////////////////////
-var UniformDistribution = (function () {
+var Distribution = (function () {
+    function Distribution(obj) {
+        if (obj === void 0) { obj = {}; }
+    }
+    return Distribution;
+}());
+exports.Distribution = Distribution;
+var UniformDistribution = (function (_super) {
+    __extends(UniformDistribution, _super);
     function UniformDistribution(obj) {
         if (obj === void 0) { obj = { min: 0, max: 0 }; }
+        _super.call(this);
         this.min = obj.min;
         this.max = obj.max;
     }
     return UniformDistribution;
-}());
+}(Distribution));
 exports.UniformDistribution = UniformDistribution;
-var BoundedNormalDistribution = (function () {
+var BoundedNormalDistribution = (function (_super) {
+    __extends(BoundedNormalDistribution, _super);
     function BoundedNormalDistribution(obj) {
         if (obj === void 0) { obj = { mean: 0, std: 0, min: 0, max: 0 }; }
+        _super.call(this, obj);
         this.mean = 0;
         this.std = 0;
-        this.min = 0;
-        this.max = 0;
-        this.min = obj.min;
         this.max = obj.max;
         this.std = obj.std;
-        this.mean = obj.mean;
     }
     return BoundedNormalDistribution;
-}());
+}(UniformDistribution));
 exports.BoundedNormalDistribution = BoundedNormalDistribution;
 var ValueDistribution = (function () {
     function ValueDistribution(obj) {
-        if (obj === void 0) { obj = { quality: "" }; }
+        if (obj === void 0) { obj = { type: DistributionType.Uniform, distribution: new UniformDistribution() }; }
         this.quality = obj.quality;
         this.type = obj.type;
+        this.distribution = obj.distribution;
     }
     return ValueDistribution;
 }());
@@ -78,18 +96,18 @@ var Resource = (function () {
     return Resource;
 }());
 exports.Resource = Resource;
-var Template = (function (_super) {
-    __extends(Template, _super);
-    function Template(obj) {
-        if (obj === void 0) { obj = { id: 0, name: "New template", valueDistribution: { quality: "" },
-            cardinalityBase: 1, type: null }; }
+var LyphTemplate = (function (_super) {
+    __extends(LyphTemplate, _super);
+    function LyphTemplate(obj) {
+        if (obj === void 0) { obj = { id: 0, name: "New template", type: null, length: 0 }; }
         _super.call(this, obj);
-        this.valueDistribution = obj.valueDistribution;
-        this.cardinalityBase = obj.cardinalityBase;
+        this.length = 0;
+        this.type = obj.type;
+        this.length = obj.length;
     }
-    return Template;
+    return LyphTemplate;
 }(Resource));
-exports.Template = Template;
+exports.LyphTemplate = LyphTemplate;
 var Type = (function (_super) {
     __extends(Type, _super);
     function Type(obj) {
@@ -173,11 +191,13 @@ var CylindricalLyphType = (function (_super) {
 }(LyphType));
 exports.CylindricalLyphType = CylindricalLyphType;
 ///////////////////////////////////////////////////////
+//TODO: Replace data for testing with user story
 var LyphTypeProvider = (function () {
     function LyphTypeProvider() {
-        this.items = [
-            { id: 1, name: "Head", equivalence: [{ id: "cocomac1" }, { id: "cocomac2" }] },
-            { id: 2, name: "Heart", supertypes: [{ id: 1, name: "Head" }] },
+        this.head = new LyphType({ id: 1, name: "Head", equivalence: [{ id: "cocomac1" }, { id: "cocomac2" }] });
+        this.testLayer = new LyphTemplate({ id: 10, name: "Head", type: this.head, length: 5 });
+        this.items = [this.head,
+            { id: 2, name: "Heart", supertypes: [{ id: 1, name: "Head" }], layers: [this.testLayer] },
             { id: 3, name: "Arm" }];
     }
     LyphTypeProvider = __decorate([
@@ -187,6 +207,30 @@ var LyphTypeProvider = (function () {
     return LyphTypeProvider;
 }());
 exports.LyphTypeProvider = LyphTypeProvider;
+var MaterialTypeProvider = (function () {
+    function MaterialTypeProvider() {
+        this.items = new LyphTypeProvider().items;
+        this.glucose = new MaterialType({ id: 4, name: "Glucose" });
+        this.items.push(this.glucose);
+    }
+    MaterialTypeProvider = __decorate([
+        core_1.Injectable(), 
+        __metadata('design:paramtypes', [])
+    ], MaterialTypeProvider);
+    return MaterialTypeProvider;
+}());
+exports.MaterialTypeProvider = MaterialTypeProvider;
+var TypeProvider = (function () {
+    function TypeProvider() {
+        this.items = new MaterialTypeProvider().items;
+    }
+    TypeProvider = __decorate([
+        core_1.Injectable(), 
+        __metadata('design:paramtypes', [])
+    ], TypeProvider);
+    return TypeProvider;
+}());
+exports.TypeProvider = TypeProvider;
 var PublicationProvider = (function () {
     function PublicationProvider() {
         this.items = [

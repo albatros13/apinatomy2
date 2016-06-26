@@ -12,8 +12,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  * Created by Natallia on 6/8/2016.
  */
 var core_1 = require('@angular/core');
-var repo_lyphType_1 = require('../components/repo.lyphType');
-var repo_publication_1 = require('../components/repo.publication');
+var repo_lyphType_1 = require('../components/repos/repo.lyphType');
+var repo_publication_1 = require('../components/repos/repo.publication');
 var service_apinatomy2_1 = require('../providers/service.apinatomy2');
 var LyphTypeWidget = (function () {
     function LyphTypeWidget(elementRef) {
@@ -92,18 +92,24 @@ var LyphTypeWidget = (function () {
 }());
 exports.LyphTypeWidget = LyphTypeWidget;
 var LyphTypeEditor = (function () {
-    function LyphTypeEditor(lyphTypeProvider, publicationProvider) {
+    function LyphTypeEditor(typeProvider, materialTypeProvider, lyphTypeProvider, publicationProvider) {
+        this.dependency = {
+            equivalences: [],
+            weakEquivalences: [],
+            types: typeProvider.items,
+            materialTypes: materialTypeProvider.items,
+            lyphTypes: lyphTypeProvider.items };
         this.items = lyphTypeProvider.items;
         this.publications = publicationProvider.items;
     }
     LyphTypeEditor = __decorate([
         core_1.Component({
             selector: 'lyphType-editor',
-            providers: [service_apinatomy2_1.LyphTypeProvider],
-            template: "\n    <repo-lyphType [items]=\"items\"></repo-lyphType>\n    <repo-publication [items]=\"publications\"></repo-publication>\n  ",
+            providers: [service_apinatomy2_1.TypeProvider, service_apinatomy2_1.MaterialTypeProvider, service_apinatomy2_1.LyphTypeProvider],
+            template: "\n    <repo-lyphType [items]=\"items\" [dependency]=\"dependency\"></repo-lyphType>\n    <repo-publication [items]=\"publications\"></repo-publication>\n  ",
             directives: [LyphTypeWidget, repo_lyphType_1.RepoLyphType, repo_publication_1.RepoPublication]
         }), 
-        __metadata('design:paramtypes', [service_apinatomy2_1.LyphTypeProvider, service_apinatomy2_1.PublicationProvider])
+        __metadata('design:paramtypes', [service_apinatomy2_1.TypeProvider, service_apinatomy2_1.MaterialTypeProvider, service_apinatomy2_1.LyphTypeProvider, service_apinatomy2_1.PublicationProvider])
     ], LyphTypeEditor);
     return LyphTypeEditor;
 }());

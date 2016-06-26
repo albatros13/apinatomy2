@@ -24,6 +24,7 @@ var RestoreService = (function () {
         return this.getItem();
     };
     RestoreService.prototype.clone = function (obj) {
+        //let objCopy = (JSON.parse(JSON.stringify(obj)));
         var objCopy = {};
         for (var key in obj) {
             if (obj.hasOwnProperty(key)) {

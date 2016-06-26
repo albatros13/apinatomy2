@@ -26,6 +26,7 @@ export class RestoreService<T> {
   }
 
   clone(obj: T) :T {
+    //let objCopy = (JSON.parse(JSON.stringify(obj)));
     let objCopy = <T>{};
     for (var key in obj){
       if (obj.hasOwnProperty(key)){

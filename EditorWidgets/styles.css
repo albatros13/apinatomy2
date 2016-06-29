@@ -28,7 +28,7 @@ body {
 
 .panel-heading:hover{
    background-color: #e3d2d2;
- }
+}
 
 .panel-content{
   /*padding: 4px;*/
@@ -36,7 +36,7 @@ body {
 }
 
 .input-control{
-  padding: 4px;
+  /*padding: 4px;*/
   display: inline-block;
   vertical-align:top;
 }
@@ -59,8 +59,6 @@ legend{
   width: auto;
 }
 
-
-
 .repo-template{
   min-width: 200px;
   width: 100%;
@@ -70,3 +68,6 @@ input[type=number] {
   text-align:right;
 }
 
+.glyphicon {
+  height: 20px;
+}

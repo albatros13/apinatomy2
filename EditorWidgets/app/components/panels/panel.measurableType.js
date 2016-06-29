@@ -19,7 +19,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require('@angular/core');
 var service_restore_1 = require("../../providers/service.restore");
 var panel_type_1 = require("./panel.type");
-var component_general_1 = require('../component.general');
 var MeasurableTypePanel = (function (_super) {
     __extends(MeasurableTypePanel, _super);
     function MeasurableTypePanel(restoreService) {
@@ -31,8 +30,8 @@ var MeasurableTypePanel = (function (_super) {
             providers: [service_restore_1.RestoreService],
             selector: 'measurableType-panel',
             inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <type-panel [item]=\"item\" [dependencies]=\"dependencies\" [ignore]=\"['equivalence', 'weakEquivalence']\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <quality-input item=\"item.quality\"></quality-input>\n      <ng-content></ng-content>      \n    </type-panel>\n  ",
-            directives: [panel_type_1.TypePanel, component_general_1.MultiSelectInput]
+            template: "\n    <type-panel [item]=\"item\" [dependencies]=\"dependencies\" [ignore]=\"['equivalence', 'weakEquivalence']\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <div class=\"input-control\">\n       <label for=\"quality\">Quality: </label>\n       <input type=\"text\" required [(ngModel)]=\"item.quality\">\n      </div>\n      <ng-content></ng-content>      \n    </type-panel>\n  ",
+            directives: [panel_type_1.TypePanel]
         }), 
         __metadata('design:paramtypes', [service_restore_1.RestoreService])
     ], MeasurableTypePanel);

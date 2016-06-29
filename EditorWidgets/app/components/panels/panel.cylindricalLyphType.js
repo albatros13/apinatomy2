@@ -21,6 +21,8 @@ var service_restore_1 = require("../../providers/service.restore");
 var service_apinatomy2_1 = require("../../providers/service.apinatomy2");
 var panel_lyphType_1 = require("./panel.lyphType");
 var ng2_radio_group_1 = require("ng2-radio-group");
+var component_general_1 = require('../component.general');
+var repo_template_1 = require('../repos/repo.template');
 var CylindricalLyphTypePanel = (function (_super) {
     __extends(CylindricalLyphTypePanel, _super);
     function CylindricalLyphTypePanel(restoreService) {
@@ -39,8 +41,8 @@ var CylindricalLyphTypePanel = (function (_super) {
             providers: [service_restore_1.RestoreService],
             selector: 'cylindricalLyphType-panel',
             inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <lyphType-panel \n      [item]=\"item\" [dependencies]=\"dependencies\" \n      (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n        <div class=\"input-control\" *ngIf=\"includeProperty('minusSide')\">\n          <label for=\"minusSide\">Minus side: </label>\n           <radio-group [(ngModel)]=\"item.plusSide\" [required]=\"true\">\n             <input type=\"radio\" [value]=\"sideType.open\">{{sideType.open}}&nbsp\n             <input type=\"radio\" [value]=\"sideType.closed\">{{sideType.closed}}<br/>\n           </radio-group>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('plusSide')\">\n          <label for=\"plusSide\">Plus side: </label>\n          <radio-group [(ngModel)]=\"item.minusSide\" [required]=\"true\">\n             <input type=\"radio\" [value]=\"sideType.open\">{{sideType.open}}&nbsp\n             <input type=\"radio\" [value]=\"sideType.closed\">{{sideType.closed}}<br/>\n           </radio-group>\n        </div>\n        <ng-content></ng-content>\n    </lyphType-panel>\n  ",
-            directives: [panel_lyphType_1.LyphTypePanel, ng2_radio_group_1.RADIO_GROUP_DIRECTIVES]
+            template: "\n    <lyphType-panel \n      [item]=\"item\" [dependencies]=\"dependencies\" \n      (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n        <div class=\"input-control\" *ngIf=\"includeProperty('minusSide')\">\n          <fieldset>\n            <legend>Minus side:</legend>\n            <radio-group [(ngModel)]=\"item.plusSide\" [required]=\"true\">\n             <input type=\"radio\" [value]=\"sideType.open\">{{sideType.open}}&nbsp;\n             <input type=\"radio\" [value]=\"sideType.closed\">{{sideType.closed}}<br/>\n            </radio-group>\n          </fieldset>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('plusSide')\">\n          <fieldset>\n            <legend>Plus side:</legend>\n             <radio-group [(ngModel)]=\"item.minusSide\" [required]=\"true\">\n               <input type=\"radio\" [value]=\"sideType.open\">{{sideType.open}}&nbsp;\n               <input type=\"radio\" [value]=\"sideType.closed\">{{sideType.closed}}<br/>\n             </radio-group>\n          </fieldset>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('inheritsSegments')\">\n          <label for=\"inheritsSegments\">Inherits segments: </label>\n          <select-input [item]=\"item.inheritsSegments\" [options]=\"dependencies.cylindricalLyphTypes\"></select-input>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('segments')\">\n          <repo-template caption=\"Segments\" [items] = \"item.segments\" [dependencies] = \"dependencies.cylindricalLyphTypes\"></repo-template>\n        </div>\n        <ng-content></ng-content>\n    </lyphType-panel>\n  ",
+            directives: [panel_lyphType_1.LyphTypePanel, ng2_radio_group_1.RADIO_GROUP_DIRECTIVES, component_general_1.MultiSelectInput, repo_template_1.RepoTemplate]
         }), 
         __metadata('design:paramtypes', [service_restore_1.RestoreService])
     ], CylindricalLyphTypePanel);

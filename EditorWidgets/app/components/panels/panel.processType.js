@@ -18,25 +18,28 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  */
 var core_1 = require('@angular/core');
 var service_restore_1 = require("../../providers/service.restore");
-var panel_resource_1 = require("./panel.resource");
+var service_apinatomy2_1 = require("../../providers/service.apinatomy2");
+var panel_type_1 = require("./panel.type");
 var component_general_1 = require('../component.general');
+var ng2_radio_group_1 = require("ng2-radio-group");
 var ProcessTypePanel = (function (_super) {
     __extends(ProcessTypePanel, _super);
     function ProcessTypePanel(restoreService) {
         _super.call(this, restoreService);
         this.restoreService = restoreService;
+        this.transportPhenomenon = service_apinatomy2_1.TransportPhenomenon;
     }
     ProcessTypePanel = __decorate([
         core_1.Component({
             providers: [service_restore_1.RestoreService],
             selector: 'processType-panel',
             inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <resource-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      [ignore]=\"['equivalence', 'weakEquivalence']\" \n      (saved)=\"saved.emit($event)\" \n      (removed)=\"removed.emit($event)\">\n        <div class=\"input-control\" *ngIf=\"includeProperty('transportPhenomenon')\">\n          <label for=\"transportPhenomenon\">Transport phenomenon: </label>\n          \n        </div>\n        <ng-content></ng-content>      \n    </resource-panel>\n  ",
-            directives: [panel_resource_1.ResourcePanel, component_general_1.MultiSelectInput]
+            template: "\n    <type-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      [ignore]=\"['equivalence', 'weakEquivalence']\" \n      (saved)=\"saved.emit($event)\" \n      (removed)=\"removed.emit($event)\">\n        <div class=\"input-control\" *ngIf=\"includeProperty('transportPhenomenon')\">\n          <fieldset>\n            <legend>Transport phenomenon:</legend>\n            <radio-group [(ngModel)]=\"item.transportPhenomenon\" [required]=\"true\">\n               <input type=\"radio\" [value]=\"transportPhenomenon.diffusion\">{{transportPhenomenon.diffusion}}&nbsp;\n               <input type=\"radio\" [value]=\"transportPhenomenon.advection\">{{transportPhenomenon.advection}}<br/>\n             </radio-group>\n          </fieldset>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('measurables')\">\n          <repo-template caption='Measurables' [items]=\"item.measurables\" [dependencies]=\"dependencies.measurableTypes\"></repo-template>\n        </div>\n        <ng-content></ng-content>      \n    </type-panel>\n  ",
+            directives: [panel_type_1.TypePanel, component_general_1.MultiSelectInput, ng2_radio_group_1.RADIO_GROUP_DIRECTIVES]
         }), 
         __metadata('design:paramtypes', [service_restore_1.RestoreService])
     ], ProcessTypePanel);
     return ProcessTypePanel;
-}(panel_resource_1.ResourcePanel));
+}(panel_type_1.TypePanel));
 exports.ProcessTypePanel = ProcessTypePanel;
 //# sourceMappingURL=panel.processType.js.map

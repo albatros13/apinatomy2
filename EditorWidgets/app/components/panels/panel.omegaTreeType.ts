@@ -9,7 +9,7 @@ import {MultiSelectInput} from '../component.general';
 
 @Component({
   providers: [RestoreService],
-  selector: 'groupType-panel',
+  selector: 'omegaTreeType-panel',
   inputs: ['item', 'ignore', 'dependencies'],
   template:`
     <groupType-panel 

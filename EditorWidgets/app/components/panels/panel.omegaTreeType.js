@@ -29,7 +29,7 @@ var OmegaTreeTypePanel = (function (_super) {
     OmegaTreeTypePanel = __decorate([
         core_1.Component({
             providers: [service_restore_1.RestoreService],
-            selector: 'groupType-panel',
+            selector: 'omegaTreeType-panel',
             inputs: ['item', 'ignore', 'dependencies'],
             template: "\n    <groupType-panel \n      [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <ng-content></ng-content>      \n    </groupType-panel>\n  ",
             directives: [panel_groupType_1.GroupTypePanel, component_general_1.MultiSelectInput]

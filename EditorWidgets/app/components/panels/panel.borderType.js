@@ -18,25 +18,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  */
 var core_1 = require('@angular/core');
 var service_restore_1 = require("../../providers/service.restore");
-var panel_resource_1 = require("./panel.resource");
+var panel_type_1 = require("./panel.type");
 var component_general_1 = require('../component.general');
-var PublicationPanel = (function (_super) {
-    __extends(PublicationPanel, _super);
-    function PublicationPanel(restoreService) {
+var ng2_radio_group_1 = require("ng2-radio-group");
+var BorderTypePanel = (function (_super) {
+    __extends(BorderTypePanel, _super);
+    function BorderTypePanel(restoreService) {
         _super.call(this, restoreService);
         this.restoreService = restoreService;
     }
-    PublicationPanel = __decorate([
+    BorderTypePanel = __decorate([
         core_1.Component({
             providers: [service_restore_1.RestoreService],
-            selector: 'publication-panel',
+            selector: 'borderType-panel',
             inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <resource-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      [ignore]=\"['equivalence', 'weakEquivalence']\" \n      (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <ng-content></ng-content>      \n    </resource-panel>\n  ",
-            directives: [panel_resource_1.ResourcePanel, component_general_1.MultiSelectInput]
+            template: "\n    <type-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      [ignore]=\"['equivalence', 'weakEquivalence']\" \n      (saved)=\"saved.emit($event)\" \n      (removed)=\"removed.emit($event)\">\n      \n        <ng-content></ng-content>      \n    </type-panel>\n  ",
+            directives: [panel_type_1.TypePanel, component_general_1.MultiSelectInput, ng2_radio_group_1.RADIO_GROUP_DIRECTIVES]
         }), 
         __metadata('design:paramtypes', [service_restore_1.RestoreService])
-    ], PublicationPanel);
-    return PublicationPanel;
-}(panel_resource_1.ResourcePanel));
-exports.PublicationPanel = PublicationPanel;
-//# sourceMappingURL=panel.publication.js.map
+    ], BorderTypePanel);
+    return BorderTypePanel;
+}(panel_type_1.TypePanel));
+exports.BorderTypePanel = BorderTypePanel;
+//# sourceMappingURL=panel.borderType.js.map

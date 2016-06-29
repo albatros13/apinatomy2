@@ -14,10 +14,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require('@angular/core');
 var ng2_select_1 = require('ng2-select/ng2-select');
 var common_1 = require('@angular/common');
+var dropdown_1 = require('ng2-bootstrap/components/dropdown');
 var MultiSelectInput = (function () {
     function MultiSelectInput() {
         this.options = [];
     }
+    MultiSelectInput.prototype.ngOnInit = function () {
+        if (!this.options)
+            this.options = [];
+    };
     MultiSelectInput.prototype.getSelectionSource = function () {
         if (this.options)
             return this.options.map(function (entry) { return ({ id: entry.id, text: entry.name ? entry.name : entry.id }); });
@@ -49,6 +54,10 @@ var SingleSelectInput = (function () {
     function SingleSelectInput() {
         this.options = [];
     }
+    SingleSelectInput.prototype.ngOnInit = function () {
+        if (!this.options)
+            this.options = [];
+    };
     SingleSelectInput.prototype.getSelectionSource = function () {
         if (this.options)
             return this.options.map(function (entry) { return ({ id: entry.id, text: entry.name ? entry.name : entry.id }); });
@@ -76,39 +85,14 @@ var SingleSelectInput = (function () {
     return SingleSelectInput;
 }());
 exports.SingleSelectInput = SingleSelectInput;
-var QualityInput = (function () {
-    function QualityInput() {
-    }
-    QualityInput = __decorate([
-        core_1.Component({
-            selector: 'quality-input',
-            inputs: ['item'],
-            template: "\n     <div class=\"input-control\">\n       <label for=\"quality\">Quality: </label>\n       <input type=\"text\" required [(ngModel)]=\"item\">\n     </div>\n  ",
-            directives: []
-        }), 
-        __metadata('design:paramtypes', [])
-    ], QualityInput);
-    return QualityInput;
-}());
-exports.QualityInput = QualityInput;
-var List = (function () {
-    function List() {
-    }
-    __decorate([
-        core_1.ContentChild(core_1.TemplateRef), 
-        __metadata('design:type', core_1.TemplateRef)
-    ], List.prototype, "contentTemplate", void 0);
-    List = __decorate([
-        core_1.Component({
-            selector: 'list',
-            inputs: ['items'],
-            template: "<template ngFor [ngForOf]=\"items\" [ngForTemplate]=\"contentTemplate\"></template>"
-        }), 
-        __metadata('design:paramtypes', [])
-    ], List);
-    return List;
-}());
-exports.List = List;
+// @Component({
+//   selector: 'list',
+//   inputs: ['items'],
+//   template: `<template ngFor [ngForOf]="items" [ngForTemplate]="contentTemplate"></template>`
+// })
+// export class List {
+//   @ContentChild(TemplateRef) contentTemplate: TemplateRef<any>;
+// }
 var ItemHeader = (function () {
     function ItemHeader() {
     }
@@ -123,4 +107,44 @@ var ItemHeader = (function () {
     return ItemHeader;
 }());
 exports.ItemHeader = ItemHeader;
+var SortToolbar = (function () {
+    function SortToolbar() {
+        this.sorted = new core_1.EventEmitter();
+    }
+    __decorate([
+        core_1.Output(), 
+        __metadata('design:type', Object)
+    ], SortToolbar.prototype, "sorted", void 0);
+    SortToolbar = __decorate([
+        core_1.Component({
+            selector: 'sort-toolbar',
+            inputs: ['options'],
+            template: "\n      <div class=\"btn-group\" dropdown>\n        <button type=\"button\" class=\"btn btn-default dropdown-toggle\" aria-label=\"SortAsc\" dropdownToggle>\n          <span class=\"glyphicon glyphicon-sort-by-attributes\" aria-hidden=\"true\"></span>\n        </button>\n        <ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"SortAsc\">\n          <li *ngFor=\"let option of options; let i = index\" role=\"menuitem\" (click)=\"sorted.emit(option)\">\n            <a class=\"dropdown-item\" href=\"#\">{{option}}</a>\n          </li>\n        </ul>\n      </div>\n      <div class=\"btn-group\" dropdown>\n        <button type=\"button\" class=\"btn btn-default dropdown-toggle\" aria-label=\"SortDesc\" dropdownToggle>\n          <span class=\"glyphicon glyphicon-sort-by-attributes-alt\" aria-hidden=\"true\"></span>\n        </button>\n        <ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"SortDesc\">\n          <li *ngFor=\"let option of options; let i = index\" role=\"menuitem\" (click)=\"sorted.emit('-'+option)\">\n            <a class=\"dropdown-item\" href=\"#\">{{option}}</a>\n          </li>\n        </ul>\n      </div>\n    ",
+            directives: [dropdown_1.DROPDOWN_DIRECTIVES, common_1.CORE_DIRECTIVES]
+        }), 
+        __metadata('design:paramtypes', [])
+    ], SortToolbar);
+    return SortToolbar;
+}());
+exports.SortToolbar = SortToolbar;
+var EditToolbar = (function () {
+    function EditToolbar() {
+        this.added = new core_1.EventEmitter();
+    }
+    __decorate([
+        core_1.Output(), 
+        __metadata('design:type', Object)
+    ], EditToolbar.prototype, "added", void 0);
+    EditToolbar = __decorate([
+        core_1.Component({
+            selector: 'edit-toolbar',
+            inputs: ['options'],
+            template: "\n      <div class=\"btn-group\" dropdown>\n        <button type=\"button\" class=\"btn btn-default dropdown-toggle\" aria-label=\"Add\" dropdownToggle>\n          <span class=\"glyphicon glyphicon-plus\"></span>\n        </button>\n        <ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"Add\">\n          <li *ngFor=\"let option of options; let i = index\" role=\"menuitem\" (click)=\"added.emit(option)\">\n            <a class=\"dropdown-item\" href=\"#\">{{option}}</a>\n          </li>\n        </ul>\n      </div>\n    ",
+            directives: [dropdown_1.DROPDOWN_DIRECTIVES, common_1.CORE_DIRECTIVES]
+        }), 
+        __metadata('design:paramtypes', [])
+    ], EditToolbar);
+    return EditToolbar;
+}());
+exports.EditToolbar = EditToolbar;
 //# sourceMappingURL=component.general.js.map

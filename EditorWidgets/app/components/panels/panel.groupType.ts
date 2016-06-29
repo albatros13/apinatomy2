@@ -5,7 +5,7 @@ import {Component} from '@angular/core';
 import {RestoreService} from "../../providers/service.restore";
 import {IGroupType} from "../../providers/service.apinatomy2";
 import {TypePanel} from "./panel.type";
-import {MultiSelectInput} from '../component.general';
+import {RepoTemplate} from '../repos/repo.template';
 
 @Component({
   providers: [RestoreService],
@@ -14,10 +14,13 @@ import {MultiSelectInput} from '../component.general';
   template:`
     <type-panel [item]="item" 
       [dependencies]="dependencies" (saved)="saved.emit($event)" (removed)="removed.emit($event)">
+      <div class="input-control" *ngIf="includeProperty('elements')">
+         <repo-template caption="Elements" [items] = "item.elements" [dependencies] = "dependencies.types"></repo-template>
+      </div>
       <ng-content></ng-content>      
     </type-panel>
   `,
-  directives: [TypePanel, MultiSelectInput]
+  directives: [TypePanel, RepoTemplate]
 })
 export class GroupTypePanel extends TypePanel{
   constructor(protected restoreService: RestoreService<IGroupType>){

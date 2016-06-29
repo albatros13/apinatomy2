@@ -3,27 +3,28 @@
  */
 import {Component} from '@angular/core';
 import {RestoreService} from "../../providers/service.restore";
-import {IClinicalIndex} from "../../providers/service.apinatomy2";
-import {ResourcePanel} from "./panel.resource";
+import {ICausalityType} from "../../providers/service.apinatomy2";
+import {TypePanel} from "./panel.type";
 import {MultiSelectInput} from '../component.general';
+import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
 
 @Component({
   providers: [RestoreService],
-  selector: 'clinicalIndex-panel',
+  selector: 'causalityType-panel',
   inputs: ['item', 'ignore', 'dependencies'],
   template:`
-    <resource-panel [item]="item" 
+    <type-panel [item]="item" 
       [dependencies]="dependencies" 
       [ignore]="['equivalence', 'weakEquivalence']" 
       (saved)="saved.emit($event)" 
       (removed)="removed.emit($event)">
-      <ng-content></ng-content>      
-    </resource-panel>
+        <ng-content></ng-content>      
+    </type-panel>
   `,
-  directives: [ResourcePanel, MultiSelectInput]
+  directives: [TypePanel, MultiSelectInput, RADIO_GROUP_DIRECTIVES]
 })
-export class ClinicalIndexPanel extends ResourcePanel{
-  constructor(protected restoreService: RestoreService<IClinicalIndex>){
+export class CausalityTypePanel extends TypePanel{
+  constructor(protected restoreService: RestoreService<ICausalityType>){
     super(restoreService);
   }
 }

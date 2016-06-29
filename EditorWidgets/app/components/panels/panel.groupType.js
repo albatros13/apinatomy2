@@ -19,7 +19,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require('@angular/core');
 var service_restore_1 = require("../../providers/service.restore");
 var panel_type_1 = require("./panel.type");
-var component_general_1 = require('../component.general');
+var repo_template_1 = require('../repos/repo.template');
 var GroupTypePanel = (function (_super) {
     __extends(GroupTypePanel, _super);
     function GroupTypePanel(restoreService) {
@@ -31,8 +31,8 @@ var GroupTypePanel = (function (_super) {
             providers: [service_restore_1.RestoreService],
             selector: 'groupType-panel',
             inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <type-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <ng-content></ng-content>      \n    </type-panel>\n  ",
-            directives: [panel_type_1.TypePanel, component_general_1.MultiSelectInput]
+            template: "\n    <type-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <div class=\"input-control\" *ngIf=\"includeProperty('elements')\">\n         <repo-template caption=\"Elements\" [items] = \"item.elements\" [dependencies] = \"dependencies.types\"></repo-template>\n      </div>\n      <ng-content></ng-content>      \n    </type-panel>\n  ",
+            directives: [panel_type_1.TypePanel, repo_template_1.RepoTemplate]
         }), 
         __metadata('design:paramtypes', [service_restore_1.RestoreService])
     ], GroupTypePanel);

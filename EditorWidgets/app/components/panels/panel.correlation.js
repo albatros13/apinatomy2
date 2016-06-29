@@ -30,9 +30,9 @@ var CorrelationPanel = (function (_super) {
         core_1.Component({
             providers: [service_restore_1.RestoreService],
             selector: 'correlation-panel',
-            inputs: ['item', 'ignore', 'dependency'],
-            template: "\n    <resource-panel [item]=\"item\" [dependency]=\"dependency\" [ignore]=\"['equivalence', 'weakEquivalence']\" \n      (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n        <ng-content></ng-content>      \n    </resource-panel>\n  ",
-            directives: [panel_resource_1.ResourcePanel, component_general_1.MultiSelectInput]
+            inputs: ['item', 'ignore', 'dependencies'],
+            template: "\n    <resource-panel [item]=\"item\" [dependencies]=\"dependencies\" [ignore]=\"['equivalence', 'weakEquivalence']\" \n      (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n        <div>\n          <label for=\"publication\">Publication: </label>\n          <select-input-1 [item] = \"item.publication\" [options] = \"dependencies.publications\"></select-input-1>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('clinicalIndices')\">\n          <label for=\"clinicalIndices\">Clinical indices: </label>\n          <select-input [item]=\"item.clinicalIndices\" [options]=\"dependencies.clinicalIndices\"></select-input>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('locatedMeasurables')\">\n          <label for=\"locatedMeasurables\">Located measurables: </label>\n          <select-input [item]=\"item.locatedMeasurables\" [options]=\"dependencies.locatedMeasurables\"></select-input>\n        </div>\n        <ng-content></ng-content>      \n    </resource-panel>\n  ",
+            directives: [panel_resource_1.ResourcePanel, component_general_1.SingleSelectInput, component_general_1.MultiSelectInput]
         }), 
         __metadata('design:paramtypes', [service_restore_1.RestoreService])
     ], CorrelationPanel);

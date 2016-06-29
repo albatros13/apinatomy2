@@ -2,7 +2,7 @@
  * Created by Natallia on 6/14/2016.
  */
 import {Component} from '@angular/core';
-import {IResource, Resource} from '../../providers/service.apinatomy2';
+import {IResource, Resource, ITemplate} from '../../providers/service.apinatomy2';
 
 @Component({
   selector: 'sort-toolbar',
@@ -53,18 +53,18 @@ export class RepoToolbar {
   items: Array<IResource>;
   constructor(){}
   addItem() {
-    this.items.push(new Resource());
+    this.items.push(new Resource({id: 0, name: "New item"}));
   }
 }
 
 @Component({
   selector: 'repo-wrapper',
-  inputs: ['model'],
+  inputs: ['items', 'caption'],
   template:`
         <div class="panel panel-info repo">
-          <div class="panel-heading">{{model.caption}}</div>
+          <div class="panel-heading">{{caption}}</div>
           <div class="panel-body" >
-            <repo-toolbar [items]="model.items"></repo-toolbar>
+            <repo-toolbar [items]="items"></repo-toolbar>
               <ng-content></ng-content>
           </div>
         </div>
@@ -74,13 +74,14 @@ export class RepoToolbar {
 })
 export class RepoWrapper {
   public selected: IResource = null;
-  public model: {items: Array<IResource>, caption: string};
+  public items: Array<IResource> = [];
 
   constructor(){}
 
   protected ngOnInit(){
-    if (this.model && this.model.items && this.model.items[0])
-      this.selected = this.model.items[0];
+
+    if (this.items && this.items[0])
+      this.selected = this.items[0];
   }
 
   protected changeActive(item: any){
@@ -95,9 +96,54 @@ export class RepoWrapper {
      }
    }
 
-  protected onRemoved(item: IResource){
-    let index = this.model.items.indexOf(item);
-    if (index > -1) this.model.items.splice(index, 1);
+  protected onRemoved(item: IResource, items: Array<IResource>){
+    if (!items) return;
+    let index = items.indexOf(item);
+    if (index > -1) items.splice(index, 1);
   }
 }
+
+@Component({
+  selector: 'repo-template-wrapper',
+  inputs: ['items', 'caption'],
+  template:`
+    <div class="panel panel-warning repo-template">
+      <div class="panel-heading">{{caption}}</div>
+      <div class="panel-body" >
+          <ng-content></ng-content>
+      </div>
+    </div>
+  `,
+  directives: []
+})
+export class RepoTemplateWrapper {
+  public selected: ITemplate = null;
+  public items: Array<ITemplate> = [];
+
+  constructor(){}
+
+  protected ngOnInit(){
+    if (!this.items) this.items = [];
+    if (this.items && this.items[0])
+      this.selected = this.items[0];
+  }
+
+  protected changeActive(item: any){
+    this.selected = item;
+  }
+
+  protected onSaved(item: ITemplate, updatedItem: ITemplate){
+    for (var key in updatedItem){
+      if (updatedItem.hasOwnProperty(key)){
+        item[key] = updatedItem[key];
+      }
+    }
+  }
+
+  protected onRemoved(item: ITemplate){
+    let index = this.items.indexOf(item);
+    if (index > -1) this.items.splice(index, 1);
+  }
+}
+
 

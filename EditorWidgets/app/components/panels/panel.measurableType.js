@@ -30,8 +30,8 @@ var MeasurableTypePanel = (function (_super) {
         core_1.Component({
             providers: [service_restore_1.RestoreService],
             selector: 'measurableType-panel',
-            inputs: ['item', 'ignore', 'dependency'],
-            template: "\n    <type-panel [item]=\"item\" [dependency]=\"dependency\" [ignore]=\"['equivalence', 'weakEquivalence']\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <quality-input item=\"item.quality\"></quality-input>\n      <ng-content></ng-content>      \n    </type-panel>\n  ",
+            inputs: ['item', 'ignore', 'dependencies'],
+            template: "\n    <type-panel [item]=\"item\" [dependencies]=\"dependencies\" [ignore]=\"['equivalence', 'weakEquivalence']\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <quality-input item=\"item.quality\"></quality-input>\n      <ng-content></ng-content>      \n    </type-panel>\n  ",
             directives: [panel_type_1.TypePanel, component_general_1.MultiSelectInput]
         }), 
         __metadata('design:paramtypes', [service_restore_1.RestoreService])

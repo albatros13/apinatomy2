@@ -10,9 +10,13 @@ import {MultiSelectInput} from '../component.general';
 @Component({
   providers: [RestoreService],
   selector: 'processType-panel',
-  inputs: ['item', 'ignore', 'dependency'],
+  inputs: ['item', 'ignore', 'dependencies'],
   template:`
-    <resource-panel [item]="item" [dependency]="dependency" [ignore]="['equivalence', 'weakEquivalence']" (saved)="saved.emit($event)" (removed)="removed.emit($event)">
+    <resource-panel [item]="item" 
+      [dependencies]="dependencies" 
+      [ignore]="['equivalence', 'weakEquivalence']" 
+      (saved)="saved.emit($event)" 
+      (removed)="removed.emit($event)">
         <div class="input-control" *ngIf="includeProperty('transportPhenomenon')">
           <label for="transportPhenomenon">Transport phenomenon: </label>
           

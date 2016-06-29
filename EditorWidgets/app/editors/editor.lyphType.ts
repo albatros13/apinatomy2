@@ -1,14 +1,13 @@
 /**
  * Created by Natallia on 6/8/2016.
  */
-import {Component, Directive, Input, ViewChild, ComponentFactory, ElementRef, ComponentResolver, ViewContainerRef} from '@angular/core';
-import {RepoLyphType} from '../components/repos/repo.lyphType'
-import {RepoPublication} from '../components/repos/repo.publication'
+import {Component, Directive, Input, ElementRef} from '@angular/core';
+import {RepoGeneral} from '../components/repos/repo.general'
 import {IExternalResource,
-  IType, TypeProvider,
+  IResource, IType, TypeProvider,
   IMaterialType, MaterialTypeProvider,
-  ILyphType, LyphTypeProvider,
-  IPublication, PublicationProvider} from '../providers/service.apinatomy2'
+  ILyphType, LyphTypeProvider} from '../providers/service.apinatomy2'
+
 declare var GoldenLayout:any;
 
 @Directive({
@@ -90,34 +89,31 @@ export class LyphTypeWidget{
   selector: 'lyphType-editor',
   providers: [TypeProvider, MaterialTypeProvider, LyphTypeProvider],
   template: `
-    <repo-lyphType [items]="items" [dependency]="dependency"></repo-lyphType>
-    <repo-publication [items]="publications"></repo-publication>
+    <repo-general [items]="items" caption="Materials" [dependencies]="dependency"></repo-general>
   `,
-  directives: [LyphTypeWidget, RepoLyphType, RepoPublication]
+  directives: [RepoGeneral]
 })
 export class LyphTypeEditor {
+  items: Array<IMaterialType>;
   dependency: {
     equivalences: Array<IExternalResource>,
     weakEquivalences: Array<IExternalResource>,
     types: Array<IType>,
     materialTypes: Array<IMaterialType>,
-    lyphTypes: Array<ILyphType> };
+    lyphTypes: Array<ILyphType>};
 
-  items: Array<ILyphType>;
-  publications: Array<IPublication>;
   constructor(
     typeProvider: TypeProvider,
     materialTypeProvider: MaterialTypeProvider,
-    lyphTypeProvider: LyphTypeProvider,
-    publicationProvider: PublicationProvider) {
+    lyphTypeProvider: LyphTypeProvider) {
+
     this.dependency = {
       equivalences: [],
       weakEquivalences: [],
       types: typeProvider.items,
       materialTypes: materialTypeProvider.items,
       lyphTypes: lyphTypeProvider.items};
-    this.items = lyphTypeProvider.items;
-    this.publications = publicationProvider.items;
+    this.items = materialTypeProvider.items;
   }
 }
 

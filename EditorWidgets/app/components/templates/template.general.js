@@ -88,7 +88,7 @@ var BoundedNormalDistributionInput = (function (_super) {
 exports.BoundedNormalDistributionInput = BoundedNormalDistributionInput;
 var DistributionInput = (function () {
     function DistributionInput() {
-        this.distributionType = ["Uniform", "BoundedNormal"];
+        this.distributionType = service_apinatomy2_1.DistributionType;
     }
     DistributionInput.prototype.ngOnInit = function () {
         if (!this.item)
@@ -98,7 +98,7 @@ var DistributionInput = (function () {
         core_1.Component({
             selector: 'distribution-input',
             inputs: ['item'],
-            template: "\n    <fieldset>\n      <radio-group [(ngModel)]=\"distributionType\" [required]=\"true\">\n        <input type=\"radio\" value=\"Uniform\" checked = \"item.type == 'Uniform'\">Uniform\n        <input type=\"radio\" value=\"BoundedNormal\" checked = \"item.type == 'BoundedNormal'\">Bounded normal<br/>\n      </radio-group>\n      <uniformDistribution-input [item]=\"item.distribution\" *ngIf=\"distributionType != 'BoundedNormal'\"></uniformDistribution-input>\n      <boundedNormalDistribution-input [item]=\"item.distribution\" *ngIf=\"distributionType == 'BoundedNormal'\"></boundedNormalDistribution-input>\n    </fieldset>\n  ",
+            template: "\n    <fieldset>\n      <radio-group [(ngModel)]=\"item.type\" [required]=\"true\">\n        <input type=\"radio\" [value]=\"distributionType.Uniform\">Uniform&nbsp;\n        <input type=\"radio\" [value]=\"distributionType.BoundedNormal\">Bounded normal<br/>\n      </radio-group>\n      <uniformDistribution-input [item]=\"item.distribution\" *ngIf=\"item.type == distributionType.Uniform\"></uniformDistribution-input>\n      <boundedNormalDistribution-input [item]=\"item.distribution\" *ngIf=\"item.type == distributionType.BoundedNormal\"></boundedNormalDistribution-input>\n    </fieldset>\n  ",
             directives: [ng2_radio_group_1.RADIO_GROUP_DIRECTIVES, UniformDistributionInput, BoundedNormalDistributionInput]
         }), 
         __metadata('design:paramtypes', [])
@@ -108,13 +108,17 @@ var DistributionInput = (function () {
 exports.DistributionInput = DistributionInput;
 var TemplateValue = (function () {
     function TemplateValue() {
-        this.valueType = ["Value", "Distribution"];
+        this.valueType = "Value";
     }
+    TemplateValue.prototype.ngOnInit = function () {
+        if (this.item && this.item['distribution'])
+            this.valueType = "Distribution";
+    };
     TemplateValue = __decorate([
         core_1.Component({
             "inputs": ["caption", "item"],
             "selector": "template-value",
-            "template": "\n     <fieldset>\n       <legend>{{caption}}</legend>\n       <radio-group [(ngModel)]=\"valueType\" [required]=\"true\">\n         <input type=\"radio\" value=\"Value\">Value\n         <input type=\"radio\" value=\"Distribution\">Distribution<br/>\n       </radio-group>\n       <input type=\"number\" min=\"0\" max=\"100\" [(ngModel)]=\"item\" *ngIf=\"valueType != 'Distribution'\"/>\n       <distribution-input [item]=\"item\" *ngIf=\"valueType == 'Distribution'\"></distribution-input>\n     </fieldset>\n   ",
+            "template": "\n     <fieldset>\n       <legend>{{caption}}</legend>\n       <radio-group [(ngModel)]=\"valueType\" [required]=\"true\">\n         <input type=\"radio\" value=\"Value\">Value&nbsp;\n         <input type=\"radio\" value=\"Distribution\">Distribution<br/>\n       </radio-group>\n       <input type=\"number\" min=\"0\" max=\"100\" [(ngModel)]=\"item\" *ngIf=\"valueType == 'Value'\"/>\n       <distribution-input [item]=\"item\" *ngIf=\"valueType == 'Distribution'\"></distribution-input>\n     </fieldset>\n   ",
             "directives": [ng2_radio_group_1.RADIO_GROUP_DIRECTIVES, DistributionInput]
         }), 
         __metadata('design:paramtypes', [])
@@ -122,43 +126,4 @@ var TemplateValue = (function () {
     return TemplateValue;
 }());
 exports.TemplateValue = TemplateValue;
-var RepoTemplateWrapper = (function () {
-    function RepoTemplateWrapper() {
-        this.selected = null;
-        this.model = {
-            caption: "Templates", items: [], options: [] };
-    }
-    RepoTemplateWrapper.prototype.ngOnInit = function () {
-        if (!this.model.items)
-            this.model.items = [];
-        if (this.model && this.model.items && this.model.items[0])
-            this.selected = this.model.items[0];
-    };
-    RepoTemplateWrapper.prototype.changeActive = function (item) {
-        this.selected = item;
-    };
-    RepoTemplateWrapper.prototype.onSaved = function (item, updatedItem) {
-        for (var key in updatedItem) {
-            if (updatedItem.hasOwnProperty(key)) {
-                item[key] = updatedItem[key];
-            }
-        }
-    };
-    RepoTemplateWrapper.prototype.onRemoved = function (item) {
-        var index = this.model.items.indexOf(item);
-        if (index > -1)
-            this.model.items.splice(index, 1);
-    };
-    RepoTemplateWrapper = __decorate([
-        core_1.Component({
-            selector: 'repo-template-wrapper',
-            inputs: ['model'],
-            template: "\n    <div class=\"panel panel-warning repo-template\">\n      <div class=\"panel-heading\">{{model.caption}}</div>\n      <div class=\"panel-body\" >\n          <ng-content></ng-content>\n      </div>\n    </div>\n  ",
-            directives: []
-        }), 
-        __metadata('design:paramtypes', [])
-    ], RepoTemplateWrapper);
-    return RepoTemplateWrapper;
-}());
-exports.RepoTemplateWrapper = RepoTemplateWrapper;
 //# sourceMappingURL=template.general.js.map

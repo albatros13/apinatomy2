@@ -10,9 +10,10 @@ import {MultiSelectInput} from '../component.general';
 @Component({
   providers: [RestoreService],
   selector: 'groupType-panel',
-  inputs: ['item', 'ignore', 'dependency'],
+  inputs: ['item', 'ignore', 'dependencies'],
   template:`
-    <groupType-panel [item]="item" [dependency]="dependency" (saved)="saved.emit($event)" (removed)="removed.emit($event)">
+    <groupType-panel 
+      [item]="item" [dependencies]="dependencies" (saved)="saved.emit($event)" (removed)="removed.emit($event)">
       <ng-content></ng-content>      
     </groupType-panel>
   `,

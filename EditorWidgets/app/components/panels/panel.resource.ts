@@ -31,7 +31,7 @@ export class ResourceToolbar {
 @Component({
   selector: 'resource-panel',
   providers: [RestoreService],
-  inputs: ['item', 'ignore', 'dependency'],
+  inputs: ['item', 'ignore', 'dependencies'],
   template:`
     <div class="panel">
         <div class="panel-body">
@@ -51,11 +51,11 @@ export class ResourceToolbar {
               </div>
               <div class="input-control" *ngIf="includeProperty('equivalence')">
                 <label for="equivalence">Equivalence: </label>
-                <select-input [item]="item.equivalence" [options]="dependency.equivalences"></select-input>
+                <select-input [item]="item.equivalence" [options]="dependencies.equivalences"></select-input>
               </div>
               <div class="input-control" *ngIf="includeProperty('weakEquivalence')">
                 <label for="weakEquivalence">Weak equivalence: </label>
-                <select-input [item]="item.weakEquivalence" [options]="dependency.weakEquivalences"></select-input>
+                <select-input [item]="item.weakEquivalence" [options]="dependencies.weakEquivalences"></select-input>
               </div>
               <ng-content></ng-content>
           </div>

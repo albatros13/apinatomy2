@@ -20,6 +20,7 @@ var core_1 = require('@angular/core');
 var service_restore_1 = require("../../providers/service.restore");
 var panel_type_1 = require("./panel.type");
 var component_general_1 = require('../component.general');
+// import {RepoMeasurableTypeTemplate} from '../templates/template.measurableType';
 var MaterialTypePanel = (function (_super) {
     __extends(MaterialTypePanel, _super);
     function MaterialTypePanel(restoreService) {
@@ -30,9 +31,9 @@ var MaterialTypePanel = (function (_super) {
         core_1.Component({
             providers: [service_restore_1.RestoreService],
             selector: 'materialType-panel',
-            inputs: ['item', 'ignore', 'dependency'],
-            template: "\n    <type-panel [item]=\"item\" \n      [dependency] = \"dependency\" \n      (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n        <div class=\"input-control\" *ngIf=\"includeProperty('materials')\">\n            <label for=\"meterials\">Materials: </label>\n            <select-input [item]=\"item.materials\" [options]=\"dependency.materialTypes\"></select-input>\n          </div>\n        <ng-content></ng-content>\n    </type-panel>\n  ",
-            directives: [panel_type_1.TypePanel, component_general_1.MultiSelectInput]
+            inputs: ['item', 'ignore', 'dependencies'],
+            template: "\n    <type-panel [item]=\"item\" \n      [dependencies] = \"dependencies\" \n      (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n        <div class=\"input-control\" *ngIf=\"includeProperty('inheritsMaterials')\">\n          <label for=\"inheritsMaterials\">Inherits materials: </label>\n          <select-input [item]=\"item.inheritsMaterials\" [options]=\"dependencies.materialTypes\"></select-input>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('materials')\">\n            <label for=\"meterials\">Materials: </label>\n            <select-input [item]=\"item.materials\" [options]=\"dependencies.materialTypes\"></select-input>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('inheritsMeasurables')\">\n          <label for=\"inheritsMeasurables\">Inherits measurables: </label>\n          <select-input [item]=\"item.inheritsMeasurables\" [options]=\"dependencies.materialTypes\"></select-input>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('measurables')\">\n          <repo-template caption='Measurables' [items]=\"item.measurables\" [dependencies]=\"dependencies.measurableTypes\"></repo-template>\n        </div>\n        <ng-content></ng-content>\n    </type-panel>\n  ",
+            directives: [panel_type_1.TypePanel, component_general_1.MultiSelectInput] //, RepoMeasurableTypeTemplate]
         }), 
         __metadata('design:paramtypes', [service_restore_1.RestoreService])
     ], MaterialTypePanel);

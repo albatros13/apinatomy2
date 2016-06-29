@@ -18,6 +18,37 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  */
 var core_1 = require('@angular/core');
 ///////////////////////////////////////////////////////
+(function (ResourceName) {
+    ResourceName[ResourceName["Resource"] = "Resource"] = "Resource";
+    ResourceName[ResourceName["Type"] = "Type"] = "Type";
+    ResourceName[ResourceName["MaterialType"] = "MaterialType"] = "MaterialType";
+    ResourceName[ResourceName["LyphType"] = "LyphType"] = "LyphType";
+    ResourceName[ResourceName["CylindricalLyphType"] = "CylindricalLyphType"] = "CylindricalLyphType";
+    ResourceName[ResourceName["ProcessType"] = "ProcessType"] = "ProcessType";
+    ResourceName[ResourceName["MeasurableType"] = "MeasurableType"] = "MeasurableType";
+    ResourceName[ResourceName["CausalityType"] = "CausalityType"] = "CausalityType";
+    ResourceName[ResourceName["NodeType"] = "NodeType"] = "NodeType";
+    ResourceName[ResourceName["BorderType"] = "BorderType"] = "BorderType";
+    ResourceName[ResourceName["GroupType"] = "GroupType"] = "GroupType";
+    ResourceName[ResourceName["OmegaTreeType"] = "OmegaTreeType"] = "OmegaTreeType";
+    ResourceName[ResourceName["Publication"] = "Publication"] = "Publication";
+    ResourceName[ResourceName["Correlation"] = "Correlation"] = "Correlation";
+    ResourceName[ResourceName["ClinicalIndex"] = "ClinicalIndex"] = "ClinicalIndex";
+})(exports.ResourceName || (exports.ResourceName = {}));
+var ResourceName = exports.ResourceName;
+(function (TemplateName) {
+    TemplateName[TemplateName["Template"] = "Template"] = "Template";
+    TemplateName[TemplateName["LyphTemplate"] = "LyphTemplate"] = "LyphTemplate";
+    TemplateName[TemplateName["CylindricalLyphTemplate"] = "CylindricalLyphTemplate"] = "CylindricalLyphTemplate";
+    TemplateName[TemplateName["ProcessTemplate"] = "ProcessTemplate"] = "ProcessTemplate";
+    TemplateName[TemplateName["MeasurableTemplate"] = "MeasurableTemplate"] = "MeasurableTemplate";
+    TemplateName[TemplateName["CausalityTemplate"] = "CausalityTemplate"] = "CausalityTemplate";
+    TemplateName[TemplateName["NodeTemplate"] = "NodeTemplate"] = "NodeTemplate";
+    TemplateName[TemplateName["BorderTemplate"] = "BorderTemplate"] = "BorderTemplate";
+    TemplateName[TemplateName["GroupTemplate"] = "GroupTemplate"] = "GroupTemplate";
+    TemplateName[TemplateName["OmegaTreeTemplate"] = "OmegaTreeTemplate"] = "OmegaTreeTemplate";
+})(exports.TemplateName || (exports.TemplateName = {}));
+var TemplateName = exports.TemplateName;
 (function (Status) {
     Status[Status["New"] = "New"] = "New";
     Status[Status["Updated"] = "Updated"] = "Updated";
@@ -84,36 +115,25 @@ var ValueDistribution = (function () {
 exports.ValueDistribution = ValueDistribution;
 var Resource = (function () {
     function Resource(obj) {
-        if (obj === void 0) { obj = { id: 0, name: "New resource" }; }
         this.id = 0;
         this.name = "";
-        this.id = obj.id;
-        this.name = obj.name;
+        this.class = ResourceName.Resource;
+        this.id = (obj.id) ? obj.id : 0;
+        this.name = (obj.name) ? obj.name : "New item";
         this.equivalence = obj.equivalence;
         this.weakEquivalence = obj.weakEquivalence;
+        this.class = obj.class;
         this.status = Status.New;
     }
     return Resource;
 }());
 exports.Resource = Resource;
-var LyphTemplate = (function (_super) {
-    __extends(LyphTemplate, _super);
-    function LyphTemplate(obj) {
-        if (obj === void 0) { obj = { id: 0, name: "New template", type: null, length: 0 }; }
-        _super.call(this, obj);
-        this.length = 0;
-        this.type = obj.type;
-        this.length = obj.length;
-    }
-    return LyphTemplate;
-}(Resource));
-exports.LyphTemplate = LyphTemplate;
 var Type = (function (_super) {
     __extends(Type, _super);
     function Type(obj) {
-        if (obj === void 0) { obj = { id: 0, name: "New type", supertypes: [] }; }
         _super.call(this, obj);
         this.supertypes = [];
+        this.class = ResourceName.Type;
         this.supertypes = obj.supertypes;
     }
     return Type;
@@ -122,49 +142,41 @@ exports.Type = Type;
 var MaterialType = (function (_super) {
     __extends(MaterialType, _super);
     function MaterialType(obj) {
-        if (obj === void 0) { obj = { id: 0, name: "New material", materials: [] }; }
         _super.call(this, obj);
+        this.inheritsMaterials = [];
         this.materials = [];
+        this.inheritsMeasurables = [];
+        this.measurables = [];
+        this.class = ResourceName.MaterialType;
+        this.inheritsMaterials = obj.inheritsMaterials;
         this.materials = obj.materials;
+        this.inheritsMeasurables = obj.inheritsMeasurables;
+        this.measurables = obj.measurables;
     }
     return MaterialType;
 }(Type));
 exports.MaterialType = MaterialType;
-var MeasurableType = (function (_super) {
-    __extends(MeasurableType, _super);
-    function MeasurableType(obj) {
-        if (obj === void 0) { obj = { id: 0, name: "New measurement", quality: "" }; }
-        _super.call(this, obj);
-        this.quality = obj.quality;
-    }
-    return MeasurableType;
-}(Type));
-exports.MeasurableType = MeasurableType;
 var LyphType = (function (_super) {
     __extends(LyphType, _super);
     function LyphType(obj) {
-        if (obj === void 0) { obj = { id: 0, name: "New lyph type" }; }
         _super.call(this, obj);
         this.inheritsLayers = [];
         this.inheritsPatches = [];
         this.inheritsParts = [];
-        this.inheritsMeasurables = [];
         this.layers = [];
         this.patches = [];
         this.parts = [];
-        this.measurables = [];
         this.processes = [];
         this.nodes = [];
         this.innerBorder = null;
         this.outerBorder = null;
+        this.class = ResourceName.LyphType;
         this.inheritsLayers = obj.inheritsLayers;
         this.inheritsPatches = obj.inheritsPatches;
         this.inheritsParts = obj.inheritsParts;
-        this.inheritsMeasurables = obj.inheritsMeasurables;
         this.layers = obj.layers;
         this.patches = obj.patches;
         this.parts = obj.parts;
-        this.measurables = obj.measurables;
         this.processes = obj.processes;
         this.nodes = obj.nodes;
         this.innerBorder = obj.innerBorder;
@@ -176,12 +188,16 @@ exports.LyphType = LyphType;
 var CylindricalLyphType = (function (_super) {
     __extends(CylindricalLyphType, _super);
     function CylindricalLyphType(obj) {
-        if (obj === void 0) { obj = { id: 0, name: "New cylindrical lyph type" }; }
         _super.call(this, obj);
+        this.plusSide = SideType.open;
+        this.minusSide = SideType.open;
         this.inheritsSegments = [];
         this.segments = [];
         this.minusBorder = null;
         this.plusBorder = null;
+        this.class = ResourceName.CylindricalLyphType;
+        this.plusSide = obj.plusSide;
+        this.minusSide = obj.minusSide;
         this.inheritsSegments = obj.inheritsSegments;
         this.segments = obj.segments;
         this.minusBorder = obj.minusBorder;
@@ -190,53 +206,46 @@ var CylindricalLyphType = (function (_super) {
     return CylindricalLyphType;
 }(LyphType));
 exports.CylindricalLyphType = CylindricalLyphType;
+var MeasurableType = (function (_super) {
+    __extends(MeasurableType, _super);
+    function MeasurableType(obj) {
+        _super.call(this, obj);
+        this.class = ResourceName.MeasurableType;
+        this.quality = obj.quality;
+        this.references = obj.references;
+    }
+    return MeasurableType;
+}(Type));
+exports.MeasurableType = MeasurableType;
 ///////////////////////////////////////////////////////
-//TODO: Replace data for testing with user story
-var LyphTypeProvider = (function () {
-    function LyphTypeProvider() {
-        this.head = new LyphType({ id: 1, name: "Head", equivalence: [{ id: "cocomac1" }, { id: "cocomac2" }] });
-        this.testLayer = new LyphTemplate({ id: 10, name: "Head", type: this.head, length: 5 });
-        this.items = [this.head,
-            { id: 2, name: "Heart", supertypes: [{ id: 1, name: "Head" }], layers: [this.testLayer] },
-            { id: 3, name: "Arm" }];
+var LyphTemplate = (function (_super) {
+    __extends(LyphTemplate, _super);
+    function LyphTemplate(obj) {
+        _super.call(this, obj);
+        this.length = 0;
+        this.width = 0;
+        this.class = TemplateName.LyphTemplate;
+        this.type = obj.type;
+        this.length = obj.length;
+        this.width = obj.width;
     }
-    LyphTypeProvider = __decorate([
-        core_1.Injectable(), 
-        __metadata('design:paramtypes', [])
-    ], LyphTypeProvider);
-    return LyphTypeProvider;
-}());
-exports.LyphTypeProvider = LyphTypeProvider;
-var MaterialTypeProvider = (function () {
-    function MaterialTypeProvider() {
-        this.items = new LyphTypeProvider().items;
-        this.glucose = new MaterialType({ id: 4, name: "Glucose" });
-        this.items.push(this.glucose);
+    return LyphTemplate;
+}(Resource));
+exports.LyphTemplate = LyphTemplate;
+var MeasurableTemplate = (function (_super) {
+    __extends(MeasurableTemplate, _super);
+    function MeasurableTemplate(obj) {
+        _super.call(this, obj);
+        this.class = TemplateName.MeasurableTemplate;
+        this.type = obj.type;
     }
-    MaterialTypeProvider = __decorate([
-        core_1.Injectable(), 
-        __metadata('design:paramtypes', [])
-    ], MaterialTypeProvider);
-    return MaterialTypeProvider;
-}());
-exports.MaterialTypeProvider = MaterialTypeProvider;
-var TypeProvider = (function () {
-    function TypeProvider() {
-        this.items = new MaterialTypeProvider().items;
-    }
-    TypeProvider = __decorate([
-        core_1.Injectable(), 
-        __metadata('design:paramtypes', [])
-    ], TypeProvider);
-    return TypeProvider;
-}());
-exports.TypeProvider = TypeProvider;
+    return MeasurableTemplate;
+}(Resource));
+exports.MeasurableTemplate = MeasurableTemplate;
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 var PublicationProvider = (function () {
     function PublicationProvider() {
-        this.items = [
-            { id: 1, name: "Paper 1" },
-            { id: 2, name: "Paper 2" },
-            { id: 3, name: "Paper 3" }];
+        this.items = [];
     }
     PublicationProvider = __decorate([
         core_1.Injectable(), 
@@ -245,4 +254,106 @@ var PublicationProvider = (function () {
     return PublicationProvider;
 }());
 exports.PublicationProvider = PublicationProvider;
+////
+var MeasurableTypeProvider = (function () {
+    function MeasurableTypeProvider() {
+        this.items = [];
+        this.items.push(new MeasurableType({ id: 100, name: "Concentration", quality: "concentration", references: [] }));
+    }
+    MeasurableTypeProvider = __decorate([
+        core_1.Injectable(), 
+        __metadata('design:paramtypes', [])
+    ], MeasurableTypeProvider);
+    return MeasurableTypeProvider;
+}());
+exports.MeasurableTypeProvider = MeasurableTypeProvider;
+////
+var TypeProvider = (function () {
+    function TypeProvider() {
+        this.items = [];
+    }
+    TypeProvider = __decorate([
+        core_1.Injectable(), 
+        __metadata('design:paramtypes', [])
+    ], TypeProvider);
+    return TypeProvider;
+}());
+exports.TypeProvider = TypeProvider;
+var MaterialTypeProvider = (function () {
+    function MaterialTypeProvider() {
+        var _this = this;
+        this.items = [];
+        this.templates = [];
+        var mtp = new MeasurableTypeProvider();
+        this.items = [
+            new MaterialType({ id: 10, name: "Water" }),
+            new MaterialType({ id: 11, name: "Sodium ion" }),
+            new MaterialType({ id: 12, name: "Pottasium ion" }),
+            new MaterialType({ id: 13, name: "Hydrogen ion" }),
+            new MaterialType({ id: 14, name: "Chloride ion" }),
+            new MaterialType({ id: 15, name: "Bicarbonate ion" }),
+            new MaterialType({ id: 16, name: "Calcium ion" }),
+            new MaterialType({ id: 17, name: "Phosphate ion" }),
+            new MaterialType({ id: 18, name: "Glucose" })
+        ];
+        var blMaterials = this.items.slice(0, 9);
+        var concentration = mtp.items.find(function (x) { return x.name == "concentration"; });
+        if (concentration)
+            concentration.references = blMaterials;
+        for (var i = 0; i < this.items.length; i++) {
+            var material = this.items[i];
+            this.templates.push(new MeasurableTemplate({ id: material.id + 100, name: material.name, type: concentration }));
+        }
+        var blMeasurables = this.templates.slice(0, 9);
+        var ef = new MaterialType({ id: 20, name: "Extracellular fluid" });
+        var bl = new MaterialType({ id: 21, name: "Biological liquid", materials: blMaterials, measurables: blMeasurables });
+        this.items.push(ef);
+        this.items.push(bl);
+        var el = new MaterialType({ id: 22, name: "Extracellular liquid", supertypes: [ef, bl], inheritsMaterials: [ef, bl], inheritsMeasurables: [ef, bl] });
+        this.items.push(el);
+        var ifl = new MaterialType({ id: 23, name: "Intracellular fluid", supertypes: [el], inheritsMaterials: [el], inheritsMeasurables: [el] });
+        this.items.push(ifl);
+        var plasma = new MaterialType({ id: 24, name: "Plasma", supertypes: [ifl], inheritsMaterials: [ifl], inheritsMeasurables: [ifl] });
+        this.items.push(plasma);
+        var urine = new MaterialType({ id: 25, name: "Urine", supertypes: [ifl], inheritsMaterials: [ifl], inheritsMeasurables: [ifl] });
+        this.items.push(urine);
+        var tfl = new MaterialType({ id: 26, name: "Tissue fluid", supertypes: [ifl], inheritsMaterials: [ifl], inheritsMeasurables: [ifl] });
+        this.items.push(tfl);
+        var cLyphs = new CylindricalLyphTypeProvider(this);
+        cLyphs.items.forEach(function (x) { return _this.items.push(x); });
+    }
+    MaterialTypeProvider = __decorate([
+        core_1.Injectable(), 
+        __metadata('design:paramtypes', [])
+    ], MaterialTypeProvider);
+    return MaterialTypeProvider;
+}());
+exports.MaterialTypeProvider = MaterialTypeProvider;
+var LyphTypeProvider = (function () {
+    function LyphTypeProvider() {
+        this.items = [];
+    }
+    LyphTypeProvider = __decorate([
+        core_1.Injectable(), 
+        __metadata('design:paramtypes', [])
+    ], LyphTypeProvider);
+    return LyphTypeProvider;
+}());
+exports.LyphTypeProvider = LyphTypeProvider;
+var CylindricalLyphTypeProvider = (function () {
+    function CylindricalLyphTypeProvider(mtp) {
+        this.items = [];
+        var ifl = mtp.items.find(function (x) { return x.name == "Intracellular fluid"; });
+        this.items = [
+            new CylindricalLyphType({ id: 1000, name: "Cytosol", materials: [ifl],
+                plusSide: SideType.closed, minusSide: SideType.closed })
+        ];
+    }
+    CylindricalLyphTypeProvider = __decorate([
+        core_1.Injectable(), 
+        __metadata('design:paramtypes', [MaterialTypeProvider])
+    ], CylindricalLyphTypeProvider);
+    return CylindricalLyphTypeProvider;
+}());
+exports.CylindricalLyphTypeProvider = CylindricalLyphTypeProvider;
 //# sourceMappingURL=service.apinatomy2.js.map

@@ -3,19 +3,22 @@
  */
 import {Component} from '@angular/core';
 import {RestoreService} from "../../providers/service.restore";
-import {IType, TypeProvider} from "../../providers/service.apinatomy2";
+import {IType} from "../../providers/service.apinatomy2";
 import {ResourcePanel} from "./panel.resource";
 import {MultiSelectInput} from '../component.general';
 
 @Component({
   providers: [RestoreService],
   selector: 'type-panel',
-  inputs: ['item', 'ignore', 'dependency'],
+  inputs: ['item', 'ignore', 'dependencies'],
   template:`
-    <resource-panel [item]="item" [dependency]="dependency" (saved)="saved.emit($event)" (removed)="removed.emit($event)">
+    <resource-panel [item]="item" 
+      [dependencies]="dependencies" 
+      (saved)="saved.emit($event)" 
+      (removed)="removed.emit($event)">
          <div class="input-control" *ngIf="includeProperty('supertypes')">
             <label for="name">Supertypes: </label>
-            <select-input [item]="item.supertypes" [options]="dependency.types"></select-input>
+            <select-input [item]="item.supertypes" [options]="dependencies.types"></select-input>
           </div>
         <ng-content></ng-content>      
     </resource-panel>

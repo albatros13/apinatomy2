@@ -2,10 +2,9 @@
  * Created by Natallia on 6/21/2016.
  */
 import {Component, EventEmitter, Output} from '@angular/core';
-import {IResource, ITemplate,
-  IValueDistribution, ValueDistribution,
+import {IValueDistribution, ValueDistribution,
   IBoundedNormalDistribution, BoundedNormalDistribution,
-  IUniformDistribution, UniformDistribution} from '../../providers/service.apinatomy2'
+  IUniformDistribution, UniformDistribution, DistributionType} from '../../providers/service.apinatomy2'
 import {RestoreService} from "../../providers/service.restore";
 import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
 
@@ -89,23 +88,24 @@ export class BoundedNormalDistributionInput extends UniformDistributionInput{
   inputs: ['item'],
   template:`
     <fieldset>
-      <radio-group [(ngModel)]="distributionType" [required]="true">
-        <input type="radio" value="Uniform" checked = "item.type == 'Uniform'">Uniform
-        <input type="radio" value="BoundedNormal" checked = "item.type == 'BoundedNormal'">Bounded normal<br/>
+      <radio-group [(ngModel)]="item.type" [required]="true">
+        <input type="radio" [value]="distributionType.Uniform">Uniform&nbsp;
+        <input type="radio" [value]="distributionType.BoundedNormal">Bounded normal<br/>
       </radio-group>
-      <uniformDistribution-input [item]="item.distribution" *ngIf="distributionType != 'BoundedNormal'"></uniformDistribution-input>
-      <boundedNormalDistribution-input [item]="item.distribution" *ngIf="distributionType == 'BoundedNormal'"></boundedNormalDistribution-input>
+      <uniformDistribution-input [item]="item.distribution" *ngIf="item.type == distributionType.Uniform"></uniformDistribution-input>
+      <boundedNormalDistribution-input [item]="item.distribution" *ngIf="item.type == distributionType.BoundedNormal"></boundedNormalDistribution-input>
     </fieldset>
   `,
   directives: [RADIO_GROUP_DIRECTIVES, UniformDistributionInput, BoundedNormalDistributionInput]
 })
 export class DistributionInput {
-  distributionType: string[] = ["Uniform", "BoundedNormal"];
+  distributionType = DistributionType;
   item: IValueDistribution;
   constructor(){}
 
   protected ngOnInit() {
-    if (!this.item) this.item = new ValueDistribution();
+    if (!this.item)
+      this.item = new ValueDistribution();
   }
 }
 
@@ -116,59 +116,20 @@ export class DistributionInput {
      <fieldset>
        <legend>{{caption}}</legend>
        <radio-group [(ngModel)]="valueType" [required]="true">
-         <input type="radio" value="Value">Value
+         <input type="radio" value="Value">Value&nbsp;
          <input type="radio" value="Distribution">Distribution<br/>
        </radio-group>
-       <input type="number" min="0" max="100" [(ngModel)]="item" *ngIf="valueType != 'Distribution'"/>
+       <input type="number" min="0" max="100" [(ngModel)]="item" *ngIf="valueType == 'Value'"/>
        <distribution-input [item]="item" *ngIf="valueType == 'Distribution'"></distribution-input>
      </fieldset>
    `,
   "directives": [RADIO_GROUP_DIRECTIVES, DistributionInput]
 })
 export class TemplateValue{
-  valueType: string[] = ["Value", "Distribution"];
-}
+  valueType: string = "Value";
+  item: number|IValueDistribution;
 
-@Component({
-  selector: 'repo-template-wrapper',
-  inputs: ['model'],
-  template:`
-    <div class="panel panel-warning repo-template">
-      <div class="panel-heading">{{model.caption}}</div>
-      <div class="panel-body" >
-          <ng-content></ng-content>
-      </div>
-    </div>
-  `,
-  directives: []
-})
-export class RepoTemplateWrapper {
-  public selected: ITemplate = null;
-  public model: {caption: string, items: Array<ITemplate>, options: Array<IResource>} = {
-    caption: "Templates", items: [], options: []};
-
-  constructor(){}
-
-  protected ngOnInit(){
-    if (!this.model.items) this.model.items = [];
-    if (this.model && this.model.items && this.model.items[0])
-      this.selected = this.model.items[0];
-  }
-
-  protected changeActive(item: any){
-    this.selected = item;
-  }
-
-  protected onSaved(item: ITemplate, updatedItem: ITemplate){
-    for (var key in updatedItem){
-      if (updatedItem.hasOwnProperty(key)){
-        item[key] = updatedItem[key];
-      }
-    }
-  }
-
-  protected onRemoved(item: ITemplate){
-    let index = this.model.items.indexOf(item);
-    if (index > -1) this.model.items.splice(index, 1);
+  ngOnInit(){
+      if (this.item && this.item['distribution']) this.valueType = "Distribution";
   }
 }

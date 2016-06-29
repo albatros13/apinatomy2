@@ -28,15 +28,21 @@ export class RestoreService<T> {
   clone(obj: T) :T {
     //let objCopy = (JSON.parse(JSON.stringify(obj)));
     let objCopy = <T>{};
-    for (var key in obj){
-      if (obj.hasOwnProperty(key)){
-        //if (typeof obj === "object"){
-        //  objCopy[key] = this.clone(obj[key]);
-        //} else {
-          objCopy[key] = obj[key];
-        //}
-      }
-    }
+    for (var key in obj)
+      if (obj.hasOwnProperty(key))
+        objCopy[key] = obj[key];
     return objCopy;
   }
+
+  // clone(obj: T) {
+  //   if (obj === null || typeof obj !== 'object') {
+  //     return obj;
+  //   }
+  //
+  //   var temp = obj.constructor(); // give temp the original obj's constructor
+  //   for (var key in obj) {
+  //     temp[key] = this.clone(obj[key]);
+  //   }
+  //   return temp;
+  // }
 }

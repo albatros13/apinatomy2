@@ -10,9 +10,9 @@ import {MultiSelectInput} from '../component.general';
 @Component({
   providers: [RestoreService],
   selector: 'measurableType-panel',
-  inputs: ['item', 'ignore', 'dependency'],
+  inputs: ['item', 'ignore', 'dependencies'],
   template:`
-    <type-panel [item]="item" [dependency]="dependency" [ignore]="['equivalence', 'weakEquivalence']" (saved)="saved.emit($event)" (removed)="removed.emit($event)">
+    <type-panel [item]="item" [dependencies]="dependencies" [ignore]="['equivalence', 'weakEquivalence']" (saved)="saved.emit($event)" (removed)="removed.emit($event)">
       <quality-input item="item.quality"></quality-input>
       <ng-content></ng-content>      
     </type-panel>

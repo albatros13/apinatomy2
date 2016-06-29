@@ -17,9 +17,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  * Created by Natallia on 6/21/2016.
  */
 var core_1 = require('@angular/core');
-var common_1 = require('@angular/common');
-var accordion_1 = require('ng2-bootstrap/components/accordion');
-var ng2_dnd_1 = require('ng2-dnd/ng2-dnd');
 var component_general_1 = require('../component.general');
 var template_general_1 = require('./template.general');
 var panel_resource_1 = require("../panels/panel.resource");
@@ -34,8 +31,8 @@ var LyphTypeTemplate = (function (_super) {
         core_1.Component({
             providers: [service_restore_1.RestoreService],
             selector: 'lyphType-template',
-            inputs: ['item', 'options'],
-            template: "\n    <resource-panel [item]=\"item\" ignore=\"['equivalence', 'weakEquivalence']\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <div>\n        <label for=\"type\">Type: </label>\n        <select-input-1 [item] = \"item.type\" [options] = \"options\"></select-input-1>\n      </div>\n      <fieldset>\n        <legend>Template:</legend>\n        <template-value caption=\"Length:\" [item]=\"item.length\"></template-value>\n        <template-value caption=\"Width:\" [item]=\"item.width\"></template-value>\n      </fieldset>\n      <ng-content></ng-content>      \n    </resource-panel>\n  ",
+            inputs: ['item', 'dependencies'],
+            template: "\n    <resource-panel [item]=\"item\" ignore=\"['equivalence', 'weakEquivalence']\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <div>\n        <label for=\"type\">Type: </label>\n        <select-input-1 [item] = \"item.type\" [options] = \"dependencies\"></select-input-1>\n      </div>\n      <fieldset>\n        <legend>Template:</legend>\n        <template-value caption=\"Length:\" [item]=\"item.length\"></template-value>\n        <template-value caption=\"Width:\" [item]=\"item.width\"></template-value>\n      </fieldset>\n      <ng-content></ng-content>      \n    </resource-panel>\n  ",
             directives: [template_general_1.TemplateValue, component_general_1.SingleSelectInput, panel_resource_1.ResourcePanel]
         }), 
         __metadata('design:paramtypes', [service_restore_1.RestoreService])
@@ -43,21 +40,4 @@ var LyphTypeTemplate = (function (_super) {
     return LyphTypeTemplate;
 }(panel_resource_1.ResourcePanel));
 exports.LyphTypeTemplate = LyphTypeTemplate;
-var RepoLyphTypeTemplate = (function (_super) {
-    __extends(RepoLyphTypeTemplate, _super);
-    function RepoLyphTypeTemplate() {
-        _super.call(this);
-    }
-    RepoLyphTypeTemplate = __decorate([
-        core_1.Component({
-            selector: 'repo-lyphType-template',
-            inputs: ['model'],
-            template: "\n      <repo-template-wrapper [model]=\"model\">\n        <accordion class=\"list-group\" [closeOthers]=\"true\" dnd-sortable-container [dropZones]=\"['lyphTemplate-zone']\" [sortableData]=\"model.items\">\n          <div *ngFor=\"let item of model.items; let i = index\">\n            <accordion-group class=\"list-group-item\" dnd-sortable [sortableIndex]=\"i\">\n                <div accordion-heading><item-header [item]=\"item\" [icon]=\"'images/lyphType.png'\"></item-header></div>\n                <lyphType-template [item]=\"item\" [options]=\"model.options\" (saved)=\"onSaved(item, $event)\" (removed)=\"onRemoved(item)\"></lyphType-template>\n            </accordion-group>        \n          </div>\n        </accordion>       \n      </repo-template-wrapper>     \n  ",
-            directives: [template_general_1.RepoTemplateWrapper, component_general_1.ItemHeader, LyphTypeTemplate, accordion_1.ACCORDION_DIRECTIVES, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES, ng2_dnd_1.DND_DIRECTIVES]
-        }), 
-        __metadata('design:paramtypes', [])
-    ], RepoLyphTypeTemplate);
-    return RepoLyphTypeTemplate;
-}(template_general_1.RepoTemplateWrapper));
-exports.RepoLyphTypeTemplate = RepoLyphTypeTemplate;
 //# sourceMappingURL=template.lyphType.js.map

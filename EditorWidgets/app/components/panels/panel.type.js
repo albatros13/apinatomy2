@@ -30,8 +30,8 @@ var TypePanel = (function (_super) {
         core_1.Component({
             providers: [service_restore_1.RestoreService],
             selector: 'type-panel',
-            inputs: ['item', 'ignore', 'dependency'],
-            template: "\n    <resource-panel [item]=\"item\" [dependency]=\"dependency\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n         <div class=\"input-control\" *ngIf=\"includeProperty('supertypes')\">\n            <label for=\"name\">Supertypes: </label>\n            <select-input [item]=\"item.supertypes\" [options]=\"dependency.types\"></select-input>\n          </div>\n        <ng-content></ng-content>      \n    </resource-panel>\n  ",
+            inputs: ['item', 'ignore', 'dependencies'],
+            template: "\n    <resource-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      (saved)=\"saved.emit($event)\" \n      (removed)=\"removed.emit($event)\">\n         <div class=\"input-control\" *ngIf=\"includeProperty('supertypes')\">\n            <label for=\"name\">Supertypes: </label>\n            <select-input [item]=\"item.supertypes\" [options]=\"dependencies.types\"></select-input>\n          </div>\n        <ng-content></ng-content>      \n    </resource-panel>\n  ",
             directives: [panel_resource_1.ResourcePanel, component_general_1.MultiSelectInput]
         }), 
         __metadata('design:paramtypes', [service_restore_1.RestoreService])

@@ -51,7 +51,7 @@ var RepoToolbar = (function () {
     function RepoToolbar() {
     }
     RepoToolbar.prototype.addItem = function () {
-        this.items.push(new service_apinatomy2_1.Resource());
+        this.items.push(new service_apinatomy2_1.Resource({ id: 0, name: "New item" }));
     };
     RepoToolbar = __decorate([
         core_1.Component({
@@ -68,10 +68,11 @@ exports.RepoToolbar = RepoToolbar;
 var RepoWrapper = (function () {
     function RepoWrapper() {
         this.selected = null;
+        this.items = [];
     }
     RepoWrapper.prototype.ngOnInit = function () {
-        if (this.model && this.model.items && this.model.items[0])
-            this.selected = this.model.items[0];
+        if (this.items && this.items[0])
+            this.selected = this.items[0];
     };
     RepoWrapper.prototype.changeActive = function (item) {
         this.selected = item;
@@ -83,16 +84,18 @@ var RepoWrapper = (function () {
             }
         }
     };
-    RepoWrapper.prototype.onRemoved = function (item) {
-        var index = this.model.items.indexOf(item);
+    RepoWrapper.prototype.onRemoved = function (item, items) {
+        if (!items)
+            return;
+        var index = items.indexOf(item);
         if (index > -1)
-            this.model.items.splice(index, 1);
+            items.splice(index, 1);
     };
     RepoWrapper = __decorate([
         core_1.Component({
             selector: 'repo-wrapper',
-            inputs: ['model'],
-            template: "\n        <div class=\"panel panel-info repo\">\n          <div class=\"panel-heading\">{{model.caption}}</div>\n          <div class=\"panel-body\" >\n            <repo-toolbar [items]=\"model.items\"></repo-toolbar>\n              <ng-content></ng-content>\n          </div>\n        </div>\n   \n  ",
+            inputs: ['items', 'caption'],
+            template: "\n        <div class=\"panel panel-info repo\">\n          <div class=\"panel-heading\">{{caption}}</div>\n          <div class=\"panel-body\" >\n            <repo-toolbar [items]=\"items\"></repo-toolbar>\n              <ng-content></ng-content>\n          </div>\n        </div>\n   \n  ",
             directives: [RepoToolbar]
         }), 
         __metadata('design:paramtypes', [])
@@ -100,4 +103,42 @@ var RepoWrapper = (function () {
     return RepoWrapper;
 }());
 exports.RepoWrapper = RepoWrapper;
+var RepoTemplateWrapper = (function () {
+    function RepoTemplateWrapper() {
+        this.selected = null;
+        this.items = [];
+    }
+    RepoTemplateWrapper.prototype.ngOnInit = function () {
+        if (!this.items)
+            this.items = [];
+        if (this.items && this.items[0])
+            this.selected = this.items[0];
+    };
+    RepoTemplateWrapper.prototype.changeActive = function (item) {
+        this.selected = item;
+    };
+    RepoTemplateWrapper.prototype.onSaved = function (item, updatedItem) {
+        for (var key in updatedItem) {
+            if (updatedItem.hasOwnProperty(key)) {
+                item[key] = updatedItem[key];
+            }
+        }
+    };
+    RepoTemplateWrapper.prototype.onRemoved = function (item) {
+        var index = this.items.indexOf(item);
+        if (index > -1)
+            this.items.splice(index, 1);
+    };
+    RepoTemplateWrapper = __decorate([
+        core_1.Component({
+            selector: 'repo-template-wrapper',
+            inputs: ['items', 'caption'],
+            template: "\n    <div class=\"panel panel-warning repo-template\">\n      <div class=\"panel-heading\">{{caption}}</div>\n      <div class=\"panel-body\" >\n          <ng-content></ng-content>\n      </div>\n    </div>\n  ",
+            directives: []
+        }), 
+        __metadata('design:paramtypes', [])
+    ], RepoTemplateWrapper);
+    return RepoTemplateWrapper;
+}());
+exports.RepoTemplateWrapper = RepoTemplateWrapper;
 //# sourceMappingURL=repo.wrapper.js.map

@@ -16,7 +16,7 @@ import {NodeTemplatePanel} from '../templates/template.nodeType';
   template:`
     <type-panel [item]="item" 
       [dependencies]="dependencies" 
-      [ignore]="['equivalence', 'weakEquivalence']" 
+      [ignore]="['externals']" 
       (saved)="saved.emit($event)" 
       (removed)="removed.emit($event)">
         <div class="input-control" *ngIf="includeProperty('transportPhenomenon')">
@@ -28,6 +28,10 @@ import {NodeTemplatePanel} from '../templates/template.nodeType';
              </radio-group>
           </fieldset>
         </div>
+        <div class="input-control" *ngIf="includeProperty('species')">
+          <label for="species">Species: </label>
+          <input type="text" [(ngModel)]="item.species">
+        </div>
         <div class="input-control" *ngIf="includeProperty('measurables')">
           <repo-template caption='Measurables' [items]="item.measurables" 
           [dependencies]="dependencies" [types]="[templateName.MeasurableTemplate]"></repo-template>
@@ -35,17 +39,16 @@ import {NodeTemplatePanel} from '../templates/template.nodeType';
         <div class="input-control" *ngIf="includeProperty('materials')">
           <label for="meterials">Materials: </label>
           <select-input [item]="item.materials" [options]="dependencies.materials"></select-input>
-        </div>
-        
+        </div>        
         <div class="input-control" *ngIf="includeProperty('source')">      
           <label for="source">Source: </label>
           <nodeTemplate-panel [item]="item.source" 
-            [dependencies]="dependencies.nodes" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></nodeTemplate-panel>
+            [dependencies]="{types: dependencies.nodes, templates: dependencies.templates}" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></nodeTemplate-panel>
         </div>
         <div class="input-control" *ngIf="includeProperty('target')">      
           <label for="target">Target: </label>
           <nodeTemplate-panel [item]="item.target" 
-            [dependencies]="dependencies.nodes" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></nodeTemplate-panel>
+            [dependencies]="{types: dependencies.nodes, templates: dependencies.templates}" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></nodeTemplate-panel>
         </div>        
     <ng-content></ng-content>      
     </type-panel>

@@ -1,7 +1,7 @@
 import {bootstrap}    from '@angular/platform-browser-dynamic';
 import {LyphTypeEditor} from './editors/editor.lyphType';
 import {
-  ResourceProvider,
+  ExternalResourceProvider,
   MaterialTypeProvider,
   LyphTypeProvider,
   CylindricalLyphTypeProvider,
@@ -9,7 +9,7 @@ import {
 import {DND_PROVIDERS} from 'ng2-dnd/ng2-dnd';
 
 bootstrap(LyphTypeEditor, [
-  ResourceProvider,
+  ExternalResourceProvider,
   MaterialTypeProvider,
   LyphTypeProvider,
   CylindricalLyphTypeProvider,

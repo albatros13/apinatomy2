@@ -11,19 +11,8 @@ import {ResourceName, TemplateName,
   CausalityType, MeasurableType, GroupType, ProcessType, OmegaTreeType,
   Publication, Correlation, ClinicalIndex
 } from "../../providers/service.apinatomy2";
-import {OrderBy} from "../../transformations/widget.transform"
-
-import {ResourcePanel} from '../panels/panel.resource';
-import {TypePanel} from '../panels/panel.type';
-import {MaterialTypePanel} from '../panels/panel.materialType';
-import {LyphTypePanel} from '../panels/panel.lyphType';
-import {CylindricalLyphTypePanel} from '../panels/panel.cylindricalLyphType';
-
-import {GroupTypePanel} from '../panels/panel.groupType';
-import {OmegaTreeTypePanel} from '../panels/panel.omegaTreeType';
-
-import {MeasurableTypePanel} from '../panels/panel.measurableType';
-import {CorrelationPanel} from '../panels/panel.correlation';
+import {OrderBy} from "../../transformations/widget.transform";
+import {PanelGeneral} from "./panel.general";
 
 @Component({
   selector: 'repo-general',
@@ -40,65 +29,8 @@ import {CorrelationPanel} from '../panels/panel.correlation';
           <accordion-group *ngFor="let item of items | orderBy : sortByMode; let i = index" class="list-group-item" dnd-sortable [sortableIndex]="i">
             <div accordion-heading><item-header [item]="item" [icon]="getIcon(item)"></item-header></div>
             
-            <!--Resources-->
-            <resource-panel *ngIf="!item.class || (item.class == resourceNames.Resource)"
-             [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></resource-panel>
-            
-            <!--Types-->
-            <type-panel *ngIf="item.class == resourceNames.Type"
-             [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></type-panel>
-            
-            <!--Materials-->
-            <materialType-panel *ngIf="item.class==resourceNames.MaterialType"
-             [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></materialType-panel>
-            
-            <!--Lyphs-->      
-            <lyphType-panel *ngIf="item.class==resourceNames.LyphType"
-             [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></lyphType-panel>
-
-            <!--Cylindrical lyphs-->      
-            <cylindricalLyphType-panel *ngIf="item.class==resourceNames.CylindricalLyphType"
-             [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></cylindricalLyphType-panel>
-            
-            <!--Processes-->      
-            <processType-panel *ngIf="item.class==resourceNames.ProcessType"
-             [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></processType-panel>
-            
-            <!--Mesurables-->
-            <measurableType-panel *ngIf="item.class==resourceNames.MeasurableType"
-             [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></measurableType-panel>
-            
-            <!--Causalities-->
-            <causalityType-panel *ngIf="item.class==resourceNames.CausalityType"
-             [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></causalityType-panel>
-            
-            <!--Nodes: generic panel-->
-            <resource-panel *ngIf="item.class==resourceNames.NodeType"  [ignore]="['equivalence', 'weakEquivalence']" 
-             [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></resource-panel>
-
-            <!--Borders-->
-            <borderType-panel *ngIf="item.class==resourceNames.BorderType"
-             [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></borderType-panel>
-            
-            <!--Groups-->
-            <groupType-panel *ngIf="item.class==resourceNames.GroupType"
-             [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></groupType-panel>
-
-            <!--Omega trees-->
-            <omegaTreeType-panel *ngIf="item.class==resourceNames.OmegaTreeType"
-             [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></omegaTreeType-panel>
-
-             <!--Publications: generic panel-->
-             <resource-panel *ngIf="item.class==resourceNames.Publication"  [ignore]="['equivalence', 'weakEquivalence']" 
-             [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></resource-panel>
-
-             <!--Correlations-->
-             <correlation-panel *ngIf="item.class==resourceNames.Correlation"
-             [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></correlation-panel>
-             
-             <!--Clinical indices: generic panel-->
-             <resource-panel *ngIf="item.class==resourceNames.ClinicalIndex"  [ignore]="['equivalence', 'weakEquivalence']" 
-             [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></resource-panel>
+            <panel-general [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></panel-general>            
+          
           </accordion-group>        
           </accordion>       
         </div>
@@ -107,10 +39,7 @@ import {CorrelationPanel} from '../panels/panel.correlation';
   directives: [
     SortToolbar, EditToolbar,
     ItemHeader,
-    ResourcePanel, TypePanel, MaterialTypePanel, LyphTypePanel, CylindricalLyphTypePanel,
-    GroupTypePanel, OmegaTreeTypePanel,
-    MeasurableTypePanel,
-    CorrelationPanel,
+    PanelGeneral,
     ACCORDION_DIRECTIVES, CORE_DIRECTIVES, FORM_DIRECTIVES, DND_DIRECTIVES],
   pipes: [OrderBy]
 })

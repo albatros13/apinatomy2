@@ -91,20 +91,20 @@ var LyphTypeWidget = (function () {
 }());
 exports.LyphTypeWidget = LyphTypeWidget;
 var LyphTypeEditor = (function () {
-    function LyphTypeEditor(resourceP, typeP, materialP, lyphP, cLyphP, measurableP) {
+    function LyphTypeEditor(eResourceP, typeP, materialP, lyphP, cLyphP, measurableP) {
         var allLyphs = lyphP.items.concat(cLyphP.items);
         var allMaterials = materialP.items.concat(allLyphs);
         var allTypes = typeP.items.concat(allMaterials, measurableP.items);
-        var allResources = resourceP.items.concat(allTypes);
+        var allLyphTemplates = lyphP.templates.concat(cLyphP.templates);
+        var allTemplates = materialP.templates.concat(allLyphTemplates);
         this.dependency = {
-            equivalences: [],
-            weakEquivalences: [],
-            resources: allResources,
+            externals: eResourceP.items,
             types: allTypes,
             materials: allMaterials,
             lyphs: allLyphs,
             cylindricalLyphs: cLyphP.items,
-            measurables: measurableP.items
+            measurables: measurableP.items,
+            templates: allTemplates
         };
         this.items = allMaterials;
     }
@@ -113,7 +113,7 @@ var LyphTypeEditor = (function () {
             selector: 'lyphType-editor',
             providers: [
                 service_apinatomy2_1.MeasurableTypeProvider,
-                service_apinatomy2_1.ResourceProvider,
+                service_apinatomy2_1.ExternalResourceProvider,
                 service_apinatomy2_1.TypeProvider,
                 service_apinatomy2_1.MaterialTypeProvider,
                 service_apinatomy2_1.LyphTypeProvider,
@@ -121,7 +121,7 @@ var LyphTypeEditor = (function () {
             template: "\n    <repo-general [items]=\"items\" caption=\"Materials\" [dependencies]=\"dependency\"></repo-general>\n  ",
             directives: [repo_general_1.RepoGeneral]
         }), 
-        __metadata('design:paramtypes', [service_apinatomy2_1.ResourceProvider, service_apinatomy2_1.TypeProvider, service_apinatomy2_1.MaterialTypeProvider, service_apinatomy2_1.LyphTypeProvider, service_apinatomy2_1.CylindricalLyphTypeProvider, service_apinatomy2_1.MeasurableTypeProvider])
+        __metadata('design:paramtypes', [service_apinatomy2_1.ExternalResourceProvider, service_apinatomy2_1.TypeProvider, service_apinatomy2_1.MaterialTypeProvider, service_apinatomy2_1.LyphTypeProvider, service_apinatomy2_1.CylindricalLyphTypeProvider, service_apinatomy2_1.MeasurableTypeProvider])
     ], LyphTypeEditor);
     return LyphTypeEditor;
 }());

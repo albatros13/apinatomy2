@@ -20,24 +20,24 @@ import {RepoTemplate} from '../repos/repo.template';
         <div class="input-control" *ngIf="includeProperty('minusSide')">
           <fieldset>
             <legend>Minus side:</legend>
-            <radio-group [(ngModel)]="item.plusSide" [required]="true">
-             <input type="radio" [value]="sideType.open">{{sideType.open}}&nbsp;
-             <input type="radio" [value]="sideType.closed">{{sideType.closed}}<br/>
-            </radio-group>
+            <checkbox-group [(ngModel)]="item.plusSide" [required]="true">
+             <input type="checkbox" [value]="sideType.open">{{sideType.open}}&nbsp;
+             <input type="checkbox" [value]="sideType.closed">{{sideType.closed}}<br/>
+            </checkbox-group>
           </fieldset>
         </div>
         <div class="input-control" *ngIf="includeProperty('plusSide')">
           <fieldset>
             <legend>Plus side:</legend>
-             <radio-group [(ngModel)]="item.minusSide" [required]="true">
-               <input type="radio" [value]="sideType.open">{{sideType.open}}&nbsp;
-               <input type="radio" [value]="sideType.closed">{{sideType.closed}}<br/>
-             </radio-group>
+             <checkbox-group [(ngModel)]="item.minusSide" [required]="true">
+               <input type="checkbox" [value]="sideType.open">{{sideType.open}}&nbsp;
+               <input type="checkbox" [value]="sideType.closed">{{sideType.closed}}<br/>
+             </checkbox-group>
           </fieldset>
         </div>
-        <div class="input-control" *ngIf="includeProperty('inheritsSegments')">
-          <label for="inheritsSegments">Inherits segments: </label>
-          <select-input [item]="item.inheritsSegments" [options]="dependencies.cylindricalLyphs"></select-input>
+        <div class="input-control" *ngIf="includeProperty('segmentProviders')">
+          <label for="segmentProviders">Inherits segments from: </label>
+          <select-input [item]="item.segmentProviders" [options]="dependencies.cylindricalLyphs"></select-input>
         </div>
         <div class="input-control" *ngIf="includeProperty('segments')">
           <repo-template caption="Segments" [items] = "item.segments" [dependencies] = "dependencies"

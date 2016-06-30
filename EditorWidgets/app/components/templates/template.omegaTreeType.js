@@ -18,7 +18,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  */
 var core_1 = require('@angular/core');
 var component_general_1 = require('../component.general');
-var template_general_1 = require('../template.general');
+var component_template_1 = require('../component.template');
 var template_groupType_1 = require("./template.groupType");
 var service_restore_1 = require("../../providers/service.restore");
 var OmegaTreeTemplatePanel = (function (_super) {
@@ -32,8 +32,8 @@ var OmegaTreeTemplatePanel = (function (_super) {
             providers: [service_restore_1.RestoreService],
             selector: 'omegaTreeTemplate-panel',
             inputs: ['item', 'dependencies'],
-            template: "\n    <template-panel [item]=\"item\" [dependencies]=\"dependencies\" ignore=\"['equivalence', 'weakEquivalence']\" \n      (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <ng-content></ng-content>      \n    </template-panel>\n  ",
-            directives: [template_general_1.TemplateValue, component_general_1.SingleSelectInput, template_groupType_1.GroupTemplatePanel]
+            template: "\n    <template-panel [item]=\"item\" [dependencies]=\"dependencies\" \n      (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <div class=\"input-control\" *ngIf=\"includeProperty('minusSide')\">\n          <fieldset>\n            <legend>Minus side:</legend>\n            <radio-group [(ngModel)]=\"item.plusSide\" [required]=\"true\">\n             <input type=\"radio\" [value]=\"sideType.open\">{{sideType.open}}&nbsp;\n             <input type=\"radio\" [value]=\"sideType.closed\">{{sideType.closed}}<br/>\n            </radio-group>\n          </fieldset>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('plusSide')\">\n          <fieldset>\n            <legend>Plus side:</legend>\n             <radio-group [(ngModel)]=\"item.minusSide\" [required]=\"true\">\n               <input type=\"radio\" [value]=\"sideType.open\">{{sideType.open}}&nbsp;\n               <input type=\"radio\" [value]=\"sideType.closed\">{{sideType.closed}}<br/>\n             </radio-group>\n          </fieldset>\n      </div>\n      <ng-content></ng-content>      \n    </template-panel>\n  ",
+            directives: [component_template_1.TemplateValue, component_general_1.SingleSelectInput, template_groupType_1.GroupTemplatePanel]
         }), 
         __metadata('design:paramtypes', [service_restore_1.RestoreService])
     ], OmegaTreeTemplatePanel);

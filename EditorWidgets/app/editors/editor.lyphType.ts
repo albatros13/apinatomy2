@@ -4,7 +4,7 @@
 import {Component, Directive, Input, ElementRef} from '@angular/core';
 import {RepoGeneral} from '../components/repos/repo.general'
 import {
-  ResourceProvider,
+  ExternalResourceProvider,
   TypeProvider,
   MaterialTypeProvider,
   LyphTypeProvider,
@@ -92,7 +92,7 @@ export class LyphTypeWidget{
   selector: 'lyphType-editor',
   providers: [
     MeasurableTypeProvider,
-    ResourceProvider,
+    ExternalResourceProvider,
     TypeProvider,
     MaterialTypeProvider,
     LyphTypeProvider,
@@ -107,7 +107,7 @@ export class LyphTypeEditor {
   dependency: any;
 
   constructor(
-    resourceP: ResourceProvider,
+    eResourceP: ExternalResourceProvider,
     typeP: TypeProvider,
     materialP: MaterialTypeProvider,
     lyphP: LyphTypeProvider,
@@ -118,17 +118,18 @@ export class LyphTypeEditor {
     let allLyphs = lyphP.items.concat(cLyphP.items);
     let allMaterials = materialP.items.concat(allLyphs);
     let allTypes = typeP.items.concat(allMaterials, measurableP.items);
-    let allResources = resourceP.items.concat(allTypes);
+
+    let allLyphTemplates =  lyphP.templates.concat(cLyphP.templates);
+    let allTemplates = materialP.templates.concat(allLyphTemplates);
 
     this.dependency = {
-      equivalences: [],
-      weakEquivalences: [],
-      resources: allResources,
+      externals: eResourceP.items,
       types: allTypes,
       materials: allMaterials,
       lyphs: allLyphs,
       cylindricalLyphs: cLyphP.items,
-      measurables: measurableP.items
+      measurables: measurableP.items,
+      templates: allTemplates
     };
     this.items = allMaterials;
   }

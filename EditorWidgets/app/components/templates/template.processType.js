@@ -18,7 +18,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  */
 var core_1 = require('@angular/core');
 var component_general_1 = require('../component.general');
-var template_general_1 = require('../template.general');
+var component_template_1 = require('../component.template');
 var template_type_1 = require("./template.type");
 var service_restore_1 = require("../../providers/service.restore");
 var ProcessTemplatePanel = (function (_super) {
@@ -32,8 +32,8 @@ var ProcessTemplatePanel = (function (_super) {
             providers: [service_restore_1.RestoreService],
             selector: 'processTemplate-panel',
             inputs: ['item', 'dependencies'],
-            template: "\n    <template-panel [item]=\"item\" [dependencies]=\"dependencies\" ignore=\"['equivalence', 'weakEquivalence']\" \n      (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <ng-content></ng-content>      \n    </template-panel>\n  ",
-            directives: [template_general_1.TemplateValue, component_general_1.SingleSelectInput, template_type_1.TemplatePanel]
+            template: "\n    <template-panel [item]=\"item\" [dependencies]=\"dependencies\" \n      (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <ng-content></ng-content>      \n    </template-panel>\n  ",
+            directives: [component_template_1.TemplateValue, component_general_1.SingleSelectInput, template_type_1.TemplatePanel]
         }), 
         __metadata('design:paramtypes', [service_restore_1.RestoreService])
     ], ProcessTemplatePanel);

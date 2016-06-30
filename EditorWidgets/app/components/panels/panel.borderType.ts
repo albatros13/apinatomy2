@@ -13,7 +13,7 @@ import {RepoTemplate} from '../repos/repo.template';
   template:`
     <type-panel [item]="item" 
       [dependencies]="dependencies" 
-      [ignore]="['equivalence', 'weakEquivalence']" 
+      [ignore]="['externals']" 
       (saved)="saved.emit($event)" 
       (removed)="removed.emit($event)">
       <!--TODO: replace with slider-->

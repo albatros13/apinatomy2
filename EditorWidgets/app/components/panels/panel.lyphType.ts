@@ -15,22 +15,26 @@ import {RepoTemplate} from '../repos/repo.template';
     <materialType-panel [item]="item" 
         [dependencies]="dependencies" 
         (saved)="saved.emit($event)" (removed)="removed.emit($event)">
-        <div class="input-control" *ngIf="includeProperty('inheritsLayers')">
-          <label for="inheritsLayers">Inherits layers: </label>
-          <select-input [item]="item.inheritsLayers" [options]="dependencies.lyphs"></select-input>
+        <div class="input-control" *ngIf="includeProperty('species')">
+          <label for="species">Species: </label>
+          <input type="text" [(ngModel)]="item.species">
         </div>
-        <div class="input-control" *ngIf="includeProperty('inheritsPatches')">
-          <label for="inheritsPatches">Inherits patches: </label>
-          <select-input [item]="item.inheritsPatches" [options]="dependencies.lyphs"></select-input>
+        <div class="input-control" *ngIf="includeProperty('layerProviders')">
+          <label for="layerProviders">Inherits layers from: </label>
+          <select-input [item]="item.layerProviders" [options]="dependencies.lyphs"></select-input>
         </div>
-        <div class="input-control" *ngIf="includeProperty('inheritsParts')">
-          <label for="inheritsParts">Inherits parts: </label>
-          <select-input [item]="item.inheritsParts" [options]="dependencies.lyphs"></select-input>
+        <div class="input-control" *ngIf="includeProperty('patchProviders')">
+          <label for="patchProviders">Inherits patches from: </label>
+          <select-input [item]="item.patchProviders" [options]="dependencies.lyphs"></select-input>
+        </div>
+        <div class="input-control" *ngIf="includeProperty('partProviders')">
+          <label for="partProviders">Inherits parts from: </label>
+          <select-input [item]="item.partProviders" [options]="dependencies.lyphs"></select-input>
         </div>
         <br/>
         <div class="input-control" *ngIf="includeProperty('layers')">
           <repo-template caption="Layers" [items] = "item.layers" [dependencies] = "dependencies" 
-          [types] = "[templateName.LyphTemplate, templateName.CylindricalLyphTemplate]"></repo-template>
+          [types] = "[templateName.LyphTemplate, templateName.CylindricalLyphTemplate, templateName.NodeTemplate]"></repo-template>
         </div>
         <div class="input-control" *ngIf="includeProperty('patches')">
           <repo-template caption="Patches" [items] = "item.patches" [dependencies] = "dependencies"
@@ -40,8 +44,14 @@ import {RepoTemplate} from '../repos/repo.template';
           <repo-template caption="Parts" [items] = "item.parts" [dependencies] = "dependencies"
           [types] = "[templateName.LyphTemplate, templateName.CylindricalLyphTemplate]"></repo-template>
         </div>
-        <!--Processes-->
-        <!--Nodes-->
+        <div class="input-control" *ngIf="includeProperty('processes')">
+          <repo-template caption="Processes" [items] = "item.processes" [dependencies] = "dependencies"
+          [types] = "[templateName.ProcessTemplate]"></repo-template>
+        </div>
+        <div class="input-control" *ngIf="includeProperty('nodes')">
+          <repo-template caption="Nodes" [items] = "item.nodes" [dependencies] = "dependencies"
+          [types] = "[templateName.NodeTemplate]"></repo-template>
+        </div>
         <!--InnerBorder-->
         <!--OuterBorder-->
         <ng-content></ng-content>

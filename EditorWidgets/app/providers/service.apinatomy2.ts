@@ -29,21 +29,22 @@ interface IQuality{}
 
 //Entities
 
-interface IExternalResource{
-  id?: string;
-  name?: string;
-}
-
 interface IResource{
   id?: number;
   name?: string;
+  href?: string;
   class?: ResourceName | TemplateName;
-  equivalence?: Array<IExternalResource>;
-  weakEquivalence?: Array<IExternalResource>;
+  externals?: Array<IExternalResource>;
+}
+
+interface IExternalResource extends IResource{
+  uri?: string;
+  type?: string;
 }
 
 interface IType extends IResource{
-  supertypes?: Array<IResource>;
+  supertypes?: Array<IType>;
+  subtypes?: Array<IType>;
 }
 
 interface IPublication extends IResource{}
@@ -57,16 +58,17 @@ interface ICorrelation extends IResource{
 }
 
 interface IMaterialType extends IType{
-  inheritsMaterials?: Array<IMaterialType>;
+  materialProviders?: Array<IMaterialType>;
   materials?: Array<IMaterialType>;
-  inheritsMeasurables?: Array<IMaterialType>;
+  measurableProviders?: Array<IMaterialType>;
   measurables?: Array<IMeasurableTemplate>;
 }
 
 interface ILyphType extends IMaterialType{
-  inheritsLayers?: Array<ILyphType>;
-  inheritsPatches?: Array<ILyphType>;
-  inheritsParts?: Array<ILyphType>;
+  species?: string;
+  layerProviders?: Array<ILyphType>;
+  patchProviders?: Array<ILyphType>;
+  partProviders?: Array<ILyphType>;
 
   layers?: Array<ILyphTemplate>;
   patches?: Array<ILyphTemplate>;
@@ -79,10 +81,10 @@ interface ILyphType extends IMaterialType{
 }
 
 interface ICylindricalLyphType extends ILyphType{
-  plusSide?: SideType;
-  minusSide?: SideType;
+  plusSide?: Array<SideType>;
+  minusSide?: Array<SideType>;
 
-  inheritsSegments?: Array<ICylindricalLyphType>;
+  segmentProviders?: Array<ICylindricalLyphType>;
   segments?: Array<ICylindricalLyphTemplate>;
   minusBorder?: IBorderTemplate;
   plusBorder?: IBorderTemplate;
@@ -97,6 +99,7 @@ interface IBorderType extends IType{
 
 interface IProcessType extends IType{
   transportPhenomenon?: TransportPhenomenon;
+  species?: string;
   materials?: Array<IMaterialType>;
   measurables?: Array<IMeasurableTemplate>;
   source?: INodeTemplate;
@@ -105,7 +108,7 @@ interface IProcessType extends IType{
 
 interface IMeasurableType extends IType{
   quality?: IQuality;
-  references?: Array<IMaterialType>;
+  materials?: Array<IMaterialType>;
 }
 
 interface ICausalityType extends IType{
@@ -126,6 +129,7 @@ interface IOmegaTreeType extends IGroupType{
 interface ITemplate extends IResource{
   type?: IType;
   cardinalityBase?: number|IValueDistribution;
+  cardinalityMultipliers?: Array<ITemplate>;
 }
 
 interface ILyphTemplate extends ITemplate{
@@ -136,6 +140,8 @@ interface ILyphTemplate extends ITemplate{
 
 interface ICylindricalLyphTemplate extends ILyphTemplate{
   type?: ICylindricalLyphType;
+  plusSide?: SideType;
+  minusSide?: SideType;
 }
 
 interface INodeTemplate extends ITemplate{
@@ -268,49 +274,63 @@ export class ValueDistribution implements IValueDistribution{
 export class Resource implements IResource{
   public id: number = 0;
   public name: string = "";
+  public href: string = "";
   public class: ResourceName | TemplateName = ResourceName.Resource;
-  public equivalence: Array<IExternalResource>;
-  public weakEquivalence: Array<IExternalResource>;
+  public externals: Array<IExternalResource>;
 
   constructor(obj: IResource = {}){
     this.id = (obj.id)? obj.id: 0;
     this.name = (obj.name)? obj.name: "New item";
-    this.equivalence = obj.equivalence;
-    this.weakEquivalence = obj.weakEquivalence;
+    this.href = obj.href;
+    this.externals = obj.externals;
     this.class = obj.class;
+  }
+}
+
+export class ExternalResource extends Resource implements IExternalResource{
+  public uri: string = "";
+  public type: string = "";
+
+  constructor(obj: IExternalResource = {}){
+    super(obj);
+    this.type = obj.type;
+    this.uri = obj.uri;
   }
 }
 
 export class Type extends Resource implements IType{
   public supertypes: Array<IResource> = [];
+  public subtypes: Array<IResource> = [];
 
   constructor(obj: IType){
     super(obj);
     this.class = ResourceName.Type;
     this.supertypes = obj.supertypes;
+    this.subtypes = obj.subtypes;
   }
 }
 
 export class MaterialType extends Type implements IMaterialType{
-  public inheritsMaterials: Array<IMaterialType> = [];
+  public materialProviders: Array<IMaterialType> = [];
   public materials: Array<IMaterialType> = [];
-  public inheritsMeasurables: Array<ILyphType> = [];
+  public measurableProviders: Array<ILyphType> = [];
   public measurables: Array<IMeasurableTemplate> = [];
 
   constructor(obj: IMaterialType){
     super(obj);
     this.class = ResourceName.MaterialType;
-    this.inheritsMaterials = obj.inheritsMaterials;
+    this.materialProviders = obj.materialProviders;
     this.materials = obj.materials;
-    this.inheritsMeasurables = obj.inheritsMeasurables;
+    this.measurableProviders = obj.measurableProviders;
     this.measurables = obj.measurables;
   }
 }
 
 export class LyphType extends MaterialType implements ILyphType{
-  public inheritsLayers: Array<ILyphType> = [];
-  public inheritsPatches: Array<ILyphType> = [];
-  public inheritsParts: Array<ILyphType> = [];
+  public species: string;
+  public layerProviders: Array<ILyphType> = [];
+  public patchProviders: Array<ILyphType> = [];
+  public partProviders: Array<ILyphType> = [];
 
   public layers: Array<ILyphTemplate> = [];
   public patches: Array<ILyphTemplate> = [];
@@ -324,9 +344,10 @@ export class LyphType extends MaterialType implements ILyphType{
   constructor(obj: ILyphType){
     super(obj);
     this.class = ResourceName.LyphType;
-    this.inheritsLayers = obj.inheritsLayers;
-    this.inheritsPatches = obj.inheritsPatches;
-    this.inheritsParts = obj.inheritsParts;
+    this.species = obj.species;
+    this.layerProviders = obj.layerProviders;
+    this.patchProviders = obj.patchProviders;
+    this.partProviders = obj.partProviders;
 
     this.layers = obj.layers;
     this.patches = obj.patches;
@@ -340,9 +361,9 @@ export class LyphType extends MaterialType implements ILyphType{
 }
 
 export class CylindricalLyphType extends LyphType implements ICylindricalLyphType{
-  public plusSide: SideType = SideType.closed;
-  public minusSide: SideType = SideType.closed;
-  public inheritsSegments: Array<ICylindricalLyphType> = [];
+  public plusSide: Array<SideType> = [SideType.closed];
+  public minusSide: Array<SideType> = [SideType.closed];
+  public segmentProviders: Array<ICylindricalLyphType> = [];
   public segments: Array<ICylindricalLyphTemplate> = [];
   public minusBorder: IBorderTemplate = null;
   public plusBorder: IBorderTemplate = null;
@@ -350,9 +371,9 @@ export class CylindricalLyphType extends LyphType implements ICylindricalLyphTyp
   constructor(obj: ICylindricalLyphType){
     super(obj);
     this.class = ResourceName.CylindricalLyphType;
-    this.plusSide = (obj.plusSide)? obj.plusSide: SideType.closed;
-    this.minusSide = (obj.minusSide)? obj.minusSide: SideType.closed;
-    this.inheritsSegments = obj.inheritsSegments;
+    this.plusSide = (obj.plusSide)? obj.plusSide: [SideType.closed];
+    this.minusSide = (obj.minusSide)? obj.minusSide: [SideType.closed];
+    this.segmentProviders = obj.segmentProviders;
     this.segments = obj.segments;
     this.minusBorder = obj.minusBorder;
     this.plusBorder = obj.plusBorder;
@@ -361,6 +382,7 @@ export class CylindricalLyphType extends LyphType implements ICylindricalLyphTyp
 
 export class ProcessType extends Type implements IProcessType{
   public transportPhenomenon: TransportPhenomenon;
+  public species: string;
   public materials: Array<IMaterialType>;
   public measurables: Array<IMeasurableTemplate>;
   public source: INodeTemplate;
@@ -370,6 +392,7 @@ export class ProcessType extends Type implements IProcessType{
     super(obj);
     this.class = ResourceName.ProcessType;
     this.transportPhenomenon = (obj.transportPhenomenon)? obj.transportPhenomenon: TransportPhenomenon.advection;
+    this.species = obj.species;
     this.materials = obj.materials;
     this.measurables = obj.measurables;
     this.source = obj.source;
@@ -379,13 +402,13 @@ export class ProcessType extends Type implements IProcessType{
 
 export class MeasurableType extends Type implements IMeasurableType{
   public quality: IQuality;
-  public references: Array<IMaterialType>;
+  public materials: Array<IMaterialType>;
 
   constructor(obj: IMeasurableType){
     super(obj);
     this.class = ResourceName.MeasurableType;
     this.quality = obj.quality;
-    this.references = obj.references;
+    this.materials = obj.materials;
   }
 }
 
@@ -561,18 +584,22 @@ export class LyphTemplate extends Template implements ILyphTemplate{
 
 export class CylindricalLyphTemplate extends LyphTemplate implements ICylindricalLyphTemplate{
   public type: IProcessType;
+  public plusSide: SideType = SideType.closed;
+  public minusSide: SideType = SideType.closed;
 
   constructor(obj: ICylindricalLyphTemplate){
     super(obj);
     this.class = TemplateName.CylindricalLyphTemplate;
+    this.plusSide = (obj.plusSide)? obj.plusSide: SideType.closed;
+    this.minusSide = (obj.minusSide)? obj.minusSide: SideType.closed;
   }
 }
 
 /*TEST PROVIDERS*/
 
 @Injectable()
-export class ResourceProvider {
-  public items: Array<IType> = [];
+export class ExternalResourceProvider {
+  public items: Array<IExternalResource> = [];
   constructor(){}
 }
 
@@ -582,34 +609,41 @@ export class TypeProvider {
   constructor(){}
 }
 
+var basicMaterials = [
+  new MaterialType({id: 10, name: "Water"}),
+  new MaterialType({id: 11, name: "Sodium ion"}),
+  new MaterialType({id: 12, name: "Pottasium ion"}),
+  new MaterialType({id: 13, name: "Hydrogen ion"}),
+  new MaterialType({id: 14, name: "Chloride ion"}),
+  new MaterialType({id: 15, name: "Bicarbonate ion"}),
+  new MaterialType({id: 16, name: "Calcium ion"}),
+  new MaterialType({id: 17, name: "Phosphate ion"}),
+  new MaterialType({id: 18, name: "Glucose"})
+];
+
+var basicMeasurables = [
+  new MeasurableType({id: 100, name: "Concentration of " + basicMaterials[0].name, quality: "concentration", materials: [basicMaterials[0]]}),
+  new MeasurableType({id: 101, name: "Concentration of " + basicMaterials[1].name, quality: "concentration", materials: [basicMaterials[1]]}),
+  new MeasurableType({id: 102, name: "Concentration of " + basicMaterials[2].name, quality: "concentration", materials: [basicMaterials[2]]}),
+  new MeasurableType({id: 103, name: "Concentration of " + basicMaterials[3].name, quality: "concentration", materials: [basicMaterials[3]]}),
+  new MeasurableType({id: 104, name: "Concentration of " + basicMaterials[4].name, quality: "concentration", materials: [basicMaterials[4]]}),
+  new MeasurableType({id: 105, name: "Concentration of " + basicMaterials[5].name, quality: "concentration", materials: [basicMaterials[5]]}),
+  new MeasurableType({id: 106, name: "Concentration of " + basicMaterials[6].name, quality: "concentration", materials: [basicMaterials[6]]}),
+  new MeasurableType({id: 107, name: "Concentration of " + basicMaterials[7].name, quality: "concentration", materials: [basicMaterials[7]]}),
+  new MeasurableType({id: 108, name: "Concentration of " + basicMaterials[8].name, quality: "concentration", materials: [basicMaterials[8]]})
+];
+
 @Injectable()
 export class MaterialTypeProvider {
   public items: Array<IMaterialType> = [];
   public templates: Array<IMeasurableTemplate> = [];
 
   constructor(){
-    let mtp = new MeasurableTypeProvider();
-
-    this.items = [
-      new MaterialType({id: 10, name: "Water"}),
-      new MaterialType({id: 11, name: "Sodium ion"}),
-      new MaterialType({id: 12, name: "Pottasium ion"}),
-      new MaterialType({id: 13, name: "Hydrogen ion"}),
-      new MaterialType({id: 14, name: "Chloride ion"}),
-      new MaterialType({id: 15, name: "Bicarbonate ion"}),
-      new MaterialType({id: 16, name: "Calcium ion"}),
-      new MaterialType({id: 17, name: "Phosphate ion"}),
-      new MaterialType({id: 18, name: "Glucose"})
-    ];
-
+    this.items = basicMaterials;
     let blMaterials = this.items.slice(0,9);
-
-    var concentration = mtp.items.find(x => x.name == "concentration");
-    if (concentration) concentration.references = blMaterials;
-
     for (let i = 0; i < this.items.length; i++) {
       let material = this.items[i];
-      this.templates.push(new MeasurableTemplate({id: material.id + 100, name: material.name, type: concentration}));
+      this.templates.push(new MeasurableTemplate({id: material.id + 200, name: "T: concentration of " + material.name, type: basicMeasurables[i]}));
     }
 
     let blMeasurables = this.templates.slice(0,9);
@@ -619,17 +653,17 @@ export class MaterialTypeProvider {
     this.items.push(ef);
     this.items.push(bl);
 
-    let el = new MaterialType({id: 22, name: "Extracellular liquid", supertypes: [ef, bl], inheritsMaterials: [ef, bl], inheritsMeasurables: [ef, bl]});
+    let el = new MaterialType({id: 22, name: "Extracellular liquid", supertypes: [ef, bl], materialProviders: [ef, bl], measurableProviders: [ef, bl]});
     this.items.push(el);
 
-    let ifl = new MaterialType({id: 23, name: "Intracellular fluid", supertypes: [el], inheritsMaterials: [el], inheritsMeasurables: [el]});
+    let ifl = new MaterialType({id: 23, name: "Intracellular fluid", supertypes: [el], materialProviders: [el], measurableProviders: [el]});
     this.items.push(ifl);
 
-    let plasma = new MaterialType({id: 24, name: "Plasma", supertypes: [ifl], inheritsMaterials: [ifl], inheritsMeasurables: [ifl]});
+    let plasma = new MaterialType({id: 24, name: "Plasma", supertypes: [ifl], materialProviders: [ifl], measurableProviders: [ifl]});
     this.items.push(plasma);
-    let urine = new MaterialType({id: 25, name: "Urine", supertypes: [ifl], inheritsMaterials: [ifl], inheritsMeasurables: [ifl]});
+    let urine = new MaterialType({id: 25, name: "Urine", supertypes: [ifl], materialProviders: [ifl], measurableProviders: [ifl]});
     this.items.push(urine);
-    let tfl = new MaterialType({id: 26, name: "Tissue fluid", supertypes: [ifl], inheritsMaterials: [ifl], inheritsMeasurables: [ifl]});
+    let tfl = new MaterialType({id: 26, name: "Tissue fluid", supertypes: [ifl], materialProviders: [ifl], measurableProviders: [ifl]});
     this.items.push(tfl);
  }
 }
@@ -651,13 +685,13 @@ export class CylindricalLyphTypeProvider {
     let ifl = mtp.items.find(x => x.name=="Intracellular fluid");
 
     //let border = new BorderType();
-    let cytosol =  new CylindricalLyphType({id: 1000, name: "Cytosol", materials: [ifl], plusSide: SideType.closed, minusSide: SideType.closed});
-    let pm =  new CylindricalLyphType({id: 1001, name: "Plasma membrain", plusSide: SideType.closed, minusSide: SideType.closed});
+    let cytosol =  new CylindricalLyphType({id: 1000, name: "Cytosol", materials: [ifl], plusSide: [SideType.closed], minusSide: [SideType.closed]});
+    let pm =  new CylindricalLyphType({id: 1001, name: "Plasma membrain", plusSide: [SideType.closed], minusSide: [SideType.closed]});
 
     this.items = [cytosol, pm];
 
     this.items.forEach(x =>
-      this.templates.push(new LyphTemplate({id: x.id + 100, name: x.name, type: x}))
+      this.templates.push(new CylindricalLyphTemplate({id: x.id + 100, name: "T: " + x.name, type: x}))
     )
   }
 }
@@ -666,6 +700,6 @@ export class CylindricalLyphTypeProvider {
 export class MeasurableTypeProvider {
   public items: Array<IMeasurableType> = [];
   constructor(){
-    this.items.push(new MeasurableType({id: 100, name: "Concentration", quality: "concentration", references: []}));
+    this.items = basicMeasurables;
   }
 }

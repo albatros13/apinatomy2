@@ -31,8 +31,8 @@ var OmegaTreeTypePanel = (function (_super) {
             providers: [service_restore_1.RestoreService],
             selector: 'omegaTreeType-panel',
             inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <groupType-panel \n      [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <ng-content></ng-content>      \n    </groupType-panel>\n  ",
-            directives: [panel_groupType_1.GroupTypePanel, component_general_1.MultiSelectInput]
+            template: "\n    <groupType-panel \n      [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <div class=\"input-control\" *ngIf=\"includeProperty('root')\">      \n        <label for=\"cause\">Root: </label>\n        <select-input-1 [item] = \"item.root\" [options] = \"dependencies.nodeTemplates\"></select-input-1>\n      </div>\n      <ng-content></ng-content>      \n    </groupType-panel>\n  ",
+            directives: [panel_groupType_1.GroupTypePanel, component_general_1.MultiSelectInput, component_general_1.SingleSelectInput]
         }), 
         __metadata('design:paramtypes', [service_restore_1.RestoreService])
     ], OmegaTreeTypePanel);

@@ -18,7 +18,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  */
 var core_1 = require('@angular/core');
 var component_general_1 = require('../component.general');
-var template_general_1 = require('../template.general');
+var component_template_1 = require('../component.template');
 var panel_resource_1 = require("../panels/panel.resource");
 var service_restore_1 = require("../../providers/service.restore");
 var TemplatePanel = (function (_super) {
@@ -32,8 +32,8 @@ var TemplatePanel = (function (_super) {
             providers: [service_restore_1.RestoreService],
             selector: 'template-panel',
             inputs: ['item', 'dependencies'],
-            template: "\n    <resource-panel [item]=\"item\" ignore=\"['equivalence', 'weakEquivalence']\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <label for=\"type\">Type: </label>\n      <select-input-1 [item] = \"item.type\" [options] = \"dependencies\"></select-input-1>\n      <fieldset>\n        <legend>Template:</legend>\n        <template-value caption=\"Cardinality base:\" [item]=\"item.cardinalityBase\"></template-value>\n        <ng-content></ng-content>           \n      </fieldset>\n    </resource-panel>\n  ",
-            directives: [template_general_1.TemplateValue, component_general_1.SingleSelectInput, panel_resource_1.ResourcePanel]
+            template: "\n    <resource-panel [item]=\"item\" \n      [ignore]=\"['externals']\"  (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <div class=\"input-control\">\n        <label for=\"type\">Type: </label>\n        <select-input-1 [item] = \"item.type\" [options] = \"dependencies.types\"></select-input-1>\n      </div>\n      <fieldset>\n        <legend>Template:</legend>\n        <template-value caption=\"Cardinality base:\" [item]=\"item.cardinalityBase\"></template-value>\n        <div class=\"input-control\" *ngIf=\"includeProperty('cardinalityMultipliers')\">\n          <label for=\"cardinalityMultipliers\">Cardinality multipliers: </label>\n            <select-input [item]=\"item.cardinalityMultipliers\" [options]=\"dependencies.templates\"></select-input>  \n        </div>\n        <ng-content></ng-content>           \n      </fieldset>\n    </resource-panel>\n  ",
+            directives: [component_template_1.TemplateValue, component_general_1.SingleSelectInput, component_general_1.MultiSelectInput, panel_resource_1.ResourcePanel]
         }), 
         __metadata('design:paramtypes', [service_restore_1.RestoreService])
     ], TemplatePanel);

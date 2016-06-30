@@ -12,8 +12,12 @@ import {RepoTemplate} from '../repos/repo.template';
   selector: 'correlation-panel',
   inputs: ['item', 'ignore', 'dependencies'],
   template:`
-    <resource-panel [item]="item" [dependencies]="dependencies" [ignore]="['equivalence', 'weakEquivalence']" 
+    <resource-panel [item]="item" [dependencies]="dependencies" [ignore]="['externals']"  
       (saved)="saved.emit($event)" (removed)="removed.emit($event)">
+         <div class="input-control" *ngIf="includeProperty('comment')">
+          <label for="comment">Comment: </label>
+          <input type="text" [(ngModel)]="item.comment">
+        </div>
         <div>
           <label for="publication">Publication: </label>
           <select-input-1 [item] = "item.publication" [options] = "dependencies.publications"></select-input-1>

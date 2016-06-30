@@ -36,7 +36,7 @@ body {
 }
 
 .input-control{
-  /*padding: 4px;*/
+  padding: 4px;
   display: inline-block;
   vertical-align:top;
 }

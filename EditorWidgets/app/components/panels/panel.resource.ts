@@ -40,21 +40,17 @@ export class ResourceToolbar {
             (removed)="onRemoved()">
           </resource-toolbar>
           <div class="panel-content">
-              <div class="input-control" *ngIf="includeProperty('id')">
-                <label for="id">ID: </label>
-                <input type="text" disabled [(ngModel)]="item.id">
-              </div>
+              <!--<div class="input-control" *ngIf="includeProperty('id')">-->
+                <!--<label for="id">ID: </label>-->
+                <!--<input type="text" disabled [(ngModel)]="item.id">-->
+              <!--</div>-->
               <div class="input-control" *ngIf="includeProperty('name')">
                 <label for="name">Name: </label>
-                <input type="text" required [(ngModel)]="item.name">
+                <input type="text" [(ngModel)]="item.name">
               </div>
-              <div class="input-control" *ngIf="includeProperty('equivalence')">
-                <label for="equivalence">Equivalence: </label>
-                <select-input [item]="item.equivalence" [options]="dependencies.equivalences"></select-input>
-              </div>
-              <div class="input-control" *ngIf="includeProperty('weakEquivalence')">
-                <label for="weakEquivalence">Weak equivalence: </label>
-                <select-input [item]="item.weakEquivalence" [options]="dependencies.weakEquivalences"></select-input>
+              <div class="input-control" *ngIf="includeProperty('externals')">
+                <label for="externals">Externals: </label>
+                <select-input [item]="item.externals" [options]="dependencies.externals"></select-input>
               </div>
               <ng-content></ng-content>
           </div>

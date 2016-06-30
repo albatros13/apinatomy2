@@ -31,7 +31,7 @@ var BorderTypePanel = (function (_super) {
             providers: [service_restore_1.RestoreService],
             selector: 'borderType-panel',
             inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <type-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      [ignore]=\"['equivalence', 'weakEquivalence']\" \n      (saved)=\"saved.emit($event)\" \n      (removed)=\"removed.emit($event)\">\n      <!--TODO: replace with slider-->\n      <div class=\"input-control\">\n        <label for=\"position\">Position: </label>\n        <input type=\"number\" min=\"0\" max=\"100\" required [(ngModel)]=\"item.position\">\n      </div>\n      <repo-template caption=\"Elements\" [items] = \"item.elements\" \n        [dependencies] = \"dependencies\" [types]=\"[templateName.NodeTemplate]\"></repo-template>\n      <ng-content></ng-content>      \n    </type-panel>\n  ",
+            template: "\n    <type-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      [ignore]=\"['externals']\" \n      (saved)=\"saved.emit($event)\" \n      (removed)=\"removed.emit($event)\">\n      <!--TODO: replace with slider-->\n      <div class=\"input-control\">\n        <label for=\"position\">Position: </label>\n        <input type=\"number\" min=\"0\" max=\"100\" required [(ngModel)]=\"item.position\">\n      </div>\n      <repo-template caption=\"Elements\" [items] = \"item.elements\" \n        [dependencies] = \"dependencies\" [types]=\"[templateName.NodeTemplate]\"></repo-template>\n      <ng-content></ng-content>      \n    </type-panel>\n  ",
             directives: [panel_type_1.TypePanel, repo_template_1.RepoTemplate]
         }), 
         __metadata('design:paramtypes', [service_restore_1.RestoreService])

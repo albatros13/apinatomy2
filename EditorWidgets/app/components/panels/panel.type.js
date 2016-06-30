@@ -33,7 +33,7 @@ var TypePanel = (function (_super) {
             providers: [service_restore_1.RestoreService],
             selector: 'type-panel',
             inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <resource-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      (saved)=\"saved.emit($event)\" \n      (removed)=\"removed.emit($event)\">\n         <div class=\"input-control\" *ngIf=\"includeProperty('supertypes')\">\n            <label for=\"name\">Supertypes: </label>\n            <select-input [item]=\"item.supertypes\" [options]=\"dependencies.types\"></select-input>\n          </div>\n        <ng-content></ng-content>      \n    </resource-panel>\n  ",
+            template: "\n    <resource-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      (saved)=\"saved.emit($event)\" \n      (removed)=\"removed.emit($event)\">\n         <div class=\"input-control\" *ngIf=\"includeProperty('supertypes')\">\n            <label for=\"name\">Supertypes: </label>\n            <select-input [item]=\"item.supertypes\" [options]=\"dependencies.types\"></select-input>\n         </div>\n         <div class=\"input-control\" *ngIf=\"includeProperty('subtypes')\">\n            <label for=\"name\">Subtypes: </label>\n            <select-input [item]=\"item.subtypes\" [options]=\"dependencies.types\"></select-input>\n         </div>\n        <ng-content></ng-content>      \n    </resource-panel>\n  ",
             directives: [panel_resource_1.ResourcePanel, component_general_1.MultiSelectInput]
         }), 
         __metadata('design:paramtypes', [service_restore_1.RestoreService])

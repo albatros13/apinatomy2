@@ -10,11 +10,17 @@ import {TypePanel} from "./panel.type";
   selector: 'measurableType-panel',
   inputs: ['item', 'ignore', 'dependencies'],
   template:`
-    <type-panel [item]="item" [dependencies]="dependencies" [ignore]="['equivalence', 'weakEquivalence']" (saved)="saved.emit($event)" (removed)="removed.emit($event)">
+    <type-panel [item]="item" [dependencies]="dependencies" 
+      [ignore]="['externals']"  
+      (saved)="saved.emit($event)" (removed)="removed.emit($event)">
       <div class="input-control">
        <label for="quality">Quality: </label>
        <input type="text" required [(ngModel)]="item.quality">
       </div>
+      <div class="input-control" *ngIf="includeProperty('materials')">
+        <label for="materials">Materials: </label>
+        <select-input [item]="item.materials" [options]="dependencies.materials"></select-input>
+      </div>   
       <ng-content></ng-content>      
     </type-panel>
   `,

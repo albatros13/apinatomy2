@@ -126,4 +126,4 @@ var TemplateValue = (function () {
     return TemplateValue;
 }());
 exports.TemplateValue = TemplateValue;
-//# sourceMappingURL=template.general.js.map
+//# sourceMappingURL=component.template.js.map

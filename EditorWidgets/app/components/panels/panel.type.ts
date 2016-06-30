@@ -19,7 +19,11 @@ import {TemplateName} from "../../providers/service.apinatomy2";
          <div class="input-control" *ngIf="includeProperty('supertypes')">
             <label for="name">Supertypes: </label>
             <select-input [item]="item.supertypes" [options]="dependencies.types"></select-input>
-          </div>
+         </div>
+         <div class="input-control" *ngIf="includeProperty('subtypes')">
+            <label for="name">Subtypes: </label>
+            <select-input [item]="item.subtypes" [options]="dependencies.types"></select-input>
+         </div>
         <ng-content></ng-content>      
     </resource-panel>
   `,

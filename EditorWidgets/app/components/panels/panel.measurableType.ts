@@ -3,7 +3,6 @@
  */
 import {Component} from '@angular/core';
 import {RestoreService} from "../../providers/service.restore";
-import {IMeasurableType} from "../../providers/service.apinatomy2";
 import {TypePanel} from "./panel.type";
 
 @Component({
@@ -22,7 +21,7 @@ import {TypePanel} from "./panel.type";
   directives: [TypePanel]
 })
 export class MeasurableTypePanel extends TypePanel{
-  constructor(protected restoreService: RestoreService<IMeasurableType>){
+  constructor(protected restoreService: RestoreService<any>){
     super(restoreService);
   }
 }

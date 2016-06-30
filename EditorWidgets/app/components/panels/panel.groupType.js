@@ -31,7 +31,7 @@ var GroupTypePanel = (function (_super) {
             providers: [service_restore_1.RestoreService],
             selector: 'groupType-panel',
             inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <type-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <div class=\"input-control\" *ngIf=\"includeProperty('elements')\">\n         <repo-template caption=\"Elements\" [items] = \"item.elements\" [dependencies] = \"dependencies.types\"></repo-template>\n      </div>\n      <ng-content></ng-content>      \n    </type-panel>\n  ",
+            template: "\n    <type-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <div class=\"input-control\" *ngIf=\"includeProperty('elements')\">\n         <repo-template caption=\"Elements\" [items] = \"item.elements\" \n         [dependencies] = \"dependencies\" [types]=\"[\n            templateName.LyphTemplate, templateName.CylindricalLyphTemplate]\"></repo-template>\n      </div>\n      <ng-content></ng-content>      \n    </type-panel>\n  ",
             directives: [panel_type_1.TypePanel, repo_template_1.RepoTemplate]
         }), 
         __metadata('design:paramtypes', [service_restore_1.RestoreService])

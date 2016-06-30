@@ -3,7 +3,6 @@
  */
 import {Component} from '@angular/core';
 import {RestoreService} from "../../providers/service.restore";
-import {ILyphType} from "../../providers/service.apinatomy2";
 import {MaterialTypePanel} from "./panel.materialType";
 import {MultiSelectInput} from '../component.general';
 import {RepoTemplate} from '../repos/repo.template';
@@ -18,35 +17,40 @@ import {RepoTemplate} from '../repos/repo.template';
         (saved)="saved.emit($event)" (removed)="removed.emit($event)">
         <div class="input-control" *ngIf="includeProperty('inheritsLayers')">
           <label for="inheritsLayers">Inherits layers: </label>
-          <select-input [item]="item.inheritsLayers" [options]="dependencies.lyphTypes"></select-input>
+          <select-input [item]="item.inheritsLayers" [options]="dependencies.lyphs"></select-input>
         </div>
         <div class="input-control" *ngIf="includeProperty('inheritsPatches')">
           <label for="inheritsPatches">Inherits patches: </label>
-          <select-input [item]="item.inheritsPatches" [options]="dependencies.lyphTypes"></select-input>
+          <select-input [item]="item.inheritsPatches" [options]="dependencies.lyphs"></select-input>
         </div>
         <div class="input-control" *ngIf="includeProperty('inheritsParts')">
           <label for="inheritsParts">Inherits parts: </label>
-          <select-input [item]="item.inheritsParts" [options]="dependencies.lyphTypes"></select-input>
+          <select-input [item]="item.inheritsParts" [options]="dependencies.lyphs"></select-input>
         </div>
         <br/>
         <div class="input-control" *ngIf="includeProperty('layers')">
-          <repo-template caption="Layers" [items] = "item.layers" [dependencies] = "dependencies.lyphTypes"></repo-template>
+          <repo-template caption="Layers" [items] = "item.layers" [dependencies] = "dependencies" 
+          [types] = "[templateName.LyphTemplate, templateName.CylindricalLyphTemplate]"></repo-template>
         </div>
         <div class="input-control" *ngIf="includeProperty('patches')">
-          <repo-template caption="Patches" [items] = "item.patches" [dependencies] = "dependencies.lyphTypes"></repo-template>
+          <repo-template caption="Patches" [items] = "item.patches" [dependencies] = "dependencies"
+          [types] = "[templateName.LyphTemplate, templateName.CylindricalLyphTemplate]"></repo-template>
         </div>
         <div class="input-control" *ngIf="includeProperty('parts')">
-          <repo-template caption="Parts" [items] = "item.parts" [dependencies] = "dependencies.lyphTypes"></repo-template>
+          <repo-template caption="Parts" [items] = "item.parts" [dependencies] = "dependencies"
+          [types] = "[templateName.LyphTemplate, templateName.CylindricalLyphTemplate]"></repo-template>
         </div>
+        <!--Processes-->
+        <!--Nodes-->
+        <!--InnerBorder-->
+        <!--OuterBorder-->
         <ng-content></ng-content>
     </materialType-panel>
   `,
   directives: [MaterialTypePanel, MultiSelectInput, RepoTemplate]
 })
 export class LyphTypePanel extends MaterialTypePanel{
-  item: ILyphType;
-
-  constructor(protected restoreService: RestoreService<ILyphType>){
+  constructor(protected restoreService: RestoreService<any>){
     super(restoreService);
   }
 }

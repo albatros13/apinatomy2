@@ -3,10 +3,13 @@
  */
 import {Component, Directive, Input, ElementRef} from '@angular/core';
 import {RepoGeneral} from '../components/repos/repo.general'
-import {IExternalResource,
-  IResource, IType, TypeProvider,
-  IMaterialType, MaterialTypeProvider,
-  ILyphType, LyphTypeProvider} from '../providers/service.apinatomy2'
+import {
+  ResourceProvider,
+  TypeProvider,
+  MaterialTypeProvider,
+  LyphTypeProvider,
+  CylindricalLyphTypeProvider, MeasurableTypeProvider
+} from '../providers/service.apinatomy2'
 
 declare var GoldenLayout:any;
 
@@ -87,33 +90,47 @@ export class LyphTypeWidget{
 
 @Component({
   selector: 'lyphType-editor',
-  providers: [TypeProvider, MaterialTypeProvider, LyphTypeProvider],
+  providers: [
+    MeasurableTypeProvider,
+    ResourceProvider,
+    TypeProvider,
+    MaterialTypeProvider,
+    LyphTypeProvider,
+    CylindricalLyphTypeProvider],
   template: `
     <repo-general [items]="items" caption="Materials" [dependencies]="dependency"></repo-general>
   `,
   directives: [RepoGeneral]
 })
 export class LyphTypeEditor {
-  items: Array<IMaterialType>;
-  dependency: {
-    equivalences: Array<IExternalResource>,
-    weakEquivalences: Array<IExternalResource>,
-    types: Array<IType>,
-    materialTypes: Array<IMaterialType>,
-    lyphTypes: Array<ILyphType>};
+  items: Array<any>;
+  dependency: any;
 
   constructor(
-    typeProvider: TypeProvider,
-    materialTypeProvider: MaterialTypeProvider,
-    lyphTypeProvider: LyphTypeProvider) {
+    resourceP: ResourceProvider,
+    typeP: TypeProvider,
+    materialP: MaterialTypeProvider,
+    lyphP: LyphTypeProvider,
+    cLyphP: CylindricalLyphTypeProvider,
+    measurableP: MeasurableTypeProvider
+  ) {
+
+    let allLyphs = lyphP.items.concat(cLyphP.items);
+    let allMaterials = materialP.items.concat(allLyphs);
+    let allTypes = typeP.items.concat(allMaterials, measurableP.items);
+    let allResources = resourceP.items.concat(allTypes);
 
     this.dependency = {
       equivalences: [],
       weakEquivalences: [],
-      types: typeProvider.items,
-      materialTypes: materialTypeProvider.items,
-      lyphTypes: lyphTypeProvider.items};
-    this.items = materialTypeProvider.items;
+      resources: allResources,
+      types: allTypes,
+      materials: allMaterials,
+      lyphs: allLyphs,
+      cylindricalLyphs: cLyphP.items,
+      measurables: measurableP.items
+    };
+    this.items = allMaterials;
   }
 }
 

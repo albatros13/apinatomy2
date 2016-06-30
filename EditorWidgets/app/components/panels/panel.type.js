@@ -20,11 +20,13 @@ var core_1 = require('@angular/core');
 var service_restore_1 = require("../../providers/service.restore");
 var panel_resource_1 = require("./panel.resource");
 var component_general_1 = require('../component.general');
+var service_apinatomy2_1 = require("../../providers/service.apinatomy2");
 var TypePanel = (function (_super) {
     __extends(TypePanel, _super);
     function TypePanel(restoreService) {
         _super.call(this, restoreService);
         this.restoreService = restoreService;
+        this.templateName = service_apinatomy2_1.TemplateName;
     }
     TypePanel = __decorate([
         core_1.Component({

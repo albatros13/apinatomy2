@@ -6,7 +6,7 @@ import {CORE_DIRECTIVES, FORM_DIRECTIVES} from '@angular/common';
 import {ACCORDION_DIRECTIVES} from 'ng2-bootstrap/components/accordion';
 import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
 import {ItemHeader, SortToolbar, EditToolbar} from '../component.general';
-import {IResource, ResourceName, TemplateName,
+import {ResourceName, TemplateName,
   Resource, Type, MaterialType, LyphType, CylindricalLyphType, BorderType, NodeType,
   CausalityType, MeasurableType, GroupType, ProcessType, OmegaTreeType,
   Publication, Correlation, ClinicalIndex
@@ -27,52 +27,76 @@ import {CorrelationPanel} from '../panels/panel.correlation';
 
 @Component({
   selector: 'repo-general',
-  inputs: ['items', 'caption', 'dependencies'],
+  inputs: ['items', 'caption', 'dependencies', 'types'],
   template:`
      <div class="panel panel-info repo">
         <div class="panel-heading">{{caption}}</div>
         <div class="panel-body" >
           <sort-toolbar [options]="['ID', 'Name']" (sorted)="onSorted($event)"></sort-toolbar>
-          <edit-toolbar [options]="itemTypes" (added)="onAdded($event)"></edit-toolbar>
+          <edit-toolbar [options]="types" (added)="onAdded($event)"></edit-toolbar>
           
           <accordion class="list-group" [closeOthers]="true" 
           dnd-sortable-container [dropZones]="zones" [sortableData]="items">
           <accordion-group *ngFor="let item of items | orderBy : sortByMode; let i = index" class="list-group-item" dnd-sortable [sortableIndex]="i">
             <div accordion-heading><item-header [item]="item" [icon]="getIcon(item)"></item-header></div>
+            
+            <!--Resources-->
             <resource-panel *ngIf="!item.class || (item.class == resourceNames.Resource)"
              [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></resource-panel>
+            
+            <!--Types-->
             <type-panel *ngIf="item.class == resourceNames.Type"
              [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></type-panel>
+            
+            <!--Materials-->
             <materialType-panel *ngIf="item.class==resourceNames.MaterialType"
              [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></materialType-panel>
+            
+            <!--Lyphs-->      
             <lyphType-panel *ngIf="item.class==resourceNames.LyphType"
              [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></lyphType-panel>
+
+            <!--Cylindrical lyphs-->      
             <cylindricalLyphType-panel *ngIf="item.class==resourceNames.CylindricalLyphType"
              [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></cylindricalLyphType-panel>
             
+            <!--Processes-->      
             <processType-panel *ngIf="item.class==resourceNames.ProcessType"
              [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></processType-panel>
+            
+            <!--Mesurables-->
             <measurableType-panel *ngIf="item.class==resourceNames.MeasurableType"
              [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></measurableType-panel>
+            
+            <!--Causalities-->
             <causalityType-panel *ngIf="item.class==resourceNames.CausalityType"
              [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></causalityType-panel>
-            <!--Resource panel is used to show nodes-->
+            
+            <!--Nodes: generic panel-->
             <resource-panel *ngIf="item.class==resourceNames.NodeType"  [ignore]="['equivalence', 'weakEquivalence']" 
              [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></resource-panel>
+
+            <!--Borders-->
             <borderType-panel *ngIf="item.class==resourceNames.BorderType"
              [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></borderType-panel>
             
+            <!--Groups-->
             <groupType-panel *ngIf="item.class==resourceNames.GroupType"
              [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></groupType-panel>
+
+            <!--Omega trees-->
             <omegaTreeType-panel *ngIf="item.class==resourceNames.OmegaTreeType"
              [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></omegaTreeType-panel>
 
-             <!--Resource panel is used to show publications-->
+             <!--Publications: generic panel-->
              <resource-panel *ngIf="item.class==resourceNames.Publication"  [ignore]="['equivalence', 'weakEquivalence']" 
              [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></resource-panel>
+
+             <!--Correlations-->
              <correlation-panel *ngIf="item.class==resourceNames.Correlation"
              [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></correlation-panel>
-             <!--Resource panel is used to show clinical indices-->
+             
+             <!--Clinical indices: generic panel-->
              <resource-panel *ngIf="item.class==resourceNames.ClinicalIndex"  [ignore]="['equivalence', 'weakEquivalence']" 
              [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></resource-panel>
           </accordion-group>        
@@ -91,22 +115,22 @@ import {CorrelationPanel} from '../panels/panel.correlation';
   pipes: [OrderBy]
 })
 export class RepoGeneral{
-  items: Array<IResource> = [];
-  selected: IResource = null;
+  items: Array<any> = [];
+  selected: any = null;
   resourceNames = ResourceName;
-  itemTypes: Array<ResourceName | TemplateName> = [];
+  types: Array<ResourceName | TemplateName> = [];
   zones: Array<string> = [];
   sortByMode: string = "id";
 
   ngOnInit(){
     if (!this.items) this.items = [];
     if (this.items[0]) this.selected = this.items[0];
-    let types = new Set(this.items.map(item => item.class));
-    this.itemTypes = Array.from(types);
-    this.zones = this.itemTypes.map(x => x + "_zone");
+    if (!this.types || (this.types.length == 0))
+      this.types = Array.from(new Set(this.items.map(item => item.class)));
+    this.zones = this.types.map(x => x + "_zone");
   }
 
-  getIcon(item: IResource){
+  getIcon(item: any){
     switch (item.class){
       case this.resourceNames.Type          : return "images/type.png";
       case this.resourceNames.MaterialType  : return "images/materialType.png";
@@ -129,17 +153,17 @@ export class RepoGeneral{
     return "images/resource.png";
   }
 
-  protected changeActive(item: IResource){
+  protected changeActive(item: any){
     this.selected = item;
   }
 
-  protected onSaved(item: IResource, updatedItem: IResource){
+  protected onSaved(item: any, updatedItem: any){
     for (var key in updatedItem){
       if (updatedItem.hasOwnProperty(key)) item[key] = updatedItem[key];
     }
   }
 
-  protected onRemoved(item: IResource){
+  protected onRemoved(item: any){
     if (!this.items) return;
     let index = this.items.indexOf(item);
     if (index > -1) this.items.splice(index, 1);
@@ -150,7 +174,7 @@ export class RepoGeneral{
   }
 
   protected onAdded(resourceType: ResourceName | TemplateName){
-    let newItem: IResource;
+    let newItem: any;
     switch (resourceType){
       case this.resourceNames.Type          : newItem = new Type({}); break;
       case this.resourceNames.MaterialType  : newItem = new MaterialType({name: "New material"}); break;
@@ -172,6 +196,5 @@ export class RepoGeneral{
       default: newItem = new Resource();
     }
     this.items.push(newItem);
-    return "images/resource.png";
   }
 }

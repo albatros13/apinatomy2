@@ -17,7 +17,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  * Created by Natallia on 6/8/2016.
  */
 var core_1 = require('@angular/core');
-///////////////////////////////////////////////////////
+/*ENUMERATIONS*/
 (function (ResourceName) {
     ResourceName[ResourceName["Resource"] = "Resource"] = "Resource";
     ResourceName[ResourceName["Type"] = "Type"] = "Type";
@@ -49,13 +49,6 @@ var ResourceName = exports.ResourceName;
     TemplateName[TemplateName["OmegaTreeTemplate"] = "OmegaTreeTemplate"] = "OmegaTreeTemplate";
 })(exports.TemplateName || (exports.TemplateName = {}));
 var TemplateName = exports.TemplateName;
-(function (Status) {
-    Status[Status["New"] = "New"] = "New";
-    Status[Status["Updated"] = "Updated"] = "Updated";
-    Status[Status["Deleted"] = "Deleted"] = "Deleted";
-    Status[Status["Valid"] = "Valid"] = "Valid";
-})(exports.Status || (exports.Status = {}));
-var Status = exports.Status;
 (function (TransportPhenomenon) {
     TransportPhenomenon[TransportPhenomenon["diffusion"] = "diffusion"] = "diffusion";
     TransportPhenomenon[TransportPhenomenon["advection"] = "advection"] = "advection";
@@ -71,7 +64,8 @@ var DistributionType = exports.DistributionType;
     SideType[SideType["closed"] = "closed"] = "closed";
 })(exports.SideType || (exports.SideType = {}));
 var SideType = exports.SideType;
-///////////////////////////////////////////////////////
+/*CLASSES*/
+//Components
 var Distribution = (function () {
     function Distribution(obj) {
         if (obj === void 0) { obj = {}; }
@@ -113,6 +107,7 @@ var ValueDistribution = (function () {
     return ValueDistribution;
 }());
 exports.ValueDistribution = ValueDistribution;
+//Entities
 var Resource = (function () {
     function Resource(obj) {
         if (obj === void 0) { obj = {}; }
@@ -124,7 +119,6 @@ var Resource = (function () {
         this.equivalence = obj.equivalence;
         this.weakEquivalence = obj.weakEquivalence;
         this.class = obj.class;
-        this.status = Status.New;
     }
     return Resource;
 }());
@@ -307,13 +301,87 @@ var Correlation = (function (_super) {
         _super.call(this, obj);
         this.class = ResourceName.Correlation;
         this.publication = obj.publication;
-        this.locatedMeasurables = obj.locatedMeasurables;
+        this.measurables = obj.measurables;
         this.clinicalIndices = obj.clinicalIndices;
     }
     return Correlation;
 }(Resource));
 exports.Correlation = Correlation;
-///////
+//Templates
+var Template = (function (_super) {
+    __extends(Template, _super);
+    function Template(obj) {
+        _super.call(this, obj);
+        this.class = TemplateName.Template;
+        this.type = obj.type;
+        this.cardinalityBase = (obj.cardinalityBase) ? obj.cardinalityBase : 1;
+    }
+    return Template;
+}(Resource));
+exports.Template = Template;
+var MeasurableTemplate = (function (_super) {
+    __extends(MeasurableTemplate, _super);
+    function MeasurableTemplate(obj) {
+        _super.call(this, obj);
+        this.class = TemplateName.MeasurableTemplate;
+    }
+    return MeasurableTemplate;
+}(Template));
+exports.MeasurableTemplate = MeasurableTemplate;
+var ProcessTemplate = (function (_super) {
+    __extends(ProcessTemplate, _super);
+    function ProcessTemplate(obj) {
+        _super.call(this, obj);
+        this.class = TemplateName.ProcessTemplate;
+    }
+    return ProcessTemplate;
+}(Template));
+exports.ProcessTemplate = ProcessTemplate;
+var CausalityTemplate = (function (_super) {
+    __extends(CausalityTemplate, _super);
+    function CausalityTemplate(obj) {
+        _super.call(this, obj);
+        this.class = TemplateName.CausalityTemplate;
+    }
+    return CausalityTemplate;
+}(Template));
+exports.CausalityTemplate = CausalityTemplate;
+var NodeTemplate = (function (_super) {
+    __extends(NodeTemplate, _super);
+    function NodeTemplate(obj) {
+        _super.call(this, obj);
+        this.class = TemplateName.NodeTemplate;
+    }
+    return NodeTemplate;
+}(Template));
+exports.NodeTemplate = NodeTemplate;
+var BorderTemplate = (function (_super) {
+    __extends(BorderTemplate, _super);
+    function BorderTemplate(obj) {
+        _super.call(this, obj);
+        this.class = TemplateName.BorderTemplate;
+    }
+    return BorderTemplate;
+}(Template));
+exports.BorderTemplate = BorderTemplate;
+var GroupTemplate = (function (_super) {
+    __extends(GroupTemplate, _super);
+    function GroupTemplate(obj) {
+        _super.call(this, obj);
+        this.class = TemplateName.GroupTemplate;
+    }
+    return GroupTemplate;
+}(Template));
+exports.GroupTemplate = GroupTemplate;
+var OmegaTreeTemplate = (function (_super) {
+    __extends(OmegaTreeTemplate, _super);
+    function OmegaTreeTemplate(obj) {
+        _super.call(this, obj);
+        this.class = TemplateName.OmegaTreeTemplate;
+    }
+    return OmegaTreeTemplate;
+}(GroupTemplate));
+exports.OmegaTreeTemplate = OmegaTreeTemplate;
 var LyphTemplate = (function (_super) {
     __extends(LyphTemplate, _super);
     function LyphTemplate(obj) {
@@ -321,49 +389,33 @@ var LyphTemplate = (function (_super) {
         this.length = 0;
         this.width = 0;
         this.class = TemplateName.LyphTemplate;
-        this.type = obj.type;
         this.length = obj.length;
         this.width = obj.width;
     }
     return LyphTemplate;
-}(Resource));
+}(Template));
 exports.LyphTemplate = LyphTemplate;
-var MeasurableTemplate = (function (_super) {
-    __extends(MeasurableTemplate, _super);
-    function MeasurableTemplate(obj) {
+var CylindricalLyphTemplate = (function (_super) {
+    __extends(CylindricalLyphTemplate, _super);
+    function CylindricalLyphTemplate(obj) {
         _super.call(this, obj);
-        this.class = TemplateName.MeasurableTemplate;
-        this.type = obj.type;
+        this.class = TemplateName.CylindricalLyphTemplate;
     }
-    return MeasurableTemplate;
-}(Resource));
-exports.MeasurableTemplate = MeasurableTemplate;
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-var PublicationProvider = (function () {
-    function PublicationProvider() {
+    return CylindricalLyphTemplate;
+}(LyphTemplate));
+exports.CylindricalLyphTemplate = CylindricalLyphTemplate;
+/*TEST PROVIDERS*/
+var ResourceProvider = (function () {
+    function ResourceProvider() {
         this.items = [];
     }
-    PublicationProvider = __decorate([
+    ResourceProvider = __decorate([
         core_1.Injectable(), 
         __metadata('design:paramtypes', [])
-    ], PublicationProvider);
-    return PublicationProvider;
+    ], ResourceProvider);
+    return ResourceProvider;
 }());
-exports.PublicationProvider = PublicationProvider;
-////
-var MeasurableTypeProvider = (function () {
-    function MeasurableTypeProvider() {
-        this.items = [];
-        this.items.push(new MeasurableType({ id: 100, name: "Concentration", quality: "concentration", references: [] }));
-    }
-    MeasurableTypeProvider = __decorate([
-        core_1.Injectable(), 
-        __metadata('design:paramtypes', [])
-    ], MeasurableTypeProvider);
-    return MeasurableTypeProvider;
-}());
-exports.MeasurableTypeProvider = MeasurableTypeProvider;
-////
+exports.ResourceProvider = ResourceProvider;
 var TypeProvider = (function () {
     function TypeProvider() {
         this.items = [];
@@ -377,7 +429,6 @@ var TypeProvider = (function () {
 exports.TypeProvider = TypeProvider;
 var MaterialTypeProvider = (function () {
     function MaterialTypeProvider() {
-        var _this = this;
         this.items = [];
         this.templates = [];
         var mtp = new MeasurableTypeProvider();
@@ -415,10 +466,6 @@ var MaterialTypeProvider = (function () {
         this.items.push(urine);
         var tfl = new MaterialType({ id: 26, name: "Tissue fluid", supertypes: [ifl], inheritsMaterials: [ifl], inheritsMeasurables: [ifl] });
         this.items.push(tfl);
-        var lyphs = new LyphTypeProvider(this);
-        lyphs.items.forEach(function (x) { return _this.items.push(x); });
-        var cLyphs = new CylindricalLyphTypeProvider(this);
-        cLyphs.items.forEach(function (x) { return _this.items.push(x); });
     }
     MaterialTypeProvider = __decorate([
         core_1.Injectable(), 
@@ -430,6 +477,7 @@ exports.MaterialTypeProvider = MaterialTypeProvider;
 var LyphTypeProvider = (function () {
     function LyphTypeProvider(mtp) {
         this.items = [];
+        this.templates = [];
     }
     LyphTypeProvider = __decorate([
         core_1.Injectable(), 
@@ -445,10 +493,8 @@ var CylindricalLyphTypeProvider = (function () {
         this.templates = [];
         var ifl = mtp.items.find(function (x) { return x.name == "Intracellular fluid"; });
         //let border = new BorderType();
-        var cytosol = new CylindricalLyphType({ id: 1000, name: "Cytosol", materials: [ifl],
-            plusSide: SideType.closed, minusSide: SideType.closed });
-        var pm = new CylindricalLyphType({ id: 1001, name: "Plasma membrain",
-            plusSide: SideType.closed, minusSide: SideType.closed });
+        var cytosol = new CylindricalLyphType({ id: 1000, name: "Cytosol", materials: [ifl], plusSide: SideType.closed, minusSide: SideType.closed });
+        var pm = new CylindricalLyphType({ id: 1001, name: "Plasma membrain", plusSide: SideType.closed, minusSide: SideType.closed });
         this.items = [cytosol, pm];
         this.items.forEach(function (x) {
             return _this.templates.push(new LyphTemplate({ id: x.id + 100, name: x.name, type: x }));
@@ -461,4 +507,16 @@ var CylindricalLyphTypeProvider = (function () {
     return CylindricalLyphTypeProvider;
 }());
 exports.CylindricalLyphTypeProvider = CylindricalLyphTypeProvider;
+var MeasurableTypeProvider = (function () {
+    function MeasurableTypeProvider() {
+        this.items = [];
+        this.items.push(new MeasurableType({ id: 100, name: "Concentration", quality: "concentration", references: [] }));
+    }
+    MeasurableTypeProvider = __decorate([
+        core_1.Injectable(), 
+        __metadata('design:paramtypes', [])
+    ], MeasurableTypeProvider);
+    return MeasurableTypeProvider;
+}());
+exports.MeasurableTypeProvider = MeasurableTypeProvider;
 //# sourceMappingURL=service.apinatomy2.js.map

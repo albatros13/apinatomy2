@@ -2,7 +2,6 @@
  * Created by Natallia on 6/14/2016.
  */
 import {Component, EventEmitter, Output} from '@angular/core';
-import {IResource} from "../../providers/service.apinatomy2";
 import {RestoreService} from "../../providers/service.restore";
 import {MultiSelectInput} from '../component.general';
 
@@ -69,9 +68,9 @@ export class ResourcePanel {
   @Output() saved = new EventEmitter();
   @Output() removed = new EventEmitter();
 
-  constructor(protected restoreService: RestoreService<IResource>){}
+  constructor(protected restoreService: RestoreService<any>){}
 
-  protected set item (item: IResource) {
+  protected set item (item: any) {
     this.restoreService.setItem(item);
   }
 

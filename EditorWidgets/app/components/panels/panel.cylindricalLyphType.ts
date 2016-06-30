@@ -3,7 +3,7 @@
  */
 import {Component} from '@angular/core';
 import {RestoreService} from "../../providers/service.restore";
-import {ICylindricalLyphType, SideType} from "../../providers/service.apinatomy2";
+import {SideType} from "../../providers/service.apinatomy2";
 import {LyphTypePanel} from "./panel.lyphType";
 import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
 import {MultiSelectInput} from '../component.general';
@@ -37,10 +37,11 @@ import {RepoTemplate} from '../repos/repo.template';
         </div>
         <div class="input-control" *ngIf="includeProperty('inheritsSegments')">
           <label for="inheritsSegments">Inherits segments: </label>
-          <select-input [item]="item.inheritsSegments" [options]="dependencies.cylindricalLyphTypes"></select-input>
+          <select-input [item]="item.inheritsSegments" [options]="dependencies.cylindricalLyphs"></select-input>
         </div>
         <div class="input-control" *ngIf="includeProperty('segments')">
-          <repo-template caption="Segments" [items] = "item.segments" [dependencies] = "dependencies.cylindricalLyphTypes"></repo-template>
+          <repo-template caption="Segments" [items] = "item.segments" [dependencies] = "dependencies"
+            [types]="[templateName.LyphTemplate]"></repo-template>
         </div>
         <ng-content></ng-content>
     </lyphType-panel>
@@ -48,15 +49,9 @@ import {RepoTemplate} from '../repos/repo.template';
   directives: [LyphTypePanel, RADIO_GROUP_DIRECTIVES, MultiSelectInput, RepoTemplate]
 })
 export class CylindricalLyphTypePanel extends LyphTypePanel{
-  item: ICylindricalLyphType;
   public sideType = SideType;
 
-  constructor(protected restoreService: RestoreService<ICylindricalLyphType>){
+  constructor(protected restoreService: RestoreService<any>){
     super(restoreService);
-  }
-
-  ngOnInit(){
-    if (!this.item.plusSide) this.item.plusSide = this.sideType.closed;
-    if (!this.item.minusSide) this.item.minusSide = this.sideType.closed;
   }
 }

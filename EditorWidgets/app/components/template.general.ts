@@ -2,10 +2,8 @@
  * Created by Natallia on 6/21/2016.
  */
 import {Component, EventEmitter, Output} from '@angular/core';
-import {IValueDistribution, ValueDistribution,
-  IBoundedNormalDistribution, BoundedNormalDistribution,
-  IUniformDistribution, UniformDistribution, DistributionType} from '../../providers/service.apinatomy2'
-import {RestoreService} from "../../providers/service.restore";
+import {ValueDistribution, BoundedNormalDistribution, UniformDistribution, DistributionType} from '../providers/service.apinatomy2'
+import {RestoreService} from "../providers/service.restore";
 import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
 
 @Component({
@@ -30,13 +28,13 @@ import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
 export class UniformDistributionInput {
   @Output() saved = new EventEmitter();
 
-  constructor(protected restoreService: RestoreService<IUniformDistribution>){}
+  constructor(protected restoreService: RestoreService<any>){}
 
   protected ngOnInit() {
     if (!this.item) this.item = new UniformDistribution();
   }
 
-  protected set item (item: IUniformDistribution) {
+  protected set item (item: any) {
     this.restoreService.setItem(item);
   }
 
@@ -74,7 +72,7 @@ export class UniformDistributionInput {
   directives: [UniformDistributionInput]
 })
 export class BoundedNormalDistributionInput extends UniformDistributionInput{
-  constructor(protected restoreService: RestoreService<IBoundedNormalDistribution>){
+  constructor(protected restoreService: RestoreService<any>){
     super(restoreService);
   }
 
@@ -100,7 +98,7 @@ export class BoundedNormalDistributionInput extends UniformDistributionInput{
 })
 export class DistributionInput {
   distributionType = DistributionType;
-  item: IValueDistribution;
+  item: any;
   constructor(){}
 
   protected ngOnInit() {
@@ -127,7 +125,7 @@ export class DistributionInput {
 })
 export class TemplateValue{
   valueType: string = "Value";
-  item: number|IValueDistribution;
+  item: number|ValueDistribution;
 
   ngOnInit(){
       if (this.item && this.item['distribution']) this.valueType = "Distribution";

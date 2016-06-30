@@ -886,7 +886,7 @@ interface ArrayConstructor {
     pop<T>(array: ArrayLike<T>): T;
     /**
       * Combines two or more arrays.
-      * @param items Additional items to add to the end of array1.
+      * @param items Additional materials to add to the end of array1.
       */
     concat<T>(array: ArrayLike<T>, ...items: (T[]| T)[]): T[];
     /**

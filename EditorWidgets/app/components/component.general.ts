@@ -103,8 +103,8 @@ export class SingleSelectInput {
 
 // @Component({
 //   selector: 'list',
-//   inputs: ['items'],
-//   template: `<template ngFor [ngForOf]="items" [ngForTemplate]="contentTemplate"></template>`
+//   inputs: ['materials'],
+//   template: `<template ngFor [ngForOf]="materials" [ngForTemplate]="contentTemplate"></template>`
 // })
 // export class List {
 //   @ContentChild(TemplateRef) contentTemplate: TemplateRef<any>;

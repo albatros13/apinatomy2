@@ -3,7 +3,6 @@
  */
 import {Component} from '@angular/core';
 import {RestoreService} from "../../providers/service.restore";
-import {IOmegaTreeType} from "../../providers/service.apinatomy2";
 import {GroupTypePanel} from "./panel.groupType";
 import {MultiSelectInput} from '../component.general';
 
@@ -20,7 +19,7 @@ import {MultiSelectInput} from '../component.general';
   directives: [GroupTypePanel, MultiSelectInput]
 })
 export class OmegaTreeTypePanel extends GroupTypePanel{
-  constructor(protected restoreService: RestoreService<IOmegaTreeType>){
+  constructor(protected restoreService: RestoreService<any>){
     super(restoreService);
   }
 }

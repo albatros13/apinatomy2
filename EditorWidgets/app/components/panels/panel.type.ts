@@ -3,9 +3,9 @@
  */
 import {Component} from '@angular/core';
 import {RestoreService} from "../../providers/service.restore";
-import {IType} from "../../providers/service.apinatomy2";
 import {ResourcePanel} from "./panel.resource";
 import {MultiSelectInput} from '../component.general';
+import {TemplateName} from "../../providers/service.apinatomy2";
 
 @Component({
   providers: [RestoreService],
@@ -26,7 +26,8 @@ import {MultiSelectInput} from '../component.general';
   directives: [ResourcePanel, MultiSelectInput]
 })
 export class TypePanel extends ResourcePanel{
-  constructor(protected restoreService: RestoreService<IType>){
+  protected templateName = TemplateName;
+  constructor(protected restoreService: RestoreService<any>){
     super(restoreService);
   }
 }

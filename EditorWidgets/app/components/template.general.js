@@ -17,8 +17,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  * Created by Natallia on 6/21/2016.
  */
 var core_1 = require('@angular/core');
-var service_apinatomy2_1 = require('../../providers/service.apinatomy2');
-var service_restore_1 = require("../../providers/service.restore");
+var service_apinatomy2_1 = require('../providers/service.apinatomy2');
+var service_restore_1 = require("../providers/service.restore");
 var ng2_radio_group_1 = require("ng2-radio-group");
 var UniformDistributionInput = (function () {
     function UniformDistributionInput(restoreService) {

@@ -3,10 +3,8 @@
  */
 import {Component} from '@angular/core';
 import {RestoreService} from "../../providers/service.restore";
-import {IBorderType} from "../../providers/service.apinatomy2";
 import {TypePanel} from "./panel.type";
-import {MultiSelectInput} from '../component.general';
-import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
+import {RepoTemplate} from '../repos/repo.template';
 
 @Component({
   providers: [RestoreService],
@@ -18,14 +16,20 @@ import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
       [ignore]="['equivalence', 'weakEquivalence']" 
       (saved)="saved.emit($event)" 
       (removed)="removed.emit($event)">
-      
-        <ng-content></ng-content>      
+      <!--TODO: replace with slider-->
+      <div class="input-control">
+        <label for="position">Position: </label>
+        <input type="number" min="0" max="100" required [(ngModel)]="item.position">
+      </div>
+      <repo-template caption="Elements" [items] = "item.elements" 
+        [dependencies] = "dependencies" [types]="[templateName.NodeTemplate]"></repo-template>
+      <ng-content></ng-content>      
     </type-panel>
   `,
-  directives: [TypePanel, MultiSelectInput, RADIO_GROUP_DIRECTIVES]
+  directives: [TypePanel, RepoTemplate]
 })
 export class BorderTypePanel extends TypePanel{
-  constructor(protected restoreService: RestoreService<IBorderType>){
+  constructor(protected restoreService: RestoreService<any>){
     super(restoreService);
   }
 }

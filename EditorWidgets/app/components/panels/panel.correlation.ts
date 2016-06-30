@@ -3,9 +3,9 @@
  */
 import {Component} from '@angular/core';
 import {RestoreService} from "../../providers/service.restore";
-import {ICorrelation} from "../../providers/service.apinatomy2";
 import {ResourcePanel} from "./panel.resource";
 import {SingleSelectInput, MultiSelectInput} from '../component.general';
+import {RepoTemplate} from '../repos/repo.template';
 
 @Component({
   providers: [RestoreService],
@@ -22,17 +22,17 @@ import {SingleSelectInput, MultiSelectInput} from '../component.general';
           <label for="clinicalIndices">Clinical indices: </label>
           <select-input [item]="item.clinicalIndices" [options]="dependencies.clinicalIndices"></select-input>
         </div>
-        <div class="input-control" *ngIf="includeProperty('locatedMeasurables')">
-          <label for="locatedMeasurables">Located measurables: </label>
-          <select-input [item]="item.locatedMeasurables" [options]="dependencies.locatedMeasurables"></select-input>
+        <div class="input-control" *ngIf="includeProperty('measurables')">
+          <repo-template caption='Measurables' [items]="item.measurables" [dependencies]="dependencies"
+          [types]="[templateName.MeasurableTemplate]"></repo-template>
         </div>
         <ng-content></ng-content>      
     </resource-panel>
   `,
-  directives: [ResourcePanel, SingleSelectInput, MultiSelectInput]
+  directives: [ResourcePanel, SingleSelectInput, MultiSelectInput, RepoTemplate]
 })
 export class CorrelationPanel extends ResourcePanel{
-  constructor(protected restoreService: RestoreService<ICorrelation>){
+  constructor(protected restoreService: RestoreService<any>){
     super(restoreService);
   }
 }

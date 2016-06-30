@@ -3,10 +3,9 @@
  */
 import {Component} from '@angular/core';
 import {RestoreService} from "../../providers/service.restore";
-import {ICausalityType} from "../../providers/service.apinatomy2";
 import {TypePanel} from "./panel.type";
-import {MultiSelectInput} from '../component.general';
-import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
+import {MeasurableTemplatePanel} from '../templates/template.measurableType';
+
 
 @Component({
   providers: [RestoreService],
@@ -18,13 +17,24 @@ import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
       [ignore]="['equivalence', 'weakEquivalence']" 
       (saved)="saved.emit($event)" 
       (removed)="removed.emit($event)">
-        <ng-content></ng-content>      
+      <div class="input-control" *ngIf="includeProperty('cause')">      
+        <label for="cause">Cause: </label>
+        <measurableTemplate-panel [item]="item.cause" 
+          [dependencies]="dependencies.measurables" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></measurableTemplate-panel>
+      </div>
+      <div class="input-control" *ngIf="includeProperty('effect')">      
+        <label for="effect">Effect: </label>
+        <measurableTemplate-panel [item]="item.effect" 
+          [dependencies]="dependencies.measurables" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></measurableTemplate-panel>
+      </div>
+      <ng-content></ng-content>      
     </type-panel>
   `,
-  directives: [TypePanel, MultiSelectInput, RADIO_GROUP_DIRECTIVES]
+  directives: [TypePanel, MeasurableTemplatePanel]
 })
 export class CausalityTypePanel extends TypePanel{
-  constructor(protected restoreService: RestoreService<ICausalityType>){
+  constructor(protected restoreService: RestoreService<any>){
     super(restoreService);
   }
+
 }

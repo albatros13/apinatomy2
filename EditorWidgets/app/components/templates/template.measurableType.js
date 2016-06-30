@@ -18,26 +18,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  */
 var core_1 = require('@angular/core');
 var component_general_1 = require('../component.general');
-var template_general_1 = require('./template.general');
-var panel_resource_1 = require("../panels/panel.resource");
+var template_general_1 = require('../template.general');
+var template_type_1 = require("./template.type");
 var service_restore_1 = require("../../providers/service.restore");
-var MeasurableTypeTemplate = (function (_super) {
-    __extends(MeasurableTypeTemplate, _super);
-    function MeasurableTypeTemplate(restoreService) {
+var MeasurableTemplatePanel = (function (_super) {
+    __extends(MeasurableTemplatePanel, _super);
+    function MeasurableTemplatePanel(restoreService) {
         _super.call(this, restoreService);
         this.restoreService = restoreService;
     }
-    MeasurableTypeTemplate = __decorate([
+    MeasurableTemplatePanel = __decorate([
         core_1.Component({
             providers: [service_restore_1.RestoreService],
-            selector: 'measurableType-template',
+            selector: 'measurableTemplate-panel',
             inputs: ['item', 'dependencies'],
-            template: "\n    <resource-panel [item]=\"item\" ignore=\"['equivalence', 'weakEquivalence']\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <div>\n        <label for=\"type\">Type: </label>\n        <select-input-1 [item] = \"item.type\" [options] = \"dependencies\"></select-input-1>\n      </div>\n      <ng-content></ng-content>      \n    </resource-panel>\n  ",
-            directives: [template_general_1.TemplateValue, component_general_1.SingleSelectInput, panel_resource_1.ResourcePanel]
+            template: "\n    <template-panel [item]=\"item\" [dependencies]=\"dependencies\" ignore=\"['equivalence', 'weakEquivalence']\" \n      (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <ng-content></ng-content>      \n    </template-panel>\n  ",
+            directives: [template_general_1.TemplateValue, component_general_1.SingleSelectInput, template_type_1.TemplatePanel]
         }), 
         __metadata('design:paramtypes', [service_restore_1.RestoreService])
-    ], MeasurableTypeTemplate);
-    return MeasurableTypeTemplate;
-}(panel_resource_1.ResourcePanel));
-exports.MeasurableTypeTemplate = MeasurableTypeTemplate;
+    ], MeasurableTemplatePanel);
+    return MeasurableTemplatePanel;
+}(template_type_1.TemplatePanel));
+exports.MeasurableTemplatePanel = MeasurableTemplatePanel;
 //# sourceMappingURL=template.measurableType.js.map

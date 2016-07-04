@@ -5,52 +5,40 @@ import {Component, Output, ContentChild, TemplateRef, EventEmitter} from '@angul
 import {SELECT_DIRECTIVES} from 'ng2-select/ng2-select';
 import {CORE_DIRECTIVES, FORM_DIRECTIVES} from '@angular/common';
 import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/components/dropdown';
+import {MapToOptions} from "../transformations/pipe.general";
 
 @Component({
   selector: 'select-input',
-  inputs: ['item', 'options'],
+  inputs: ['items', 'options'],
   template:`
       <ng-select
-        [items]       = "getSelectionSource()"
-        [initData]    = "getSelected()"
+        [items]       = "options | mapToOptions"
+        [initData]    = "items | mapToOptions"
         [multiple]    = true
-        (data)="refreshValue($event)"
-        (selected)="itemSelected($event)"
-        (removed)="itemRemoved($event)"
-        (typed)="itemTyped($event)"
+        (data)     ="refreshValue($event)"
+        (selected) ="selected.emit($event)"
+        (removed)  ="removed.emit($event)"
       ></ng-select>
   `,
-  directives: [SELECT_DIRECTIVES, CORE_DIRECTIVES, FORM_DIRECTIVES]
+  directives: [SELECT_DIRECTIVES, CORE_DIRECTIVES, FORM_DIRECTIVES],
+  pipes: [MapToOptions]
 })
 export class MultiSelectInput {
-  item: Array<any>;
+  items: Array<any>;
   options: Array<any> = [];
+  @Output() removed = new EventEmitter();
+  @Output() selected = new EventEmitter();
 
   constructor(){}
 
   protected ngOnInit(){
     if (!this.options) this.options = [];
+    if (!this.items) this.items = [];
   }
-
-  protected getSelectionSource(){
-    if (this.options)
-      return this.options.map((entry: any) => ({id: entry.id, text: entry.name? entry.name: entry.id}));
-  }
-
-  protected getSelected(){
-    if (this.item)
-      return this.item.map((entry: any) => ({id: entry.id, text: entry.name? entry.name: entry.id}));
-    return [];
-  }
-
-  public itemSelected(value:any):void {}
-
-  public itemRemoved(value:any):void {}
-
-  public itemTyped(value:any):void {}
 
   public refreshValue(value:any):void {
-    this.item = value;
+    this.items = value;
+    this.selected.emit(this.items);
   }
 }
 
@@ -59,45 +47,28 @@ export class MultiSelectInput {
   inputs: ['item', 'options'],
   template:`
       <ng-select
-        [items]       = "getSelectionSource()"
-        [initData]    = "getSelected()"
+        [items]       = "options | mapToOptions"
+        [initData]    = "items | mapToOptions"
         [multiple]    = false
-        (data)="refreshValue($event)"
-        (selected)="itemSelected($event)"
-        (removed)="itemRemoved($event)"
-        (typed)="itemTyped($event)"
+        (data)        = "refreshValue($event)"
+        (removed)     = "removed.emit($event)"
       ></ng-select>
   `,
-  directives: [SELECT_DIRECTIVES, CORE_DIRECTIVES, FORM_DIRECTIVES]
+  directives: [SELECT_DIRECTIVES, CORE_DIRECTIVES, FORM_DIRECTIVES],
+  pipes: [MapToOptions]
 })
-export class SingleSelectInput {
+export class SingleSelectInput extends MultiSelectInput{
   item: any;
-  options: Array<any> = [];
-
-  constructor(){}
 
   protected ngOnInit(){
-    if (!this.options) this.options = [];
+    if (!this.item) this.item = {};
+    this.items = [this.item];
+    super.ngOnInit();
   }
-
-  protected getSelectionSource(){
-    if (this.options)
-      return this.options.map((entry: any) => ({id: entry.id, text: entry.name? entry.name: entry.id}));
-  }
-
-  protected getSelected(){
-    if (this.item) return [{id: this.item.id, text: this.item.name? this.item.name: this.item.id}];
-    return [];
-  }
-
-  public itemSelected(value:any):void {}
-
-  public itemRemoved(value:any):void {}
-
-  public itemTyped(value:any):void {}
 
   public refreshValue(value:any):void {
     this.item = value[0];
+    this.selected.emit(this.items);
   }
 }
 

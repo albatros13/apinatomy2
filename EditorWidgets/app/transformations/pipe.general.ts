@@ -13,6 +13,27 @@ export class FilterBy implements PipeTransform {
   }
 }
 
+@Pipe({
+  name: 'filterByClass'
+})
+@Injectable()
+export class FilterByClass implements PipeTransform {
+  transform(items: any[], classNames: any[]): any {
+    return items.filter(item => (classNames.indexOf(item.class) !== -1));
+  }
+}
+
+@Pipe({
+  name: 'mapToOptions'
+})
+@Injectable()
+export class MapToOptions implements PipeTransform {
+  transform(items: any[]): any {
+    if (!items) return [];
+    return items.map((entry: any) => ({id: entry.id, text: entry.name? entry.name: entry.id}))
+  }
+}
+
 @Pipe({name: 'orderBy', pure: false})
 export class OrderBy implements PipeTransform {
 

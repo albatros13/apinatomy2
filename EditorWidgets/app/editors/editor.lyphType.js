@@ -8,6 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 /**
  * Created by Natallia on 6/8/2016.
  */
@@ -91,7 +94,7 @@ var LyphTypeWidget = (function () {
 }());
 exports.LyphTypeWidget = LyphTypeWidget;
 var LyphTypeEditor = (function () {
-    function LyphTypeEditor(eResourceP, typeP, materialP, lyphP, cLyphP, measurableP) {
+    function LyphTypeEditor(eResourceP, typeP, materialP, lyphP, cLyphP, measurableP, processP) {
         var allLyphs = lyphP.items.concat(cLyphP.items);
         var allMaterials = materialP.items.concat(allLyphs);
         var allTypes = typeP.items.concat(allMaterials, measurableP.items);
@@ -104,6 +107,7 @@ var LyphTypeEditor = (function () {
             lyphs: allLyphs,
             cylindricalLyphs: cLyphP.items,
             measurables: measurableP.items,
+            processes: processP.items,
             templates: allTemplates
         };
         this.items = allMaterials;
@@ -117,11 +121,19 @@ var LyphTypeEditor = (function () {
                 service_apinatomy2_1.TypeProvider,
                 service_apinatomy2_1.MaterialTypeProvider,
                 service_apinatomy2_1.LyphTypeProvider,
-                service_apinatomy2_1.CylindricalLyphTypeProvider],
+                service_apinatomy2_1.CylindricalLyphTypeProvider,
+                service_apinatomy2_1.ProcessTypeProvider],
             template: "\n    <repo-general [items]=\"items\" caption=\"Materials\" [dependencies]=\"dependency\"></repo-general>\n  ",
             directives: [repo_general_1.RepoGeneral]
-        }), 
-        __metadata('design:paramtypes', [service_apinatomy2_1.ExternalResourceProvider, service_apinatomy2_1.TypeProvider, service_apinatomy2_1.MaterialTypeProvider, service_apinatomy2_1.LyphTypeProvider, service_apinatomy2_1.CylindricalLyphTypeProvider, service_apinatomy2_1.MeasurableTypeProvider])
+        }),
+        __param(0, core_1.Inject(service_apinatomy2_1.ExternalResourceProvider)),
+        __param(1, core_1.Inject(service_apinatomy2_1.TypeProvider)),
+        __param(2, core_1.Inject(service_apinatomy2_1.MaterialTypeProvider)),
+        __param(3, core_1.Inject(service_apinatomy2_1.LyphTypeProvider)),
+        __param(4, core_1.Inject(service_apinatomy2_1.CylindricalLyphTypeProvider)),
+        __param(5, core_1.Inject(service_apinatomy2_1.MeasurableTypeProvider)),
+        __param(6, core_1.Inject(service_apinatomy2_1.ProcessTypeProvider)), 
+        __metadata('design:paramtypes', [service_apinatomy2_1.ExternalResourceProvider, service_apinatomy2_1.TypeProvider, service_apinatomy2_1.MaterialTypeProvider, service_apinatomy2_1.LyphTypeProvider, service_apinatomy2_1.CylindricalLyphTypeProvider, service_apinatomy2_1.MeasurableTypeProvider, service_apinatomy2_1.ProcessTypeProvider])
     ], LyphTypeEditor);
     return LyphTypeEditor;
 }());

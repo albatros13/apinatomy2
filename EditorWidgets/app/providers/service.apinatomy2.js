@@ -20,6 +20,7 @@ var core_1 = require('@angular/core');
 /*ENUMERATIONS*/
 (function (ResourceName) {
     ResourceName[ResourceName["Resource"] = "Resource"] = "Resource";
+    ResourceName[ResourceName["ExternalResource"] = "ExternalResource"] = "ExternalResource";
     ResourceName[ResourceName["Type"] = "Type"] = "Type";
     ResourceName[ResourceName["MaterialType"] = "MaterialType"] = "MaterialType";
     ResourceName[ResourceName["LyphType"] = "LyphType"] = "LyphType";
@@ -34,6 +35,7 @@ var core_1 = require('@angular/core');
     ResourceName[ResourceName["Publication"] = "Publication"] = "Publication";
     ResourceName[ResourceName["Correlation"] = "Correlation"] = "Correlation";
     ResourceName[ResourceName["ClinicalIndex"] = "ClinicalIndex"] = "ClinicalIndex";
+    ResourceName[ResourceName["Coalescence"] = "Coalescence"] = "Coalescence";
 })(exports.ResourceName || (exports.ResourceName = {}));
 var ResourceName = exports.ResourceName;
 (function (TemplateName) {
@@ -223,7 +225,8 @@ var ProcessType = (function (_super) {
     function ProcessType(obj) {
         _super.call(this, obj);
         this.class = ResourceName.ProcessType;
-        this.transportPhenomenon = (obj.transportPhenomenon) ? obj.transportPhenomenon : TransportPhenomenon.advection;
+        this.transportPhenomenon = (obj.transportPhenomenon) ? obj.transportPhenomenon :
+            [TransportPhenomenon.advection, TransportPhenomenon.diffusion];
         this.species = obj.species;
         this.materials = obj.materials;
         this.measurables = obj.measurables;
@@ -260,6 +263,7 @@ var NodeType = (function (_super) {
     function NodeType(obj) {
         _super.call(this, obj);
         this.class = ResourceName.NodeType;
+        this.channels = obj.channels;
     }
     return NodeType;
 }(Type));
@@ -325,6 +329,17 @@ var Correlation = (function (_super) {
     return Correlation;
 }(Resource));
 exports.Correlation = Correlation;
+var Coalescence = (function (_super) {
+    __extends(Coalescence, _super);
+    function Coalescence(obj) {
+        _super.call(this, obj);
+        this.class = ResourceName.Coalescence;
+        this.lyphs = obj.lyphs;
+        this.interfaceLayers = obj.interfaceLayers;
+    }
+    return Coalescence;
+}(Resource));
+exports.Coalescence = Coalescence;
 //Templates
 var Template = (function (_super) {
     __extends(Template, _super);
@@ -351,6 +366,8 @@ var ProcessTemplate = (function (_super) {
     function ProcessTemplate(obj) {
         _super.call(this, obj);
         this.class = TemplateName.ProcessTemplate;
+        this.transportPhenomenon = (obj.transportPhenomenon) ? obj.transportPhenomenon : TransportPhenomenon.advection;
+        this.conveyingLyph = obj.conveyingLyph;
     }
     return ProcessTemplate;
 }(Template));
@@ -369,6 +386,8 @@ var NodeTemplate = (function (_super) {
     function NodeTemplate(obj) {
         _super.call(this, obj);
         this.class = TemplateName.NodeTemplate;
+        this.incomingProcesses = obj.incomingProcesses;
+        this.outgoingProcesses = obj.outgoingProcesses;
     }
     return NodeTemplate;
 }(Template));
@@ -409,6 +428,7 @@ var LyphTemplate = (function (_super) {
         this.class = TemplateName.LyphTemplate;
         this.length = obj.length;
         this.width = obj.width;
+        this.coalescences = obj.coalescences;
     }
     return LyphTemplate;
 }(Template));
@@ -427,28 +447,6 @@ var CylindricalLyphTemplate = (function (_super) {
 }(LyphTemplate));
 exports.CylindricalLyphTemplate = CylindricalLyphTemplate;
 /*TEST PROVIDERS*/
-var ExternalResourceProvider = (function () {
-    function ExternalResourceProvider() {
-        this.items = [];
-    }
-    ExternalResourceProvider = __decorate([
-        core_1.Injectable(), 
-        __metadata('design:paramtypes', [])
-    ], ExternalResourceProvider);
-    return ExternalResourceProvider;
-}());
-exports.ExternalResourceProvider = ExternalResourceProvider;
-var TypeProvider = (function () {
-    function TypeProvider() {
-        this.items = [];
-    }
-    TypeProvider = __decorate([
-        core_1.Injectable(), 
-        __metadata('design:paramtypes', [])
-    ], TypeProvider);
-    return TypeProvider;
-}());
-exports.TypeProvider = TypeProvider;
 var basicMaterials = [
     new MaterialType({ id: 10, name: "Water" }),
     new MaterialType({ id: 11, name: "Sodium ion" }),
@@ -471,6 +469,31 @@ var basicMeasurables = [
     new MeasurableType({ id: 107, name: "Concentration of " + basicMaterials[7].name, quality: "concentration", materials: [basicMaterials[7]] }),
     new MeasurableType({ id: 108, name: "Concentration of " + basicMaterials[8].name, quality: "concentration", materials: [basicMaterials[8]] })
 ];
+var testProcesses = [
+    new ProcessType({ name: "Test process" })
+];
+var ExternalResourceProvider = (function () {
+    function ExternalResourceProvider() {
+        this.items = [];
+    }
+    ExternalResourceProvider = __decorate([
+        core_1.Injectable(), 
+        __metadata('design:paramtypes', [])
+    ], ExternalResourceProvider);
+    return ExternalResourceProvider;
+}());
+exports.ExternalResourceProvider = ExternalResourceProvider;
+var TypeProvider = (function () {
+    function TypeProvider() {
+        this.items = [];
+    }
+    TypeProvider = __decorate([
+        core_1.Injectable(), 
+        __metadata('design:paramtypes', [])
+    ], TypeProvider);
+    return TypeProvider;
+}());
+exports.TypeProvider = TypeProvider;
 var MaterialTypeProvider = (function () {
     function MaterialTypeProvider() {
         this.items = [];
@@ -549,4 +572,16 @@ var MeasurableTypeProvider = (function () {
     return MeasurableTypeProvider;
 }());
 exports.MeasurableTypeProvider = MeasurableTypeProvider;
+var ProcessTypeProvider = (function () {
+    function ProcessTypeProvider() {
+        this.items = [];
+        this.items = testProcesses;
+    }
+    ProcessTypeProvider = __decorate([
+        core_1.Injectable(), 
+        __metadata('design:paramtypes', [])
+    ], ProcessTypeProvider);
+    return ProcessTypeProvider;
+}());
+exports.ProcessTypeProvider = ProcessTypeProvider;
 //# sourceMappingURL=service.apinatomy2.js.map

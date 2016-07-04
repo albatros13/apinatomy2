@@ -11,7 +11,7 @@ import {ResourceName, TemplateName,
   CausalityType, MeasurableType, GroupType, ProcessType, OmegaTreeType,
   Publication, Correlation, ClinicalIndex
 } from "../../providers/service.apinatomy2";
-import {OrderBy} from "../../transformations/widget.transform";
+import {OrderBy} from "../../transformations/pipe.general";
 import {PanelGeneral} from "./panel.general";
 
 @Component({
@@ -26,10 +26,11 @@ import {PanelGeneral} from "./panel.general";
           
           <accordion class="list-group" [closeOthers]="true" 
           dnd-sortable-container [dropZones]="zones" [sortableData]="items">
-          <accordion-group *ngFor="let item of items | orderBy : sortByMode; let i = index" class="list-group-item" dnd-sortable [sortableIndex]="i">
+          <accordion-group *ngFor="let item of items | orderBy : sortByMode; let i = index" class="list-group-item" 
+            dnd-sortable [sortableIndex]="i" (click)="selected = item">
             <div accordion-heading><item-header [item]="item" [icon]="getIcon(item)"></item-header></div>
             
-            <panel-general [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></panel-general>            
+            <panel-general *ngIf="item == selected" [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></panel-general>            
           
           </accordion-group>        
           </accordion>       
@@ -80,10 +81,6 @@ export class RepoGeneral{
       case this.resourceNames.ClinicalIndex : return "images/clinicalIndex.png";
     }
     return "images/resource.png";
-  }
-
-  protected changeActive(item: any){
-    this.selected = item;
   }
 
   protected onSaved(item: any, updatedItem: any){

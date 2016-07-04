@@ -20,6 +20,7 @@ var service_apinatomy2_1 = require('../../providers/service.apinatomy2');
 var panel_template_1 = require("./panel.template");
 var RepoTemplate = (function () {
     function RepoTemplate() {
+        this.added = new core_1.EventEmitter();
         this.selected = null;
         this.items = [];
         this.templateNames = service_apinatomy2_1.TemplateName;
@@ -50,9 +51,6 @@ var RepoTemplate = (function () {
         }
         return "images/resource.png";
     };
-    RepoTemplate.prototype.changeActive = function (item) {
-        this.selected = item;
-    };
     RepoTemplate.prototype.onSaved = function (item, updatedItem) {
         for (var key in updatedItem) {
             if (updatedItem.hasOwnProperty(key))
@@ -70,7 +68,8 @@ var RepoTemplate = (function () {
         var newItem;
         switch (resourceType) {
             case this.templateNames.CausalityTemplate:
-                newItem = new service_apinatomy2_1.CausalityTemplate({ name: "New causality template" });
+                newItem =
+                    new service_apinatomy2_1.CausalityTemplate({ name: "New causality template" });
                 break;
             case this.templateNames.BorderTemplate:
                 newItem = new service_apinatomy2_1.BorderTemplate({ name: "New border template" });
@@ -99,12 +98,17 @@ var RepoTemplate = (function () {
             default: newItem = new service_apinatomy2_1.Template({ name: "New template" });
         }
         this.items.push(newItem);
+        this.added.emit(newItem);
     };
+    __decorate([
+        core_1.Output(), 
+        __metadata('design:type', Object)
+    ], RepoTemplate.prototype, "added", void 0);
     RepoTemplate = __decorate([
         core_1.Component({
             selector: 'repo-template',
             inputs: ['items', 'caption', 'dependencies', 'types'],
-            template: "\n    <div class=\"panel panel-warning repo-template\">\n      <div class=\"panel-heading\">{{caption}}</div>\n      <div class=\"panel-body\" >\n        <edit-toolbar [options]=\"types\" (added)=\"onAdded($event)\"></edit-toolbar>\n      \n        <accordion class=\"list-group\" [closeOthers]=\"true\" dnd-sortable-container [dropZones]=\"['lyphTemplate-zone']\" [sortableData]=\"items\">\n          <accordion-group *ngFor=\"let item of items; let i = index\" class=\"list-group-item\" dnd-sortable [sortableIndex]=\"i\">\n            <div accordion-heading><item-header [item]=\"item\" [icon]=\"'images/lyphType.png'\"></item-header></div>\n\n            <panel-template [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"onSaved(item, $event)\" (removed)=\"onRemoved(item)\"></panel-template>            \n\n          </accordion-group>        \n        </accordion>       \n      </div>\n    </div>\n  ",
+            template: "\n    <div class=\"panel panel-warning repo-template\">\n      <div class=\"panel-heading\">{{caption}}</div>\n      <div class=\"panel-body\" >\n        <edit-toolbar [options]=\"types\" (added)=\"onAdded($event)\"></edit-toolbar>\n      \n        <accordion class=\"list-group\" [closeOthers]=\"true\" dnd-sortable-container [dropZones]=\"['lyphTemplate-zone']\" [sortableData]=\"items\">\n          <accordion-group *ngFor=\"let item of items; let i = index\" class=\"list-group-item\" dnd-sortable \n           [sortableIndex]=\"i\" (click)=\"selected = item\">\n            <div accordion-heading><item-header [item]=\"item\" [icon]=\"'images/lyphType.png'\"></item-header></div>\n\n            <panel-template *ngIf=\"item == selected\" [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"onSaved(item, $event)\" (removed)=\"onRemoved(item)\"></panel-template>            \n\n          </accordion-group>        \n        </accordion>       \n      </div>\n    </div>\n  ",
             directives: [component_general_1.ItemHeader, component_general_1.EditToolbar, panel_template_1.PanelTemplate, accordion_1.ACCORDION_DIRECTIVES, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES, ng2_dnd_1.DND_DIRECTIVES]
         }), 
         __metadata('design:paramtypes', [])

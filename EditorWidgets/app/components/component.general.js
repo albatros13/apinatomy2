@@ -1,4 +1,9 @@
 "use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -15,75 +20,71 @@ var core_1 = require('@angular/core');
 var ng2_select_1 = require('ng2-select/ng2-select');
 var common_1 = require('@angular/common');
 var dropdown_1 = require('ng2-bootstrap/components/dropdown');
+var pipe_general_1 = require("../transformations/pipe.general");
 var MultiSelectInput = (function () {
     function MultiSelectInput() {
         this.options = [];
+        this.removed = new core_1.EventEmitter();
+        this.selected = new core_1.EventEmitter();
     }
     MultiSelectInput.prototype.ngOnInit = function () {
         if (!this.options)
             this.options = [];
+        if (!this.items)
+            this.items = [];
     };
-    MultiSelectInput.prototype.getSelectionSource = function () {
-        if (this.options)
-            return this.options.map(function (entry) { return ({ id: entry.id, text: entry.name ? entry.name : entry.id }); });
-    };
-    MultiSelectInput.prototype.getSelected = function () {
-        if (this.item)
-            return this.item.map(function (entry) { return ({ id: entry.id, text: entry.name ? entry.name : entry.id }); });
-        return [];
-    };
-    MultiSelectInput.prototype.itemSelected = function (value) { };
-    MultiSelectInput.prototype.itemRemoved = function (value) { };
-    MultiSelectInput.prototype.itemTyped = function (value) { };
     MultiSelectInput.prototype.refreshValue = function (value) {
-        this.item = value;
+        this.items = value;
+        this.selected.emit(this.items);
     };
+    __decorate([
+        core_1.Output(), 
+        __metadata('design:type', Object)
+    ], MultiSelectInput.prototype, "removed", void 0);
+    __decorate([
+        core_1.Output(), 
+        __metadata('design:type', Object)
+    ], MultiSelectInput.prototype, "selected", void 0);
     MultiSelectInput = __decorate([
         core_1.Component({
             selector: 'select-input',
-            inputs: ['item', 'options'],
-            template: "\n      <ng-select\n        [items]       = \"getSelectionSource()\"\n        [initData]    = \"getSelected()\"\n        [multiple]    = true\n        (data)=\"refreshValue($event)\"\n        (selected)=\"itemSelected($event)\"\n        (removed)=\"itemRemoved($event)\"\n        (typed)=\"itemTyped($event)\"\n      ></ng-select>\n  ",
-            directives: [ng2_select_1.SELECT_DIRECTIVES, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES]
+            inputs: ['items', 'options'],
+            template: "\n      <ng-select\n        [items]       = \"options | mapToOptions\"\n        [initData]    = \"items | mapToOptions\"\n        [multiple]    = true\n        (data)     =\"refreshValue($event)\"\n        (selected) =\"selected.emit($event)\"\n        (removed)  =\"removed.emit($event)\"\n      ></ng-select>\n  ",
+            directives: [ng2_select_1.SELECT_DIRECTIVES, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES],
+            pipes: [pipe_general_1.MapToOptions]
         }), 
         __metadata('design:paramtypes', [])
     ], MultiSelectInput);
     return MultiSelectInput;
 }());
 exports.MultiSelectInput = MultiSelectInput;
-var SingleSelectInput = (function () {
+var SingleSelectInput = (function (_super) {
+    __extends(SingleSelectInput, _super);
     function SingleSelectInput() {
-        this.options = [];
+        _super.apply(this, arguments);
     }
     SingleSelectInput.prototype.ngOnInit = function () {
-        if (!this.options)
-            this.options = [];
+        if (!this.item)
+            this.item = {};
+        this.items = [this.item];
+        _super.prototype.ngOnInit.call(this);
     };
-    SingleSelectInput.prototype.getSelectionSource = function () {
-        if (this.options)
-            return this.options.map(function (entry) { return ({ id: entry.id, text: entry.name ? entry.name : entry.id }); });
-    };
-    SingleSelectInput.prototype.getSelected = function () {
-        if (this.item)
-            return [{ id: this.item.id, text: this.item.name ? this.item.name : this.item.id }];
-        return [];
-    };
-    SingleSelectInput.prototype.itemSelected = function (value) { };
-    SingleSelectInput.prototype.itemRemoved = function (value) { };
-    SingleSelectInput.prototype.itemTyped = function (value) { };
     SingleSelectInput.prototype.refreshValue = function (value) {
         this.item = value[0];
+        this.selected.emit(this.items);
     };
     SingleSelectInput = __decorate([
         core_1.Component({
             selector: 'select-input-1',
             inputs: ['item', 'options'],
-            template: "\n      <ng-select\n        [items]       = \"getSelectionSource()\"\n        [initData]    = \"getSelected()\"\n        [multiple]    = false\n        (data)=\"refreshValue($event)\"\n        (selected)=\"itemSelected($event)\"\n        (removed)=\"itemRemoved($event)\"\n        (typed)=\"itemTyped($event)\"\n      ></ng-select>\n  ",
-            directives: [ng2_select_1.SELECT_DIRECTIVES, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES]
+            template: "\n      <ng-select\n        [items]       = \"options | mapToOptions\"\n        [initData]    = \"items | mapToOptions\"\n        [multiple]    = false\n        (data)        = \"refreshValue($event)\"\n        (removed)     = \"removed.emit($event)\"\n      ></ng-select>\n  ",
+            directives: [ng2_select_1.SELECT_DIRECTIVES, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES],
+            pipes: [pipe_general_1.MapToOptions]
         }), 
         __metadata('design:paramtypes', [])
     ], SingleSelectInput);
     return SingleSelectInput;
-}());
+}(MultiSelectInput));
 exports.SingleSelectInput = SingleSelectInput;
 // @Component({
 //   selector: 'list',

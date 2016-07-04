@@ -1,8 +1,8 @@
 /**
  * Created by Natallia on 6/28/2016.
  */
-import {Component, EventEmitter, Output} from '@angular/core';
-import {CORE_DIRECTIVES, FORM_DIRECTIVES, NgForm} from '@angular/common';
+import {Component, Output, EventEmitter} from '@angular/core';
+import {CORE_DIRECTIVES, FORM_DIRECTIVES} from '@angular/common';
 import {ACCORDION_DIRECTIVES} from 'ng2-bootstrap/components/accordion';
 import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
 import {ItemHeader, EditToolbar} from '../component.general';
@@ -22,10 +22,11 @@ import {PanelTemplate} from "./panel.template";
         <edit-toolbar [options]="types" (added)="onAdded($event)"></edit-toolbar>
       
         <accordion class="list-group" [closeOthers]="true" dnd-sortable-container [dropZones]="['lyphTemplate-zone']" [sortableData]="items">
-          <accordion-group *ngFor="let item of items; let i = index" class="list-group-item" dnd-sortable [sortableIndex]="i">
+          <accordion-group *ngFor="let item of items; let i = index" class="list-group-item" dnd-sortable 
+           [sortableIndex]="i" (click)="selected = item">
             <div accordion-heading><item-header [item]="item" [icon]="'images/lyphType.png'"></item-header></div>
 
-            <panel-template [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></panel-template>            
+            <panel-template *ngIf="item == selected" [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></panel-template>            
 
           </accordion-group>        
         </accordion>       
@@ -35,6 +36,7 @@ import {PanelTemplate} from "./panel.template";
   directives: [ItemHeader, EditToolbar, PanelTemplate, ACCORDION_DIRECTIVES, CORE_DIRECTIVES, FORM_DIRECTIVES, DND_DIRECTIVES]
 })
 export class RepoTemplate{
+  @Output() added = new EventEmitter();
   public selected: any = null;
   public items: Array<any> = [];
   templateNames = TemplateName;
@@ -70,10 +72,6 @@ export class RepoTemplate{
     return "images/resource.png";
   }
 
-  protected changeActive(item: any){
-    this.selected = item;
-  }
-
   protected onSaved(item: any, updatedItem: any){
     for (var key in updatedItem){
       if (updatedItem.hasOwnProperty(key)) item[key] = updatedItem[key];
@@ -89,20 +87,30 @@ export class RepoTemplate{
   protected onAdded(resourceType: ResourceName | TemplateName){
     let newItem: any;
     switch (resourceType){
-      case this.templateNames.CausalityTemplate  : newItem = new CausalityTemplate({name: "New causality template"}); break;
-      case this.templateNames.BorderTemplate  : newItem = new BorderTemplate({name: "New border template"}); break;
-      case this.templateNames.NodeTemplate  : newItem = new NodeTemplate({name: "New node template"}); break;
-      case this.templateNames.MeasurableTemplate  : newItem = new MeasurableTemplate({name: "New Measurable template"}); break;
-      case this.templateNames.ProcessTemplate  : newItem = new ProcessTemplate({name: "New process template"}); break;
+      case this.templateNames.CausalityTemplate  : newItem =
+        new CausalityTemplate({name: "New causality template"}); break;
+      case this.templateNames.BorderTemplate  :
+        newItem = new BorderTemplate({name: "New border template"}); break;
+      case this.templateNames.NodeTemplate  :
+        newItem = new NodeTemplate({name: "New node template"}); break;
+      case this.templateNames.MeasurableTemplate  :
+        newItem = new MeasurableTemplate({name: "New Measurable template"}); break;
+      case this.templateNames.ProcessTemplate  :
+        newItem = new ProcessTemplate({name: "New process template"}); break;
 
-      case this.templateNames.LyphTemplate  : newItem = new LyphTemplate({name: "New lyph template"}); break;
-      case this.templateNames.CylindricalLyphTemplate  : newItem = new CylindricalLyphTemplate({name: "New cylindrical lyph template"}); break;
+      case this.templateNames.LyphTemplate  :
+        newItem = new LyphTemplate({name: "New lyph template"}); break;
+      case this.templateNames.CylindricalLyphTemplate  :
+        newItem = new CylindricalLyphTemplate({name: "New cylindrical lyph template"}); break;
 
-      case this.templateNames.GroupTemplate  : newItem = new GroupTemplate({name: "New group template"}); break;
-      case this.templateNames.OmegaTreeTemplate  : newItem = new OmegaTreeTemplate({name: "New omega tree template"}); break;
+      case this.templateNames.GroupTemplate  :
+        newItem = new GroupTemplate({name: "New group template"}); break;
+      case this.templateNames.OmegaTreeTemplate  :
+        newItem = new OmegaTreeTemplate({name: "New omega tree template"}); break;
 
       default: newItem = new Template({name: "New template"});
     }
     this.items.push(newItem);
+    this.added.emit(newItem);
   }
 }

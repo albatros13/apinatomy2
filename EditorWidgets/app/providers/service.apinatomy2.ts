@@ -42,6 +42,11 @@ interface IExternalResource extends IResource{
   type?: string;
 }
 
+interface ICoalescence extends IResource{
+  lyphs?: Array<ILyphTemplate>;
+  interfaceLayers?: Array<LyphType>;
+}
+
 interface IType extends IResource{
   supertypes?: Array<IType>;
   subtypes?: Array<IType>;
@@ -90,7 +95,9 @@ interface ICylindricalLyphType extends ILyphType{
   plusBorder?: IBorderTemplate;
 }
 
-interface INodeType extends IType{}
+interface INodeType extends IType{
+  channels?: Array<NodeTemplate>;
+}
 
 interface IBorderType extends IType{
   position?: any;
@@ -98,10 +105,21 @@ interface IBorderType extends IType{
 }
 
 interface IProcessType extends IType{
-  transportPhenomenon?: TransportPhenomenon;
+  transportPhenomenon?: Array<TransportPhenomenon>;
   species?: string;
+
   materials?: Array<IMaterialType>;
+  materialProviders?: Array<IProcessType>;
+
+  segments?: Array<IProcessTemplate>;
+  segmentProviders?: Array<IProcessType>;
+
   measurables?: Array<IMeasurableTemplate>;
+  measurableProviders?: Array<IProcessType>;
+
+  channels?: Array<IProcessTemplate>;
+  channelProviders?: Array<IProcessType>;
+
   source?: INodeTemplate;
   target?: INodeTemplate;
 }
@@ -136,6 +154,7 @@ interface ILyphTemplate extends ITemplate{
   type?: ILyphType;
   length?: number|IValueDistribution;
   width?: number|IValueDistribution;
+  coalescences?: Array<ICoalescence>;
 }
 
 interface ICylindricalLyphTemplate extends ILyphTemplate{
@@ -146,6 +165,8 @@ interface ICylindricalLyphTemplate extends ILyphTemplate{
 
 interface INodeTemplate extends ITemplate{
   type?: INodeType;
+  incomingProcesses?: Array<IProcessType>;
+  outgoingProcesses?: Array<IProcessType>;
 }
 
 interface IBorderTemplate extends ITemplate{
@@ -154,6 +175,8 @@ interface IBorderTemplate extends ITemplate{
 
 interface IProcessTemplate extends ITemplate{
   type?: IProcessType;
+  transportPhenomenon?: TransportPhenomenon;
+  conveyingLyph?: LyphType;
 }
 
 interface IMeasurableTemplate extends ITemplate{
@@ -176,6 +199,7 @@ interface IOmegaTreeTemplate extends IGroupTemplate {
 
 export enum ResourceName {
   Resource            = <any>"Resource",
+  ExternalResource    = <any>"ExternalResource",
   Type                = <any>"Type",
 
   MaterialType        = <any>"MaterialType",
@@ -193,7 +217,9 @@ export enum ResourceName {
 
   Publication         = <any>"Publication",
   Correlation         = <any>"Correlation",
-  ClinicalIndex       = <any>"ClinicalIndex"
+  ClinicalIndex       = <any>"ClinicalIndex",
+
+  Coalescence         = <any>"Coalescence"
 }
 
 export enum TemplateName {
@@ -381,7 +407,7 @@ export class CylindricalLyphType extends LyphType implements ICylindricalLyphTyp
 }
 
 export class ProcessType extends Type implements IProcessType{
-  public transportPhenomenon: TransportPhenomenon;
+  public transportPhenomenon: Array<TransportPhenomenon>;
   public species: string;
   public materials: Array<IMaterialType>;
   public measurables: Array<IMeasurableTemplate>;
@@ -391,7 +417,8 @@ export class ProcessType extends Type implements IProcessType{
   constructor(obj: IProcessType){
     super(obj);
     this.class = ResourceName.ProcessType;
-    this.transportPhenomenon = (obj.transportPhenomenon)? obj.transportPhenomenon: TransportPhenomenon.advection;
+    this.transportPhenomenon = (obj.transportPhenomenon)? obj.transportPhenomenon:
+      [TransportPhenomenon.advection, TransportPhenomenon.diffusion];
     this.species = obj.species;
     this.materials = obj.materials;
     this.measurables = obj.measurables;
@@ -425,9 +452,12 @@ export class CausalityType extends Type implements ICausalityType{
 }
 
 export class NodeType extends Type implements INodeType{
+  public channels: Array<NodeTemplate>;
+
   constructor(obj: INodeType){
     super(obj);
     this.class = ResourceName.NodeType;
+    this.channels = obj.channels;
   }
 }
 
@@ -492,6 +522,18 @@ export class Correlation extends Resource implements ICorrelation{
   }
 }
 
+export class Coalescence extends Resource implements ICoalescence {
+  public lyphs: Array<ILyphTemplate>;
+  public interfaceLayers: Array<LyphType>;
+
+  constructor(obj:ICoalescence) {
+    super(obj);
+    this.class = ResourceName.Coalescence;
+    this.lyphs = obj.lyphs;
+    this.interfaceLayers = obj.interfaceLayers;
+  }
+}
+
 //Templates
 
 export class Template extends Resource implements ITemplate{
@@ -517,10 +559,14 @@ export class MeasurableTemplate extends Template implements IMeasurableTemplate{
 
 export class ProcessTemplate extends Template implements IProcessTemplate{
   public type: IProcessType;
+  public transportPhenomenon: TransportPhenomenon;
+  public conveyingLyph: LyphType;
 
   constructor(obj: IProcessTemplate){
     super(obj);
     this.class = TemplateName.ProcessTemplate;
+    this.transportPhenomenon = (obj.transportPhenomenon)? obj.transportPhenomenon: TransportPhenomenon.advection;
+    this.conveyingLyph = obj.conveyingLyph;
   }
 }
 
@@ -535,10 +581,14 @@ export class CausalityTemplate extends Template implements ICausalityTemplate{
 
 export class NodeTemplate extends Template implements INodeTemplate{
   public type: INodeType;
+  incomingProcesses: Array<IProcessType>;
+  outgoingProcesses: Array<IProcessType>;
 
   constructor(obj: INodeTemplate){
     super(obj);
     this.class = TemplateName.NodeTemplate;
+    this.incomingProcesses = obj.incomingProcesses;
+    this.outgoingProcesses = obj.outgoingProcesses;
   }
 }
 
@@ -573,12 +623,14 @@ export class LyphTemplate extends Template implements ILyphTemplate{
   public length: number | IValueDistribution = 0;
   public width: number | IValueDistribution = 0;
   public type: ILyphType;
+  public coalescences: Array<ICoalescence>;
 
   constructor(obj: ILyphTemplate){
     super(obj);
     this.class = TemplateName.LyphTemplate;
     this.length = obj.length;
     this.width = obj.width;
+    this.coalescences = obj.coalescences;
   }
 }
 
@@ -596,18 +648,6 @@ export class CylindricalLyphTemplate extends LyphTemplate implements ICylindrica
 }
 
 /*TEST PROVIDERS*/
-
-@Injectable()
-export class ExternalResourceProvider {
-  public items: Array<IExternalResource> = [];
-  constructor(){}
-}
-
-@Injectable()
-export class TypeProvider {
-  public items: Array<IType> = [];
-  constructor(){}
-}
 
 var basicMaterials = [
   new MaterialType({id: 10, name: "Water"}),
@@ -632,6 +672,22 @@ var basicMeasurables = [
   new MeasurableType({id: 107, name: "Concentration of " + basicMaterials[7].name, quality: "concentration", materials: [basicMaterials[7]]}),
   new MeasurableType({id: 108, name: "Concentration of " + basicMaterials[8].name, quality: "concentration", materials: [basicMaterials[8]]})
 ];
+
+var testProcesses = [
+  new ProcessType({name: "Test process"})
+];
+
+@Injectable()
+export class ExternalResourceProvider {
+  public items: Array<IExternalResource> = [];
+  constructor(){}
+}
+
+@Injectable()
+export class TypeProvider {
+  public items: Array<IType> = [];
+  constructor(){}
+}
 
 @Injectable()
 export class MaterialTypeProvider {
@@ -703,3 +759,13 @@ export class MeasurableTypeProvider {
     this.items = basicMeasurables;
   }
 }
+
+@Injectable()
+export class ProcessTypeProvider {
+  public items: Array<IProcessType> = [];
+  constructor(){
+    this.items = testProcesses;
+  }
+}
+
+

@@ -17,7 +17,7 @@ var accordion_1 = require('ng2-bootstrap/components/accordion');
 var ng2_dnd_1 = require('ng2-dnd/ng2-dnd');
 var component_general_1 = require('../component.general');
 var service_apinatomy2_1 = require("../../providers/service.apinatomy2");
-var widget_transform_1 = require("../../transformations/widget.transform");
+var pipe_general_1 = require("../../transformations/pipe.general");
 var panel_general_1 = require("./panel.general");
 var RepoGeneral = (function () {
     function RepoGeneral() {
@@ -55,9 +55,6 @@ var RepoGeneral = (function () {
             case this.resourceNames.ClinicalIndex: return "images/clinicalIndex.png";
         }
         return "images/resource.png";
-    };
-    RepoGeneral.prototype.changeActive = function (item) {
-        this.selected = item;
     };
     RepoGeneral.prototype.onSaved = function (item, updatedItem) {
         for (var key in updatedItem) {
@@ -128,13 +125,13 @@ var RepoGeneral = (function () {
         core_1.Component({
             selector: 'repo-general',
             inputs: ['items', 'caption', 'dependencies', 'types'],
-            template: "\n     <div class=\"panel panel-info repo\">\n        <div class=\"panel-heading\">{{caption}}</div>\n        <div class=\"panel-body\" >\n          <sort-toolbar [options]=\"['ID', 'Name']\" (sorted)=\"onSorted($event)\"></sort-toolbar>\n          <edit-toolbar [options]=\"types\" (added)=\"onAdded($event)\"></edit-toolbar>\n          \n          <accordion class=\"list-group\" [closeOthers]=\"true\" \n          dnd-sortable-container [dropZones]=\"zones\" [sortableData]=\"items\">\n          <accordion-group *ngFor=\"let item of items | orderBy : sortByMode; let i = index\" class=\"list-group-item\" dnd-sortable [sortableIndex]=\"i\">\n            <div accordion-heading><item-header [item]=\"item\" [icon]=\"getIcon(item)\"></item-header></div>\n            \n            <panel-general [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"onSaved(item, $event)\" (removed)=\"onRemoved(item)\"></panel-general>            \n          \n          </accordion-group>        \n          </accordion>       \n        </div>\n      </div>\n  ",
+            template: "\n     <div class=\"panel panel-info repo\">\n        <div class=\"panel-heading\">{{caption}}</div>\n        <div class=\"panel-body\" >\n          <sort-toolbar [options]=\"['ID', 'Name']\" (sorted)=\"onSorted($event)\"></sort-toolbar>\n          <edit-toolbar [options]=\"types\" (added)=\"onAdded($event)\"></edit-toolbar>\n          \n          <accordion class=\"list-group\" [closeOthers]=\"true\" \n          dnd-sortable-container [dropZones]=\"zones\" [sortableData]=\"items\">\n          <accordion-group *ngFor=\"let item of items | orderBy : sortByMode; let i = index\" class=\"list-group-item\" \n            dnd-sortable [sortableIndex]=\"i\" (click)=\"selected = item\">\n            <div accordion-heading><item-header [item]=\"item\" [icon]=\"getIcon(item)\"></item-header></div>\n            \n            <panel-general *ngIf=\"item == selected\" [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"onSaved(item, $event)\" (removed)=\"onRemoved(item)\"></panel-general>            \n          \n          </accordion-group>        \n          </accordion>       \n        </div>\n      </div>\n  ",
             directives: [
                 component_general_1.SortToolbar, component_general_1.EditToolbar,
                 component_general_1.ItemHeader,
                 panel_general_1.PanelGeneral,
                 accordion_1.ACCORDION_DIRECTIVES, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES, ng2_dnd_1.DND_DIRECTIVES],
-            pipes: [widget_transform_1.OrderBy]
+            pipes: [pipe_general_1.OrderBy]
         }), 
         __metadata('design:paramtypes', [])
     ], RepoGeneral);

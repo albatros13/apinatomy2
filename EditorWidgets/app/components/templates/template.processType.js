@@ -21,19 +21,22 @@ var component_general_1 = require('../component.general');
 var component_template_1 = require('../component.template');
 var template_type_1 = require("./template.type");
 var service_restore_1 = require("../../providers/service.restore");
+var ng2_radio_group_1 = require("ng2-radio-group");
+var service_apinatomy2_1 = require("../../providers/service.apinatomy2");
 var ProcessTemplatePanel = (function (_super) {
     __extends(ProcessTemplatePanel, _super);
     function ProcessTemplatePanel(restoreService) {
         _super.call(this, restoreService);
         this.restoreService = restoreService;
+        this.transportPhenomenon = service_apinatomy2_1.TransportPhenomenon;
     }
     ProcessTemplatePanel = __decorate([
         core_1.Component({
             providers: [service_restore_1.RestoreService],
             selector: 'processTemplate-panel',
             inputs: ['item', 'dependencies'],
-            template: "\n    <template-panel [item]=\"item\" [dependencies]=\"dependencies\" \n      (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <ng-content></ng-content>      \n    </template-panel>\n  ",
-            directives: [component_template_1.TemplateValue, component_general_1.SingleSelectInput, template_type_1.TemplatePanel]
+            template: "\n    <template-panel [item]=\"item\" [dependencies]=\"dependencies\" \n      (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <div class=\"input-control\" *ngIf=\"includeProperty('transportPhenomenon')\">\n        <fieldset>\n          <legend>Transport phenomenon:</legend>\n          <radio-group [(ngModel)]=\"item.transportPhenomenon\" [required]=\"true\">\n             <input type=\"radio\" [value]=\"transportPhenomenon.diffusion\">{{transportPhenomenon.diffusion}}&nbsp;\n             <input type=\"radio\" [value]=\"transportPhenomenon.advection\">{{transportPhenomenon.advection}}<br/>\n           </radio-group>\n        </fieldset>\n      </div>\n      <ng-content></ng-content>      \n    </template-panel>\n  ",
+            directives: [component_template_1.TemplateValue, component_general_1.SingleSelectInput, template_type_1.TemplatePanel, ng2_radio_group_1.RADIO_GROUP_DIRECTIVES]
         }), 
         __metadata('design:paramtypes', [service_restore_1.RestoreService])
     ], ProcessTemplatePanel);

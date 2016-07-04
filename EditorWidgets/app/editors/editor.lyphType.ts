@@ -1,14 +1,15 @@
 /**
  * Created by Natallia on 6/8/2016.
  */
-import {Component, Directive, Input, ElementRef} from '@angular/core';
+import {Component, Directive, Input, ElementRef, Inject} from '@angular/core';
 import {RepoGeneral} from '../components/repos/repo.general'
 import {
   ExternalResourceProvider,
   TypeProvider,
   MaterialTypeProvider,
   LyphTypeProvider,
-  CylindricalLyphTypeProvider, MeasurableTypeProvider
+  CylindricalLyphTypeProvider, MeasurableTypeProvider,
+  ProcessTypeProvider
 } from '../providers/service.apinatomy2'
 
 declare var GoldenLayout:any;
@@ -96,7 +97,8 @@ export class LyphTypeWidget{
     TypeProvider,
     MaterialTypeProvider,
     LyphTypeProvider,
-    CylindricalLyphTypeProvider],
+    CylindricalLyphTypeProvider,
+    ProcessTypeProvider],
   template: `
     <repo-general [items]="items" caption="Materials" [dependencies]="dependency"></repo-general>
   `,
@@ -107,12 +109,13 @@ export class LyphTypeEditor {
   dependency: any;
 
   constructor(
-    eResourceP: ExternalResourceProvider,
-    typeP: TypeProvider,
-    materialP: MaterialTypeProvider,
-    lyphP: LyphTypeProvider,
-    cLyphP: CylindricalLyphTypeProvider,
-    measurableP: MeasurableTypeProvider
+    @Inject(ExternalResourceProvider) eResourceP: ExternalResourceProvider,
+    @Inject(TypeProvider) typeP: TypeProvider,
+    @Inject(MaterialTypeProvider) materialP: MaterialTypeProvider,
+    @Inject(LyphTypeProvider) lyphP: LyphTypeProvider,
+    @Inject(CylindricalLyphTypeProvider) cLyphP: CylindricalLyphTypeProvider,
+    @Inject(MeasurableTypeProvider) measurableP: MeasurableTypeProvider,
+    @Inject(ProcessTypeProvider) processP: ProcessTypeProvider
   ) {
 
     let allLyphs = lyphP.items.concat(cLyphP.items);
@@ -129,6 +132,7 @@ export class LyphTypeEditor {
       lyphs: allLyphs,
       cylindricalLyphs: cLyphP.items,
       measurables: measurableP.items,
+      processes: processP.items,
       templates: allTemplates
     };
     this.items = allMaterials;

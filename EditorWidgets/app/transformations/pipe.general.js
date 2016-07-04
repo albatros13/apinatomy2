@@ -28,6 +28,40 @@ var FilterBy = (function () {
     return FilterBy;
 }());
 exports.FilterBy = FilterBy;
+var FilterByClass = (function () {
+    function FilterByClass() {
+    }
+    FilterByClass.prototype.transform = function (items, classNames) {
+        return items.filter(function (item) { return (classNames.indexOf(item.class) !== -1); });
+    };
+    FilterByClass = __decorate([
+        core_1.Pipe({
+            name: 'filterByClass'
+        }),
+        core_1.Injectable(), 
+        __metadata('design:paramtypes', [])
+    ], FilterByClass);
+    return FilterByClass;
+}());
+exports.FilterByClass = FilterByClass;
+var MapToOptions = (function () {
+    function MapToOptions() {
+    }
+    MapToOptions.prototype.transform = function (items) {
+        if (!items)
+            return [];
+        return items.map(function (entry) { return ({ id: entry.id, text: entry.name ? entry.name : entry.id }); });
+    };
+    MapToOptions = __decorate([
+        core_1.Pipe({
+            name: 'mapToOptions'
+        }),
+        core_1.Injectable(), 
+        __metadata('design:paramtypes', [])
+    ], MapToOptions);
+    return MapToOptions;
+}());
+exports.MapToOptions = MapToOptions;
 var OrderBy = (function () {
     function OrderBy() {
     }
@@ -63,4 +97,4 @@ var OrderBy = (function () {
     return OrderBy;
 }());
 exports.OrderBy = OrderBy;
-//# sourceMappingURL=widget.transform.js.map
+//# sourceMappingURL=pipe.general.js.map

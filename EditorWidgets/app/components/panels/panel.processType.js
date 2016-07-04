@@ -23,20 +23,49 @@ var panel_type_1 = require("./panel.type");
 var component_general_1 = require('../component.general');
 var ng2_radio_group_1 = require("ng2-radio-group");
 var template_nodeType_1 = require('../templates/template.nodeType');
+var pipe_general_1 = require("../../transformations/pipe.general");
 var ProcessTypePanel = (function (_super) {
     __extends(ProcessTypePanel, _super);
     function ProcessTypePanel(restoreService) {
         _super.call(this, restoreService);
         this.restoreService = restoreService;
+        this.saved = new core_1.EventEmitter();
         this.transportPhenomenon = service_apinatomy2_1.TransportPhenomenon;
     }
+    ProcessTypePanel.prototype.onSourceAdded = function () {
+        this.item.source = new service_apinatomy2_1.NodeTemplate({ name: "T: Source node " + this.item.name });
+        if (this.dependencies) {
+            if (!this.dependencies.templates)
+                this.dependencies.templates = [];
+            this.dependencies.templates.push(this.item.source);
+        }
+    };
+    ProcessTypePanel.prototype.onTargetAdded = function () {
+        this.item.target = new service_apinatomy2_1.NodeTemplate({ name: "T: Target node " + this.item.name });
+        if (this.dependencies) {
+            if (!this.dependencies.templates)
+                this.dependencies.templates = [];
+            this.dependencies.templates.push(this.item.target);
+        }
+    };
+    ProcessTypePanel.prototype.onSourceRemoved = function (node) {
+        this.item.source = null;
+    };
+    ProcessTypePanel.prototype.onTargetRemoved = function (node) {
+        this.item.target = null;
+    };
+    __decorate([
+        core_1.Output(), 
+        __metadata('design:type', Object)
+    ], ProcessTypePanel.prototype, "saved", void 0);
     ProcessTypePanel = __decorate([
         core_1.Component({
             providers: [service_restore_1.RestoreService],
             selector: 'processType-panel',
             inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <type-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      [ignore]=\"['externals']\" \n      (saved)=\"saved.emit($event)\" \n      (removed)=\"removed.emit($event)\">\n        <div class=\"input-control\" *ngIf=\"includeProperty('transportPhenomenon')\">\n          <fieldset>\n            <legend>Transport phenomenon:</legend>\n            <radio-group [(ngModel)]=\"item.transportPhenomenon\" [required]=\"true\">\n               <input type=\"radio\" [value]=\"transportPhenomenon.diffusion\">{{transportPhenomenon.diffusion}}&nbsp;\n               <input type=\"radio\" [value]=\"transportPhenomenon.advection\">{{transportPhenomenon.advection}}<br/>\n             </radio-group>\n          </fieldset>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('species')\">\n          <label for=\"species\">Species: </label>\n          <input type=\"text\" [(ngModel)]=\"item.species\">\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('measurables')\">\n          <repo-template caption='Measurables' [items]=\"item.measurables\" \n          [dependencies]=\"dependencies\" [types]=\"[templateName.MeasurableTemplate]\"></repo-template>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('materials')\">\n          <label for=\"meterials\">Materials: </label>\n          <select-input [item]=\"item.materials\" [options]=\"dependencies.materials\"></select-input>\n        </div>        \n        <div class=\"input-control\" *ngIf=\"includeProperty('source')\">      \n          <label for=\"source\">Source: </label>\n          <nodeTemplate-panel [item]=\"item.source\" \n            [dependencies]=\"{types: dependencies.nodes, templates: dependencies.templates}\" (saved)=\"onSaved(item, $event)\" (removed)=\"onRemoved(item)\"></nodeTemplate-panel>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('target')\">      \n          <label for=\"target\">Target: </label>\n          <nodeTemplate-panel [item]=\"item.target\" \n            [dependencies]=\"{types: dependencies.nodes, templates: dependencies.templates}\" (saved)=\"onSaved(item, $event)\" (removed)=\"onRemoved(item)\"></nodeTemplate-panel>\n        </div>        \n    <ng-content></ng-content>      \n    </type-panel>\n  ",
-            directives: [panel_type_1.TypePanel, component_general_1.MultiSelectInput, ng2_radio_group_1.RADIO_GROUP_DIRECTIVES, template_nodeType_1.NodeTemplatePanel]
+            template: "\n    <type-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      [ignore]=\"['externals']\" \n      (saved)=\"saved.emit($event)\" \n      (removed)=\"removed.emit($event)\">\n        <!--TransportPhenomenon-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('transportPhenomenon')\">\n          <fieldset>\n            <legend>Transport phenomenon:</legend>\n            <check-group [(ngModel)]=\"item.transportPhenomenon\" [required]=\"true\">\n               <input type=\"checkbox\" [value]=\"transportPhenomenon.diffusion\">{{transportPhenomenon.diffusion}}&nbsp;\n               <input type=\"checkbox\" [value]=\"transportPhenomenon.advection\">{{transportPhenomenon.advection}}<br/>\n             </check-group>\n          </fieldset>\n        </div>\n        \n        <!--Species-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('species')\">\n          <label for=\"species\">Species: </label>\n          <input type=\"text\" [(ngModel)]=\"item.species\">\n        </div>\n        \n        <!--Measurables-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('measurables')\">\n          <repo-template caption='Measurables' [items]=\"item.measurables\" \n          [dependencies]=\"dependencies\" [types]=\"[templateName.MeasurableTemplate]\"></repo-template>\n        </div>\n        \n        <!--MeasurableProviders-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('measurableProviders')\">\n          <label for=\"measurableProviders\">Inherits measurables from: </label>\n          <select-input [item]=\"item.measurableProviders\" [options]=\"dependencies.processes\"></select-input>\n        </div>\n        \n        <!--Materials-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('materials')\">\n          <label for=\"meterials\">Materials: </label>\n          <select-input [item]=\"item.materials\" [options]=\"dependencies.materials\"></select-input>\n        </div>        \n        \n         <!--MaterialProviders-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('materialProviders')\">\n          <label for=\"materialProviders\">Inherits materials from: </label>\n          <select-input [item]=\"item.materialProviders\" [options]=\"dependencies.processes\"></select-input>\n        </div>\n        \n        <!--Segments-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('segments')\">\n          <repo-template caption='Segments' [items]=\"item.segments\" \n          [dependencies]=\"dependencies\" [types]=\"[templateName.ProcessTemplate]\"></repo-template>\n        </div>\n        \n        <!--SegmentProviders-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('segmentProviders')\">\n          <label for=\"segmentProviders\">Inherits segments from: </label>\n          <select-input [item]=\"item.segmentProviders\" [options]=\"dependencies.processes\"></select-input>\n        </div>\n        \n        <!--Channels-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('channels')\">\n          <repo-template caption='Channels' [items]=\"item.channels\" \n          [dependencies]=\"dependencies\" [types]=\"[templateName.ProcessTemplate]\"></repo-template>\n        </div>\n        \n        <!--ChannelProviders-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('channelProviders')\">\n          <label for=\"channelProviders\">Inherits channels from: </label>\n          <select-input [item]=\"item.channelProviders\" [options]=\"dependencies.channels\"></select-input>\n        </div>\n        \n        <!--Source-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('source')\">      \n          <label for=\"source\">Source: </label>\n          <select-input-1 [item] = \"item.source\" \n            [options] = \"dependencies.templates | filterByClass: [templateName.NodeTemplate]\"></select-input-1>\n          <edit-toolbar *ngIf=\"!item.source\" [options]=\"[templateName.NodeTemplate]\" \n            (added)=\"onSourceAdded($event)\"></edit-toolbar>\n          <nodeTemplate-panel *ngIf=\"item.source\" [item]=\"item.source\" \n            [dependencies]=\"{types: dependencies.nodes, templates: dependencies.templates}\" \n            (saved)=\"onSaved(item, $event)\" (removed)=\"onSourceRemoved(item)\"></nodeTemplate-panel>\n        </div>\n        \n        <!--Target-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('target')\">      \n          <label for=\"target\">Target: </label>\n          <select-input-1 [item] = \"item.target\" \n            [options] = \"dependencies.templates | filterByClass: [templateName.NodeTemplate]\"></select-input-1>\n          <edit-toolbar *ngIf=\"!item.target\" [options]=\"[templateName.NodeTemplate]\" \n            (added)=\"onTargetAdded($event)\"></edit-toolbar>\n          <nodeTemplate-panel *ngIf=\"item.target\" [item]=\"item.target\" \n            [dependencies]=\"{types: dependencies.nodes, templates: dependencies.templates}\" \n            (saved)=\"onSaved(item, $event)\" (removed)=\"onTargetRemoved(item)\"></nodeTemplate-panel>\n        </div>        \n    <ng-content></ng-content>      \n    </type-panel>\n  ",
+            directives: [panel_type_1.TypePanel, component_general_1.MultiSelectInput, component_general_1.SingleSelectInput, ng2_radio_group_1.RADIO_GROUP_DIRECTIVES, template_nodeType_1.NodeTemplatePanel, component_general_1.EditToolbar],
+            pipes: [pipe_general_1.FilterByClass]
         }), 
         __metadata('design:paramtypes', [service_restore_1.RestoreService])
     ], ProcessTypePanel);

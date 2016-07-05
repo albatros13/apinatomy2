@@ -1,7 +1,7 @@
 /**
  * Created by Natallia on 6/19/2016.
  */
-import {Component, Input, Output, OnChanges, KeyValueDiffers, EventEmitter} from '@angular/core';
+import {Component, Output, OnChanges, KeyValueDiffers, EventEmitter} from '@angular/core';
 import {SELECT_DIRECTIVES} from 'ng2-select/ng2-select';
 import {CORE_DIRECTIVES, FORM_DIRECTIVES} from '@angular/common';
 import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/components/dropdown';
@@ -149,3 +149,24 @@ export class EditToolbar {
   constructor(){}
 }
 
+@Component({
+  selector: 'form-toolbar',
+  template: `
+    <button type="button" class="btn btn-default" aria-label="Remove" (click)="removed.emit()">
+      <span class="glyphicon glyphicon-remove"></span>
+    </button>
+    <button type="button" class="btn btn-default" aria-label="Save" (click)="saved.emit()">
+      <span class="glyphicon glyphicon-check"></span>
+    </button>
+    <button type="button" class="btn btn-default" aria-label="Restore" (click)="canceled.emit()">
+      <span class="glyphicon glyphicon-refresh"></span>
+    </button>
+    `
+})
+export class FormToolbar {
+  @Output() removed = new EventEmitter();
+  @Output() canceled = new EventEmitter();
+  @Output() saved = new EventEmitter();
+
+  constructor(){};
+}

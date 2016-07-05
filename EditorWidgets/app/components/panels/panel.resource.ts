@@ -2,29 +2,7 @@
  * Created by Natallia on 6/14/2016.
  */
 import {Component, EventEmitter, Output, Inject} from '@angular/core';
-import {MultiSelectInput} from '../component.general';
-
-@Component({
-  selector: 'resource-toolbar',
-  template: `
-    <button type="button" class="btn btn-default" aria-label="Remove" (click)="removed.emit()">
-      <span class="glyphicon glyphicon-remove"></span>
-    </button>
-    <button type="button" class="btn btn-default" aria-label="Save" (click)="saved.emit()">
-      <span class="glyphicon glyphicon-check"></span>
-    </button>
-    <button type="button" class="btn btn-default" aria-label="Restore" (click)="canceled.emit()">
-      <span class="glyphicon glyphicon-refresh"></span>
-    </button>
-    `
-})
-export class ResourceToolbar {
-  @Output() removed = new EventEmitter();
-  @Output() canceled = new EventEmitter();
-  @Output() saved = new EventEmitter();
-
-  constructor(){};
-}
+import {MultiSelectInput, FormToolbar} from '../component.general';
 
 @Component({
   selector: 'resource-panel',
@@ -32,11 +10,11 @@ export class ResourceToolbar {
   template:`
     <div class="panel">
         <div class="panel-body">
-          <resource-toolbar  
+          <form-toolbar  
             (saved)    = "saved.emit($event)"
             (canceled) = "canceled.emit($event)"
             (removed)  = "removed.emit($event)">
-          </resource-toolbar>
+          </form-toolbar>
           <div class="panel-content">
               <!--<div class="input-control" *ngIf="includeProperty('id')">-->
                 <!--<label for="id">ID: </label>-->
@@ -58,7 +36,7 @@ export class ResourceToolbar {
         </div>
     </div>
   `,
-  directives: [ResourceToolbar, MultiSelectInput]
+  directives: [FormToolbar, MultiSelectInput]
 })
 export class ResourcePanel {
   item: any;

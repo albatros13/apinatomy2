@@ -147,4 +147,33 @@ var EditToolbar = (function () {
     return EditToolbar;
 }());
 exports.EditToolbar = EditToolbar;
+var FormToolbar = (function () {
+    function FormToolbar() {
+        this.removed = new core_1.EventEmitter();
+        this.canceled = new core_1.EventEmitter();
+        this.saved = new core_1.EventEmitter();
+    }
+    ;
+    __decorate([
+        core_1.Output(), 
+        __metadata('design:type', Object)
+    ], FormToolbar.prototype, "removed", void 0);
+    __decorate([
+        core_1.Output(), 
+        __metadata('design:type', Object)
+    ], FormToolbar.prototype, "canceled", void 0);
+    __decorate([
+        core_1.Output(), 
+        __metadata('design:type', Object)
+    ], FormToolbar.prototype, "saved", void 0);
+    FormToolbar = __decorate([
+        core_1.Component({
+            selector: 'form-toolbar',
+            template: "\n    <button type=\"button\" class=\"btn btn-default\" aria-label=\"Remove\" (click)=\"removed.emit()\">\n      <span class=\"glyphicon glyphicon-remove\"></span>\n    </button>\n    <button type=\"button\" class=\"btn btn-default\" aria-label=\"Save\" (click)=\"saved.emit()\">\n      <span class=\"glyphicon glyphicon-check\"></span>\n    </button>\n    <button type=\"button\" class=\"btn btn-default\" aria-label=\"Restore\" (click)=\"canceled.emit()\">\n      <span class=\"glyphicon glyphicon-refresh\"></span>\n    </button>\n    "
+        }), 
+        __metadata('design:paramtypes', [])
+    ], FormToolbar);
+    return FormToolbar;
+}());
+exports.FormToolbar = FormToolbar;
 //# sourceMappingURL=component.general.js.map

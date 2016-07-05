@@ -12,7 +12,7 @@ import {ResourcePanel} from "../panels/panel.resource";
   template:`
     <resource-panel [item]="item" 
       [ignore]="['externals']"  
-            (saved)    = "saved.emit($event)"
+            (saved)    = "onSave($event)"
             (canceled) = "canceled.emit($event)"
             (removed)  = "removed.emit($event)">
       <div class="input-control">
@@ -23,7 +23,11 @@ import {ResourcePanel} from "../panels/panel.resource";
       </div>
       <fieldset>
         <legend>Template:</legend>
-        <template-value caption="Cardinality base:" [item]="item.cardinalityBase"></template-value>
+        <template-value caption="Cardinality base:" 
+          [item]="item.cardinalityBase"
+          (updated)="updateProperty('cardinalityBase', $event)"
+          ></template-value>
+        
         <div class="input-control" *ngIf="includeProperty('cardinalityMultipliers')">
           <label for="cardinalityMultipliers">Cardinality multipliers: </label>
             <select-input [items]="item.cardinalityMultipliers" 
@@ -37,5 +41,10 @@ import {ResourcePanel} from "../panels/panel.resource";
   directives: [TemplateValue, SingleSelectInput, MultiSelectInput, ResourcePanel]
 })
 export class TemplatePanel extends ResourcePanel{
+
+  onSave(item:any){
+    console.dir(this.item);
+    this.saved.emit(item);
+  }
 }
 

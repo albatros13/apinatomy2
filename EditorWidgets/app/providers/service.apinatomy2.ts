@@ -7,7 +7,8 @@ import {Injectable} from '@angular/core';
 
 //Components
 
-interface IDistribution{}
+interface IDistribution{
+}
 
 interface IUniformDistribution extends IDistribution{
   min: number;
@@ -20,7 +21,7 @@ interface IBoundedNormalDistribution extends IUniformDistribution{
 }
 
 interface IValueDistribution{
-  quality?: IQuality;
+  unit?: string;
   type?: DistributionType;
   distribution?: IDistribution;
 }
@@ -257,7 +258,7 @@ export enum SideType {
 
 //Components
 
-export class Distribution{
+export class Distribution implements IDistribution{
   constructor(obj: IDistribution = {}){}
 }
 
@@ -267,7 +268,6 @@ export class UniformDistribution extends Distribution implements IUniformDistrib
 
   constructor(obj: IUniformDistribution = {min:0, max: 0}){
     super();
-    this.type = DistributionType.Uniform;
     this.min = obj.min;
     this.max = obj.max;
   }
@@ -279,19 +279,18 @@ export class BoundedNormalDistribution extends UniformDistribution implements IB
 
   constructor(obj: IBoundedNormalDistribution = {mean: 0, std: 0, min:0, max: 0}){
     super(obj);
-    this.type = DistributionType.BoundedNormal;
     this.max = obj.max;
     this.std = obj.std;
   }
 }
 
 export class ValueDistribution implements IValueDistribution{
-  public quality: IQuality;
-  public type: DistributionType;
+  //public unit: string;
+  public type: DistributionType;  
   public distribution: IDistribution;
 
   constructor(obj: IValueDistribution = {type: DistributionType.Uniform, distribution: new UniformDistribution()}){
-    this.quality = obj.quality;
+    //this.unit = obj.unit;
     this.type = obj.type;
     this.distribution = obj.distribution;
   }

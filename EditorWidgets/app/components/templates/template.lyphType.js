@@ -29,8 +29,8 @@ var LyphTemplatePanel = (function (_super) {
         core_1.Component({
             selector: 'lyphTemplate-panel',
             inputs: ['item', 'dependencies'],
-            template: "\n    <template-panel [item]=\"item\" [dependencies]=\"dependencies\" \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n\n      <template-value caption=\"Length:\" [item]=\"item.length\"></template-value>\n      <template-value caption=\"Width:\" [item]=\"item.width\"></template-value>\n      <ng-content></ng-content>      \n    </template-panel>\n  ",
-            directives: [component_template_1.TemplateValue, component_general_1.SingleSelectInput, template_type_1.TemplatePanel]
+            template: "\n    <template-panel [item]=\"item\" [dependencies]=\"dependencies\" \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n      <!--<template-value caption=\"Length:\" [item]=\"item.length\"-->\n       <!--(updated)=\"updateProperty('length', $event)\"></template-value>-->\n      <!--<template-value caption=\"Width:\" [item]=\"item.width\"-->\n       <!--(updated)=\"updateProperty('width', $event)\"></template-value>-->\n      <ng-content></ng-content>      \n    </template-panel>\n  ",
+            directives: [component_general_1.SingleSelectInput, component_template_1.TemplateValue, template_type_1.TemplatePanel]
         }), 
         __metadata('design:paramtypes', [])
     ], LyphTemplatePanel);

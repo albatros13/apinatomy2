@@ -26,11 +26,31 @@ var panel_measurableType_1 = require('../panels/panel.measurableType');
 var panel_correlation_1 = require('../panels/panel.correlation');
 var panel_coalescence_1 = require('../panels/panel.coalescence');
 var PanelGeneral = (function () {
-    function PanelGeneral() {
+    function PanelGeneral(restoreService) {
+        this.restoreService = restoreService;
+        this.resourceNames = service_apinatomy2_1.ResourceName;
         this.saved = new core_1.EventEmitter();
         this.removed = new core_1.EventEmitter();
-        this.resourceNames = service_apinatomy2_1.ResourceName;
+        this.canceled = new core_1.EventEmitter();
     }
+    Object.defineProperty(PanelGeneral.prototype, "item", {
+        get: function () {
+            return this.restoreService.getItem();
+        },
+        set: function (item) {
+            this.restoreService.setItem(item);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    PanelGeneral.prototype.onSaved = function () {
+        this.item = this.restoreService.getItem();
+        this.saved.emit(this.item);
+    };
+    PanelGeneral.prototype.onCanceled = function () {
+        this.item = this.restoreService.restoreItem();
+        this.canceled.emit(this.item);
+    };
     __decorate([
         core_1.Output(), 
         __metadata('design:type', Object)
@@ -39,18 +59,22 @@ var PanelGeneral = (function () {
         core_1.Output(), 
         __metadata('design:type', Object)
     ], PanelGeneral.prototype, "removed", void 0);
+    __decorate([
+        core_1.Output(), 
+        __metadata('design:type', Object)
+    ], PanelGeneral.prototype, "canceled", void 0);
     PanelGeneral = __decorate([
         core_1.Component({
             providers: [service_restore_1.RestoreService],
             selector: 'panel-general',
             inputs: ['item', 'dependencies'],
-            template: "\n    <!--Resources-->\n    <resource-panel *ngIf=\"!item.class || (item.class == resourceNames.Resource)\"\n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\"></resource-panel>\n    \n    <!--Types-->\n    <type-panel *ngIf=\"item.class == resourceNames.Type\"\n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\"></type-panel>\n    \n    <!--Materials-->\n    <materialType-panel *ngIf=\"item.class==resourceNames.MaterialType\"\n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\"></materialType-panel>\n    \n    <!--Lyphs-->      \n    <lyphType-panel *ngIf=\"item.class==resourceNames.LyphType\"\n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\"></lyphType-panel>\n\n    <!--Cylindrical lyphs-->      \n    <cylindricalLyphType-panel *ngIf=\"item.class==resourceNames.CylindricalLyphType\"\n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\"></cylindricalLyphType-panel>\n    \n    <!--Processes-->      \n    <processType-panel *ngIf=\"item.class==resourceNames.ProcessType\"\n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\"></processType-panel>\n    \n    <!--Mesurables-->\n    <measurableType-panel *ngIf=\"item.class==resourceNames.MeasurableType\"\n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\"></measurableType-panel>\n    \n    <!--Causalities-->\n    <causalityType-panel *ngIf=\"item.class==resourceNames.CausalityType\"\n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\"></causalityType-panel>\n    \n    <!--Nodes-->\n    <nodeType-panel *ngIf=\"item.class==resourceNames.NodeType\" [ignore]=\"['externals']\" \n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\"></nodeType-panel>\n\n    <!--Borders-->\n    <borderType-panel *ngIf=\"item.class==resourceNames.BorderType\"\n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\"></borderType-panel>\n    \n    <!--Groups-->\n    <groupType-panel *ngIf=\"item.class==resourceNames.GroupType\"\n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\"></groupType-panel>\n\n    <!--Omega trees-->\n    <omegaTreeType-panel *ngIf=\"item.class==resourceNames.OmegaTreeType\"\n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\"></omegaTreeType-panel>\n\n     <!--Publications: generic panel-->\n     <resource-panel *ngIf=\"item.class==resourceNames.Publication\" \n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\"></resource-panel>\n\n     <!--Correlations-->\n     <correlation-panel *ngIf=\"item.class==resourceNames.Correlation\"\n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\"></correlation-panel>\n\n     <!--Coalescence-->\n     <coalescence-panel *ngIf=\"item.class==resourceNames.Coalescence\"\n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\"></coalescence-panel>\n\n     <!--Clinical indices: generic panel-->\n     <resource-panel *ngIf=\"item.class==resourceNames.ClinicalIndex\" [ignore]=\"['externals']\"  \n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\"></resource-panel>  \n  ",
+            template: "\n    <!--Resources-->\n    <resource-panel *ngIf=\"!item.class || (item.class == resourceNames.Resource)\"\n     [item]=\"item\" [dependencies]=\"dependencies\" \n      (saved)=\"onSaved($event)\" (canceled)=\"onCanceled($event)\" (removed)=\"removed.emit($event)\"></resource-panel>\n    \n    <!--Types-->\n    <type-panel *ngIf=\"item.class == resourceNames.Type\"\n     [item]=\"item\" [dependencies]=\"dependencies\"\n      (saved)=\"onSaved($event)\" (canceled)=\"onCanceled($event)\" (removed)=\"removed.emit($event)\">\n    </type-panel>\n    \n    <!--Materials-->\n    <materialType-panel *ngIf=\"item.class==resourceNames.MaterialType\"\n     [item]=\"item\" [dependencies]=\"dependencies\" \n      (saved)=\"onSaved($event)\" (canceled)=\"onCanceled($event)\" (removed)=\"removed.emit($event)\">\n    </materialType-panel>\n    \n    <!--Lyphs-->      \n    <lyphType-panel *ngIf=\"item.class==resourceNames.LyphType\"\n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"onSaved($event)\" (canceled)=\"onCanceled($event)\" (removed)=\"removed.emit($event)\"></lyphType-panel>\n\n    <!--Cylindrical lyphs-->      \n    <cylindricalLyphType-panel *ngIf=\"item.class==resourceNames.CylindricalLyphType\"\n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"onSaved($event)\" (canceled)=\"onCanceled($event)\" (removed)=\"removed.emit($event)\"></cylindricalLyphType-panel>\n    \n    <!--Processes-->      \n    <processType-panel *ngIf=\"item.class==resourceNames.ProcessType\"\n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"onSaved($event)\" (canceled)=\"onCanceled($event)\" (removed)=\"removed.emit($event)\"></processType-panel>\n    \n    <!--Mesurables-->\n    <measurableType-panel *ngIf=\"item.class==resourceNames.MeasurableType\"\n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"onSaved($event)\" (canceled)=\"onCanceled($event)\" (removed)=\"removed.emit($event)\"></measurableType-panel>\n    \n    <!--Causalities-->\n    <causalityType-panel *ngIf=\"item.class==resourceNames.CausalityType\"\n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"onSaved($event)\" (canceled)=\"onCanceled($event)\" (removed)=\"removed.emit($event)\"></causalityType-panel>\n    \n    <!--Nodes-->\n    <nodeType-panel *ngIf=\"item.class==resourceNames.NodeType\" [ignore]=\"['externals']\" \n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"onSaved($event)\" (canceled)=\"onCanceled($event)\" (removed)=\"removed.emit($event)\"></nodeType-panel>\n\n    <!--Borders-->\n    <borderType-panel *ngIf=\"item.class==resourceNames.BorderType\"\n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"onSaved($event)\" (canceled)=\"onCanceled($event)\" (removed)=\"removed.emit($event)\"></borderType-panel>\n    \n    <!--Groups-->\n    <groupType-panel *ngIf=\"item.class==resourceNames.GroupType\"\n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"onSaved($event)\" (canceled)=\"onCanceled($event)\" (removed)=\"removed.emit($event)\"></groupType-panel>\n\n    <!--Omega trees-->\n    <omegaTreeType-panel *ngIf=\"item.class==resourceNames.OmegaTreeType\"\n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"onSaved($event)\" (canceled)=\"onCanceled($event)\" (removed)=\"removed.emit($event)\"></omegaTreeType-panel>\n\n     <!--Publications: generic panel-->\n     <resource-panel *ngIf=\"item.class==resourceNames.Publication\" \n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"onSaved($event)\" (canceled)=\"onCanceled($event)\" (removed)=\"removed.emit($event)\"></resource-panel>\n\n     <!--Correlations-->\n     <correlation-panel *ngIf=\"item.class==resourceNames.Correlation\"\n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"onSaved($event)\" (canceled)=\"onCanceled($event)\" (removed)=\"removed.emit($event)\"></correlation-panel>\n\n     <!--Coalescence-->\n     <coalescence-panel *ngIf=\"item.class==resourceNames.Coalescence\"\n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"onSaved($event)\" (canceled)=\"onCanceled($event)\" (removed)=\"removed.emit($event)\"></coalescence-panel>\n\n     <!--Clinical indices: generic panel-->\n     <resource-panel *ngIf=\"item.class==resourceNames.ClinicalIndex\" [ignore]=\"['externals']\"  \n     [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"onSaved($event)\" (canceled)=\"onCanceled($event)\" (removed)=\"removed.emit($event)\"></resource-panel>  \n  ",
             directives: [panel_resource_1.ResourcePanel, panel_type_1.TypePanel, panel_materialType_1.MaterialTypePanel, panel_lyphType_1.LyphTypePanel, panel_cylindricalLyphType_1.CylindricalLyphTypePanel,
                 panel_groupType_1.GroupTypePanel, panel_omegaTreeType_1.OmegaTreeTypePanel,
                 panel_measurableType_1.MeasurableTypePanel, panel_processType_1.ProcessTypePanel, panel_causalityType_1.CausalityTypePanel, panel_nodeType_1.NodeTypePanel, panel_borderType_1.BorderTypePanel,
                 panel_correlation_1.CorrelationPanel, panel_coalescence_1.CoalescencePanel]
         }), 
-        __metadata('design:paramtypes', [])
+        __metadata('design:paramtypes', [service_restore_1.RestoreService])
     ], PanelGeneral);
     return PanelGeneral;
 }());

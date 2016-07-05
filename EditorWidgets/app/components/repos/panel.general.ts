@@ -26,67 +26,72 @@ import {CoalescencePanel} from '../panels/panel.coalescence';
   template:`
     <!--Resources-->
     <resource-panel *ngIf="!item.class || (item.class == resourceNames.Resource)"
-     [item]="item" [dependencies]="dependencies" (saved)="saved.emit($event)" (removed)="removed.emit($event)"></resource-panel>
+     [item]="item" [dependencies]="dependencies" 
+      (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></resource-panel>
     
     <!--Types-->
     <type-panel *ngIf="item.class == resourceNames.Type"
-     [item]="item" [dependencies]="dependencies" (saved)="saved.emit($event)" (removed)="removed.emit($event)"></type-panel>
+     [item]="item" [dependencies]="dependencies"
+      (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)">
+    </type-panel>
     
     <!--Materials-->
     <materialType-panel *ngIf="item.class==resourceNames.MaterialType"
-     [item]="item" [dependencies]="dependencies" (saved)="saved.emit($event)" (removed)="removed.emit($event)"></materialType-panel>
+     [item]="item" [dependencies]="dependencies" 
+      (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)">
+    </materialType-panel>
     
     <!--Lyphs-->      
     <lyphType-panel *ngIf="item.class==resourceNames.LyphType"
-     [item]="item" [dependencies]="dependencies" (saved)="saved.emit($event)" (removed)="removed.emit($event)"></lyphType-panel>
+     [item]="item" [dependencies]="dependencies" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></lyphType-panel>
 
     <!--Cylindrical lyphs-->      
     <cylindricalLyphType-panel *ngIf="item.class==resourceNames.CylindricalLyphType"
-     [item]="item" [dependencies]="dependencies" (saved)="saved.emit($event)" (removed)="removed.emit($event)"></cylindricalLyphType-panel>
+     [item]="item" [dependencies]="dependencies" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></cylindricalLyphType-panel>
     
     <!--Processes-->      
     <processType-panel *ngIf="item.class==resourceNames.ProcessType"
-     [item]="item" [dependencies]="dependencies" (saved)="saved.emit($event)" (removed)="removed.emit($event)"></processType-panel>
+     [item]="item" [dependencies]="dependencies" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></processType-panel>
     
     <!--Mesurables-->
     <measurableType-panel *ngIf="item.class==resourceNames.MeasurableType"
-     [item]="item" [dependencies]="dependencies" (saved)="saved.emit($event)" (removed)="removed.emit($event)"></measurableType-panel>
+     [item]="item" [dependencies]="dependencies" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></measurableType-panel>
     
     <!--Causalities-->
     <causalityType-panel *ngIf="item.class==resourceNames.CausalityType"
-     [item]="item" [dependencies]="dependencies" (saved)="saved.emit($event)" (removed)="removed.emit($event)"></causalityType-panel>
+     [item]="item" [dependencies]="dependencies" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></causalityType-panel>
     
     <!--Nodes-->
     <nodeType-panel *ngIf="item.class==resourceNames.NodeType" [ignore]="['externals']" 
-     [item]="item" [dependencies]="dependencies" (saved)="saved.emit($event)" (removed)="removed.emit($event)"></nodeType-panel>
+     [item]="item" [dependencies]="dependencies" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></nodeType-panel>
 
     <!--Borders-->
     <borderType-panel *ngIf="item.class==resourceNames.BorderType"
-     [item]="item" [dependencies]="dependencies" (saved)="saved.emit($event)" (removed)="removed.emit($event)"></borderType-panel>
+     [item]="item" [dependencies]="dependencies" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></borderType-panel>
     
     <!--Groups-->
     <groupType-panel *ngIf="item.class==resourceNames.GroupType"
-     [item]="item" [dependencies]="dependencies" (saved)="saved.emit($event)" (removed)="removed.emit($event)"></groupType-panel>
+     [item]="item" [dependencies]="dependencies" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></groupType-panel>
 
     <!--Omega trees-->
     <omegaTreeType-panel *ngIf="item.class==resourceNames.OmegaTreeType"
-     [item]="item" [dependencies]="dependencies" (saved)="saved.emit($event)" (removed)="removed.emit($event)"></omegaTreeType-panel>
+     [item]="item" [dependencies]="dependencies" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></omegaTreeType-panel>
 
      <!--Publications: generic panel-->
      <resource-panel *ngIf="item.class==resourceNames.Publication" 
-     [item]="item" [dependencies]="dependencies" (saved)="saved.emit($event)" (removed)="removed.emit($event)"></resource-panel>
+     [item]="item" [dependencies]="dependencies" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></resource-panel>
 
      <!--Correlations-->
      <correlation-panel *ngIf="item.class==resourceNames.Correlation"
-     [item]="item" [dependencies]="dependencies" (saved)="saved.emit($event)" (removed)="removed.emit($event)"></correlation-panel>
+     [item]="item" [dependencies]="dependencies" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></correlation-panel>
 
      <!--Coalescence-->
      <coalescence-panel *ngIf="item.class==resourceNames.Coalescence"
-     [item]="item" [dependencies]="dependencies" (saved)="saved.emit($event)" (removed)="removed.emit($event)"></coalescence-panel>
+     [item]="item" [dependencies]="dependencies" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></coalescence-panel>
 
      <!--Clinical indices: generic panel-->
      <resource-panel *ngIf="item.class==resourceNames.ClinicalIndex" [ignore]="['externals']"  
-     [item]="item" [dependencies]="dependencies" (saved)="saved.emit($event)" (removed)="removed.emit($event)"></resource-panel>  
+     [item]="item" [dependencies]="dependencies" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></resource-panel>  
   `,
   directives: [ResourcePanel, TypePanel, MaterialTypePanel, LyphTypePanel, CylindricalLyphTypePanel,
     GroupTypePanel, OmegaTreeTypePanel,
@@ -94,7 +99,29 @@ import {CoalescencePanel} from '../panels/panel.coalescence';
     CorrelationPanel, CoalescencePanel]
 })
 export class PanelGeneral{
+  resourceNames = ResourceName;
   @Output() saved = new EventEmitter();
   @Output() removed = new EventEmitter();
-  resourceNames = ResourceName;
+  @Output() canceled = new EventEmitter();
+
+  constructor(protected restoreService: RestoreService){
+  }
+
+   protected set item (item: any) {
+   this.restoreService.setItem(item);
+   }
+
+   protected get item () {
+     return this.restoreService.getItem();
+   }
+
+  protected onSaved() {
+    this.item = this.restoreService.getItem();
+    this.saved.emit(this.item);
+  }
+
+  protected onCanceled() {
+    this.item = this.restoreService.restoreItem();
+    this.canceled.emit(this.item);
+  }
 }

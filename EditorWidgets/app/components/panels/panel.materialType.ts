@@ -14,30 +14,47 @@ import {RepoTemplate} from '../repos/repo.template';
   template:`
     <type-panel [item]="item" 
       [dependencies] = "dependencies" 
-      (saved)="saved.emit($event)" (removed)="removed.emit($event)">
-        <div class="input-control" *ngIf="includeProperty('materialProviders')">
-          <label for="materialProviders">Inherits materials from: </label>
-          <select-input [item]="item.materialProviders" [options]="dependencies.materials"></select-input>
-        </div>
+            (saved)    = "saved.emit($event)"
+            (canceled) = "canceled.emit($event)"
+            (removed)  = "removed.emit($event)">
+        <!--Materials-->
         <div class="input-control" *ngIf="includeProperty('materials')">
             <label for="materials">Materials: </label>
-            <select-input [item]="item.materials" [options]="dependencies.materials"></select-input>
+            <select-input 
+              [items]="item.materials" 
+              (updated)="updateProperty('materials', $event)" 
+              [options]="dependencies.materials"></select-input>
         </div>
-        <div class="input-control" *ngIf="includeProperty('measurableProviders')">
-          <label for="measurableProviders">Inherits measurables from: </label>
-          <select-input [item]="item.measurableProviders" [options]="dependencies.materials"></select-input>
+        
+        <!--MaterialProviders-->
+        <div class="input-control" *ngIf="includeProperty('materialProviders')">
+          <label for="materialProviders">Inherits materials from: </label>
+          <select-input 
+            [items]="item.materialProviders" 
+            (updated)="updateProperty('materialProviders', $event)" 
+            [options]="dependencies.materials"></select-input>
         </div>
+
+        <!--Measurables-->
         <div class="input-control" *ngIf="includeProperty('measurables')">
-          <repo-template caption='Measurables' [items]="item.measurables" [dependencies]="dependencies"
+          <repo-template caption='Measurables' 
+          [items]="item.measurables" 
+          (updated)="updateProperty('measurables', $event)" 
+          [dependencies]="dependencies"
           [types]="[templateName.MeasurableTemplate]"></repo-template>
         </div>
+
+        <!--MeasurableProviders-->
+        <div class="input-control" *ngIf="includeProperty('measurableProviders')">
+          <label for="measurableProviders">Inherits measurables from: </label>
+          <select-input [items]="item.measurableProviders" 
+          (updated)="updateProperty('measurableProviders', $event)" 
+          [options]="dependencies.materials"></select-input>
+        </div>
+
         <ng-content></ng-content>
     </type-panel>
   `,
   directives: [TypePanel, MultiSelectInput, RepoTemplate]
 })
-export class MaterialTypePanel extends TypePanel{
-  constructor(protected restoreService: RestoreService<any>){
-    super(restoreService);
-  }
-}
+export class MaterialTypePanel extends TypePanel{}

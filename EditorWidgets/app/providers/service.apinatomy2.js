@@ -80,6 +80,7 @@ var UniformDistribution = (function (_super) {
     function UniformDistribution(obj) {
         if (obj === void 0) { obj = { min: 0, max: 0 }; }
         _super.call(this);
+        this.type = DistributionType.Uniform;
         this.min = obj.min;
         this.max = obj.max;
     }
@@ -93,6 +94,7 @@ var BoundedNormalDistribution = (function (_super) {
         _super.call(this, obj);
         this.mean = 0;
         this.std = 0;
+        this.type = DistributionType.BoundedNormal;
         this.max = obj.max;
         this.std = obj.std;
     }

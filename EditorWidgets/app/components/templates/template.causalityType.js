@@ -20,22 +20,19 @@ var core_1 = require('@angular/core');
 var component_general_1 = require('../component.general');
 var component_template_1 = require('../component.template');
 var template_type_1 = require("./template.type");
-var service_restore_1 = require("../../providers/service.restore");
 var CausalityTemplatePanel = (function (_super) {
     __extends(CausalityTemplatePanel, _super);
-    function CausalityTemplatePanel(restoreService) {
-        _super.call(this, restoreService);
-        this.restoreService = restoreService;
+    function CausalityTemplatePanel() {
+        _super.apply(this, arguments);
     }
     CausalityTemplatePanel = __decorate([
         core_1.Component({
-            providers: [service_restore_1.RestoreService],
             selector: 'causalityTemplate-panel',
             inputs: ['item', 'dependencies'],
-            template: "\n    <template-panel [item]=\"item\" [dependencies]=\"dependencies\"  \n      (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <ng-content></ng-content>      \n    </template-panel>\n  ",
+            template: "\n    <template-panel [item]=\"item\" [dependencies]=\"dependencies\"  \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n\n      <ng-content></ng-content>      \n    </template-panel>\n  ",
             directives: [component_template_1.TemplateValue, component_general_1.SingleSelectInput, template_type_1.TemplatePanel]
         }), 
-        __metadata('design:paramtypes', [service_restore_1.RestoreService])
+        __metadata('design:paramtypes', [])
     ], CausalityTemplatePanel);
     return CausalityTemplatePanel;
 }(template_type_1.TemplatePanel));

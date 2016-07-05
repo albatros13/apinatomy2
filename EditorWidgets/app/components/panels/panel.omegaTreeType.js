@@ -17,24 +17,23 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  * Created by Natallia on 6/17/2016.
  */
 var core_1 = require('@angular/core');
-var service_restore_1 = require("../../providers/service.restore");
 var panel_groupType_1 = require("./panel.groupType");
 var component_general_1 = require('../component.general');
+var pipe_general_1 = require("../../transformations/pipe.general");
 var OmegaTreeTypePanel = (function (_super) {
     __extends(OmegaTreeTypePanel, _super);
-    function OmegaTreeTypePanel(restoreService) {
-        _super.call(this, restoreService);
-        this.restoreService = restoreService;
+    function OmegaTreeTypePanel() {
+        _super.apply(this, arguments);
     }
     OmegaTreeTypePanel = __decorate([
         core_1.Component({
-            providers: [service_restore_1.RestoreService],
             selector: 'omegaTreeType-panel',
             inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <groupType-panel \n      [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <div class=\"input-control\" *ngIf=\"includeProperty('root')\">      \n        <label for=\"cause\">Root: </label>\n        <select-input-1 [item] = \"item.root\" [options] = \"dependencies.nodeTemplates\"></select-input-1>\n      </div>\n      <ng-content></ng-content>      \n    </groupType-panel>\n  ",
-            directives: [panel_groupType_1.GroupTypePanel, component_general_1.MultiSelectInput, component_general_1.SingleSelectInput]
+            template: "\n    <groupType-panel \n      [item]=\"item\" [dependencies]=\"dependencies\" \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n      <div class=\"input-control\" *ngIf=\"includeProperty('root')\">      \n        <label for=\"cause\">Root: </label>\n        <select-input-1 [item] = \"item.root\" \n          (updated)=\"updateProperty('root', $event)\"   \n          [options] = \"dependencies.templates | filterByClass: [templateName.NodeTemplate]\"></select-input-1>\n      </div>\n      <ng-content></ng-content>      \n    </groupType-panel>\n  ",
+            directives: [panel_groupType_1.GroupTypePanel, component_general_1.MultiSelectInput, component_general_1.SingleSelectInput],
+            pipes: [pipe_general_1.FilterByClass]
         }), 
-        __metadata('design:paramtypes', [service_restore_1.RestoreService])
+        __metadata('design:paramtypes', [])
     ], OmegaTreeTypePanel);
     return OmegaTreeTypePanel;
 }(panel_groupType_1.GroupTypePanel));

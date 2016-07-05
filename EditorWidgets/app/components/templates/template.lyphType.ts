@@ -5,15 +5,16 @@ import {Component} from '@angular/core';
 import {SingleSelectInput} from '../component.general';
 import {TemplateValue} from '../component.template';
 import {TemplatePanel} from "./template.type";
-import {RestoreService} from "../../providers/service.restore";
 
 @Component({
-  providers: [RestoreService],
   selector: 'lyphTemplate-panel',
   inputs: ['item', 'dependencies'],
   template:`
     <template-panel [item]="item" [dependencies]="dependencies" 
-      (saved)="saved.emit($event)" (removed)="removed.emit($event)">
+            (saved)    = "saved.emit($event)"
+            (canceled) = "canceled.emit($event)"
+            (removed)  = "removed.emit($event)">
+
       <template-value caption="Length:" [item]="item.length"></template-value>
       <template-value caption="Width:" [item]="item.width"></template-value>
       <ng-content></ng-content>      
@@ -21,8 +22,4 @@ import {RestoreService} from "../../providers/service.restore";
   `,
   directives: [TemplateValue, SingleSelectInput, TemplatePanel]
 })
-export class LyphTemplatePanel extends TemplatePanel{
-  constructor(protected restoreService: RestoreService<any>){
-    super(restoreService);
-  }
-}
+export class LyphTemplatePanel extends TemplatePanel{}

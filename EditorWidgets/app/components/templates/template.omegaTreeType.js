@@ -20,22 +20,19 @@ var core_1 = require('@angular/core');
 var component_general_1 = require('../component.general');
 var component_template_1 = require('../component.template');
 var template_groupType_1 = require("./template.groupType");
-var service_restore_1 = require("../../providers/service.restore");
 var OmegaTreeTemplatePanel = (function (_super) {
     __extends(OmegaTreeTemplatePanel, _super);
-    function OmegaTreeTemplatePanel(restoreService) {
-        _super.call(this, restoreService);
-        this.restoreService = restoreService;
+    function OmegaTreeTemplatePanel() {
+        _super.apply(this, arguments);
     }
     OmegaTreeTemplatePanel = __decorate([
         core_1.Component({
-            providers: [service_restore_1.RestoreService],
             selector: 'omegaTreeTemplate-panel',
             inputs: ['item', 'dependencies'],
-            template: "\n    <template-panel [item]=\"item\" [dependencies]=\"dependencies\" \n      (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <div class=\"input-control\" *ngIf=\"includeProperty('minusSide')\">\n          <fieldset>\n            <legend>Minus side:</legend>\n            <radio-group [(ngModel)]=\"item.plusSide\" [required]=\"true\">\n             <input type=\"radio\" [value]=\"sideType.open\">{{sideType.open}}&nbsp;\n             <input type=\"radio\" [value]=\"sideType.closed\">{{sideType.closed}}<br/>\n            </radio-group>\n          </fieldset>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('plusSide')\">\n          <fieldset>\n            <legend>Plus side:</legend>\n             <radio-group [(ngModel)]=\"item.minusSide\" [required]=\"true\">\n               <input type=\"radio\" [value]=\"sideType.open\">{{sideType.open}}&nbsp;\n               <input type=\"radio\" [value]=\"sideType.closed\">{{sideType.closed}}<br/>\n             </radio-group>\n          </fieldset>\n      </div>\n      <ng-content></ng-content>      \n    </template-panel>\n  ",
+            template: "\n    <template-panel [item]=\"item\" [dependencies]=\"dependencies\" \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n      <div class=\"input-control\" *ngIf=\"includeProperty('minusSide')\">\n          <fieldset>\n            <legend>Minus side:</legend>\n            <radio-group [(ngModel)]=\"item.plusSide\" [required]=\"true\">\n             <input type=\"radio\" [value]=\"sideType.open\">{{sideType.open}}&nbsp;\n             <input type=\"radio\" [value]=\"sideType.closed\">{{sideType.closed}}<br/>\n            </radio-group>\n          </fieldset>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('plusSide')\">\n          <fieldset>\n            <legend>Plus side:</legend>\n             <radio-group [(ngModel)]=\"item.minusSide\" [required]=\"true\">\n               <input type=\"radio\" [value]=\"sideType.open\">{{sideType.open}}&nbsp;\n               <input type=\"radio\" [value]=\"sideType.closed\">{{sideType.closed}}<br/>\n             </radio-group>\n          </fieldset>\n      </div>\n      <ng-content></ng-content>      \n    </template-panel>\n  ",
             directives: [component_template_1.TemplateValue, component_general_1.SingleSelectInput, template_groupType_1.GroupTemplatePanel]
         }), 
-        __metadata('design:paramtypes', [service_restore_1.RestoreService])
+        __metadata('design:paramtypes', [])
     ], OmegaTreeTemplatePanel);
     return OmegaTreeTemplatePanel;
 }(template_groupType_1.GroupTemplatePanel));

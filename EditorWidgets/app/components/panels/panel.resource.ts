@@ -1,8 +1,7 @@
 /**
  * Created by Natallia on 6/14/2016.
  */
-import {Component, EventEmitter, Output} from '@angular/core';
-import {RestoreService} from "../../providers/service.restore";
+import {Component, EventEmitter, Output, Inject} from '@angular/core';
 import {MultiSelectInput} from '../component.general';
 
 @Component({
@@ -29,15 +28,14 @@ export class ResourceToolbar {
 
 @Component({
   selector: 'resource-panel',
-  providers: [RestoreService],
   inputs: ['item', 'ignore', 'dependencies'],
   template:`
     <div class="panel">
         <div class="panel-body">
           <resource-toolbar  
-            (saved)="onSaved()"
-            (canceled)="onCanceled()"
-            (removed)="onRemoved()">
+            (saved)    = "saved.emit($event)"
+            (canceled) = "canceled.emit($event)"
+            (removed)  = "removed.emit($event)">
           </resource-toolbar>
           <div class="panel-content">
               <!--<div class="input-control" *ngIf="includeProperty('id')">-->
@@ -50,7 +48,10 @@ export class ResourceToolbar {
               </div>
               <div class="input-control" *ngIf="includeProperty('externals')">
                 <label for="externals">Externals: </label>
-                <select-input [item]="item.externals" [options]="dependencies.externals"></select-input>
+                <select-input 
+                [items]="item.externals" 
+                (updated)="updateProperty('externals', $event)" 
+                [options]="dependencies.externals"></select-input>
               </div>
               <ng-content></ng-content>
           </div>
@@ -60,35 +61,20 @@ export class ResourceToolbar {
   directives: [ResourceToolbar, MultiSelectInput]
 })
 export class ResourcePanel {
+  item: any;
   ignore: Array<string> = [];
   @Output() saved = new EventEmitter();
+  @Output() canceled = new EventEmitter();
   @Output() removed = new EventEmitter();
 
-  constructor(protected restoreService: RestoreService<any>){}
-
-  protected set item (item: any) {
-    this.restoreService.setItem(item);
-  }
-
-  protected get item () {
-    return this.restoreService.getItem();
-  }
-
-  protected onSaved() {
-    this.item = this.restoreService.getItem();
-    this.saved.emit(this.item);
-  }
-
-  protected onCanceled() {
-    this.item = this.restoreService.restoreItem();
-  }
-
-  protected onRemoved(){
-    this.removed.emit(this.item);
-  }
+  constructor(){}
 
   protected includeProperty(prop: string){
     if (this.ignore && (this.ignore.indexOf(prop) > -1)) return false;
     return true;
+  }
+
+  updateProperty(property: string, selectedItems: Array<any>){
+    this.item[property] = selectedItems;
   }
 }

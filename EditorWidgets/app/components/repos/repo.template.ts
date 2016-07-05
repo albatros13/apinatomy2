@@ -36,7 +36,7 @@ import {PanelTemplate} from "./panel.template";
   directives: [ItemHeader, EditToolbar, PanelTemplate, ACCORDION_DIRECTIVES, CORE_DIRECTIVES, FORM_DIRECTIVES, DND_DIRECTIVES]
 })
 export class RepoTemplate{
-  @Output() added = new EventEmitter();
+  @Output() updated = new EventEmitter();
   public selected: any = null;
   public items: Array<any> = [];
   templateNames = TemplateName;
@@ -76,12 +76,14 @@ export class RepoTemplate{
     for (var key in updatedItem){
       if (updatedItem.hasOwnProperty(key)) item[key] = updatedItem[key];
     }
+    this.updated.emit(this.items);
   }
 
   protected onRemoved(item: any){
     if (!this.items) return;
     let index = this.items.indexOf(item);
     if (index > -1) this.items.splice(index, 1);
+    this.updated.emit(this.items);
   }
 
   protected onAdded(resourceType: ResourceName | TemplateName){
@@ -111,6 +113,6 @@ export class RepoTemplate{
       default: newItem = new Template({name: "New template"});
     }
     this.items.push(newItem);
-    this.added.emit(newItem);
+    this.updated.emit(this.items);
   }
 }

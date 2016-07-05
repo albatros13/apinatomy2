@@ -1,7 +1,7 @@
 /**
  * Created by Natallia on 6/19/2016.
  */
-import {Component, Output, ContentChild, TemplateRef, EventEmitter} from '@angular/core';
+import {Component, Input, Output, OnChanges, KeyValueDiffers, EventEmitter} from '@angular/core';
 import {SELECT_DIRECTIVES} from 'ng2-select/ng2-select';
 import {CORE_DIRECTIVES, FORM_DIRECTIVES} from '@angular/common';
 import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/components/dropdown';
@@ -15,30 +15,30 @@ import {MapToOptions} from "../transformations/pipe.general";
         [items]       = "options | mapToOptions"
         [initData]    = "items | mapToOptions"
         [multiple]    = true
-        (data)     ="refreshValue($event)"
-        (selected) ="selected.emit($event)"
-        (removed)  ="removed.emit($event)"
+        (data)        ="refreshValue($event)"        
       ></ng-select>
   `,
   directives: [SELECT_DIRECTIVES, CORE_DIRECTIVES, FORM_DIRECTIVES],
   pipes: [MapToOptions]
 })
-export class MultiSelectInput {
+export class MultiSelectInput implements OnChanges{
   items: Array<any>;
   options: Array<any> = [];
-  @Output() removed = new EventEmitter();
-  @Output() selected = new EventEmitter();
-
-  constructor(){}
+  @Output() updated = new EventEmitter();
 
   protected ngOnInit(){
     if (!this.options) this.options = [];
     if (!this.items) this.items = [];
   }
 
-  public refreshValue(value:any):void {
-    this.items = value;
-    this.selected.emit(this.items);
+  ngOnChanges(changes: {[propName: string]: any}) {
+  //  console.log('onChanges - items = ', changes['items'].currentValue);
+  }
+
+  public refreshValue(value: Array<any>):void {
+    let selected = value.map(x => x.id);
+    this.items = this.options.filter(y => (selected.indexOf(y.id + "-" + y.name) != -1));
+    this.updated.emit(this.items);
   }
 }
 
@@ -51,24 +51,26 @@ export class MultiSelectInput {
         [initData]    = "items | mapToOptions"
         [multiple]    = false
         (data)        = "refreshValue($event)"
-        (removed)     = "removed.emit($event)"
       ></ng-select>
   `,
   directives: [SELECT_DIRECTIVES, CORE_DIRECTIVES, FORM_DIRECTIVES],
   pipes: [MapToOptions]
 })
-export class SingleSelectInput extends MultiSelectInput{
+export class SingleSelectInput{
   item: any;
+  items: Array<any>;
+  options: Array<any> = [];
+  @Output() updated = new EventEmitter();
 
   protected ngOnInit(){
-    if (!this.item) this.item = {};
-    this.items = [this.item];
-    super.ngOnInit();
+    if (!this.options) this.options = [];
+    this.items = [];
+    if (this.item) this.items = [this.item];
   }
 
-  public refreshValue(value:any):void {
-    this.item = value[0];
-    this.selected.emit(this.items);
+  public refreshValue(value: any):void {
+    this.item = this.options.find(y => (value.id == (y.id + "-" + y.name)));
+    this.updated.emit(this.item);
   }
 }
 

@@ -12,7 +12,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  * Created by Natallia on 6/14/2016.
  */
 var core_1 = require('@angular/core');
-var service_restore_1 = require("../../providers/service.restore");
 var component_general_1 = require('../component.general');
 var ResourceToolbar = (function () {
     function ResourceToolbar() {
@@ -44,36 +43,19 @@ var ResourceToolbar = (function () {
 }());
 exports.ResourceToolbar = ResourceToolbar;
 var ResourcePanel = (function () {
-    function ResourcePanel(restoreService) {
-        this.restoreService = restoreService;
+    function ResourcePanel() {
         this.ignore = [];
         this.saved = new core_1.EventEmitter();
+        this.canceled = new core_1.EventEmitter();
         this.removed = new core_1.EventEmitter();
     }
-    Object.defineProperty(ResourcePanel.prototype, "item", {
-        get: function () {
-            return this.restoreService.getItem();
-        },
-        set: function (item) {
-            this.restoreService.setItem(item);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ResourcePanel.prototype.onSaved = function () {
-        this.item = this.restoreService.getItem();
-        this.saved.emit(this.item);
-    };
-    ResourcePanel.prototype.onCanceled = function () {
-        this.item = this.restoreService.restoreItem();
-    };
-    ResourcePanel.prototype.onRemoved = function () {
-        this.removed.emit(this.item);
-    };
     ResourcePanel.prototype.includeProperty = function (prop) {
         if (this.ignore && (this.ignore.indexOf(prop) > -1))
             return false;
         return true;
+    };
+    ResourcePanel.prototype.updateProperty = function (property, selectedItems) {
+        this.item[property] = selectedItems;
     };
     __decorate([
         core_1.Output(), 
@@ -82,16 +64,19 @@ var ResourcePanel = (function () {
     __decorate([
         core_1.Output(), 
         __metadata('design:type', Object)
+    ], ResourcePanel.prototype, "canceled", void 0);
+    __decorate([
+        core_1.Output(), 
+        __metadata('design:type', Object)
     ], ResourcePanel.prototype, "removed", void 0);
     ResourcePanel = __decorate([
         core_1.Component({
             selector: 'resource-panel',
-            providers: [service_restore_1.RestoreService],
             inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <div class=\"panel\">\n        <div class=\"panel-body\">\n          <resource-toolbar  \n            (saved)=\"onSaved()\"\n            (canceled)=\"onCanceled()\"\n            (removed)=\"onRemoved()\">\n          </resource-toolbar>\n          <div class=\"panel-content\">\n              <!--<div class=\"input-control\" *ngIf=\"includeProperty('id')\">-->\n                <!--<label for=\"id\">ID: </label>-->\n                <!--<input type=\"text\" disabled [(ngModel)]=\"item.id\">-->\n              <!--</div>-->\n              <div class=\"input-control\" *ngIf=\"includeProperty('name')\">\n                <label for=\"name\">Name: </label>\n                <input type=\"text\" [(ngModel)]=\"item.name\">\n              </div>\n              <div class=\"input-control\" *ngIf=\"includeProperty('externals')\">\n                <label for=\"externals\">Externals: </label>\n                <select-input [item]=\"item.externals\" [options]=\"dependencies.externals\"></select-input>\n              </div>\n              <ng-content></ng-content>\n          </div>\n        </div>\n    </div>\n  ",
+            template: "\n    <div class=\"panel\">\n        <div class=\"panel-body\">\n          <resource-toolbar  \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n          </resource-toolbar>\n          <div class=\"panel-content\">\n              <!--<div class=\"input-control\" *ngIf=\"includeProperty('id')\">-->\n                <!--<label for=\"id\">ID: </label>-->\n                <!--<input type=\"text\" disabled [(ngModel)]=\"item.id\">-->\n              <!--</div>-->\n              <div class=\"input-control\" *ngIf=\"includeProperty('name')\">\n                <label for=\"name\">Name: </label>\n                <input type=\"text\" [(ngModel)]=\"item.name\">\n              </div>\n              <div class=\"input-control\" *ngIf=\"includeProperty('externals')\">\n                <label for=\"externals\">Externals: </label>\n                <select-input \n                [items]=\"item.externals\" \n                (updated)=\"updateProperty('externals', $event)\" \n                [options]=\"dependencies.externals\"></select-input>\n              </div>\n              <ng-content></ng-content>\n          </div>\n        </div>\n    </div>\n  ",
             directives: [ResourceToolbar, component_general_1.MultiSelectInput]
         }), 
-        __metadata('design:paramtypes', [service_restore_1.RestoreService])
+        __metadata('design:paramtypes', [])
     ], ResourcePanel);
     return ResourcePanel;
 }());

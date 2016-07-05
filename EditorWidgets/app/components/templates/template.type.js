@@ -20,22 +20,19 @@ var core_1 = require('@angular/core');
 var component_general_1 = require('../component.general');
 var component_template_1 = require('../component.template');
 var panel_resource_1 = require("../panels/panel.resource");
-var service_restore_1 = require("../../providers/service.restore");
 var TemplatePanel = (function (_super) {
     __extends(TemplatePanel, _super);
-    function TemplatePanel(restoreService) {
-        _super.call(this, restoreService);
-        this.restoreService = restoreService;
+    function TemplatePanel() {
+        _super.apply(this, arguments);
     }
     TemplatePanel = __decorate([
         core_1.Component({
-            providers: [service_restore_1.RestoreService],
             selector: 'template-panel',
             inputs: ['item', 'dependencies'],
-            template: "\n    <resource-panel [item]=\"item\" \n      [ignore]=\"['externals']\"  (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <div class=\"input-control\">\n        <label for=\"type\">Type: </label>\n        <select-input-1 [item] = \"item.type\" [options] = \"dependencies.types\"></select-input-1>\n      </div>\n      <fieldset>\n        <legend>Template:</legend>\n        <template-value caption=\"Cardinality base:\" [item]=\"item.cardinalityBase\"></template-value>\n        <div class=\"input-control\" *ngIf=\"includeProperty('cardinalityMultipliers')\">\n          <label for=\"cardinalityMultipliers\">Cardinality multipliers: </label>\n            <select-input [item]=\"item.cardinalityMultipliers\" [options]=\"dependencies.templates\"></select-input>  \n        </div>\n        <ng-content></ng-content>           \n      </fieldset>\n    </resource-panel>\n  ",
+            template: "\n    <resource-panel [item]=\"item\" \n      [ignore]=\"['externals']\"  \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n      <div class=\"input-control\">\n        <label for=\"type\">Type: </label>\n        <select-input-1 [item] = \"item.type\"\n         (updated)=\"updateProperty('type', $event)\"    \n         [options] = \"dependencies.types\"></select-input-1>\n      </div>\n      <fieldset>\n        <legend>Template:</legend>\n        <template-value caption=\"Cardinality base:\" [item]=\"item.cardinalityBase\"></template-value>\n        <div class=\"input-control\" *ngIf=\"includeProperty('cardinalityMultipliers')\">\n          <label for=\"cardinalityMultipliers\">Cardinality multipliers: </label>\n            <select-input [items]=\"item.cardinalityMultipliers\" \n            (updated)=\"updateProperty('cardinalityMultipliers', $event)\"          \n            [options]=\"dependencies.templates\"></select-input>  \n        </div>\n        <ng-content></ng-content>           \n      </fieldset>\n    </resource-panel>\n  ",
             directives: [component_template_1.TemplateValue, component_general_1.SingleSelectInput, component_general_1.MultiSelectInput, panel_resource_1.ResourcePanel]
         }), 
-        __metadata('design:paramtypes', [service_restore_1.RestoreService])
+        __metadata('design:paramtypes', [])
     ], TemplatePanel);
     return TemplatePanel;
 }(panel_resource_1.ResourcePanel));

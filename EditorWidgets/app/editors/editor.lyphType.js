@@ -138,4 +138,10 @@ var LyphTypeEditor = (function () {
     return LyphTypeEditor;
 }());
 exports.LyphTypeEditor = LyphTypeEditor;
+var EditItem = (function () {
+    function EditItem(item) {
+        this.item = item;
+    }
+    return EditItem;
+}());
 //# sourceMappingURL=editor.lyphType.js.map

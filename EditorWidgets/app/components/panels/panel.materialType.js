@@ -23,19 +23,18 @@ var component_general_1 = require('../component.general');
 var repo_template_1 = require('../repos/repo.template');
 var MaterialTypePanel = (function (_super) {
     __extends(MaterialTypePanel, _super);
-    function MaterialTypePanel(restoreService) {
-        _super.call(this, restoreService);
-        this.restoreService = restoreService;
+    function MaterialTypePanel() {
+        _super.apply(this, arguments);
     }
     MaterialTypePanel = __decorate([
         core_1.Component({
             providers: [service_restore_1.RestoreService],
             selector: 'materialType-panel',
             inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <type-panel [item]=\"item\" \n      [dependencies] = \"dependencies\" \n      (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n        <div class=\"input-control\" *ngIf=\"includeProperty('materialProviders')\">\n          <label for=\"materialProviders\">Inherits materials from: </label>\n          <select-input [item]=\"item.materialProviders\" [options]=\"dependencies.materials\"></select-input>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('materials')\">\n            <label for=\"materials\">Materials: </label>\n            <select-input [item]=\"item.materials\" [options]=\"dependencies.materials\"></select-input>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('measurableProviders')\">\n          <label for=\"measurableProviders\">Inherits measurables from: </label>\n          <select-input [item]=\"item.measurableProviders\" [options]=\"dependencies.materials\"></select-input>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('measurables')\">\n          <repo-template caption='Measurables' [items]=\"item.measurables\" [dependencies]=\"dependencies\"\n          [types]=\"[templateName.MeasurableTemplate]\"></repo-template>\n        </div>\n        <ng-content></ng-content>\n    </type-panel>\n  ",
+            template: "\n    <type-panel [item]=\"item\" \n      [dependencies] = \"dependencies\" \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n        <!--Materials-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('materials')\">\n            <label for=\"materials\">Materials: </label>\n            <select-input \n              [items]=\"item.materials\" \n              (updated)=\"updateProperty('materials', $event)\" \n              [options]=\"dependencies.materials\"></select-input>\n        </div>\n        \n        <!--MaterialProviders-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('materialProviders')\">\n          <label for=\"materialProviders\">Inherits materials from: </label>\n          <select-input \n            [items]=\"item.materialProviders\" \n            (updated)=\"updateProperty('materialProviders', $event)\" \n            [options]=\"dependencies.materials\"></select-input>\n        </div>\n\n        <!--Measurables-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('measurables')\">\n          <repo-template caption='Measurables' \n          [items]=\"item.measurables\" \n          (updated)=\"updateProperty('measurables', $event)\" \n          [dependencies]=\"dependencies\"\n          [types]=\"[templateName.MeasurableTemplate]\"></repo-template>\n        </div>\n\n        <!--MeasurableProviders-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('measurableProviders')\">\n          <label for=\"measurableProviders\">Inherits measurables from: </label>\n          <select-input [items]=\"item.measurableProviders\" \n          (updated)=\"updateProperty('measurableProviders', $event)\" \n          [options]=\"dependencies.materials\"></select-input>\n        </div>\n\n        <ng-content></ng-content>\n    </type-panel>\n  ",
             directives: [panel_type_1.TypePanel, component_general_1.MultiSelectInput, repo_template_1.RepoTemplate]
         }), 
-        __metadata('design:paramtypes', [service_restore_1.RestoreService])
+        __metadata('design:paramtypes', [])
     ], MaterialTypePanel);
     return MaterialTypePanel;
 }(panel_type_1.TypePanel));

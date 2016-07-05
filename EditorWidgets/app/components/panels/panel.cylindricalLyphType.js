@@ -17,7 +17,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  * Created by Natallia on 6/17/2016.
  */
 var core_1 = require('@angular/core');
-var service_restore_1 = require("../../providers/service.restore");
 var service_apinatomy2_1 = require("../../providers/service.apinatomy2");
 var panel_lyphType_1 = require("./panel.lyphType");
 var ng2_radio_group_1 = require("ng2-radio-group");
@@ -25,20 +24,18 @@ var component_general_1 = require('../component.general');
 var repo_template_1 = require('../repos/repo.template');
 var CylindricalLyphTypePanel = (function (_super) {
     __extends(CylindricalLyphTypePanel, _super);
-    function CylindricalLyphTypePanel(restoreService) {
-        _super.call(this, restoreService);
-        this.restoreService = restoreService;
+    function CylindricalLyphTypePanel() {
+        _super.apply(this, arguments);
         this.sideType = service_apinatomy2_1.SideType;
     }
     CylindricalLyphTypePanel = __decorate([
         core_1.Component({
-            providers: [service_restore_1.RestoreService],
             selector: 'cylindricalLyphType-panel',
             inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <lyphType-panel \n      [item]=\"item\" [dependencies]=\"dependencies\" \n      (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n        <div class=\"input-control\" *ngIf=\"includeProperty('minusSide')\">\n          <fieldset>\n            <legend>Minus side:</legend>\n            <checkbox-group [(ngModel)]=\"item.plusSide\" [required]=\"true\">\n             <input type=\"checkbox\" [value]=\"sideType.open\">{{sideType.open}}&nbsp;\n             <input type=\"checkbox\" [value]=\"sideType.closed\">{{sideType.closed}}<br/>\n            </checkbox-group>\n          </fieldset>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('plusSide')\">\n          <fieldset>\n            <legend>Plus side:</legend>\n             <checkbox-group [(ngModel)]=\"item.minusSide\" [required]=\"true\">\n               <input type=\"checkbox\" [value]=\"sideType.open\">{{sideType.open}}&nbsp;\n               <input type=\"checkbox\" [value]=\"sideType.closed\">{{sideType.closed}}<br/>\n             </checkbox-group>\n          </fieldset>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('segmentProviders')\">\n          <label for=\"segmentProviders\">Inherits segments from: </label>\n          <select-input [item]=\"item.segmentProviders\" [options]=\"dependencies.cylindricalLyphs\"></select-input>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('segments')\">\n          <repo-template caption=\"Segments\" [items] = \"item.segments\" [dependencies] = \"dependencies\"\n            [types]=\"[templateName.LyphTemplate]\"></repo-template>\n        </div>\n        <ng-content></ng-content>\n    </lyphType-panel>\n  ",
+            template: "\n    <lyphType-panel \n      [item]=\"item\" [dependencies]=\"dependencies\" \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n        <div class=\"input-control\" *ngIf=\"includeProperty('minusSide')\">\n          <fieldset>\n            <legend>Minus side:</legend>\n            <checkbox-group [(ngModel)]=\"item.plusSide\" [required]=\"true\">\n             <input type=\"checkbox\" [value]=\"sideType.open\">{{sideType.open}}&nbsp;\n             <input type=\"checkbox\" [value]=\"sideType.closed\">{{sideType.closed}}<br/>\n            </checkbox-group>\n          </fieldset>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('plusSide')\">\n          <fieldset>\n            <legend>Plus side:</legend>\n             <checkbox-group [(ngModel)]=\"item.minusSide\" [required]=\"true\">\n               <input type=\"checkbox\" [value]=\"sideType.open\">{{sideType.open}}&nbsp;\n               <input type=\"checkbox\" [value]=\"sideType.closed\">{{sideType.closed}}<br/>\n             </checkbox-group>\n          </fieldset>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('segmentProviders')\">\n          <label for=\"segmentProviders\">Inherits segments from: </label>\n          <select-input [items]=\"item.segmentProviders\" \n          (updated)=\"updateProperty('segmentProviders', $event)\"\n          [options]=\"dependencies.cylindricalLyphs\"></select-input>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('segments')\">\n          <repo-template caption=\"Segments\" [items] = \"item.segments\" \n          (updated)=\"updateProperty('segments', $event)\"\n          [dependencies] = \"dependencies\"\n            [types]=\"[templateName.LyphTemplate]\"></repo-template>\n        </div>\n        <ng-content></ng-content>\n    </lyphType-panel>\n  ",
             directives: [panel_lyphType_1.LyphTypePanel, ng2_radio_group_1.RADIO_GROUP_DIRECTIVES, component_general_1.MultiSelectInput, repo_template_1.RepoTemplate]
         }), 
-        __metadata('design:paramtypes', [service_restore_1.RestoreService])
+        __metadata('design:paramtypes', [])
     ], CylindricalLyphTypePanel);
     return CylindricalLyphTypePanel;
 }(panel_lyphType_1.LyphTypePanel));

@@ -21,6 +21,7 @@ var pipe_general_1 = require("../../transformations/pipe.general");
 var panel_general_1 = require("./panel.general");
 var RepoGeneral = (function () {
     function RepoGeneral() {
+        this.updated = new core_1.EventEmitter();
         this.items = [];
         this.selected = null;
         this.resourceNames = service_apinatomy2_1.ResourceName;
@@ -61,13 +62,16 @@ var RepoGeneral = (function () {
             if (updatedItem.hasOwnProperty(key))
                 item[key] = updatedItem[key];
         }
+        this.updated.emit(this.items);
     };
+    RepoGeneral.prototype.onCanceled = function (updatedItem) { };
     RepoGeneral.prototype.onRemoved = function (item) {
         if (!this.items)
             return;
         var index = this.items.indexOf(item);
         if (index > -1)
             this.items.splice(index, 1);
+        this.updated.emit(this.items);
     };
     RepoGeneral.prototype.onSorted = function (prop) {
         this.sortByMode = prop.toLowerCase();
@@ -120,12 +124,17 @@ var RepoGeneral = (function () {
             default: newItem = new service_apinatomy2_1.Resource();
         }
         this.items.push(newItem);
+        this.updated.emit(this.items);
     };
+    __decorate([
+        core_1.Output(), 
+        __metadata('design:type', Object)
+    ], RepoGeneral.prototype, "updated", void 0);
     RepoGeneral = __decorate([
         core_1.Component({
             selector: 'repo-general',
             inputs: ['items', 'caption', 'dependencies', 'types'],
-            template: "\n     <div class=\"panel panel-info repo\">\n        <div class=\"panel-heading\">{{caption}}</div>\n        <div class=\"panel-body\" >\n          <sort-toolbar [options]=\"['ID', 'Name']\" (sorted)=\"onSorted($event)\"></sort-toolbar>\n          <edit-toolbar [options]=\"types\" (added)=\"onAdded($event)\"></edit-toolbar>\n          \n          <accordion class=\"list-group\" [closeOthers]=\"true\" \n          dnd-sortable-container [dropZones]=\"zones\" [sortableData]=\"items\">\n          <accordion-group *ngFor=\"let item of items | orderBy : sortByMode; let i = index\" class=\"list-group-item\" \n            dnd-sortable [sortableIndex]=\"i\" (click)=\"selected = item\">\n            <div accordion-heading><item-header [item]=\"item\" [icon]=\"getIcon(item)\"></item-header></div>\n            \n            <panel-general *ngIf=\"item == selected\" [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"onSaved(item, $event)\" (removed)=\"onRemoved(item)\"></panel-general>            \n          \n          </accordion-group>        \n          </accordion>       \n        </div>\n      </div>\n  ",
+            template: "\n     <div class=\"panel panel-info repo\">\n        <div class=\"panel-heading\">{{caption}}</div>\n        <div class=\"panel-body\" >\n          <sort-toolbar [options]=\"['ID', 'Name']\" (sorted)=\"onSorted($event)\"></sort-toolbar>\n          <edit-toolbar [options]=\"types\" (added)=\"onAdded($event)\"></edit-toolbar>\n          \n          <accordion class=\"list-group\" [closeOthers]=\"true\" \n          dnd-sortable-container [dropZones]=\"zones\" [sortableData]=\"items\">\n          <accordion-group *ngFor=\"let item of items | orderBy : sortByMode; let i = index\" class=\"list-group-item\" \n            dnd-sortable [sortableIndex]=\"i\" (click)=\"selected = item\">\n            <div accordion-heading><item-header [item]=\"item\" [icon]=\"getIcon(item)\"></item-header></div>\n            \n            <panel-general *ngIf=\"item == selected\" [item]=\"item\" \n              [dependencies]=\"dependencies\" \n              (saved)=\"onSaved(item, $event)\" \n              (canceled)=\"onCanceled($event)\"\n              (removed)=\"onRemoved(item)\">\n             </panel-general>            \n          </accordion-group>        \n          </accordion>       \n        </div>\n      </div>\n  ",
             directives: [
                 component_general_1.SortToolbar, component_general_1.EditToolbar,
                 component_general_1.ItemHeader,

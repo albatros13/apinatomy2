@@ -9,7 +9,6 @@ import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
 @Component({
   selector: 'uniformDistribution-input',
   inputs: ['item'],
-  providers: [RestoreService],
   template:`
     <fieldset>
       <div class="input-control">
@@ -26,36 +25,15 @@ import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
   directives: []
 })
 export class UniformDistributionInput {
-  @Output() saved = new EventEmitter();
-
-  constructor(protected restoreService: RestoreService<any>){}
-
+  item: any;
   protected ngOnInit() {
     if (!this.item) this.item = new UniformDistribution();
-  }
-
-  protected set item (item: any) {
-    this.restoreService.setItem(item);
-  }
-
-  protected get item () {
-    return this.restoreService.getItem();
-  }
-
-  protected onSaved() {
-    this.item = this.restoreService.getItem();
-    this.saved.emit(this.item);
-  }
-
-  protected onCanceled() {
-    this.item = this.restoreService.restoreItem();
   }
 }
 
 @Component({
   selector: 'boundedNormalDistribution-input',
   inputs: ['item'],
-  providers: [RestoreService],
   template:`
     <uniformDistribution-input [item]="item">
       <div class="input-control">
@@ -72,10 +50,6 @@ export class UniformDistributionInput {
   directives: [UniformDistributionInput]
 })
 export class BoundedNormalDistributionInput extends UniformDistributionInput{
-  constructor(protected restoreService: RestoreService<any>){
-    super(restoreService);
-  }
-
   protected ngOnInit() {
     if (!this.item) this.item = new BoundedNormalDistribution();
   }

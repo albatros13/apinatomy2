@@ -17,25 +17,22 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  * Created by Natallia on 6/19/2016.
  */
 var core_1 = require('@angular/core');
-var service_restore_1 = require("../../providers/service.restore");
 var panel_resource_1 = require("./panel.resource");
 var component_general_1 = require('../component.general');
 var repo_template_1 = require('../repos/repo.template');
 var CoalescencePanel = (function (_super) {
     __extends(CoalescencePanel, _super);
-    function CoalescencePanel(restoreService) {
-        _super.call(this, restoreService);
-        this.restoreService = restoreService;
+    function CoalescencePanel() {
+        _super.apply(this, arguments);
     }
     CoalescencePanel = __decorate([
         core_1.Component({
-            providers: [service_restore_1.RestoreService],
             selector: 'coalescence-panel',
             inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <resource-panel [item]=\"item\" [dependencies]=\"dependencies\" [ignore]=\"['externals']\"  \n      (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n        <div class=\"input-control\" *ngIf=\"includeProperty('interfaceLayers')\">\n          <label for=\"interfaceLayers\">Interface layers: </label>\n          <select-input [item]=\"item.interfaceLayers\" [options]=\"dependencies.interfaceLayers\"></select-input>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('lyphs')\">\n          <repo-template caption='Lyphs' [items]=\"item.lyphs\" [dependencies]=\"dependencies\"\n          [types]=\"[templateName.LyphTemplate, templateName.CylindricalLyphTemplate]\"></repo-template>\n        </div>\n        <ng-content></ng-content>      \n    </resource-panel>\n  ",
+            template: "\n    <resource-panel [item]=\"item\" [dependencies]=\"dependencies\" [ignore]=\"['externals']\"  \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n        <div class=\"input-control\" *ngIf=\"includeProperty('interfaceLayers')\">\n          <label for=\"interfaceLayers\">Interface layers: </label>\n          <select-input [items]=\"item.interfaceLayers\" \n          (updated)=\"updateProperty('interfaceLayers', $event)\"          \n          [options]=\"dependencies.interfaceLayers\"></select-input>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('lyphs')\">\n          <repo-template caption='Lyphs' [items]=\"item.lyphs\" \n          (updated)=\"updateProperty('lyphs', $event)\"          \n          [dependencies]=\"dependencies\"\n          [types]=\"[templateName.LyphTemplate, templateName.CylindricalLyphTemplate]\"></repo-template>\n        </div>\n        <ng-content></ng-content>      \n    </resource-panel>\n  ",
             directives: [panel_resource_1.ResourcePanel, component_general_1.MultiSelectInput, repo_template_1.RepoTemplate]
         }), 
-        __metadata('design:paramtypes', [service_restore_1.RestoreService])
+        __metadata('design:paramtypes', [])
     ], CoalescencePanel);
     return CoalescencePanel;
 }(panel_resource_1.ResourcePanel));

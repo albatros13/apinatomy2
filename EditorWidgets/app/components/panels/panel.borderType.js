@@ -17,24 +17,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  * Created by Natallia on 6/19/2016.
  */
 var core_1 = require('@angular/core');
-var service_restore_1 = require("../../providers/service.restore");
 var panel_type_1 = require("./panel.type");
 var repo_template_1 = require('../repos/repo.template');
 var BorderTypePanel = (function (_super) {
     __extends(BorderTypePanel, _super);
-    function BorderTypePanel(restoreService) {
-        _super.call(this, restoreService);
-        this.restoreService = restoreService;
+    function BorderTypePanel() {
+        _super.apply(this, arguments);
     }
     BorderTypePanel = __decorate([
         core_1.Component({
-            providers: [service_restore_1.RestoreService],
             selector: 'borderType-panel',
             inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <type-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      [ignore]=\"['externals']\" \n      (saved)=\"saved.emit($event)\" \n      (removed)=\"removed.emit($event)\">\n      <!--TODO: replace with slider-->\n      <div class=\"input-control\">\n        <label for=\"position\">Position: </label>\n        <input type=\"number\" min=\"0\" max=\"100\" required [(ngModel)]=\"item.position\">\n      </div>\n      <repo-template caption=\"Elements\" [items] = \"item.elements\" \n        [dependencies] = \"dependencies\" [types]=\"[templateName.NodeTemplate]\"></repo-template>\n      <ng-content></ng-content>      \n    </type-panel>\n  ",
+            template: "\n    <type-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      [ignore]=\"['externals']\" \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n      <!--TODO: replace with slider-->\n      <div class=\"input-control\">\n        <label for=\"position\">Position: </label>\n        <input type=\"number\" min=\"0\" max=\"100\" required [(ngModel)]=\"item.position\">\n      </div>\n      <repo-template caption=\"Elements\" [items] = \"item.elements\" \n        (updated)=\"updateProperty('elements', $event)\"          \n        [dependencies] = \"dependencies\" [types]=\"[templateName.NodeTemplate]\"></repo-template>\n      <ng-content></ng-content>      \n    </type-panel>\n  ",
             directives: [panel_type_1.TypePanel, repo_template_1.RepoTemplate]
         }), 
-        __metadata('design:paramtypes', [service_restore_1.RestoreService])
+        __metadata('design:paramtypes', [])
     ], BorderTypePanel);
     return BorderTypePanel;
 }(panel_type_1.TypePanel));

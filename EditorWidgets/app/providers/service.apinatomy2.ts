@@ -1,7 +1,7 @@
 /**
  * Created by Natallia on 6/8/2016.
  */
-import {Injectable, Inject} from '@angular/core';
+import {Injectable} from '@angular/core';
 
 /*INTERFACES*/
 
@@ -267,6 +267,7 @@ export class UniformDistribution extends Distribution implements IUniformDistrib
 
   constructor(obj: IUniformDistribution = {min:0, max: 0}){
     super();
+    this.type = DistributionType.Uniform;
     this.min = obj.min;
     this.max = obj.max;
   }
@@ -278,6 +279,7 @@ export class BoundedNormalDistribution extends UniformDistribution implements IB
 
   constructor(obj: IBoundedNormalDistribution = {mean: 0, std: 0, min:0, max: 0}){
     super(obj);
+    this.type = DistributionType.BoundedNormal;
     this.max = obj.max;
     this.std = obj.std;
   }

@@ -139,3 +139,8 @@ export class LyphTypeEditor {
   }
 }
 
+class EditItem {
+  editing: boolean;
+  constructor (public item: any) {}
+}
+

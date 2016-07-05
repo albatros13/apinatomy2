@@ -30,7 +30,7 @@ export class FilterByClass implements PipeTransform {
 export class MapToOptions implements PipeTransform {
   transform(items: any[]): any {
     if (!items) return [];
-    return items.map((entry: any) => ({id: entry.id, text: entry.name? entry.name: entry.id}))
+    return items.map((entry: any) => ({id: entry.id + "-" + entry.name, text: entry.name? entry.name: entry.id}))
   }
 }
 

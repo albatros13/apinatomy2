@@ -5,15 +5,15 @@ import {Component} from '@angular/core';
 import {SingleSelectInput} from '../component.general';
 import {TemplateValue} from '../component.template';
 import {GroupTemplatePanel} from "./template.groupType";
-import {RestoreService} from "../../providers/service.restore";
 
 @Component({
-  providers: [RestoreService],
   selector: 'omegaTreeTemplate-panel',
   inputs: ['item', 'dependencies'],
   template:`
     <template-panel [item]="item" [dependencies]="dependencies" 
-      (saved)="saved.emit($event)" (removed)="removed.emit($event)">
+            (saved)    = "saved.emit($event)"
+            (canceled) = "canceled.emit($event)"
+            (removed)  = "removed.emit($event)">
       <div class="input-control" *ngIf="includeProperty('minusSide')">
           <fieldset>
             <legend>Minus side:</legend>
@@ -38,7 +38,4 @@ import {RestoreService} from "../../providers/service.restore";
   directives: [TemplateValue, SingleSelectInput, GroupTemplatePanel]
 })
 export class OmegaTreeTemplatePanel extends GroupTemplatePanel{
-  constructor(protected restoreService: RestoreService<any>){
-    super(restoreService);
-  }
 }

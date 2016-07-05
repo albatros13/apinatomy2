@@ -17,25 +17,22 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  * Created by Natallia on 6/19/2016.
  */
 var core_1 = require('@angular/core');
-var service_restore_1 = require("../../providers/service.restore");
 var panel_resource_1 = require("./panel.resource");
 var component_general_1 = require('../component.general');
 var repo_template_1 = require('../repos/repo.template');
 var CorrelationPanel = (function (_super) {
     __extends(CorrelationPanel, _super);
-    function CorrelationPanel(restoreService) {
-        _super.call(this, restoreService);
-        this.restoreService = restoreService;
+    function CorrelationPanel() {
+        _super.apply(this, arguments);
     }
     CorrelationPanel = __decorate([
         core_1.Component({
-            providers: [service_restore_1.RestoreService],
             selector: 'correlation-panel',
             inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <resource-panel [item]=\"item\" [dependencies]=\"dependencies\" [ignore]=\"['externals']\"  \n      (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n         <div class=\"input-control\" *ngIf=\"includeProperty('comment')\">\n          <label for=\"comment\">Comment: </label>\n          <input type=\"text\" [(ngModel)]=\"item.comment\">\n        </div>\n        <div>\n          <label for=\"publication\">Publication: </label>\n          <select-input-1 [item] = \"item.publication\" [options] = \"dependencies.publications\"></select-input-1>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('clinicalIndices')\">\n          <label for=\"clinicalIndices\">Clinical indices: </label>\n          <select-input [item]=\"item.clinicalIndices\" [options]=\"dependencies.clinicalIndices\"></select-input>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('measurables')\">\n          <repo-template caption='Measurables' [items]=\"item.measurables\" [dependencies]=\"dependencies\"\n          [types]=\"[templateName.MeasurableTemplate]\"></repo-template>\n        </div>\n        <ng-content></ng-content>      \n    </resource-panel>\n  ",
+            template: "\n    <resource-panel [item]=\"item\" [dependencies]=\"dependencies\" [ignore]=\"['externals']\"  \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n         <div class=\"input-control\" *ngIf=\"includeProperty('comment')\">\n          <label for=\"comment\">Comment: </label>\n          <input type=\"text\" [(ngModel)]=\"item.comment\">\n        </div>\n        <div>\n          <label for=\"publication\">Publication: </label>\n          <select-input-1 [item] = \"item.publication\" \n            (updated)=\"updateProperty('publication', $event)\"  \n            [options] = \"dependencies.publications\"></select-input-1>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('clinicalIndices')\">\n          <label for=\"clinicalIndices\">Clinical indices: </label>\n          <select-input [items]=\"item.clinicalIndices\" \n          (updated)=\"updateProperty('clinicalIndices', $event)\"\n          [options]=\"dependencies.clinicalIndices\"></select-input>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('measurables')\">\n          <repo-template caption='Measurables' [items]=\"item.measurables\" \n          (updated)=\"updateProperty('measurables', $event)\"          \n          [dependencies]=\"dependencies\"\n          [types]=\"[templateName.MeasurableTemplate]\"></repo-template>\n        </div>\n        <ng-content></ng-content>      \n    </resource-panel>\n  ",
             directives: [panel_resource_1.ResourcePanel, component_general_1.SingleSelectInput, component_general_1.MultiSelectInput, repo_template_1.RepoTemplate]
         }), 
-        __metadata('design:paramtypes', [service_restore_1.RestoreService])
+        __metadata('design:paramtypes', [])
     ], CorrelationPanel);
     return CorrelationPanel;
 }(panel_resource_1.ResourcePanel));

@@ -50,7 +50,7 @@ var MapToOptions = (function () {
     MapToOptions.prototype.transform = function (items) {
         if (!items)
             return [];
-        return items.map(function (entry) { return ({ id: entry.id, text: entry.name ? entry.name : entry.id }); });
+        return items.map(function (entry) { return ({ id: entry.id + "-" + entry.name, text: entry.name ? entry.name : entry.id }); });
     };
     MapToOptions = __decorate([
         core_1.Pipe({

@@ -17,24 +17,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  * Created by Natallia on 6/19/2016.
  */
 var core_1 = require('@angular/core');
-var service_restore_1 = require("../../providers/service.restore");
 var panel_type_1 = require("./panel.type");
 var repo_template_1 = require('../repos/repo.template');
 var NodeTypePanel = (function (_super) {
     __extends(NodeTypePanel, _super);
-    function NodeTypePanel(restoreService) {
-        _super.call(this, restoreService);
-        this.restoreService = restoreService;
+    function NodeTypePanel() {
+        _super.apply(this, arguments);
     }
     NodeTypePanel = __decorate([
         core_1.Component({
-            providers: [service_restore_1.RestoreService],
             selector: 'nodeType-panel',
             inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <type-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      [ignore]=\"['externals']\" \n      (saved)=\"saved.emit($event)\" \n      (removed)=\"removed.emit($event)\">\n      <repo-template caption=\"Channels\" [items] = \"item.channels\" \n        [dependencies] = \"dependencies\" [types]=\"[templateName.NodeTemplate]\"></repo-template>\n      <ng-content></ng-content>      \n    </type-panel>\n  ",
+            template: "\n    <type-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      [ignore]=\"['externals']\" \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n      <repo-template caption=\"Channels\" [items] = \"item.channels\" \n        (updated)=\"updateProperty('channels', $event)\"     \n        [dependencies] = \"dependencies\" [types]=\"[templateName.NodeTemplate]\"></repo-template>\n      <ng-content></ng-content>      \n    </type-panel>\n  ",
             directives: [panel_type_1.TypePanel, repo_template_1.RepoTemplate]
         }), 
-        __metadata('design:paramtypes', [service_restore_1.RestoreService])
+        __metadata('design:paramtypes', [])
     ], NodeTypePanel);
     return NodeTypePanel;
 }(panel_type_1.TypePanel));

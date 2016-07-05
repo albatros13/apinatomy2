@@ -20,23 +20,20 @@ var core_1 = require('@angular/core');
 var component_general_1 = require('../component.general');
 var component_template_1 = require('../component.template');
 var template_lyphType_1 = require("./template.lyphType");
-var service_restore_1 = require("../../providers/service.restore");
 var ng2_radio_group_1 = require("ng2-radio-group");
 var CylindricalLyphTemplatePanel = (function (_super) {
     __extends(CylindricalLyphTemplatePanel, _super);
-    function CylindricalLyphTemplatePanel(restoreService) {
-        _super.call(this, restoreService);
-        this.restoreService = restoreService;
+    function CylindricalLyphTemplatePanel() {
+        _super.apply(this, arguments);
     }
     CylindricalLyphTemplatePanel = __decorate([
         core_1.Component({
-            providers: [service_restore_1.RestoreService],
             selector: 'cylindricalLyphTemplate-panel',
             inputs: ['item', 'dependencies'],
-            template: "\n    <lyphTemplate-panel [item]=\"item\" [dependencies]=\"dependencies\" \n      (saved)=\"saved.emit($event)\" (removed)=\"removed.emit($event)\">\n      <ng-content></ng-content>      \n    </lyphTemplate-panel>\n  ",
+            template: "\n    <lyphTemplate-panel [item]=\"item\" [dependencies]=\"dependencies\" \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n      <ng-content></ng-content>      \n    </lyphTemplate-panel>\n  ",
             directives: [component_template_1.TemplateValue, component_general_1.SingleSelectInput, template_lyphType_1.LyphTemplatePanel, ng2_radio_group_1.RADIO_GROUP_DIRECTIVES]
         }), 
-        __metadata('design:paramtypes', [service_restore_1.RestoreService])
+        __metadata('design:paramtypes', [])
     ], CylindricalLyphTemplatePanel);
     return CylindricalLyphTemplatePanel;
 }(template_lyphType_1.LyphTemplatePanel));

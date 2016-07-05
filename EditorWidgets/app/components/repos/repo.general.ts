@@ -1,7 +1,7 @@
 /**
  * Created by Natallia on 6/18/2016.
  */
-import {Component} from '@angular/core';
+import {Component, Output, EventEmitter} from '@angular/core';
 import {CORE_DIRECTIVES, FORM_DIRECTIVES} from '@angular/common';
 import {ACCORDION_DIRECTIVES} from 'ng2-bootstrap/components/accordion';
 import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
@@ -30,8 +30,12 @@ import {PanelGeneral} from "./panel.general";
             dnd-sortable [sortableIndex]="i" (click)="selected = item">
             <div accordion-heading><item-header [item]="item" [icon]="getIcon(item)"></item-header></div>
             
-            <panel-general *ngIf="item == selected" [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></panel-general>            
-          
+            <panel-general *ngIf="item == selected" [item]="item" 
+              [dependencies]="dependencies" 
+              (saved)="onSaved(item, $event)" 
+              (canceled)="onCanceled($event)"
+              (removed)="onRemoved(item)">
+             </panel-general>            
           </accordion-group>        
           </accordion>       
         </div>
@@ -45,6 +49,7 @@ import {PanelGeneral} from "./panel.general";
   pipes: [OrderBy]
 })
 export class RepoGeneral{
+  @Output() updated = new EventEmitter();
   items: Array<any> = [];
   selected: any = null;
   resourceNames = ResourceName;
@@ -87,12 +92,16 @@ export class RepoGeneral{
     for (var key in updatedItem){
       if (updatedItem.hasOwnProperty(key)) item[key] = updatedItem[key];
     }
+    this.updated.emit(this.items);
   }
+
+  protected onCanceled(updatedItem: any){}
 
   protected onRemoved(item: any){
     if (!this.items) return;
     let index = this.items.indexOf(item);
     if (index > -1) this.items.splice(index, 1);
+    this.updated.emit(this.items);
   }
 
   protected onSorted(prop: string){
@@ -122,5 +131,6 @@ export class RepoGeneral{
       default: newItem = new Resource();
     }
     this.items.push(newItem);
+    this.updated.emit(this.items);
   }
 }

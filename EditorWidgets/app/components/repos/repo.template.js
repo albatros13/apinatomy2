@@ -20,7 +20,7 @@ var service_apinatomy2_1 = require('../../providers/service.apinatomy2');
 var panel_template_1 = require("./panel.template");
 var RepoTemplate = (function () {
     function RepoTemplate() {
-        this.added = new core_1.EventEmitter();
+        this.updated = new core_1.EventEmitter();
         this.selected = null;
         this.items = [];
         this.templateNames = service_apinatomy2_1.TemplateName;
@@ -56,6 +56,7 @@ var RepoTemplate = (function () {
             if (updatedItem.hasOwnProperty(key))
                 item[key] = updatedItem[key];
         }
+        this.updated.emit(this.items);
     };
     RepoTemplate.prototype.onRemoved = function (item) {
         if (!this.items)
@@ -63,6 +64,7 @@ var RepoTemplate = (function () {
         var index = this.items.indexOf(item);
         if (index > -1)
             this.items.splice(index, 1);
+        this.updated.emit(this.items);
     };
     RepoTemplate.prototype.onAdded = function (resourceType) {
         var newItem;
@@ -98,12 +100,12 @@ var RepoTemplate = (function () {
             default: newItem = new service_apinatomy2_1.Template({ name: "New template" });
         }
         this.items.push(newItem);
-        this.added.emit(newItem);
+        this.updated.emit(this.items);
     };
     __decorate([
         core_1.Output(), 
         __metadata('design:type', Object)
-    ], RepoTemplate.prototype, "added", void 0);
+    ], RepoTemplate.prototype, "updated", void 0);
     RepoTemplate = __decorate([
         core_1.Component({
             selector: 'repo-template',

@@ -2,28 +2,29 @@
  * Created by Natallia on 6/17/2016.
  */
 import {Component} from '@angular/core';
-import {RestoreService} from "../../providers/service.restore";
 import {GroupTypePanel} from "./panel.groupType";
 import {MultiSelectInput, SingleSelectInput} from '../component.general';
+import {FilterByClass} from "../../transformations/pipe.general";
 
 @Component({
-  providers: [RestoreService],
   selector: 'omegaTreeType-panel',
   inputs: ['item', 'ignore', 'dependencies'],
   template:`
     <groupType-panel 
-      [item]="item" [dependencies]="dependencies" (saved)="saved.emit($event)" (removed)="removed.emit($event)">
+      [item]="item" [dependencies]="dependencies" 
+            (saved)    = "saved.emit($event)"
+            (canceled) = "canceled.emit($event)"
+            (removed)  = "removed.emit($event)">
       <div class="input-control" *ngIf="includeProperty('root')">      
         <label for="cause">Root: </label>
-        <select-input-1 [item] = "item.root" [options] = "dependencies.nodeTemplates"></select-input-1>
+        <select-input-1 [item] = "item.root" 
+          (updated)="updateProperty('root', $event)"   
+          [options] = "dependencies.templates | filterByClass: [templateName.NodeTemplate]"></select-input-1>
       </div>
       <ng-content></ng-content>      
     </groupType-panel>
   `,
-  directives: [GroupTypePanel, MultiSelectInput, SingleSelectInput]
+  directives: [GroupTypePanel, MultiSelectInput, SingleSelectInput],
+  pipes: [FilterByClass]
 })
-export class OmegaTreeTypePanel extends GroupTypePanel{
-  constructor(protected restoreService: RestoreService<any>){
-    super(restoreService);
-  }
-}
+export class OmegaTreeTypePanel extends GroupTypePanel{}

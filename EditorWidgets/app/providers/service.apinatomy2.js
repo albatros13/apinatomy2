@@ -488,6 +488,22 @@ var ExternalResourceProvider = (function () {
     return ExternalResourceProvider;
 }());
 exports.ExternalResourceProvider = ExternalResourceProvider;
+var BorderTypeProvider = (function () {
+    function BorderTypeProvider() {
+        this.items = [];
+        this.templates = [];
+        this.items = testBorders;
+        this.templates = this.items.map(function (item) {
+            return new BorderTemplate({ id: item.id + 300, name: "T: " + item.name, type: item });
+        });
+    }
+    BorderTypeProvider = __decorate([
+        core_1.Injectable(), 
+        __metadata('design:paramtypes', [])
+    ], BorderTypeProvider);
+    return BorderTypeProvider;
+}());
+exports.BorderTypeProvider = BorderTypeProvider;
 var TypeProvider = (function () {
     function TypeProvider() {
         this.items = [];
@@ -533,13 +549,13 @@ var MaterialTypeProvider = (function () {
 }());
 exports.MaterialTypeProvider = MaterialTypeProvider;
 var LyphTypeProvider = (function () {
-    function LyphTypeProvider(mtp) {
+    function LyphTypeProvider() {
         this.items = [];
         this.templates = [];
     }
     LyphTypeProvider = __decorate([
         core_1.Injectable(), 
-        __metadata('design:paramtypes', [MaterialTypeProvider])
+        __metadata('design:paramtypes', [])
     ], LyphTypeProvider);
     return LyphTypeProvider;
 }());
@@ -549,7 +565,7 @@ var CylindricalLyphTypeProvider = (function () {
         var _this = this;
         this.items = [];
         this.templates = [];
-        var ifl = mtp.items.find(function (x) { return x.name == "Intracellular fluid"; });
+        var ifl = mtp.items.find(function (x) { return (x.name == "Intracellular fluid"); });
         var bt = btp.templates.find(function (x) { return x.name.indexOf("Border Cytosol - Plasma") > -1; });
         //let border = new BorderType();
         var cytosol = new CylindricalLyphType({ id: 1000, name: "Cytosol", materials: [ifl], plusSide: [SideType.closed], minusSide: [SideType.closed],
@@ -563,7 +579,7 @@ var CylindricalLyphTypeProvider = (function () {
         var cellLayers = this.items.slice(0, 2);
         var cell = new CylindricalLyphType({ id: 1002, name: "Cell", plusSide: [SideType.closed], minusSide: [SideType.closed], layers: cellLayers });
         this.items.push(cell);
-        var bt1 = btp.templates.find(function (x) { return x.name.indexOf("Border Apical - Basolateral") > -1; });
+        var bt1 = btp.templates.find(function (x) { return (x.name.indexOf("Border Apical - Basolateral") > -1); });
         var sec_a = new CylindricalLyphType({ id: 1006, name: "Apical region of the surface epithelial cell",
             plusSide: [SideType.open], minusSide: [SideType.closed], plusBorder: bt1 });
         var sec_b = new CylindricalLyphType({ id: 1007, name: "Basolateral region of the epithelial cell",
@@ -632,22 +648,6 @@ var ProcessTypeProvider = (function () {
     return ProcessTypeProvider;
 }());
 exports.ProcessTypeProvider = ProcessTypeProvider;
-var BorderTypeProvider = (function () {
-    function BorderTypeProvider() {
-        this.items = [];
-        this.templates = [];
-        this.items = testBorders;
-        this.templates = this.items.map(function (item) {
-            return new BorderTemplate({ id: item.id + 300, name: "T: " + item.name, type: item });
-        });
-    }
-    BorderTypeProvider = __decorate([
-        core_1.Injectable(), 
-        __metadata('design:paramtypes', [])
-    ], BorderTypeProvider);
-    return BorderTypeProvider;
-}());
-exports.BorderTypeProvider = BorderTypeProvider;
 var GroupTypeProvider = (function () {
     function GroupTypeProvider() {
         this.items = [];
@@ -665,7 +665,9 @@ var OmegaTreeTypeProvider = (function () {
         this.items = [];
         this.templates = [];
         var elements = [];
+        //cltp.items.find();
         var sln = new OmegaTreeType({ id: 10000, name: "Short Looped Nephron", elements: elements });
+        this.items.push(sln);
     }
     OmegaTreeTypeProvider = __decorate([
         core_1.Injectable(), 

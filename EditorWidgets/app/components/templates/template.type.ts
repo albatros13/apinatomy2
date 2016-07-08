@@ -12,7 +12,7 @@ import {ResourcePanel} from "../panels/panel.resource";
   template:`
     <resource-panel [item]="item" 
       [ignore]="['externals']"  
-            (saved)    = "onSave($event)"
+            (saved)    = "saved.emit($event)"
             (canceled) = "canceled.emit($event)"
             (removed)  = "removed.emit($event)">
       <div class="input-control">
@@ -40,11 +40,5 @@ import {ResourcePanel} from "../panels/panel.resource";
   `,
   directives: [TemplateValue, SingleSelectInput, MultiSelectInput, ResourcePanel]
 })
-export class TemplatePanel extends ResourcePanel{
-
-  onSave(item:any){
-    console.dir(this.item);
-    this.saved.emit(item);
-  }
-}
+export class TemplatePanel extends ResourcePanel{}
 

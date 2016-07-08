@@ -1,7 +1,7 @@
 /**
  * Created by Natallia on 6/8/2016.
  */
-import {Injectable} from '@angular/core';
+import {Injectable, Inject} from '@angular/core';
 
 /*INTERFACES*/
 
@@ -692,6 +692,18 @@ export class ExternalResourceProvider {
 }
 
 @Injectable()
+export class BorderTypeProvider {
+  public items: Array<IBorderType> = [];
+  public templates: Array<IBorderTemplate> = [];
+
+  constructor(){
+    this.items = testBorders;
+    this.templates = this.items.map((item) =>
+      new BorderTemplate({id: item.id + 300, name: "T: " + item.name, type: item}));
+  }
+}
+
+@Injectable()
 export class TypeProvider {
   public items: Array<IType> = [];
   constructor(){}
@@ -737,7 +749,7 @@ export class LyphTypeProvider{
   public items: Array<ILyphType> = [];
   public templates: Array<ILyphTemplate> = [];
 
-  constructor(mtp: MaterialTypeProvider){}
+  constructor(){}
 }
 
 @Injectable()
@@ -745,8 +757,9 @@ export class CylindricalLyphTypeProvider {
   public items: Array<ICylindricalLyphType> = [];
   public templates: Array<ICylindricalLyphTemplate> = [];
 
-  constructor(mtp: MaterialTypeProvider, btp:BorderTypeProvider){
-    let ifl = mtp.items.find(x => x.name=="Intracellular fluid");
+  constructor(mtp: MaterialTypeProvider,  btp: BorderTypeProvider){
+
+    let ifl = mtp.items.find(x => (x.name=="Intracellular fluid"));
 
     let bt = btp.templates.find(x => x.name.indexOf("Border Cytosol - Plasma") > -1);
 
@@ -759,11 +772,9 @@ export class CylindricalLyphTypeProvider {
       outerBorder: bt});
 
     this.items = [cytosol, pm];
-
     this.items.forEach(x =>
       this.templates.push(new CylindricalLyphTemplate({id: x.id + 100, name: "T: " + x.name, type: x}))
     );
-
     let cellLayers = this.items.slice(0,2);
 
     let cell = new CylindricalLyphType(
@@ -771,7 +782,7 @@ export class CylindricalLyphTypeProvider {
 
     this.items.push(cell);
 
-    let bt1 = btp.templates.find(x => x.name.indexOf("Border Apical - Basolateral") > -1);
+    let bt1 = btp.templates.find(x => (x.name.indexOf("Border Apical - Basolateral") > -1));
 
     let sec_a = new CylindricalLyphType(
       {id: 1006, name: "Apical region of the surface epithelial cell",
@@ -851,18 +862,6 @@ export class ProcessTypeProvider {
 }
 
 @Injectable()
-export class BorderTypeProvider {
-  public items: Array<IBorderType> = [];
-  public templates: Array<IBorderTemplate> = [];
-
-  constructor(){
-    this.items = testBorders;
-    this.templates = this.items.map((item) =>
-      new BorderTemplate({id: item.id + 300, name: "T: " + item.name, type: item}));
-  }
-}
-
-@Injectable()
 export class GroupTypeProvider {
   public items: Array<IBorderType> = [];
   public templates: Array<IBorderTemplate> = [];
@@ -872,13 +871,16 @@ export class GroupTypeProvider {
 
 @Injectable()
 export class OmegaTreeTypeProvider {
-  public items: Array<IBorderType> = [];
-  public templates: Array<IBorderTemplate> = [];
+  public items: Array<IOmegaTreeType> = [];
+  public templates: Array<IOmegaTreeTemplate> = [];
 
   constructor(cltp: CylindricalLyphTypeProvider){
     let elements: Array<Template> = [];
 
+    //cltp.items.find();
+
     let sln = new OmegaTreeType({id: 10000, name: "Short Looped Nephron", elements: elements});
+    this.items.push(sln);
   }
 }
 

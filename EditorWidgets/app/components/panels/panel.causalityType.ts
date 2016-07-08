@@ -13,8 +13,7 @@ import {FilterByClass} from "../../transformations/pipe.general";
   inputs: ['item', 'ignore', 'dependencies'],
   template:`
     <type-panel [item]="item" 
-      [dependencies]="dependencies" 
-      [ignore]="['externals']"  
+      [dependencies]="dependencies" [ignore]="ignore"
             (saved)    = "saved.emit($event)"
             (canceled) = "canceled.emit($event)"
             (removed)  = "removed.emit($event)">

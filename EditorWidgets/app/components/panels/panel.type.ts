@@ -11,7 +11,7 @@ import {TemplateName} from "../../providers/service.apinatomy2";
   inputs: ['item', 'ignore', 'dependencies'],
   template:`
     <resource-panel [item]="item" 
-      [dependencies]="dependencies" 
+      [dependencies]="dependencies" [ignore]="ignore"
           (saved)    = "saved.emit($event)"
           (canceled) = "canceled.emit($event)"
           (removed)  = "removed.emit($event)">

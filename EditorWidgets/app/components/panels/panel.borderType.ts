@@ -11,14 +11,14 @@ import {RepoTemplate} from '../repos/repo.template';
   template:`
     <type-panel [item]="item" 
       [dependencies]="dependencies" 
-      [ignore]="['externals']" 
+      [ignore]="ignore"
             (saved)    = "saved.emit($event)"
             (canceled) = "canceled.emit($event)"
             (removed)  = "removed.emit($event)">
       <!--TODO: replace with slider-->
       <div class="input-control">
         <label for="position">Position: </label>
-        <input type="number" min="0" max="100" required [(ngModel)]="item.position">
+        <input type="range" min="0" max="100" required [(ngModel)]="item.position">
       </div>
       <repo-template caption="Elements" [items] = "item.elements" 
         (updated)="updateProperty('elements', $event)"          

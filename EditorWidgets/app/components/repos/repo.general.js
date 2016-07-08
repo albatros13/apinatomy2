@@ -1,4 +1,9 @@
 "use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -19,25 +24,13 @@ var component_general_1 = require('../component.general');
 var service_apinatomy2_1 = require("../../providers/service.apinatomy2");
 var pipe_general_1 = require("../../transformations/pipe.general");
 var panel_general_1 = require("./panel.general");
-var RepoGeneral = (function () {
+var repo_abstract_1 = require("./repo.abstract");
+var RepoGeneral = (function (_super) {
+    __extends(RepoGeneral, _super);
     function RepoGeneral() {
-        this.updated = new core_1.EventEmitter();
-        this.items = [];
-        this.selected = null;
+        _super.apply(this, arguments);
         this.resourceNames = service_apinatomy2_1.ResourceName;
-        this.types = [];
-        this.zones = [];
-        this.sortByMode = "id";
     }
-    RepoGeneral.prototype.ngOnInit = function () {
-        if (!this.items)
-            this.items = [];
-        if (this.items[0])
-            this.selected = this.items[0];
-        if (!this.types || (this.types.length == 0))
-            this.types = Array.from(new Set(this.items.map(function (item) { return item.class; })));
-        this.zones = this.types.map(function (x) { return x + "_zone"; });
-    };
     RepoGeneral.prototype.getIcon = function (item) {
         switch (item.class) {
             case this.resourceNames.Type: return "images/type.png";
@@ -56,25 +49,6 @@ var RepoGeneral = (function () {
             case this.resourceNames.ClinicalIndex: return "images/clinicalIndex.png";
         }
         return "images/resource.png";
-    };
-    RepoGeneral.prototype.onSaved = function (item, updatedItem) {
-        for (var key in updatedItem) {
-            if (updatedItem.hasOwnProperty(key))
-                item[key] = updatedItem[key];
-        }
-        this.updated.emit(this.items);
-    };
-    RepoGeneral.prototype.onCanceled = function (updatedItem) { };
-    RepoGeneral.prototype.onRemoved = function (item) {
-        if (!this.items)
-            return;
-        var index = this.items.indexOf(item);
-        if (index > -1)
-            this.items.splice(index, 1);
-        this.updated.emit(this.items);
-    };
-    RepoGeneral.prototype.onSorted = function (prop) {
-        this.sortByMode = prop.toLowerCase();
     };
     RepoGeneral.prototype.onAdded = function (resourceType) {
         var newItem;
@@ -125,26 +99,24 @@ var RepoGeneral = (function () {
         }
         this.items.push(newItem);
         this.updated.emit(this.items);
+        this.selectedItem = newItem;
     };
-    __decorate([
-        core_1.Output(), 
-        __metadata('design:type', Object)
-    ], RepoGeneral.prototype, "updated", void 0);
     RepoGeneral = __decorate([
         core_1.Component({
             selector: 'repo-general',
-            inputs: ['items', 'caption', 'dependencies', 'types'],
-            template: "\n     <div class=\"panel panel-info repo\">\n        <div class=\"panel-heading\">{{caption}}</div>\n        <div class=\"panel-body\" >\n          <sort-toolbar [options]=\"['ID', 'Name']\" (sorted)=\"onSorted($event)\"></sort-toolbar>\n          <edit-toolbar [options]=\"types\" (added)=\"onAdded($event)\"></edit-toolbar>\n          \n          <accordion class=\"list-group\" [closeOthers]=\"true\" \n          dnd-sortable-container [dropZones]=\"zones\" [sortableData]=\"items\">\n          <accordion-group *ngFor=\"let item of items | orderBy : sortByMode; let i = index\" class=\"list-group-item\" \n            dnd-sortable [sortableIndex]=\"i\" (click)=\"selected = item\">\n            <div accordion-heading><item-header [item]=\"item\" [icon]=\"getIcon(item)\"></item-header></div>\n            \n            <panel-general *ngIf=\"item == selected\" [item]=\"item\" \n              [dependencies]=\"dependencies\" \n              (saved)=\"onSaved(item, $event)\" \n              (canceled)=\"onCanceled($event)\"\n              (removed)=\"onRemoved(item)\">\n             </panel-general>            \n          </accordion-group>        \n          </accordion>       \n        </div>\n      </div>\n  ",
+            inputs: ['items', 'caption', 'dependencies', 'types', 'options'],
+            template: "\n     <div class=\"panel panel-info repo\">\n        <div class=\"panel-heading\">{{caption}}</div>\n        <div class=\"panel-body\">\n          <sort-toolbar [options]=\"['ID', 'Name']\" (sorted)=\"onSorted($event)\"></sort-toolbar>\n          <edit-toolbar [options]=\"types\" (added)=\"onAdded($event)\"></edit-toolbar>\n          <filter-toolbar [filter]=\"searchString\" [options]=\"['ID', 'Name']\" (applied)=\"onFiltered($event)\"></filter-toolbar>\n          \n          <accordion class=\"list-group\" [closeOthers]=\"true\" \n          dnd-sortable-container [dropZones]=\"zones\" [sortableData]=\"items\">\n          <accordion-group *ngFor=\"let item of items | orderBy : sortByMode | filterBy: [searchString, filterByMode]; let i = index\" class=\"list-group-item\" \n            dnd-sortable [sortableIndex]=\"i\" (click)=\"selectedItem = item\">\n            <div accordion-heading><item-header [item]=\"item\" [icon]=\"getIcon(item)\"></item-header></div>\n\n            <div *ngIf=\"!options || !options.headersOnly\">\n              <panel-general *ngIf=\"item == selectedItem\" [item]=\"item\" \n                [dependencies]=\"dependencies\" \n                (saved)=\"onSaved(item, $event)\" \n                (canceled)=\"onCanceled($event)\"\n                (removed)=\"onRemoved(item)\">\n               </panel-general>            \n            </div>\n\n          </accordion-group>        \n          </accordion>       \n        </div>\n      </div>\n  ",
+            styles: ['.repo{ width: 100%}'],
             directives: [
-                component_general_1.SortToolbar, component_general_1.EditToolbar,
+                component_general_1.SortToolbar, component_general_1.EditToolbar, component_general_1.FilterToolbar,
                 component_general_1.ItemHeader,
                 panel_general_1.PanelGeneral,
                 accordion_1.ACCORDION_DIRECTIVES, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES, ng2_dnd_1.DND_DIRECTIVES],
-            pipes: [pipe_general_1.OrderBy]
+            pipes: [pipe_general_1.OrderBy, pipe_general_1.FilterBy]
         }), 
         __metadata('design:paramtypes', [])
     ], RepoGeneral);
     return RepoGeneral;
-}());
+}(repo_abstract_1.RepoAbstract));
 exports.RepoGeneral = RepoGeneral;
 //# sourceMappingURL=repo.general.js.map

@@ -29,7 +29,7 @@ var OmegaTreeTypePanel = (function (_super) {
         core_1.Component({
             selector: 'omegaTreeType-panel',
             inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <groupType-panel \n      [item]=\"item\" [dependencies]=\"dependencies\" \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n      <div class=\"input-control\" *ngIf=\"includeProperty('root')\">      \n        <label for=\"cause\">Root: </label>\n        <select-input-1 [item] = \"item.root\" \n          (updated)=\"updateProperty('root', $event)\"   \n          [options] = \"dependencies.templates | filterByClass: [templateName.NodeTemplate]\"></select-input-1>\n      </div>\n      <ng-content></ng-content>      \n    </groupType-panel>\n  ",
+            template: "\n    <groupType-panel \n      [item]=\"item\" [dependencies]=\"dependencies\" [ignore]=\"ignore\"\n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n      <div class=\"input-control\" *ngIf=\"includeProperty('root')\">      \n        <label for=\"cause\">Root: </label>\n        <select-input-1 [item] = \"item.root\" \n          (updated)=\"updateProperty('root', $event)\"   \n          [options] = \"dependencies.templates | filterByClass: [templateName.NodeTemplate]\"></select-input-1>\n      </div>\n      <ng-content></ng-content>      \n    </groupType-panel>\n  ",
             directives: [panel_groupType_1.GroupTypePanel, component_general_1.MultiSelectInput, component_general_1.SingleSelectInput],
             pipes: [pipe_general_1.FilterByClass]
         }), 

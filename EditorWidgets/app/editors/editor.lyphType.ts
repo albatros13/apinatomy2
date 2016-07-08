@@ -1,8 +1,8 @@
 /**
  * Created by Natallia on 6/8/2016.
  */
-import {Component, Directive, Input, ElementRef, Inject} from '@angular/core';
-import {RepoGeneral} from '../components/repos/repo.general'
+import {Component, Inject} from '@angular/core';
+import {RepoGeneral} from '../components/repos/repo.general';
 import {
   ExternalResourceProvider,
   TypeProvider,
@@ -11,83 +11,10 @@ import {
   CylindricalLyphTypeProvider, MeasurableTypeProvider,
   ProcessTypeProvider
 } from '../providers/service.apinatomy2'
+import {TreeWidget} from '../widgets/widget.tree';
+import {EditorLayout} from '../components/component.test';
 
-declare var GoldenLayout:any;
-
-@Directive({
-  selector: '[lyphType-widget]'
-})
-export class LyphTypeWidget{
-  @Input() inputConfig: any;
-
-  config = {
-    content: [{
-      type: 'row',
-      content:[{
-        type: 'component',
-        componentName: 'LyphTypeRepo',
-        title: "Lyph types",
-        showPopoutIcon: false,
-        width: 60,
-        componentState: {
-          content: '<div id="lyphTypeRepo"><ng-content select="lyphTypeRepoComponent"></ng-content></div>'
-        }
-      },
-        {
-          type: 'stack',
-          content: [
-            {
-              type: 'component',
-              componentName: 'LyphType',
-              title: "Lyph type",
-              showPopoutIcon: false,
-              width: 40,
-              componentState: {
-                content: '<div id="lyphType"><ng-content select="lyphTypeWidget"></ng-content></div>'
-              }
-            },
-            {
-              type: 'component',
-              componentName: 'LyphTypePartonomy',
-              title: "Lyph type partonomy",
-              showPopoutIcon: false,
-              width: 40,
-              componentState: {
-                content: '<div id="lyphTypePartonomy"><ng-content select="lyphTypePartonomyWidget"></ng-content></div>'
-              }
-            }
-          ]
-        }]
-    }]
-  };
-
-  myLayout: any;
-
-  constructor(public elementRef: ElementRef) {
-    this.myLayout = new GoldenLayout(this.inputConfig || this.config, this.elementRef.nativeElement);
-
-    this.myLayout.registerComponent('LyphTypeRepo', function(container:any, componentState:any) {
-      container.getElement().html(componentState.content);
-      container.on('open', function () {
-      })
-    });
-
-    this.myLayout.registerComponent('LyphType', function (container:any, componentState:any) {
-      container.getElement().html(componentState.content);
-      container.on('open', function () {});
-      container.on('resize', function () {
-      });
-    });
-
-    this.myLayout.registerComponent('LyphTypePartonomy', function (container:any, componentState:any) {
-      container.getElement().html(componentState.content);
-      container.on('open', function () {});
-      container.on('resize', function () {
-      });
-    });
-    this.myLayout.init();
-  }
-}
+//declare var Split: any;
 
 @Component({
   selector: 'lyphType-editor',
@@ -100,12 +27,25 @@ export class LyphTypeWidget{
     CylindricalLyphTypeProvider,
     ProcessTypeProvider],
   template: `
-    <repo-general [items]="items" caption="Materials" [dependencies]="dependency"></repo-general>
+    <div class="row">
+        <div class="col-sm-6">
+            <repo-general 
+              [items]="items" 
+              caption="Materials" 
+              [dependencies]="dependency" 
+              (selected)="onItemSelect($event)">
+            </repo-general>
+        </div>
+        <div class="col-sm-6">
+          <tree [item]="selectedItem" [options]="{transform: true, property: 'materials', depth: -1}"></tree>
+        </div>
+    </div>
   `,
-  directives: [RepoGeneral]
+  directives: [RepoGeneral, TreeWidget]
 })
 export class LyphTypeEditor {
   items: Array<any>;
+  selectedItem: any;
   dependency: any;
 
   constructor(
@@ -137,10 +77,25 @@ export class LyphTypeEditor {
     };
     this.items = allMaterials;
   }
+
+  onItemSelect(item: any){
+    this.selectedItem = item;
+  }
+
+  // height: number = 600;
+  // ngOnInit(){
+  //   this.setPanelSize(window.innerWidth, window.innerHeight);
+  // }
+  //
+  // onResize(event: any){
+  //   this.setPanelSize(window.innerWidth, window.innerHeight);
+  // }
+  //
+  // setPanelSize(innerWidth: number, innerHeight: number){
+  //   if (innerHeight > 300) this.height = innerHeight - 40;
+  // }
+
 }
 
-class EditItem {
-  editing: boolean;
-  constructor (public item: any) {}
-}
+
 

@@ -11,7 +11,7 @@ import {FilterByClass} from "../../transformations/pipe.general";
   inputs: ['item', 'ignore', 'dependencies'],
   template:`
     <groupType-panel 
-      [item]="item" [dependencies]="dependencies" 
+      [item]="item" [dependencies]="dependencies" [ignore]="ignore"
             (saved)    = "saved.emit($event)"
             (canceled) = "canceled.emit($event)"
             (removed)  = "removed.emit($event)">

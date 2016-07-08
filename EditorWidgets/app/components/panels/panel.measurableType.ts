@@ -9,7 +9,7 @@ import {TypePanel} from "./panel.type";
   inputs: ['item', 'ignore', 'dependencies'],
   template:`
     <type-panel [item]="item" [dependencies]="dependencies" 
-      [ignore]="['externals']"  
+      [ignore]="ignore" 
             (saved)    = "saved.emit($event)"
             (canceled) = "canceled.emit($event)"
             (removed)  = "removed.emit($event)">

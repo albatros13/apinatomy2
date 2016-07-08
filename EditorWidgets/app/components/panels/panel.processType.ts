@@ -14,8 +14,7 @@ import {FilterByClass} from "../../transformations/pipe.general";
   inputs: ['item', 'ignore', 'dependencies'],
   template:`
     <type-panel [item]="item" 
-      [dependencies]="dependencies" 
-      [ignore]="['externals']" 
+      [dependencies]="dependencies" [ignore]="ignore"
             (saved)    = "saved.emit($event)"
             (canceled) = "canceled.emit($event)"
             (removed)  = "removed.emit($event)">
@@ -137,7 +136,7 @@ export class ProcessTypePanel extends TypePanel{
   dependencies: any;
   @Output() saved = new EventEmitter();
   transportPhenomenon = TransportPhenomenon;
-
+  
   addProperty(property: string){
     this.item[property] = new NodeTemplate({name: "T: " + property + " " + this.item.name});
     if (this.dependencies) {

@@ -9,7 +9,7 @@ import {RepoTemplate} from '../repos/repo.template';
   selector: 'groupType-panel',
   inputs: ['item', 'ignore', 'dependencies'],
   template:`
-    <type-panel [item]="item" 
+    <type-panel [item]="item" [ignore]="ignore"
       [dependencies]="dependencies" 
             (saved)    = "saved.emit($event)"
             (canceled) = "canceled.emit($event)"

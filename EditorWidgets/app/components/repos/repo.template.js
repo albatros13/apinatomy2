@@ -1,4 +1,9 @@
 "use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -18,24 +23,13 @@ var ng2_dnd_1 = require('ng2-dnd/ng2-dnd');
 var component_general_1 = require('../component.general');
 var service_apinatomy2_1 = require('../../providers/service.apinatomy2');
 var panel_template_1 = require("./panel.template");
-var RepoTemplate = (function () {
+var repo_abstract_1 = require("./repo.abstract");
+var RepoTemplate = (function (_super) {
+    __extends(RepoTemplate, _super);
     function RepoTemplate() {
-        this.updated = new core_1.EventEmitter();
-        this.selected = null;
-        this.items = [];
+        _super.apply(this, arguments);
         this.templateNames = service_apinatomy2_1.TemplateName;
-        this.types = [];
-        this.zones = [];
     }
-    RepoTemplate.prototype.ngOnInit = function () {
-        if (!this.items)
-            this.items = [];
-        if (this.items && this.items[0])
-            this.selected = this.items[0];
-        if (!this.types || (this.types.length == 0))
-            this.types = Array.from(new Set(this.items.map(function (item) { return item.class; })));
-        this.zones = this.types.map(function (x) { return x + "_zone"; });
-    };
     RepoTemplate.prototype.getIcon = function (item) {
         switch (item.class) {
             case this.templateNames.Template: return "images/type.png";
@@ -50,21 +44,6 @@ var RepoTemplate = (function () {
             case this.templateNames.OmegaTreeTemplate: return "images/omegaTreeType.png";
         }
         return "images/resource.png";
-    };
-    RepoTemplate.prototype.onSaved = function (item, updatedItem) {
-        for (var key in updatedItem) {
-            if (updatedItem.hasOwnProperty(key))
-                item[key] = updatedItem[key];
-        }
-        this.updated.emit(this.items);
-    };
-    RepoTemplate.prototype.onRemoved = function (item) {
-        if (!this.items)
-            return;
-        var index = this.items.indexOf(item);
-        if (index > -1)
-            this.items.splice(index, 1);
-        this.updated.emit(this.items);
     };
     RepoTemplate.prototype.onAdded = function (resourceType) {
         var newItem;
@@ -101,21 +80,18 @@ var RepoTemplate = (function () {
         }
         this.items.push(newItem);
         this.updated.emit(this.items);
+        this.selectedItem = newItem;
     };
-    __decorate([
-        core_1.Output(), 
-        __metadata('design:type', Object)
-    ], RepoTemplate.prototype, "updated", void 0);
     RepoTemplate = __decorate([
         core_1.Component({
             selector: 'repo-template',
-            inputs: ['items', 'caption', 'dependencies', 'types'],
-            template: "\n    <div class=\"panel panel-warning repo-template\">\n      <div class=\"panel-heading\">{{caption}}</div>\n      <div class=\"panel-body\" >\n        <edit-toolbar [options]=\"types\" (added)=\"onAdded($event)\"></edit-toolbar>\n      \n        <accordion class=\"list-group\" [closeOthers]=\"true\" dnd-sortable-container [dropZones]=\"['lyphTemplate-zone']\" [sortableData]=\"items\">\n          <accordion-group *ngFor=\"let item of items; let i = index\" class=\"list-group-item\" dnd-sortable \n           [sortableIndex]=\"i\" (click)=\"selected = item\">\n            <div accordion-heading><item-header [item]=\"item\" [icon]=\"'images/lyphType.png'\"></item-header></div>\n\n            <panel-template *ngIf=\"item == selected\" [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"onSaved(item, $event)\" (removed)=\"onRemoved(item)\"></panel-template>            \n\n          </accordion-group>        \n        </accordion>       \n      </div>\n    </div>\n  ",
+            inputs: ['items', 'caption', 'dependencies', 'types', 'options'],
+            template: "\n    <div class=\"panel panel-warning repo-template\">\n      <div class=\"panel-heading\">{{caption}}</div>\n      <div class=\"panel-body\" >\n        <edit-toolbar [options]=\"types\" (added)=\"onAdded($event)\"></edit-toolbar>\n      \n        <accordion class=\"list-group\" [closeOthers]=\"true\" dnd-sortable-container [dropZones]=\"['lyphTemplate-zone']\" [sortableData]=\"items\">\n          <accordion-group *ngFor=\"let item of items; let i = index\" class=\"list-group-item\" dnd-sortable \n           [sortableIndex]=\"i\" (click)=\"selectedItem = item\">\n            <div accordion-heading><item-header [item]=\"item\" [icon]=\"'images/lyphType.png'\"></item-header></div>\n\n            <div *ngIf=\"!options || !options.headersOnly\">\n              <panel-template *ngIf=\"item == selectedItem\" [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"onSaved(item, $event)\" (removed)=\"onRemoved(item)\"></panel-template>            \n            </div>\n          </accordion-group>        \n        </accordion>       \n      </div>\n    </div>\n  ",
             directives: [component_general_1.ItemHeader, component_general_1.EditToolbar, panel_template_1.PanelTemplate, accordion_1.ACCORDION_DIRECTIVES, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES, ng2_dnd_1.DND_DIRECTIVES]
         }), 
         __metadata('design:paramtypes', [])
     ], RepoTemplate);
     return RepoTemplate;
-}());
+}(repo_abstract_1.RepoAbstract));
 exports.RepoTemplate = RepoTemplate;
 //# sourceMappingURL=repo.template.js.map

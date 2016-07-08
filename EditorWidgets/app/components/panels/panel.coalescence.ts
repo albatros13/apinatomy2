@@ -10,7 +10,7 @@ import {RepoTemplate} from '../repos/repo.template';
   selector: 'coalescence-panel',
   inputs: ['item', 'ignore', 'dependencies'],
   template:`
-    <resource-panel [item]="item" [dependencies]="dependencies" [ignore]="['externals']"  
+    <resource-panel [item]="item" [dependencies]="dependencies" [ignore]="ignore"
             (saved)    = "saved.emit($event)"
             (canceled) = "canceled.emit($event)"
             (removed)  = "removed.emit($event)">

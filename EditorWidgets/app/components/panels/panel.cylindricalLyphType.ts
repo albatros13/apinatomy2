@@ -13,7 +13,7 @@ import {RepoTemplate} from '../repos/repo.template';
   inputs: ['item', 'ignore', 'dependencies'],
   template:`
     <lyphType-panel 
-      [item]="item" [dependencies]="dependencies" 
+      [item]="item" [dependencies]="dependencies" [ignore]="ignore" 
             (saved)    = "saved.emit($event)"
             (canceled) = "canceled.emit($event)"
             (removed)  = "removed.emit($event)">

@@ -17,82 +17,8 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var core_1 = require('@angular/core');
 var repo_general_1 = require('../components/repos/repo.general');
 var service_apinatomy2_1 = require('../providers/service.apinatomy2');
-var LyphTypeWidget = (function () {
-    function LyphTypeWidget(elementRef) {
-        this.elementRef = elementRef;
-        this.config = {
-            content: [{
-                    type: 'row',
-                    content: [{
-                            type: 'component',
-                            componentName: 'LyphTypeRepo',
-                            title: "Lyph types",
-                            showPopoutIcon: false,
-                            width: 60,
-                            componentState: {
-                                content: '<div id="lyphTypeRepo"><ng-content select="lyphTypeRepoComponent"></ng-content></div>'
-                            }
-                        },
-                        {
-                            type: 'stack',
-                            content: [
-                                {
-                                    type: 'component',
-                                    componentName: 'LyphType',
-                                    title: "Lyph type",
-                                    showPopoutIcon: false,
-                                    width: 40,
-                                    componentState: {
-                                        content: '<div id="lyphType"><ng-content select="lyphTypeWidget"></ng-content></div>'
-                                    }
-                                },
-                                {
-                                    type: 'component',
-                                    componentName: 'LyphTypePartonomy',
-                                    title: "Lyph type partonomy",
-                                    showPopoutIcon: false,
-                                    width: 40,
-                                    componentState: {
-                                        content: '<div id="lyphTypePartonomy"><ng-content select="lyphTypePartonomyWidget"></ng-content></div>'
-                                    }
-                                }
-                            ]
-                        }]
-                }]
-        };
-        this.myLayout = new GoldenLayout(this.inputConfig || this.config, this.elementRef.nativeElement);
-        this.myLayout.registerComponent('LyphTypeRepo', function (container, componentState) {
-            container.getElement().html(componentState.content);
-            container.on('open', function () {
-            });
-        });
-        this.myLayout.registerComponent('LyphType', function (container, componentState) {
-            container.getElement().html(componentState.content);
-            container.on('open', function () { });
-            container.on('resize', function () {
-            });
-        });
-        this.myLayout.registerComponent('LyphTypePartonomy', function (container, componentState) {
-            container.getElement().html(componentState.content);
-            container.on('open', function () { });
-            container.on('resize', function () {
-            });
-        });
-        this.myLayout.init();
-    }
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], LyphTypeWidget.prototype, "inputConfig", void 0);
-    LyphTypeWidget = __decorate([
-        core_1.Directive({
-            selector: '[lyphType-widget]'
-        }), 
-        __metadata('design:paramtypes', [core_1.ElementRef])
-    ], LyphTypeWidget);
-    return LyphTypeWidget;
-}());
-exports.LyphTypeWidget = LyphTypeWidget;
+var widget_tree_1 = require('../widgets/widget.tree');
+//declare var Split: any;
 var LyphTypeEditor = (function () {
     function LyphTypeEditor(eResourceP, typeP, materialP, lyphP, cLyphP, measurableP, processP) {
         var allLyphs = lyphP.items.concat(cLyphP.items);
@@ -112,6 +38,9 @@ var LyphTypeEditor = (function () {
         };
         this.items = allMaterials;
     }
+    LyphTypeEditor.prototype.onItemSelect = function (item) {
+        this.selectedItem = item;
+    };
     LyphTypeEditor = __decorate([
         core_1.Component({
             selector: 'lyphType-editor',
@@ -123,8 +52,8 @@ var LyphTypeEditor = (function () {
                 service_apinatomy2_1.LyphTypeProvider,
                 service_apinatomy2_1.CylindricalLyphTypeProvider,
                 service_apinatomy2_1.ProcessTypeProvider],
-            template: "\n    <repo-general [items]=\"items\" caption=\"Materials\" [dependencies]=\"dependency\"></repo-general>\n  ",
-            directives: [repo_general_1.RepoGeneral]
+            template: "\n    <div class=\"row\">\n        <div class=\"col-sm-6\">\n            <repo-general \n              [items]=\"items\" \n              caption=\"Materials\" \n              [dependencies]=\"dependency\" \n              (selected)=\"onItemSelect($event)\">\n            </repo-general>\n        </div>\n        <div class=\"col-sm-6\">\n          <tree [item]=\"selectedItem\" [options]=\"{transform: true, property: 'materials', depth: -1}\"></tree>\n        </div>\n    </div>\n  ",
+            directives: [repo_general_1.RepoGeneral, widget_tree_1.TreeWidget]
         }),
         __param(0, core_1.Inject(service_apinatomy2_1.ExternalResourceProvider)),
         __param(1, core_1.Inject(service_apinatomy2_1.TypeProvider)),
@@ -138,10 +67,4 @@ var LyphTypeEditor = (function () {
     return LyphTypeEditor;
 }());
 exports.LyphTypeEditor = LyphTypeEditor;
-var EditItem = (function () {
-    function EditItem(item) {
-        this.item = item;
-    }
-    return EditItem;
-}());
 //# sourceMappingURL=editor.lyphType.js.map

@@ -28,7 +28,7 @@ var GroupTypePanel = (function (_super) {
         core_1.Component({
             selector: 'groupType-panel',
             inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <type-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n      <div class=\"input-control\" *ngIf=\"includeProperty('elements')\">\n         <repo-template caption=\"Elements\" [items] = \"item.elements\" \n         (updated)=\"updateProperty('elements', $event)\"\n         [dependencies] = \"dependencies\" [types]=\"[\n            templateName.LyphTemplate, templateName.CylindricalLyphTemplate]\"></repo-template>\n      </div>\n      <ng-content></ng-content>      \n    </type-panel>\n  ",
+            template: "\n    <type-panel [item]=\"item\" [ignore]=\"ignore\"\n      [dependencies]=\"dependencies\" \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n      <div class=\"input-control\" *ngIf=\"includeProperty('elements')\">\n         <repo-template caption=\"Elements\" [items] = \"item.elements\" \n         (updated)=\"updateProperty('elements', $event)\"\n         [dependencies] = \"dependencies\" [types]=\"[\n            templateName.LyphTemplate, templateName.CylindricalLyphTemplate]\"></repo-template>\n      </div>\n      <ng-content></ng-content>      \n    </type-panel>\n  ",
             directives: [panel_type_1.TypePanel, repo_template_1.RepoTemplate]
         }), 
         __metadata('design:paramtypes', [])

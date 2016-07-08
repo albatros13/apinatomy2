@@ -1,6 +1,4 @@
-body {
-  margin: 2em;
-}
+body { margin: 4px;}
 
 .icon {
   height: 2.025rem;
@@ -19,7 +17,7 @@ body {
 }
 
 .panel-body{
-  padding: 4px;
+  padding: 0px;
 }
 
 .list-group-item{
@@ -67,3 +65,33 @@ legend{
 input[type=number] {
   text-align:right;
 }
+
+.svg-widget{
+  width: 100%;
+  height: 100%;
+}
+
+.treeNode rect {
+  stroke: steelblue;
+  stroke-width: 2px;
+  cursor: pointer;
+}
+
+.treeNode circle {
+  stroke: steelblue;
+  stroke-width: 2px;
+  cursor: pointer;
+}
+
+.treeLabel text {
+  font: 12px sans-serif;
+  pointer-events: none;
+}
+
+.treeLink {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 2px;
+}
+
+

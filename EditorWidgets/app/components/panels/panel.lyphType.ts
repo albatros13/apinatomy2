@@ -7,7 +7,7 @@ import {MultiSelectInput, SingleSelectInput, EditToolbar} from '../component.gen
 import {RepoTemplate} from '../repos/repo.template';
 import {ProcessTemplate, BorderTemplate} from '../../providers/service.apinatomy2';
 import {BorderTemplatePanel} from '../templates/template.borderType';
-import {FilterByClass} from "../../transformations/pipe.general";
+import {FilterByClass, FilterBy} from "../../transformations/pipe.general";
 
 @Component({
   selector: 'lyphType-panel',
@@ -15,9 +15,31 @@ import {FilterByClass} from "../../transformations/pipe.general";
   template:`
     <materialType-panel [item]="item" 
         [dependencies]="dependencies" 
+        [ignore]="ignore"
+
             (saved)    = "saved.emit($event)"
             (canceled) = "canceled.emit($event)"
             (removed)  = "removed.emit($event)">
+        
+        <!--Classified externals-->
+        <!--FMA-->
+        <div class="input-control" *ngIf="includeProperty('fma')">
+          <label for="fma">FMA: </label>
+          <select-input 
+            [items]="item.externals | filterBy: ['fma', 'type']" 
+            (updated)="updateProperty('externals', $event)" 
+            [options]="dependencies.externals | filterBy: ['fma', 'type']"></select-input>
+        </div>
+
+        <!--Cocomac-->
+        <div class="input-control" *ngIf="includeProperty('cocomac')">
+          <label for="cocomac">Cocomac: </label>
+          <select-input 
+            [items]="item.externals | filterBy: ['cocomac', 'type']" 
+            (updated)="updateProperty('externals', $event)" 
+            [options]="dependencies.externals | filterBy: ['cocomac', 'type']"></select-input>
+        </div>
+
         <!--Species-->
         <div class="input-control" *ngIf="includeProperty('species')">
           <label for="species">Species: </label>
@@ -127,8 +149,7 @@ import {FilterByClass} from "../../transformations/pipe.general";
     </materialType-panel>
   `,
   directives: [MaterialTypePanel, MultiSelectInput, SingleSelectInput, RepoTemplate, BorderTemplatePanel, EditToolbar],
-  pipes: [FilterByClass]
-
+  pipes: [FilterByClass, FilterBy]
 })
 export class LyphTypePanel extends MaterialTypePanel{
   dependencies: any;

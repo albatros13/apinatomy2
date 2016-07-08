@@ -11,10 +11,11 @@ import {ResourceName, TemplateName,
   GroupTemplate, OmegaTreeTemplate,
   LyphTemplate, CylindricalLyphTemplate} from '../../providers/service.apinatomy2';
 import {PanelTemplate} from "./panel.template";
+import {RepoAbstract} from "./repo.abstract";
 
 @Component({
   selector: 'repo-template',
-  inputs: ['items', 'caption', 'dependencies', 'types'],
+  inputs: ['items', 'caption', 'dependencies', 'types', 'options'],
   template:`
     <div class="panel panel-warning repo-template">
       <div class="panel-heading">{{caption}}</div>
@@ -23,11 +24,12 @@ import {PanelTemplate} from "./panel.template";
       
         <accordion class="list-group" [closeOthers]="true" dnd-sortable-container [dropZones]="['lyphTemplate-zone']" [sortableData]="items">
           <accordion-group *ngFor="let item of items; let i = index" class="list-group-item" dnd-sortable 
-           [sortableIndex]="i" (click)="selected = item">
+           [sortableIndex]="i" (click)="selectedItem = item">
             <div accordion-heading><item-header [item]="item" [icon]="'images/lyphType.png'"></item-header></div>
 
-            <panel-template *ngIf="item == selected" [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></panel-template>            
-
+            <div *ngIf="!options || !options.headersOnly">
+              <panel-template *ngIf="item == selectedItem" [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></panel-template>            
+            </div>
           </accordion-group>        
         </accordion>       
       </div>
@@ -35,25 +37,10 @@ import {PanelTemplate} from "./panel.template";
   `,
   directives: [ItemHeader, EditToolbar, PanelTemplate, ACCORDION_DIRECTIVES, CORE_DIRECTIVES, FORM_DIRECTIVES, DND_DIRECTIVES]
 })
-export class RepoTemplate{
-  @Output() updated = new EventEmitter();
-  public selected: any = null;
-  public items: Array<any> = [];
+export class RepoTemplate extends RepoAbstract{
   templateNames = TemplateName;
-  types: Array<ResourceName | TemplateName> = [];
-  zones: Array<string> = [];
 
-  constructor(){}
-
-  protected ngOnInit(){
-    if (!this.items) this.items = [];
-    if (this.items && this.items[0]) this.selected = this.items[0];
-    if (!this.types || (this.types.length == 0))
-      this.types = Array.from(new Set(this.items.map(item => item.class)));
-    this.zones = this.types.map(x => x + "_zone");
-  }
-
-  getIcon(item: any){
+  protected getIcon(item: any){
     switch (item.class){
       case this.templateNames.Template          : return "images/type.png";
       case this.templateNames.LyphTemplate      : return "images/lyphType.png";
@@ -70,20 +57,6 @@ export class RepoTemplate{
 
     }
     return "images/resource.png";
-  }
-
-  protected onSaved(item: any, updatedItem: any){
-    for (var key in updatedItem){
-      if (updatedItem.hasOwnProperty(key)) item[key] = updatedItem[key];
-    }
-    this.updated.emit(this.items);
-  }
-
-  protected onRemoved(item: any){
-    if (!this.items) return;
-    let index = this.items.indexOf(item);
-    if (index > -1) this.items.splice(index, 1);
-    this.updated.emit(this.items);
   }
 
   protected onAdded(resourceType: ResourceName | TemplateName){
@@ -114,5 +87,6 @@ export class RepoTemplate{
     }
     this.items.push(newItem);
     this.updated.emit(this.items);
+    this.selectedItem = newItem;
   }
 }

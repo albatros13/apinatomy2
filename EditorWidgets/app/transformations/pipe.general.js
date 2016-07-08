@@ -16,13 +16,24 @@ var FilterBy = (function () {
     function FilterBy() {
     }
     FilterBy.prototype.transform = function (items, args) {
-        return items.filter(function (item) { return item.id.indexOf(args[0]) !== -1; });
+        if (!items)
+            return items;
+        if (!args || args.length < 2)
+            return items;
+        if (args[0].length == 0)
+            return items;
+        var filter = args[0];
+        var property = args[1];
+        return items.filter(function (item) {
+            return (typeof (item[property]) === 'string') ?
+                item[property].indexOf(filter) !== -1 :
+                item[property] == filter;
+        });
     };
     FilterBy = __decorate([
         core_1.Pipe({
             name: 'filterBy'
-        }),
-        core_1.Injectable(), 
+        }), 
         __metadata('design:paramtypes', [])
     ], FilterBy);
     return FilterBy;
@@ -37,8 +48,7 @@ var FilterByClass = (function () {
     FilterByClass = __decorate([
         core_1.Pipe({
             name: 'filterByClass'
-        }),
-        core_1.Injectable(), 
+        }), 
         __metadata('design:paramtypes', [])
     ], FilterByClass);
     return FilterByClass;
@@ -55,8 +65,7 @@ var MapToOptions = (function () {
     MapToOptions = __decorate([
         core_1.Pipe({
             name: 'mapToOptions'
-        }),
-        core_1.Injectable(), 
+        }), 
         __metadata('design:paramtypes', [])
     ], MapToOptions);
     return MapToOptions;
@@ -65,9 +74,9 @@ exports.MapToOptions = MapToOptions;
 var OrderBy = (function () {
     function OrderBy() {
     }
-    OrderBy.prototype.transform = function (item, orderField) {
+    OrderBy.prototype.transform = function (item, property) {
         var orderType = 'ask';
-        var currentField = orderField;
+        var currentField = property;
         if (currentField[0] === '-') {
             currentField = currentField.substring(1);
             orderType = 'desc';

@@ -28,7 +28,7 @@ var NodeTypePanel = (function (_super) {
         core_1.Component({
             selector: 'nodeType-panel',
             inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <type-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      [ignore]=\"['externals']\" \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n      <repo-template caption=\"Channels\" [items] = \"item.channels\" \n        (updated)=\"updateProperty('channels', $event)\"     \n        [dependencies] = \"dependencies\" [types]=\"[templateName.NodeTemplate]\"></repo-template>\n      <ng-content></ng-content>      \n    </type-panel>\n  ",
+            template: "\n    <type-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      [ignore]=\"ignore\"\n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n      <repo-template caption=\"Channels\" [items] = \"item.channels\" \n        (updated)=\"updateProperty('channels', $event)\"     \n        [dependencies] = \"dependencies\" [types]=\"[templateName.NodeTemplate]\"></repo-template>\n      <ng-content></ng-content>      \n    </type-panel>\n  ",
             directives: [panel_type_1.TypePanel, repo_template_1.RepoTemplate]
         }), 
         __metadata('design:paramtypes', [])

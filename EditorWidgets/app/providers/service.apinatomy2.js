@@ -470,7 +470,12 @@ var basicMeasurables = [
     new MeasurableType({ id: 108, name: "Concentration of " + basicMaterials[8].name, quality: "concentration", materials: [basicMaterials[8]] })
 ];
 var testProcesses = [
-    new ProcessType({ name: "Test process" })
+    new ProcessType({ id: 50, name: "Sample process" })
+];
+var testBorders = [
+    new BorderType({ id: 80, name: "Border Cytosol - Plasma" }),
+    new BorderType({ id: 81, name: "Border Apical - Basolateral" }),
+    new BorderType({ id: 82, name: "Border Luminal - Abluminal" })
 ];
 var ExternalResourceProvider = (function () {
     function ExternalResourceProvider() {
@@ -540,22 +545,60 @@ var LyphTypeProvider = (function () {
 }());
 exports.LyphTypeProvider = LyphTypeProvider;
 var CylindricalLyphTypeProvider = (function () {
-    function CylindricalLyphTypeProvider(mtp) {
+    function CylindricalLyphTypeProvider(mtp, btp) {
         var _this = this;
         this.items = [];
         this.templates = [];
         var ifl = mtp.items.find(function (x) { return x.name == "Intracellular fluid"; });
+        var bt = btp.templates.find(function (x) { return x.name.indexOf("Border Cytosol - Plasma") > -1; });
         //let border = new BorderType();
-        var cytosol = new CylindricalLyphType({ id: 1000, name: "Cytosol", materials: [ifl], plusSide: [SideType.closed], minusSide: [SideType.closed] });
-        var pm = new CylindricalLyphType({ id: 1001, name: "Plasma membrain", plusSide: [SideType.closed], minusSide: [SideType.closed] });
+        var cytosol = new CylindricalLyphType({ id: 1000, name: "Cytosol", materials: [ifl], plusSide: [SideType.closed], minusSide: [SideType.closed],
+            innerBorder: bt });
+        var pm = new CylindricalLyphType({ id: 1001, name: "Plasma membrain", plusSide: [SideType.closed], minusSide: [SideType.closed],
+            outerBorder: bt });
         this.items = [cytosol, pm];
         this.items.forEach(function (x) {
             return _this.templates.push(new CylindricalLyphTemplate({ id: x.id + 100, name: "T: " + x.name, type: x }));
         });
+        var cellLayers = this.items.slice(0, 2);
+        var cell = new CylindricalLyphType({ id: 1002, name: "Cell", plusSide: [SideType.closed], minusSide: [SideType.closed], layers: cellLayers });
+        this.items.push(cell);
+        var bt1 = btp.templates.find(function (x) { return x.name.indexOf("Border Apical - Basolateral") > -1; });
+        var sec_a = new CylindricalLyphType({ id: 1006, name: "Apical region of the surface epithelial cell",
+            plusSide: [SideType.open], minusSide: [SideType.closed], plusBorder: bt1 });
+        var sec_b = new CylindricalLyphType({ id: 1007, name: "Basolateral region of the epithelial cell",
+            plusSide: [SideType.open], minusSide: [SideType.closed], minusBorder: bt1 });
+        this.items.concat([sec_a, sec_b]);
+        var sec_at = new CylindricalLyphTemplate({ id: sec_a.id + 100, name: "T: " + sec_a.name, type: sec_a });
+        var sec_bt = new CylindricalLyphTemplate({ id: sec_b.id + 100, name: "T: " + sec_b.name, type: sec_b });
+        this.templates.concat([sec_at, sec_bt]);
+        var sec = new CylindricalLyphType({ id: 1004, name: "Surface epithelial cell", plusSide: [SideType.closed], minusSide: [SideType.closed],
+            supertypes: [cell], layerProviders: [cell], measurableProviders: [cell], segments: [sec_at, sec_bt] });
+        var rbc = new CylindricalLyphType({ id: 1003, name: "Red blood cell", plusSide: [SideType.closed], minusSide: [SideType.closed],
+            supertypes: [cell], layerProviders: [cell], measurableProviders: [cell] });
+        var rsec = new CylindricalLyphType({ id: 1005, name: "Renal surface epithelial cell", plusSide: [SideType.closed], minusSide: [SideType.closed],
+            supertypes: [sec], layerProviders: [sec], measurableProviders: [sec], segmentProviders: [sec] });
+        this.items.concat([rbc, sec, rsec]);
+        var bt2 = btp.templates.find(function (x) { return x.name.indexOf("Border Luminal - Abluminal") > -1; });
+        var sec_lum = new CylindricalLyphType({ id: 1008, name: "Luminal region of the Surface Endothelial Cell",
+            plusSide: [SideType.open], minusSide: [SideType.closed], plusBorder: bt2 });
+        var sec_ablum = new CylindricalLyphType({ id: 1009, name: "Abluminal region of the Surface Endothelial Cell",
+            plusSide: [SideType.open], minusSide: [SideType.closed], minusBorder: bt2 });
+        this.items.concat([sec_lum, sec_ablum]);
+        var sec_lumt = new CylindricalLyphTemplate({ id: sec_lum.id + 100, name: "T: " + sec_lum.name, type: sec_lum });
+        var sec_ablumt = new CylindricalLyphTemplate({ id: sec_ablum.id + 100, name: "T: " + sec_ablum.name, type: sec_ablum });
+        this.templates.concat([sec_lumt, sec_ablumt]);
+        var ec = new CylindricalLyphType({ id: 1010, name: "Endothelial Cell", plusSide: [SideType.closed], minusSide: [SideType.closed],
+            supertypes: [cell], layerProviders: [cell], measurableProviders: [cell], segments: [sec_lumt, sec_ablumt] });
+        var smc = new CylindricalLyphType({ id: 1011, name: "Smooth Muscle Cell", plusSide: [SideType.closed], minusSide: [SideType.closed],
+            supertypes: [cell], layerProviders: [cell], measurableProviders: [cell] });
+        var cmc = new CylindricalLyphType({ id: 1012, name: "Cardiac Muscle Cell", plusSide: [SideType.closed], minusSide: [SideType.closed],
+            supertypes: [sec], layerProviders: [sec], measurableProviders: [sec], segmentProviders: [sec] });
+        this.items.push([ec, smc, cmc]);
     }
     CylindricalLyphTypeProvider = __decorate([
         core_1.Injectable(), 
-        __metadata('design:paramtypes', [MaterialTypeProvider])
+        __metadata('design:paramtypes', [MaterialTypeProvider, BorderTypeProvider])
     ], CylindricalLyphTypeProvider);
     return CylindricalLyphTypeProvider;
 }());
@@ -563,6 +606,7 @@ exports.CylindricalLyphTypeProvider = CylindricalLyphTypeProvider;
 var MeasurableTypeProvider = (function () {
     function MeasurableTypeProvider() {
         this.items = [];
+        this.templates = [];
         this.items = basicMeasurables;
     }
     MeasurableTypeProvider = __decorate([
@@ -575,7 +619,11 @@ exports.MeasurableTypeProvider = MeasurableTypeProvider;
 var ProcessTypeProvider = (function () {
     function ProcessTypeProvider() {
         this.items = [];
+        this.templates = [];
         this.items = testProcesses;
+        this.templates = this.items.map(function (item) {
+            return new ProcessTemplate({ id: item.id + 300, name: "T: " + item.name, type: item });
+        });
     }
     ProcessTypeProvider = __decorate([
         core_1.Injectable(), 
@@ -584,4 +632,46 @@ var ProcessTypeProvider = (function () {
     return ProcessTypeProvider;
 }());
 exports.ProcessTypeProvider = ProcessTypeProvider;
+var BorderTypeProvider = (function () {
+    function BorderTypeProvider() {
+        this.items = [];
+        this.templates = [];
+        this.items = testBorders;
+        this.templates = this.items.map(function (item) {
+            return new BorderTemplate({ id: item.id + 300, name: "T: " + item.name, type: item });
+        });
+    }
+    BorderTypeProvider = __decorate([
+        core_1.Injectable(), 
+        __metadata('design:paramtypes', [])
+    ], BorderTypeProvider);
+    return BorderTypeProvider;
+}());
+exports.BorderTypeProvider = BorderTypeProvider;
+var GroupTypeProvider = (function () {
+    function GroupTypeProvider() {
+        this.items = [];
+        this.templates = [];
+    }
+    GroupTypeProvider = __decorate([
+        core_1.Injectable(), 
+        __metadata('design:paramtypes', [])
+    ], GroupTypeProvider);
+    return GroupTypeProvider;
+}());
+exports.GroupTypeProvider = GroupTypeProvider;
+var OmegaTreeTypeProvider = (function () {
+    function OmegaTreeTypeProvider(cltp) {
+        this.items = [];
+        this.templates = [];
+        var elements = [];
+        var sln = new OmegaTreeType({ id: 10000, name: "Short Looped Nephron", elements: elements });
+    }
+    OmegaTreeTypeProvider = __decorate([
+        core_1.Injectable(), 
+        __metadata('design:paramtypes', [CylindricalLyphTypeProvider])
+    ], OmegaTreeTypeProvider);
+    return OmegaTreeTypeProvider;
+}());
+exports.OmegaTreeTypeProvider = OmegaTreeTypeProvider;
 //# sourceMappingURL=service.apinatomy2.js.map

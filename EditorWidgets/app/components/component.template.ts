@@ -146,7 +146,6 @@ export class TemplateValue{
 
   notifyParent(item: any){
     this.item = item;
-    console.dir(this.item);
     this.updated.emit(this.item);
   }
 }

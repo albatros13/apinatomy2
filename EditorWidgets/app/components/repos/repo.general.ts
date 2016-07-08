@@ -5,67 +5,59 @@ import {Component, Output, EventEmitter} from '@angular/core';
 import {CORE_DIRECTIVES, FORM_DIRECTIVES} from '@angular/common';
 import {ACCORDION_DIRECTIVES} from 'ng2-bootstrap/components/accordion';
 import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
-import {ItemHeader, SortToolbar, EditToolbar} from '../component.general';
+import {ItemHeader, SortToolbar, EditToolbar, FilterToolbar} from '../component.general';
 import {ResourceName, TemplateName,
   Resource, Type, MaterialType, LyphType, CylindricalLyphType, BorderType, NodeType,
   CausalityType, MeasurableType, GroupType, ProcessType, OmegaTreeType,
   Publication, Correlation, ClinicalIndex
 } from "../../providers/service.apinatomy2";
-import {OrderBy} from "../../transformations/pipe.general";
+import {OrderBy, FilterBy} from "../../transformations/pipe.general";
 import {PanelGeneral} from "./panel.general";
+import {RepoAbstract} from "./repo.abstract";
 
 @Component({
   selector: 'repo-general',
-  inputs: ['items', 'caption', 'dependencies', 'types'],
+  inputs: ['items', 'caption', 'dependencies', 'types', 'options'],
   template:`
      <div class="panel panel-info repo">
         <div class="panel-heading">{{caption}}</div>
-        <div class="panel-body" >
+        <div class="panel-body">
           <sort-toolbar [options]="['ID', 'Name']" (sorted)="onSorted($event)"></sort-toolbar>
           <edit-toolbar [options]="types" (added)="onAdded($event)"></edit-toolbar>
+          <filter-toolbar [filter]="searchString" [options]="['ID', 'Name']" (applied)="onFiltered($event)"></filter-toolbar>
           
           <accordion class="list-group" [closeOthers]="true" 
           dnd-sortable-container [dropZones]="zones" [sortableData]="items">
-          <accordion-group *ngFor="let item of items | orderBy : sortByMode; let i = index" class="list-group-item" 
-            dnd-sortable [sortableIndex]="i" (click)="selected = item">
+          <accordion-group *ngFor="let item of items | orderBy : sortByMode | filterBy: [searchString, filterByMode]; let i = index" class="list-group-item" 
+            dnd-sortable [sortableIndex]="i" (click)="selectedItem = item">
             <div accordion-heading><item-header [item]="item" [icon]="getIcon(item)"></item-header></div>
-            
-            <panel-general *ngIf="item == selected" [item]="item" 
-              [dependencies]="dependencies" 
-              (saved)="onSaved(item, $event)" 
-              (canceled)="onCanceled($event)"
-              (removed)="onRemoved(item)">
-             </panel-general>            
+
+            <div *ngIf="!options || !options.headersOnly">
+              <panel-general *ngIf="item == selectedItem" [item]="item" 
+                [dependencies]="dependencies" 
+                (saved)="onSaved(item, $event)" 
+                (canceled)="onCanceled($event)"
+                (removed)="onRemoved(item)">
+               </panel-general>            
+            </div>
+
           </accordion-group>        
           </accordion>       
         </div>
       </div>
   `,
+  styles: ['.repo{ width: 100%}'],
   directives: [
-    SortToolbar, EditToolbar,
+    SortToolbar, EditToolbar, FilterToolbar,
     ItemHeader,
     PanelGeneral,
     ACCORDION_DIRECTIVES, CORE_DIRECTIVES, FORM_DIRECTIVES, DND_DIRECTIVES],
-  pipes: [OrderBy]
+  pipes: [OrderBy, FilterBy]
 })
-export class RepoGeneral{
-  @Output() updated = new EventEmitter();
-  items: Array<any> = [];
-  selected: any = null;
+export class RepoGeneral extends RepoAbstract{
   resourceNames = ResourceName;
-  types: Array<ResourceName | TemplateName> = [];
-  zones: Array<string> = [];
-  sortByMode: string = "id";
 
-  ngOnInit(){
-    if (!this.items) this.items = [];
-    if (this.items[0]) this.selected = this.items[0];
-    if (!this.types || (this.types.length == 0))
-      this.types = Array.from(new Set(this.items.map(item => item.class)));
-    this.zones = this.types.map(x => x + "_zone");
-  }
-
-  getIcon(item: any){
+  protected getIcon(item: any){
     switch (item.class){
       case this.resourceNames.Type          : return "images/type.png";
       case this.resourceNames.MaterialType  : return "images/materialType.png";
@@ -86,26 +78,6 @@ export class RepoGeneral{
       case this.resourceNames.ClinicalIndex : return "images/clinicalIndex.png";
     }
     return "images/resource.png";
-  }
-
-  protected onSaved(item: any, updatedItem: any){
-    for (var key in updatedItem){
-      if (updatedItem.hasOwnProperty(key)) item[key] = updatedItem[key];
-    }
-    this.updated.emit(this.items);
-  }
-
-  protected onCanceled(updatedItem: any){}
-
-  protected onRemoved(item: any){
-    if (!this.items) return;
-    let index = this.items.indexOf(item);
-    if (index > -1) this.items.splice(index, 1);
-    this.updated.emit(this.items);
-  }
-
-  protected onSorted(prop: string){
-    this.sortByMode = prop.toLowerCase();
   }
 
   protected onAdded(resourceType: ResourceName | TemplateName){
@@ -132,5 +104,6 @@ export class RepoGeneral{
     }
     this.items.push(newItem);
     this.updated.emit(this.items);
+    this.selectedItem = newItem;
   }
 }

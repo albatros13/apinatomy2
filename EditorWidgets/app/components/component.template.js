@@ -125,7 +125,6 @@ var TemplateValue = (function () {
     };
     TemplateValue.prototype.notifyParent = function (item) {
         this.item = item;
-        console.dir(this.item);
         this.updated.emit(this.item);
     };
     __decorate([

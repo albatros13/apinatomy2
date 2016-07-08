@@ -20,6 +20,7 @@ var MultiSelectInput = (function () {
     function MultiSelectInput() {
         this.options = [];
         this.updated = new core_1.EventEmitter();
+        this.active = true;
     }
     MultiSelectInput.prototype.ngOnInit = function () {
         if (!this.options)
@@ -28,7 +29,28 @@ var MultiSelectInput = (function () {
             this.items = [];
     };
     MultiSelectInput.prototype.ngOnChanges = function (changes) {
-        //  console.log('onChanges - items = ', changes['items'].currentValue);
+        //console.log('onChanges - items = ', changes['items'].currentValue);
+        if (this.selectionChanged(this.prev, this.items)) {
+            this.prev = this.items;
+            this.refresh();
+        }
+    };
+    MultiSelectInput.prototype.selectionChanged = function (prev, current) {
+        if (!prev && !current)
+            return false;
+        if (!prev != !current)
+            return true;
+        if (prev.length != current.length)
+            return true;
+        var diff = prev.filter(function (item) { return (current.indexOf(item) == -1); });
+        if (diff && (diff.length > 0))
+            return true;
+        return false;
+    };
+    MultiSelectInput.prototype.refresh = function () {
+        var _this = this;
+        setTimeout(function () { _this.active = false; }, 0);
+        setTimeout(function () { _this.active = true; }, 0);
     };
     MultiSelectInput.prototype.refreshValue = function (value) {
         var selected = value.map(function (x) { return x.id; });
@@ -43,7 +65,7 @@ var MultiSelectInput = (function () {
         core_1.Component({
             selector: 'select-input',
             inputs: ['items', 'options'],
-            template: "\n      <ng-select\n        [items]       = \"options | mapToOptions\"\n        [initData]    = \"items | mapToOptions\"\n        [multiple]    = true\n        (data)        =\"refreshValue($event)\"        \n      ></ng-select>\n  ",
+            template: "\n    <div *ngIf=\"active\">\n      <ng-select \n        [items]       = \"options | mapToOptions\"\n        [initData]    = \"items | mapToOptions\"\n        [multiple]    = true\n        (data)        = \"refreshValue($event)\"        \n      ></ng-select>\n    </div>\n    ",
             directives: [ng2_select_1.SELECT_DIRECTIVES, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES],
             pipes: [pipe_general_1.MapToOptions]
         }), 
@@ -56,10 +78,16 @@ var SingleSelectInput = (function () {
     function SingleSelectInput() {
         this.options = [];
         this.updated = new core_1.EventEmitter();
+        this.active = true;
     }
     SingleSelectInput.prototype.ngOnInit = function () {
         if (!this.options)
             this.options = [];
+        this.items = [];
+        if (this.item)
+            this.items = [this.item];
+    };
+    SingleSelectInput.prototype.ngOnChanges = function (changes) {
         this.items = [];
         if (this.item)
             this.items = [this.item];
@@ -76,7 +104,7 @@ var SingleSelectInput = (function () {
         core_1.Component({
             selector: 'select-input-1',
             inputs: ['item', 'options'],
-            template: "\n      <ng-select\n        [items]       = \"options | mapToOptions\"\n        [initData]    = \"items | mapToOptions\"\n        [multiple]    = false\n        (data)        = \"refreshValue($event)\"\n      ></ng-select>\n  ",
+            template: "\n    <div *ngIf=\"active\">\n      <ng-select\n        [items]       = \"options | mapToOptions\"\n        [initData]    = \"items | mapToOptions\"\n        [multiple]    = false\n        (data)        = \"refreshValue($event)\"\n      ></ng-select>\n    </div>\n  ",
             directives: [ng2_select_1.SELECT_DIRECTIVES, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES],
             pipes: [pipe_general_1.MapToOptions]
         }), 
@@ -85,14 +113,6 @@ var SingleSelectInput = (function () {
     return SingleSelectInput;
 }());
 exports.SingleSelectInput = SingleSelectInput;
-// @Component({
-//   selector: 'list',
-//   inputs: ['materials'],
-//   template: `<template ngFor [ngForOf]="materials" [ngForTemplate]="contentTemplate"></template>`
-// })
-// export class List {
-//   @ContentChild(TemplateRef) contentTemplate: TemplateRef<any>;
-// }
 var ItemHeader = (function () {
     function ItemHeader() {
     }
@@ -100,7 +120,7 @@ var ItemHeader = (function () {
         core_1.Component({
             selector: 'item-header',
             inputs: ['item', 'icon'],
-            template: "\n      <i class=\"pull-left glyphicon\" \n        [ngClass]=\"{'glyphicon-chevron-down': item == selected, 'glyphicon-chevron-right': item != selected}\"></i>&nbsp;\n        {{item.id}} - {{item.name}} \n        <img class=\"pull-right icon\" src=\"{{icon}}\"/>\n  "
+            template: "\n      <i class=\"pull-left glyphicon\"\n        [ngClass]=\"{'glyphicon-chevron-down': item == selectedItem, 'glyphicon-chevron-right': item != selectedItem}\"></i>&nbsp;\n        {{item.id}} - {{item.name}}\n        <img class=\"pull-right icon\" src=\"{{icon}}\"/>\n  "
         }), 
         __metadata('design:paramtypes', [])
     ], ItemHeader);
@@ -127,6 +147,42 @@ var SortToolbar = (function () {
     return SortToolbar;
 }());
 exports.SortToolbar = SortToolbar;
+var FilterToolbar = (function () {
+    function FilterToolbar() {
+        this.applied = new core_1.EventEmitter();
+    }
+    FilterToolbar.prototype.ngOnInit = function () {
+        if (this.options && (this.options.length > 0))
+            this.mode = this.options[0];
+    };
+    FilterToolbar.prototype.updateMode = function (option) {
+        this.mode = option;
+        this.applied.emit({ filter: this.filter, mode: this.mode });
+    };
+    FilterToolbar.prototype.updateValue = function (event) {
+        this.filter = event.target.value;
+        console.dir(this.filter);
+        //Remove filter if search string is empty
+        if (this.filter.trim().length == 0)
+            this.applied.emit({ filter: this.filter, mode: this.mode });
+    };
+    __decorate([
+        core_1.Output(), 
+        __metadata('design:type', Object)
+    ], FilterToolbar.prototype, "applied", void 0);
+    FilterToolbar = __decorate([
+        core_1.Component({
+            selector: 'filter-toolbar',
+            inputs: ['filter', 'options'],
+            template: "\n      <input type=\"text\" [value]=\"filter\" (input)=\"updateValue($event)\" (keyup.enter)=\"applied.emit({filter: filter, mode: mode});\"/>\n      <div class=\"btn-group\" dropdown>\n        <button type=\"button\" class=\"btn btn-default dropdown-toggle\" aria-label=\"Filter\" dropdownToggle>\n          <span class=\"glyphicon glyphicon-filter\" aria-hidden=\"true\"></span>\n        </button>\n        <ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"Filter\">\n          <li *ngFor=\"let option of options; let i = index\" role=\"menuitem\" (click)=\"updateMode(option)\">\n            <a class=\"dropdown-item\" href=\"#\">{{option}}</a>\n          </li>\n        </ul>\n      </div>\n    ",
+            styles: [':host {float: right;}'],
+            directives: [dropdown_1.DROPDOWN_DIRECTIVES, common_1.CORE_DIRECTIVES]
+        }), 
+        __metadata('design:paramtypes', [])
+    ], FilterToolbar);
+    return FilterToolbar;
+}());
+exports.FilterToolbar = FilterToolbar;
 var EditToolbar = (function () {
     function EditToolbar() {
         this.added = new core_1.EventEmitter();

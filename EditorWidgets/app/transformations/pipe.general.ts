@@ -6,17 +6,23 @@ import {Pipe, PipeTransform, Injectable} from '@angular/core';
 @Pipe({
   name: 'filterBy'
 })
-@Injectable()
 export class FilterBy implements PipeTransform {
   transform(items: any[], args: any[]): any {
-    return items.filter(item => item.id.indexOf(args[0]) !== -1);
+    if (!items) return items;
+    if (!args || args.length < 2) return items;
+    if (args[0].length == 0) return items;
+    let filter = args[0];
+    let property = args[1];
+    return items.filter(item =>
+      (typeof(item[property]) === 'string')?
+        item[property].indexOf(filter) !== -1 :
+        item[property] == filter);
   }
 }
 
 @Pipe({
   name: 'filterByClass'
 })
-@Injectable()
 export class FilterByClass implements PipeTransform {
   transform(items: any[], classNames: any[]): any {
     return items.filter(item => (classNames.indexOf(item.class) !== -1));
@@ -26,7 +32,6 @@ export class FilterByClass implements PipeTransform {
 @Pipe({
   name: 'mapToOptions'
 })
-@Injectable()
 export class MapToOptions implements PipeTransform {
   transform(items: any[]): any {
     if (!items) return [];
@@ -37,9 +42,9 @@ export class MapToOptions implements PipeTransform {
 @Pipe({name: 'orderBy', pure: false})
 export class OrderBy implements PipeTransform {
 
-  transform(item: any, orderField: string): any {
+  transform(item: any, property: string): any {
       var orderType = 'ask';
-      let currentField = orderField;
+      let currentField = property;
       if (currentField[0] === '-') {
         currentField = currentField.substring(1);
         orderType = 'desc';

@@ -189,7 +189,6 @@ export class FilterToolbar {
 
   updateValue(event: any){
     this.filter = event.target.value;
-    console.dir(this.filter);
     //Remove filter if search string is empty
     if (this.filter.trim().length == 0)
       this.applied.emit({filter: this.filter, mode: this.mode});
@@ -240,3 +239,7 @@ export class FormToolbar {
 
   constructor(){};
 }
+
+
+
+

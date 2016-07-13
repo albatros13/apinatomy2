@@ -10,15 +10,15 @@ import {TemplatePanel} from "./template.type";
   selector: 'lyphTemplate-panel',
   inputs: ['item', 'dependencies'],
   template:`
-    <template-panel [item]="item" [dependencies]="dependencies" 
-            (saved)    = "saved.emit($event)"
-            (canceled) = "canceled.emit($event)"
-            (removed)  = "removed.emit($event)">
-      <!--<template-value caption="Length:" [item]="item.length"-->
-       <!--(updated)="updateProperty('length', $event)"></template-value>-->
-      <!--<template-value caption="Width:" [item]="item.width"-->
-       <!--(updated)="updateProperty('width', $event)"></template-value>-->
+    <template-panel [item]="item" 
+      [dependencies]="dependencies" 
+      (saved)    = "saved.emit($event)"
+      (canceled) = "canceled.emit($event)"
+      (removed)  = "removed.emit($event)"
+      (propertyUpdated) = "propertyUpdated.emit($event)">
+  
       <ng-content></ng-content>      
+  
     </template-panel>
   `,
   directives: [SingleSelectInput, TemplateValue, TemplatePanel]

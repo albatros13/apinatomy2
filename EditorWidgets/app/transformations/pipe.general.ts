@@ -15,7 +15,7 @@ export class FilterBy implements PipeTransform {
     let property = args[1];
     return items.filter(item =>
       (typeof(item[property]) === 'string')?
-        item[property].indexOf(filter) !== -1 :
+        item[property].toLowerCase().indexOf(filter.toLowerCase()) !== -1 :
         item[property] == filter);
   }
 }

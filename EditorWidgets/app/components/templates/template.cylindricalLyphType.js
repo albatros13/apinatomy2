@@ -20,7 +20,6 @@ var core_1 = require('@angular/core');
 var component_general_1 = require('../component.general');
 var component_template_1 = require('../component.template');
 var template_lyphType_1 = require("./template.lyphType");
-var ng2_radio_group_1 = require("ng2-radio-group");
 var CylindricalLyphTemplatePanel = (function (_super) {
     __extends(CylindricalLyphTemplatePanel, _super);
     function CylindricalLyphTemplatePanel() {
@@ -30,8 +29,8 @@ var CylindricalLyphTemplatePanel = (function (_super) {
         core_1.Component({
             selector: 'cylindricalLyphTemplate-panel',
             inputs: ['item', 'dependencies'],
-            template: "\n    <lyphTemplate-panel [item]=\"item\" [dependencies]=\"dependencies\" \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n      <ng-content></ng-content>      \n    </lyphTemplate-panel>\n  ",
-            directives: [component_template_1.TemplateValue, component_general_1.SingleSelectInput, template_lyphType_1.LyphTemplatePanel, ng2_radio_group_1.RADIO_GROUP_DIRECTIVES]
+            template: "\n    <lyphTemplate-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n    \n      <ng-content></ng-content>      \n    \n    </lyphTemplate-panel>\n  ",
+            directives: [component_template_1.TemplateValue, component_general_1.SingleSelectInput, template_lyphType_1.LyphTemplatePanel]
         }), 
         __metadata('design:paramtypes', [])
     ], CylindricalLyphTemplatePanel);

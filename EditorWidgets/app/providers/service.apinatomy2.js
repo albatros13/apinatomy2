@@ -61,11 +61,11 @@ var TransportPhenomenon = exports.TransportPhenomenon;
     DistributionType[DistributionType["BoundedNormal"] = "BoundedNormal"] = "BoundedNormal";
 })(exports.DistributionType || (exports.DistributionType = {}));
 var DistributionType = exports.DistributionType;
-(function (SideType) {
-    SideType[SideType["open"] = "open"] = "open";
-    SideType[SideType["closed"] = "closed"] = "closed";
-})(exports.SideType || (exports.SideType = {}));
-var SideType = exports.SideType;
+(function (FormType) {
+    FormType[FormType["open"] = "open"] = "open";
+    FormType[FormType["closed"] = "closed"] = "closed";
+})(exports.FormType || (exports.FormType = {}));
+var FormType = exports.FormType;
 /*CLASSES*/
 //Components
 var Distribution = (function () {
@@ -117,7 +117,7 @@ var Resource = (function () {
         this.name = "";
         this.href = "";
         this.class = ResourceName.Resource;
-        this.id = (obj.id) ? obj.id : 0;
+        this.id = obj.id;
         this.name = (obj.name) ? obj.name : "New item";
         this.href = obj.href;
         this.externals = obj.externals;
@@ -203,15 +203,11 @@ var CylindricalLyphType = (function (_super) {
     __extends(CylindricalLyphType, _super);
     function CylindricalLyphType(obj) {
         _super.call(this, obj);
-        this.plusSide = [SideType.closed];
-        this.minusSide = [SideType.closed];
         this.segmentProviders = [];
         this.segments = [];
         this.minusBorder = null;
         this.plusBorder = null;
         this.class = ResourceName.CylindricalLyphType;
-        this.plusSide = (obj.plusSide) ? obj.plusSide : [SideType.closed];
-        this.minusSide = (obj.minusSide) ? obj.minusSide : [SideType.closed];
         this.segmentProviders = obj.segmentProviders;
         this.segments = obj.segments;
         this.minusBorder = obj.minusBorder;
@@ -252,8 +248,6 @@ var CausalityType = (function (_super) {
     function CausalityType(obj) {
         _super.call(this, obj);
         this.class = ResourceName.CausalityType;
-        this.cause = obj.cause;
-        this.effect = obj.effect;
     }
     return CausalityType;
 }(Type));
@@ -272,9 +266,11 @@ var BorderType = (function (_super) {
     __extends(BorderType, _super);
     function BorderType(obj) {
         _super.call(this, obj);
+        this.form = [FormType.open, FormType.closed];
         this.class = ResourceName.BorderType;
         this.position = obj.position;
         this.nodes = obj.nodes;
+        this.form = obj.form;
     }
     return BorderType;
 }(Type));
@@ -377,6 +373,8 @@ var CausalityTemplate = (function (_super) {
     function CausalityTemplate(obj) {
         _super.call(this, obj);
         this.class = TemplateName.CausalityTemplate;
+        this.cause = obj.cause;
+        this.effect = obj.effect;
     }
     return CausalityTemplate;
 }(Template));
@@ -397,6 +395,7 @@ var BorderTemplate = (function (_super) {
     function BorderTemplate(obj) {
         _super.call(this, obj);
         this.class = TemplateName.BorderTemplate;
+        this.form = obj.form;
     }
     return BorderTemplate;
 }(Template));
@@ -437,11 +436,7 @@ var CylindricalLyphTemplate = (function (_super) {
     __extends(CylindricalLyphTemplate, _super);
     function CylindricalLyphTemplate(obj) {
         _super.call(this, obj);
-        this.plusSide = SideType.closed;
-        this.minusSide = SideType.closed;
         this.class = TemplateName.CylindricalLyphTemplate;
-        this.plusSide = (obj.plusSide) ? obj.plusSide : SideType.closed;
-        this.minusSide = (obj.minusSide) ? obj.minusSide : SideType.closed;
     }
     return CylindricalLyphTemplate;
 }(LyphTemplate));
@@ -473,9 +468,9 @@ var testProcesses = [
     new ProcessType({ id: 50, name: "Sample process" })
 ];
 var testBorders = [
-    new BorderType({ id: 80, name: "Border Cytosol - Plasma" }),
-    new BorderType({ id: 81, name: "Border Apical - Basolateral" }),
-    new BorderType({ id: 82, name: "Border Luminal - Abluminal" })
+    new BorderType({ id: 80, name: "Border Cytosol - Plasma", form: [FormType.open] }),
+    new BorderType({ id: 81, name: "Border Apical - Basolateral", form: [FormType.open] }),
+    new BorderType({ id: 82, name: "Border Luminal - Abluminal", form: [FormType.open] })
 ];
 var ExternalResourceProvider = (function () {
     function ExternalResourceProvider() {
@@ -568,49 +563,38 @@ var CylindricalLyphTypeProvider = (function () {
         var ifl = mtp.items.find(function (x) { return (x.name == "Intracellular fluid"); });
         var bt = btp.templates.find(function (x) { return x.name.indexOf("Border Cytosol - Plasma") > -1; });
         //let border = new BorderType();
-        var cytosol = new CylindricalLyphType({ id: 1000, name: "Cytosol", materials: [ifl], plusSide: [SideType.closed], minusSide: [SideType.closed],
-            innerBorder: bt });
-        var pm = new CylindricalLyphType({ id: 1001, name: "Plasma membrain", plusSide: [SideType.closed], minusSide: [SideType.closed],
-            outerBorder: bt });
+        var cytosol = new CylindricalLyphType({ id: 1000, name: "Cytosol", materials: [ifl], innerBorder: bt });
+        var pm = new CylindricalLyphType({ id: 1001, name: "Plasma membrain", outerBorder: bt });
         this.items = [cytosol, pm];
         this.items.forEach(function (x) {
             return _this.templates.push(new CylindricalLyphTemplate({ id: x.id + 100, name: "T: " + x.name, type: x }));
         });
         var cellLayers = this.items.slice(0, 2);
-        var cell = new CylindricalLyphType({ id: 1002, name: "Cell", plusSide: [SideType.closed], minusSide: [SideType.closed], layers: cellLayers });
+        var cell = new CylindricalLyphType({ id: 1002, name: "Cell", layers: cellLayers });
         this.items.push(cell);
         var bt1 = btp.templates.find(function (x) { return (x.name.indexOf("Border Apical - Basolateral") > -1); });
-        var sec_a = new CylindricalLyphType({ id: 1006, name: "Apical region of the surface epithelial cell",
-            plusSide: [SideType.open], minusSide: [SideType.closed], plusBorder: bt1 });
-        var sec_b = new CylindricalLyphType({ id: 1007, name: "Basolateral region of the epithelial cell",
-            plusSide: [SideType.open], minusSide: [SideType.closed], minusBorder: bt1 });
+        var sec_a = new CylindricalLyphType({ id: 1006, name: "Apical region of the surface epithelial cell", plusBorder: bt1 });
+        var sec_b = new CylindricalLyphType({ id: 1007, name: "Basolateral region of the epithelial cell", minusBorder: bt1 });
         this.items.concat([sec_a, sec_b]);
         var sec_at = new CylindricalLyphTemplate({ id: sec_a.id + 100, name: "T: " + sec_a.name, type: sec_a });
         var sec_bt = new CylindricalLyphTemplate({ id: sec_b.id + 100, name: "T: " + sec_b.name, type: sec_b });
         this.templates.concat([sec_at, sec_bt]);
-        var sec = new CylindricalLyphType({ id: 1004, name: "Surface epithelial cell", plusSide: [SideType.closed], minusSide: [SideType.closed],
-            supertypes: [cell], layerProviders: [cell], measurableProviders: [cell], segments: [sec_at, sec_bt] });
-        var rbc = new CylindricalLyphType({ id: 1003, name: "Red blood cell", plusSide: [SideType.closed], minusSide: [SideType.closed],
-            supertypes: [cell], layerProviders: [cell], measurableProviders: [cell] });
-        var rsec = new CylindricalLyphType({ id: 1005, name: "Renal surface epithelial cell", plusSide: [SideType.closed], minusSide: [SideType.closed],
-            supertypes: [sec], layerProviders: [sec], measurableProviders: [sec], segmentProviders: [sec] });
+        var sec = new CylindricalLyphType({ id: 1004, name: "Surface epithelial cell", supertypes: [cell], layerProviders: [cell], measurableProviders: [cell], segments: [sec_at, sec_bt] });
+        var rbc = new CylindricalLyphType({ id: 1003, name: "Red blood cell", supertypes: [cell], layerProviders: [cell], measurableProviders: [cell] });
+        var rsec = new CylindricalLyphType({ id: 1005, name: "Renal surface epithelial cell", supertypes: [sec], layerProviders: [sec], measurableProviders: [sec], segmentProviders: [sec] });
         this.items.concat([rbc, sec, rsec]);
         var bt2 = btp.templates.find(function (x) { return x.name.indexOf("Border Luminal - Abluminal") > -1; });
-        var sec_lum = new CylindricalLyphType({ id: 1008, name: "Luminal region of the Surface Endothelial Cell",
-            plusSide: [SideType.open], minusSide: [SideType.closed], plusBorder: bt2 });
-        var sec_ablum = new CylindricalLyphType({ id: 1009, name: "Abluminal region of the Surface Endothelial Cell",
-            plusSide: [SideType.open], minusSide: [SideType.closed], minusBorder: bt2 });
+        var sec_lum = new CylindricalLyphType({ id: 1008, name: "Luminal region of the Surface Endothelial Cell", plusBorder: bt2 });
+        var sec_ablum = new CylindricalLyphType({ id: 1009, name: "Abluminal region of the Surface Endothelial Cell", minusBorder: bt2 });
         this.items.concat([sec_lum, sec_ablum]);
         var sec_lumt = new CylindricalLyphTemplate({ id: sec_lum.id + 100, name: "T: " + sec_lum.name, type: sec_lum });
         var sec_ablumt = new CylindricalLyphTemplate({ id: sec_ablum.id + 100, name: "T: " + sec_ablum.name, type: sec_ablum });
         this.templates.concat([sec_lumt, sec_ablumt]);
-        var ec = new CylindricalLyphType({ id: 1010, name: "Endothelial Cell", plusSide: [SideType.closed], minusSide: [SideType.closed],
-            supertypes: [cell], layerProviders: [cell], measurableProviders: [cell], segments: [sec_lumt, sec_ablumt] });
-        var smc = new CylindricalLyphType({ id: 1011, name: "Smooth Muscle Cell", plusSide: [SideType.closed], minusSide: [SideType.closed],
+        var ec = new CylindricalLyphType({ id: 1010, name: "Endothelial Cell", supertypes: [cell], layerProviders: [cell], measurableProviders: [cell], segments: [sec_lumt, sec_ablumt] });
+        var smc = new CylindricalLyphType({ id: 1011, name: "Smooth Muscle Cell",
             supertypes: [cell], layerProviders: [cell], measurableProviders: [cell] });
-        var cmc = new CylindricalLyphType({ id: 1012, name: "Cardiac Muscle Cell", plusSide: [SideType.closed], minusSide: [SideType.closed],
-            supertypes: [sec], layerProviders: [sec], measurableProviders: [sec], segmentProviders: [sec] });
-        this.items.push([ec, smc, cmc]);
+        var cmc = new CylindricalLyphType({ id: 1012, name: "Cardiac Muscle Cell", supertypes: [sec], layerProviders: [sec], measurableProviders: [sec], segmentProviders: [sec] });
+        this.items.concat([ec, smc, cmc]);
     }
     CylindricalLyphTypeProvider = __decorate([
         core_1.Injectable(), 

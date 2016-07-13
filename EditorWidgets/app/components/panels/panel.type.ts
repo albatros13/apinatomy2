@@ -11,23 +11,31 @@ import {TemplateName} from "../../providers/service.apinatomy2";
   inputs: ['item', 'ignore', 'dependencies'],
   template:`
     <resource-panel [item]="item" 
-      [dependencies]="dependencies" [ignore]="ignore"
-          (saved)    = "saved.emit($event)"
-          (canceled) = "canceled.emit($event)"
-          (removed)  = "removed.emit($event)">
-         <div class="input-control" *ngIf="includeProperty('supertypes')">
-            <label for="name">Supertypes: </label>
-            <select-input [items]="item.supertypes" 
-            (updated)="updateProperty('supertypes', $event)" 
-            [options]="dependencies.types"></select-input>
-         </div>
-         <div class="input-control" *ngIf="includeProperty('subtypes')">
-            <label for="name">Subtypes: </label>
-            <select-input [items]="item.subtypes" 
-              (updated)="updateProperty('subtypes', $event)" 
-              [options]="dependencies.types"></select-input>
-         </div>
-        <ng-content></ng-content>      
+      [(dependencies)]="dependencies" 
+      [ignore]="ignore"
+      (saved)    = "saved.emit($event)"
+      (canceled) = "canceled.emit($event)"
+      (removed)  = "removed.emit($event)"
+      (propertyUpdated) = "propertyUpdated.emit($event)">
+  
+      <!--Supertypes-->
+      <div class="input-control" *ngIf="includeProperty('supertypes')">
+        <label for="name">Supertypes: </label>
+        <select-input [items]="item.supertypes" 
+        (updated)="updateProperty('supertypes', $event)" 
+        [options]="dependencies.types"></select-input>
+      </div>
+
+      <!--Subtypes-->
+      <div class="input-control" *ngIf="includeProperty('subtypes')">
+        <label for="name">Subtypes: </label>
+        <select-input [items]="item.subtypes" 
+          (updated)="updateProperty('subtypes', $event)" 
+        [options]="dependencies.types"></select-input>
+      </div>
+
+      <ng-content></ng-content>      
+
     </resource-panel>
   `,
   directives: [ResourcePanel, MultiSelectInput]

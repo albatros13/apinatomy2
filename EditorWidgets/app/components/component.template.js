@@ -41,7 +41,7 @@ var UniformDistributionInput = (function () {
         core_1.Component({
             selector: 'uniformDistribution-input',
             inputs: ['item'],
-            template: "\n    <fieldset>\n      <div class=\"input-control\">\n        <label for=\"min\">Min: </label>\n        <input type=\"number\" min=\"0\" max=\"100\" required [value]=\"item.min\" (input)=\"updateValue('min', $event)\">\n      </div>\n      <div class=\"input-control\">\n        <label for=\"max\">Max: </label>\n        <input type=\"number\" min=\"0\" max=\"100\" required [value]=\"item.max\" (input)=\"updateValue('max', $event)\">\n      </div>\n      <ng-content></ng-content>\n    </fieldset>\n  ",
+            template: "\n    <fieldset>\n      <div class=\"input-control\">\n        <label for=\"min\">Min: </label>\n        <input type=\"number\" min=\"0\" max=\"100\" step=\"0.1\" required [value]=\"item.min\" (input)=\"updateValue('min', $event)\">\n      </div>\n      <div class=\"input-control\">\n        <label for=\"max\">Max: </label>\n        <input type=\"number\" min=\"0\" max=\"100\" step=\"0.1\" required [value]=\"item.max\" (input)=\"updateValue('max', $event)\">\n      </div>\n      <ng-content></ng-content>\n    </fieldset>\n  ",
             directives: []
         }), 
         __metadata('design:paramtypes', [])
@@ -62,7 +62,7 @@ var BoundedNormalDistributionInput = (function (_super) {
         core_1.Component({
             selector: 'boundedNormalDistribution-input',
             inputs: ['item'],
-            template: "\n    <uniformDistribution-input [item]=\"item\" (updated)=\"updated.emit($event)\">\n      <div class=\"input-control\">\n        <label for=\"mean\">Mean: </label>\n        <input type=\"number\" min=\"0\" max=\"100\" required [value]=\"item.mean\" (input)=\"updateValue('mean', $event)\">\n      </div>\n      <div class=\"input-control\">\n        <label for=\"std\">Std: </label>\n        <input type=\"number\" min=\"0\" max=\"100\" required [value]=\"item.std\" (input)=\"updateValue('std', $event)\">\n      </div>\n      <ng-content></ng-content>\n    </uniformDistribution-input>\n  ",
+            template: "\n    <uniformDistribution-input [item]=\"item\" (updated)=\"updated.emit($event)\">\n      <div class=\"input-control\">\n        <label for=\"mean\">Mean: </label>\n        <input type=\"number\" min=\"0\" max=\"100\" step=\"0.1\" required [value]=\"item.mean\" (input)=\"updateValue('mean', $event)\">\n      </div>\n      <div class=\"input-control\">\n        <label for=\"std\">Std: </label>\n        <input type=\"number\" min=\"0\" max=\"100\" step=\"0.1\" required [value]=\"item.std\" (input)=\"updateValue('std', $event)\">\n      </div>\n      <ng-content></ng-content>\n    </uniformDistribution-input>\n  ",
             directives: [UniformDistributionInput]
         }), 
         __metadata('design:paramtypes', [])

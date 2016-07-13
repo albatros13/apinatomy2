@@ -14,10 +14,12 @@ import {FilterByClass} from "../../transformations/pipe.general";
   inputs: ['item', 'ignore', 'dependencies'],
   template:`
     <type-panel [item]="item" 
-      [dependencies]="dependencies" [ignore]="ignore"
-            (saved)    = "saved.emit($event)"
-            (canceled) = "canceled.emit($event)"
-            (removed)  = "removed.emit($event)">
+      [(dependencies)]="dependencies" 
+      [ignore]="ignore"
+      (saved)    = "saved.emit($event)"
+      (canceled) = "canceled.emit($event)"
+      (removed)  = "removed.emit($event)"
+      (propertyUpdated) = "propertyUpdated.emit($event)">
 
         <!--TransportPhenomenon-->
         <div class="input-control" *ngIf="includeProperty('transportPhenomenon')">
@@ -95,37 +97,8 @@ import {FilterByClass} from "../../transformations/pipe.general";
           <select-input [items]="item.channelProviders" 
           (updated)="updateProperty('channelProviders', $event)"           
           [options]="dependencies.channels"></select-input>
-        </div>
-        
-        <!--Source-->
-        <div class="input-control" *ngIf="includeProperty('source')">      
-          <label for="source">Source: </label>
-          <select-input-1 [item] = "item.source" 
-            (updated)="updateProperty('source', $event)"   
-            [options] = "dependencies.templates | filterByClass: [templateName.NodeTemplate]"></select-input-1>
-          <edit-toolbar *ngIf="!item.source" [options]="[templateName.NodeTemplate]" 
-            (added)="addProperty('source', $event)"></edit-toolbar>
-          <nodeTemplate-panel *ngIf="item.source" [item]="item.source" 
-            [dependencies]="{types: dependencies.nodes, templates: dependencies.templates}" 
-            (saved)="updateProperty('source', $event)"    
-            (removed)="updateProperty('source', null)">            
-          </nodeTemplate-panel>
-        </div>
-        
-        <!--Target-->
-        <div class="input-control" *ngIf="includeProperty('target')">      
-          <label for="target">Target: </label>
-          <select-input-1 [item] = "item.target" 
-            (updated)="updateProperty('target', $event)"   
-            [options] = "dependencies.templates | filterByClass: [templateName.NodeTemplate]"></select-input-1>
-          <edit-toolbar *ngIf="!item.target" [options]="[templateName.NodeTemplate]" 
-            (added)="addProperty('target', $event)"></edit-toolbar>
-          <nodeTemplate-panel *ngIf="item.target" [item]="item.target" 
-            [dependencies]="{types: dependencies.nodes, templates: dependencies.templates}" 
-            (saved)="updateProperty('target', $event)"    
-            (removed)="updateProperty('target', null)">
-          </nodeTemplate-panel>
-        </div>        
+        </div>      
+       
     <ng-content></ng-content>      
     </type-panel>
   `,
@@ -136,13 +109,5 @@ export class ProcessTypePanel extends TypePanel{
   dependencies: any;
   @Output() saved = new EventEmitter();
   transportPhenomenon = TransportPhenomenon;
-  
-  addProperty(property: string){
-    this.item[property] = new NodeTemplate({name: "T: " + property + " " + this.item.name});
-    if (this.dependencies) {
-      if (!this.dependencies.templates) this.dependencies.templates = [];
-      this.dependencies.templates.push(this.item[property]);
-    }
-  }
-
+ 
 }

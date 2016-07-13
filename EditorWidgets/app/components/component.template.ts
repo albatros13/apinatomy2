@@ -14,11 +14,11 @@ import {FormToolbar} from "./component.general";
     <fieldset>
       <div class="input-control">
         <label for="min">Min: </label>
-        <input type="number" min="0" max="100" required [value]="item.min" (input)="updateValue('min', $event)">
+        <input type="number" min="0" max="100" step="0.1" required [value]="item.min" (input)="updateValue('min', $event)">
       </div>
       <div class="input-control">
         <label for="max">Max: </label>
-        <input type="number" min="0" max="100" required [value]="item.max" (input)="updateValue('max', $event)">
+        <input type="number" min="0" max="100" step="0.1" required [value]="item.max" (input)="updateValue('max', $event)">
       </div>
       <ng-content></ng-content>
     </fieldset>
@@ -45,11 +45,11 @@ export class UniformDistributionInput {
     <uniformDistribution-input [item]="item" (updated)="updated.emit($event)">
       <div class="input-control">
         <label for="mean">Mean: </label>
-        <input type="number" min="0" max="100" required [value]="item.mean" (input)="updateValue('mean', $event)">
+        <input type="number" min="0" max="100" step="0.1" required [value]="item.mean" (input)="updateValue('mean', $event)">
       </div>
       <div class="input-control">
         <label for="std">Std: </label>
-        <input type="number" min="0" max="100" required [value]="item.std" (input)="updateValue('std', $event)">
+        <input type="number" min="0" max="100" step="0.1" required [value]="item.std" (input)="updateValue('std', $event)">
       </div>
       <ng-content></ng-content>
     </uniformDistribution-input>

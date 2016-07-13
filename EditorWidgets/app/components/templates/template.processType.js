@@ -22,6 +22,7 @@ var component_template_1 = require('../component.template');
 var template_type_1 = require("./template.type");
 var ng2_radio_group_1 = require("ng2-radio-group");
 var service_apinatomy2_1 = require("../../providers/service.apinatomy2");
+var pipe_general_1 = require("../../transformations/pipe.general");
 var ProcessTemplatePanel = (function (_super) {
     __extends(ProcessTemplatePanel, _super);
     function ProcessTemplatePanel() {
@@ -31,9 +32,10 @@ var ProcessTemplatePanel = (function (_super) {
     ProcessTemplatePanel = __decorate([
         core_1.Component({
             selector: 'processTemplate-panel',
-            inputs: ['item', 'dependencies'],
-            template: "\n    <template-panel [item]=\"item\" [dependencies]=\"dependencies\" \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n      <div class=\"input-control\" *ngIf=\"includeProperty('transportPhenomenon')\">\n        <fieldset>\n          <legend>Transport phenomenon:</legend>\n          <radio-group [(ngModel)]=\"item.transportPhenomenon\" [required]=\"true\">\n             <input type=\"radio\" [value]=\"transportPhenomenon.diffusion\">{{transportPhenomenon.diffusion}}&nbsp;\n             <input type=\"radio\" [value]=\"transportPhenomenon.advection\">{{transportPhenomenon.advection}}<br/>\n           </radio-group>\n        </fieldset>\n      </div>\n      <ng-content></ng-content>      \n    </template-panel>\n  ",
-            directives: [component_template_1.TemplateValue, component_general_1.SingleSelectInput, template_type_1.TemplatePanel, ng2_radio_group_1.RADIO_GROUP_DIRECTIVES]
+            inputs: ['item', 'dependencies', 'ignore'],
+            template: "\n    <template-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n      <!--TransportPhenomenon-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('transportPhenomenon')\">\n        <fieldset>\n          <legend>Transport phenomenon:</legend>\n          <radio-group [(ngModel)]=\"item.transportPhenomenon\" [required]=\"true\">\n             <input type=\"radio\" [value]=\"transportPhenomenon.diffusion\">{{transportPhenomenon.diffusion}}&nbsp;\n             <input type=\"radio\" [value]=\"transportPhenomenon.advection\">{{transportPhenomenon.advection}}<br/>\n           </radio-group>\n        </fieldset>\n      </div>\n      \n      <!--ConveyingLyph-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('conveyingLyph')\">\n        <label for=\"conveyingLyph\">Conveying lyph: </label>\n        <select-input-1 [item] = \"item.conveyingLyph\"\n         (updated)=\"updateProperty('conveyingLyph', $event)\"    \n         [options] = \"dependencies.lyphs\"></select-input-1>\n      </div>\n      \n      <!--Source-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('source')\">      \n        <label for=\"source\">Source: </label>\n        <select-input-1 [item] = \"item.source\" \n          (updated)=\"updateProperty('source', $event)\"   \n          [options] = \"dependencies.templates | filterByClass: [templateName.NodeTemplate]\"></select-input-1>\n      </div>\n      \n      <!--Target-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('target')\">      \n        <label for=\"target\">Target: </label>\n        <select-input-1 [item] = \"item.target\" \n          (updated)=\"updateProperty('target', $event)\"   \n          [options] = \"dependencies.templates | filterByClass: [templateName.NodeTemplate]\"></select-input-1>\n      </div>        \n      \n      <ng-content></ng-content>      \n    \n    </template-panel>\n  ",
+            directives: [component_template_1.TemplateValue, component_general_1.SingleSelectInput, template_type_1.TemplatePanel, ng2_radio_group_1.RADIO_GROUP_DIRECTIVES],
+            pipes: [pipe_general_1.FilterByClass]
         }), 
         __metadata('design:paramtypes', [])
     ], ProcessTemplatePanel);

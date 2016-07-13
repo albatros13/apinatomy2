@@ -1,8 +1,45 @@
 import {Component, Directive, OnChanges, Input, Output, ViewChild, ElementRef, Renderer,
   ViewContainerRef, EventEmitter, ComponentResolver} from '@angular/core';
 import {DclWrapperComponent} from "../components/component.test";
+import {SingleSelectInput, MultiSelectInput} from "../components/component.general";
 
 declare var d3:any;
+
+
+@Component({
+  selector: 'property-toolbar',
+  inputs: ['relation', 'options'],
+  template: `
+      <!--Relation to show-->
+      <div class="input-control">
+        <label for="relation">Relation: </label>
+        <select-input-1 [item] = "relation"
+           (updated)="updateProperty('relation', $event)"    
+           [options] = "options">
+        </select-input-1>
+      </div>
+      <!--Relation to show-->
+      <!--<div class="input-control">-->
+        <!--<label for="properties">Properties: </label>-->
+      <!--</div>-->
+      <!---->
+ 
+      <!--Tree layout-->
+      <div class="input-control">
+        <label for="relation">Layout: </label>
+         <select-input-1 [item] = "layout"
+          (itemChanged)="layout = $event.target.value"    
+          [options] = "layouts"></select-input-1>
+      </div>
+  
+    `,
+  directives: [SingleSelectInput, MultiSelectInput]
+})
+export class PropertyToolbar {
+  layout = "bottom";
+  layouts = ["top", "bottom", "left", "right", "radial"];
+}
+
 
 export class TemplateBox{
   model: any;
@@ -18,7 +55,6 @@ export class TemplateBox{
   }
 }
 
-
 @Component({
   selector: 'tree',
   inputs: ['item', 'options'],
@@ -30,13 +66,13 @@ export class TemplateBox{
       </div>
     </div>
   `,
-  directives: [DclWrapperComponent]
+  directives: [DclWrapperComponent]//, PropertyToolbar
 })
 export class TreeWidget implements OnChanges{
   item: any;
   data: any;
   caption: string = "Hierarchy";
-  options: any;
+  options: any; //{property: ,}
   vp: any = {size: {width: 400, height: 600},
     margin: {x: 20, y: 20},
     node: {size: {width: 40, height: 20}}};
@@ -97,7 +133,8 @@ export class TreeWidget implements OnChanges{
     let treeSvg = svg.append("g").attr("class", "tree").attr("width", vp.size.width).attr("height", vp.size.height)
       .attr("transform", "translate(" + vp.margin.x + "," + vp.margin.y + ")");
 
-    let cluster = d3.layout.cluster().size([w, h]);
+    let cluster = d3.layout.tree().size([w, h]);
+
     let diagonal = d3.svg.diagonal().projection((d: any) => [d.x, d.y]);
 
     let nodes = cluster.nodes(data);
@@ -125,7 +162,7 @@ export class TreeWidget implements OnChanges{
          }
       );
 
-    
+
     let text = treeSvg.selectAll("treeLabel").data(nodes)
       .enter()
       .append("g")

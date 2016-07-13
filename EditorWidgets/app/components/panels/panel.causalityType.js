@@ -18,30 +18,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  */
 var core_1 = require('@angular/core');
 var panel_type_1 = require("./panel.type");
-var template_measurableType_1 = require('../templates/template.measurableType');
-var component_general_1 = require('../component.general');
-var service_apinatomy2_1 = require('../../providers/service.apinatomy2');
-var pipe_general_1 = require("../../transformations/pipe.general");
 var CausalityTypePanel = (function (_super) {
     __extends(CausalityTypePanel, _super);
     function CausalityTypePanel() {
         _super.apply(this, arguments);
     }
-    CausalityTypePanel.prototype.addProperty = function (property) {
-        this.item[property] = new service_apinatomy2_1.MeasurableTemplate({ name: "T: " + property + " " + this.item.name });
-        if (this.dependencies) {
-            if (!this.dependencies.templates)
-                this.dependencies.templates = [];
-            this.dependencies.templates.push(this.item[property]);
-        }
-    };
     CausalityTypePanel = __decorate([
         core_1.Component({
             selector: 'causalityType-panel',
             inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <type-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" [ignore]=\"ignore\"\n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n      \n      <!--Cause-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('cause')\">      \n        <label for=\"cause\">Cause: </label>\n        <select-input-1 [item] = \"item.cause\" \n          (updated)=\"updateProperty('cause', $event)\"    \n          [options] = \"dependencies.templates | filterByClass: [templateName.MeasurableTemplate]\"></select-input-1>\n        <edit-toolbar *ngIf=\"!item.cause\" [options]=\"[templateName.MeasurableTemplate]\" \n          (added)=\"addProperty('cause', $event)\"></edit-toolbar>\n        <measurableTemplate-panel [item]=\"item.cause\" \n          [dependencies]=\"{types: dependencies.measurables, templates: dependencies.templates}\" \n          (saved)=\"updateProperty('cause', $event)\"    \n          (removed)=\"updateProperty('cause', null)\">\n        </measurableTemplate-panel>\n      </div>\n      \n      <!--Effect-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('effect')\">      \n        <label for=\"effect\">Effect: </label>\n        <select-input-1 [item] = \"item.effect\" \n          (updated)=\"updateProperty('effect', $event)\"    \n          [options] = \"dependencies.templates | filterByClass: [templateName.MeasurableTemplate]\"></select-input-1>\n        <edit-toolbar *ngIf=\"!item.effect\" [options]=\"[templateName.MeasurableTemplate]\" \n          (added)=\"addProperty('effect', $event)\"></edit-toolbar>\n        <measurableTemplate-panel *ngIf=\"item.effect\" \n          [item]=\"item.effect\" \n          [dependencies]=\"{types: dependencies.measurables, templates: dependencies.templates}\" \n          (saved)=\"updateProperty('effect', $event)\"    \n          (removed)=\"updateProperty('effect',null)\">\n        </measurableTemplate-panel>\n      </div>\n      <ng-content></ng-content>      \n    </type-panel>\n  ",
-            directives: [panel_type_1.TypePanel, template_measurableType_1.MeasurableTemplatePanel, component_general_1.EditToolbar, component_general_1.SingleSelectInput],
-            pipes: [pipe_general_1.FilterByClass]
+            template: "\n    <type-panel [item]=\"item\" \n      [(dependencies)]=\"dependencies\" [ignore]=\"ignore\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n      <ng-content></ng-content>      \n    \n    </type-panel>\n  ",
+            directives: [panel_type_1.TypePanel]
         }), 
         __metadata('design:paramtypes', [])
     ], CausalityTypePanel);

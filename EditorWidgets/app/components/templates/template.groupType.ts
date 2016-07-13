@@ -10,12 +10,15 @@ import {TemplatePanel} from "./template.type";
   selector: 'groupTemplate-panel',
   inputs: ['item', 'dependencies'],
   template:`
-    <template-panel [item]="item" [dependencies]="dependencies" 
-            (saved)    = "saved.emit($event)"
-            (canceled) = "canceled.emit($event)"
-            (removed)  = "removed.emit($event)">
+    <template-panel [item]="item" 
+      [dependencies]="dependencies" 
+      (saved)    = "saved.emit($event)"
+      (canceled) = "canceled.emit($event)"
+      (removed)  = "removed.emit($event)"
+      (propertyUpdated) = "propertyUpdated.emit($event)">
 
       <ng-content></ng-content>      
+
     </template-panel>
   `,
   directives: [TemplateValue, SingleSelectInput, TemplatePanel]

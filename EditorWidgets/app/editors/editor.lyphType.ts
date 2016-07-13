@@ -30,7 +30,7 @@ import {TreeWidget} from '../widgets/widget.tree';
         <div class="col-sm-6">
             <repo-general 
               [items]="items" 
-              caption="Materials" 
+              caption="Test resources" 
               [dependencies]="dependency" 
               (selected)="onItemSelect($event)">
             </repo-general>
@@ -78,9 +78,9 @@ export class LyphTypeEditor {
       cylindricalLyphs: cLyphP.items,
       measurables: measurableP.items,
       processes: processP.items,
-     borders: borderP.items,
-     groups: allGroups,
-     omegaTrees: omegaTreeP.items,
+      borders: borderP.items,
+      groups: allGroups,
+      omegaTrees: omegaTreeP.items,
       templates: allTemplates
     };
     this.items = allTypes;

@@ -17,9 +17,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  * Created by Natallia on 6/21/2016.
  */
 var core_1 = require('@angular/core');
-var component_general_1 = require('../component.general');
 var component_template_1 = require('../component.template');
 var template_type_1 = require("./template.type");
+var component_general_1 = require('../component.general');
+var pipe_general_1 = require("../../transformations/pipe.general");
 var CausalityTemplatePanel = (function (_super) {
     __extends(CausalityTemplatePanel, _super);
     function CausalityTemplatePanel() {
@@ -29,8 +30,9 @@ var CausalityTemplatePanel = (function (_super) {
         core_1.Component({
             selector: 'causalityTemplate-panel',
             inputs: ['item', 'dependencies'],
-            template: "\n    <template-panel [item]=\"item\" [dependencies]=\"dependencies\"  \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n\n      <ng-content></ng-content>      \n    </template-panel>\n  ",
-            directives: [component_template_1.TemplateValue, component_general_1.SingleSelectInput, template_type_1.TemplatePanel]
+            template: "\n    <template-panel [item]=\"item\" \n      [dependencies]=\"dependencies\"  \n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n      <!--Cause-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('cause')\">      \n        <label for=\"cause\">Cause: </label>\n        <select-input-1 [item] = \"item.cause\" \n          (updated)=\"updateProperty('cause', $event)\"    \n          [options] = \"dependencies.templates | filterByClass: [templateName.MeasurableTemplate]\"></select-input-1>\n      </div>\n      \n      <!--Effect-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('effect')\">      \n        <label for=\"effect\">Effect: </label>\n        <select-input-1 [item] = \"item.effect\" \n          (updated)=\"updateProperty('effect', $event)\"    \n          [options] = \"dependencies.templates | filterByClass: [templateName.MeasurableTemplate]\"></select-input-1>\n      </div>\n    \n      <ng-content></ng-content>      \n    \n    </template-panel>\n  ",
+            directives: [component_template_1.TemplateValue, component_general_1.SingleSelectInput, template_type_1.TemplatePanel],
+            pipes: [pipe_general_1.FilterByClass]
         }), 
         __metadata('design:paramtypes', [])
     ], CausalityTemplatePanel);

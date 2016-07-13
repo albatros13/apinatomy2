@@ -61,7 +61,7 @@ var LyphTypeEditor = (function () {
                 service_apinatomy2_1.GroupTypeProvider,
                 service_apinatomy2_1.OmegaTreeTypeProvider
             ],
-            template: "\n    <div class=\"row\">\n        <div class=\"col-sm-6\">\n            <repo-general \n              [items]=\"items\" \n              caption=\"Materials\" \n              [dependencies]=\"dependency\" \n              (selected)=\"onItemSelect($event)\">\n            </repo-general>\n        </div>\n        <div class=\"col-sm-6\">\n          <tree [item]=\"selectedItem\" [options]=\"{transform: true, property: 'materials', depth: 2}\"></tree>\n        </div>\n    </div>\n  ",
+            template: "\n    <div class=\"row\">\n        <div class=\"col-sm-6\">\n            <repo-general \n              [items]=\"items\" \n              caption=\"Test resources\" \n              [dependencies]=\"dependency\" \n              (selected)=\"onItemSelect($event)\">\n            </repo-general>\n        </div>\n        <div class=\"col-sm-6\">\n          <tree [item]=\"selectedItem\" [options]=\"{transform: true, property: 'materials', depth: 2}\"></tree>\n        </div>\n    </div>\n  ",
             directives: [repo_general_1.RepoGeneral, widget_tree_1.TreeWidget]
         }),
         __param(0, core_1.Inject(service_apinatomy2_1.ExternalResourceProvider)),

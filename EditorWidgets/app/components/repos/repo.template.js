@@ -24,6 +24,7 @@ var component_general_1 = require('../component.general');
 var service_apinatomy2_1 = require('../../providers/service.apinatomy2');
 var panel_template_1 = require("./panel.template");
 var repo_abstract_1 = require("./repo.abstract");
+var pipe_general_1 = require("../../transformations/pipe.general");
 var RepoTemplate = (function (_super) {
     __extends(RepoTemplate, _super);
     function RepoTemplate() {
@@ -86,8 +87,10 @@ var RepoTemplate = (function (_super) {
         core_1.Component({
             selector: 'repo-template',
             inputs: ['items', 'caption', 'dependencies', 'types', 'options'],
-            template: "\n    <div class=\"panel panel-warning repo-template\">\n      <div class=\"panel-heading\">{{caption}}</div>\n      <div class=\"panel-body\" >\n        <edit-toolbar [options]=\"types\" (added)=\"onAdded($event)\"></edit-toolbar>\n      \n        <accordion class=\"list-group\" [closeOthers]=\"true\" dnd-sortable-container [dropZones]=\"['lyphTemplate-zone']\" [sortableData]=\"items\">\n          <accordion-group *ngFor=\"let item of items; let i = index\" class=\"list-group-item\" dnd-sortable \n           [sortableIndex]=\"i\" (click)=\"selectedItem = item\">\n            <div accordion-heading><item-header [item]=\"item\" [icon]=\"'images/lyphType.png'\"></item-header></div>\n\n            <div *ngIf=\"!options || !options.headersOnly\">\n              <panel-template *ngIf=\"item == selectedItem\" [item]=\"item\" [dependencies]=\"dependencies\" (saved)=\"onSaved(item, $event)\" (removed)=\"onRemoved(item)\"></panel-template>            \n            </div>\n          </accordion-group>        \n        </accordion>       \n      </div>\n    </div>\n  ",
-            directives: [component_general_1.ItemHeader, component_general_1.EditToolbar, panel_template_1.PanelTemplate, accordion_1.ACCORDION_DIRECTIVES, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES, ng2_dnd_1.DND_DIRECTIVES]
+            template: "\n    <div class=\"panel panel-warning repo-template\">\n      <div class=\"panel-heading\">{{caption}}</div>\n      <div class=\"panel-body\" >\n        <edit-toolbar [options]=\"types\" (added)=\"onAdded($event)\"></edit-toolbar>\n        <filter-toolbar [filter]=\"searchString\" [options]=\"['Name', 'ID']\" (applied)=\"onFiltered($event)\"></filter-toolbar>\n          \n        <accordion class=\"list-group\" [closeOthers]=\"true\" dnd-sortable-container [dropZones]=\"['lyphTemplate-zone']\" [sortableData]=\"items\">\n          <accordion-group *ngFor=\"let item of items; let i = index\" class=\"list-group-item\" dnd-sortable \n           [sortableIndex]=\"i\" (click)=\"selectedItem = item\">\n            <div accordion-heading><item-header [item]=\"item\" [icon]=\"'images/lyphType.png'\"></item-header></div>\n\n            <div *ngIf=\"!options || !options.headersOnly\">\n              <panel-template *ngIf=\"item == selectedItem\" \n                [item]=\"item\" \n                [(dependencies)]=\"dependencies\" \n                (saved)=\"onSaved(item, $event)\" \n                (removed)=\"onRemoved(item)\"></panel-template>            \n            </div>\n          </accordion-group>        \n        </accordion>       \n      </div>\n    </div>\n  ",
+            directives: [component_general_1.ItemHeader, component_general_1.EditToolbar, component_general_1.FilterToolbar,
+                panel_template_1.PanelTemplate, accordion_1.ACCORDION_DIRECTIVES, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES, ng2_dnd_1.DND_DIRECTIVES],
+            pipes: [pipe_general_1.FilterBy]
         }), 
         __metadata('design:paramtypes', [])
     ], RepoTemplate);

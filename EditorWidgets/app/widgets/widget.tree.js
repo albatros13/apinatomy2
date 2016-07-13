@@ -10,6 +10,24 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require('@angular/core');
 var component_test_1 = require("../components/component.test");
+var component_general_1 = require("../components/component.general");
+var PropertyToolbar = (function () {
+    function PropertyToolbar() {
+        this.layout = "bottom";
+        this.layouts = ["top", "bottom", "left", "right", "radial"];
+    }
+    PropertyToolbar = __decorate([
+        core_1.Component({
+            selector: 'property-toolbar',
+            inputs: ['relation', 'options'],
+            template: "\n      <!--Relation to show-->\n      <div class=\"input-control\">\n        <label for=\"relation\">Relation: </label>\n        <select-input-1 [item] = \"relation\"\n           (updated)=\"updateProperty('relation', $event)\"    \n           [options] = \"options\">\n        </select-input-1>\n      </div>\n      <!--Relation to show-->\n      <!--<div class=\"input-control\">-->\n        <!--<label for=\"properties\">Properties: </label>-->\n      <!--</div>-->\n      <!---->\n \n      <!--Tree layout-->\n      <div class=\"input-control\">\n        <label for=\"relation\">Layout: </label>\n         <select-input-1 [item] = \"layout\"\n          (itemChanged)=\"layout = $event.target.value\"    \n          [options] = \"layouts\"></select-input-1>\n      </div>\n  \n    ",
+            directives: [component_general_1.SingleSelectInput, component_general_1.MultiSelectInput]
+        }), 
+        __metadata('design:paramtypes', [])
+    ], PropertyToolbar);
+    return PropertyToolbar;
+}());
+exports.PropertyToolbar = PropertyToolbar;
 var TemplateBox = (function () {
     function TemplateBox(model) {
         this.model = model;
@@ -77,7 +95,7 @@ var TreeWidget = (function () {
         svg.selectAll("g").remove();
         var treeSvg = svg.append("g").attr("class", "tree").attr("width", vp.size.width).attr("height", vp.size.height)
             .attr("transform", "translate(" + vp.margin.x + "," + vp.margin.y + ")");
-        var cluster = d3.layout.cluster().size([w, h]);
+        var cluster = d3.layout.tree().size([w, h]);
         var diagonal = d3.svg.diagonal().projection(function (d) { return [d.x, d.y]; });
         var nodes = cluster.nodes(data);
         var links = cluster.links(nodes);
@@ -175,7 +193,7 @@ var TreeWidget = (function () {
             selector: 'tree',
             inputs: ['item', 'options'],
             template: "\n    <div class=\"panel panel-success\">\n      <div class=\"panel-heading\">{{caption}}</div>\n      <div class=\"panel-body\" (window:resize)=\"onResize($event)\">\n        <svg #treeSvg class=\"svg-widget\"></svg>\n      </div>\n    </div>\n  ",
-            directives: [component_test_1.DclWrapperComponent]
+            directives: [component_test_1.DclWrapperComponent] //, PropertyToolbar
         }), 
         __metadata('design:paramtypes', [core_1.Renderer, core_1.ElementRef, core_1.ViewContainerRef, core_1.ComponentResolver])
     ], TreeWidget);

@@ -14,32 +14,13 @@ import {FilterByClass, FilterBy} from "../../transformations/pipe.general";
   inputs: ['item', 'ignore', 'dependencies'],
   template:`
     <materialType-panel [item]="item" 
-        [dependencies]="dependencies" 
+        [(dependencies)]="dependencies" 
         [ignore]="ignore"
-
-            (saved)    = "saved.emit($event)"
-            (canceled) = "canceled.emit($event)"
-            (removed)  = "removed.emit($event)">
+        (saved)    = "saved.emit($event)"
+        (canceled) = "canceled.emit($event)"
+        (removed)  = "removed.emit($event)"
+        (propertyUpdated) = "propertyUpdated.emit($event)">
         
-        <!--Classified externals-->
-        <!--FMA-->
-        <div class="input-control" *ngIf="includeProperty('fma')">
-          <label for="fma">FMA: </label>
-          <select-input 
-            [items]="item.externals | filterBy: ['fma', 'type']" 
-            (updated)="updateProperty('externals', $event)" 
-            [options]="dependencies.externals | filterBy: ['fma', 'type']"></select-input>
-        </div>
-
-        <!--Cocomac-->
-        <div class="input-control" *ngIf="includeProperty('cocomac')">
-          <label for="cocomac">Cocomac: </label>
-          <select-input 
-            [items]="item.externals | filterBy: ['cocomac', 'type']" 
-            (updated)="updateProperty('externals', $event)" 
-            [options]="dependencies.externals | filterBy: ['cocomac', 'type']"></select-input>
-        </div>
-
         <!--Species-->
         <div class="input-control" *ngIf="includeProperty('species')">
           <label for="species">Species: </label>
@@ -116,13 +97,7 @@ import {FilterByClass, FilterBy} from "../../transformations/pipe.general";
         <!--InnerBorder-->
         <div class="input-control" *ngIf="includeProperty('innerBorder')">      
           <label for="item.innerBorder">Inner border: </label>
-          <select-input-1 [item] = "item.innerBorder" 
-            (updated)="updateProperty('innerBorder', $event)"   
-            [options] = "dependencies.templates | filterByClass: [templateName.BorderTemplate]"></select-input-1>
-          <edit-toolbar *ngIf="!item.innerBorder" 
-            (added)="addProperty('innerBorder', $event)"
-            [options]="[templateName.BorderTemplate]"></edit-toolbar>
-          <borderTemplate-panel *ngIf="item.innerBorder" [item]="item.innerBorder" 
+          <borderTemplate-panel [item]="item.innerBorder" 
             [dependencies]="{types: dependencies.borders, templates: dependencies.templates}" 
             (saved)="updateProperty('innerBorder', $event)"    
             (removed)="updateProperty('innerBorder', null)">
@@ -132,20 +107,15 @@ import {FilterByClass, FilterBy} from "../../transformations/pipe.general";
         <!--OuterBorder-->
         <div class="input-control" *ngIf="includeProperty('outerBorder')">      
           <label for="item.outerBorder">Outer border: </label>
-          <select-input-1 [item] = "item.outerBorder" 
-            (updated)="updateProperty('outerBorder', $event)"   
-            [options] = "dependencies.templates | filterByClass: [templateName.BorderTemplate]">
-          </select-input-1>
-          <edit-toolbar *ngIf="!item.outerBorder" 
-            (added)="addProperty('outerBorder', $event)"
-            [options]="[templateName.BorderTemplate]"></edit-toolbar>
-          <borderTemplate-panel *ngIf="item.outerBorder" [item]="item.outerBorder" 
+          <borderTemplate-panel [item]="item.outerBorder" 
             [dependencies]="{types: dependencies.borders, templates: dependencies.templates}" 
             (saved)="updateProperty('outerBorder', $event)"    
             (removed)="updateProperty('outerBorder', null)">
           </borderTemplate-panel>
         </div>            
+        
         <ng-content></ng-content>
+        
     </materialType-panel>
   `,
   directives: [MaterialTypePanel, MultiSelectInput, SingleSelectInput, RepoTemplate, BorderTemplatePanel, EditToolbar],

@@ -28,8 +28,8 @@ var OmegaTreeTemplatePanel = (function (_super) {
     OmegaTreeTemplatePanel = __decorate([
         core_1.Component({
             selector: 'omegaTreeTemplate-panel',
-            inputs: ['item', 'dependencies'],
-            template: "\n    <template-panel [item]=\"item\" [dependencies]=\"dependencies\" \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n      <div class=\"input-control\" *ngIf=\"includeProperty('minusSide')\">\n          <fieldset>\n            <legend>Minus side:</legend>\n            <radio-group [(ngModel)]=\"item.plusSide\" [required]=\"true\">\n             <input type=\"radio\" [value]=\"sideType.open\">{{sideType.open}}&nbsp;\n             <input type=\"radio\" [value]=\"sideType.closed\">{{sideType.closed}}<br/>\n            </radio-group>\n          </fieldset>\n        </div>\n        <div class=\"input-control\" *ngIf=\"includeProperty('plusSide')\">\n          <fieldset>\n            <legend>Plus side:</legend>\n             <radio-group [(ngModel)]=\"item.minusSide\" [required]=\"true\">\n               <input type=\"radio\" [value]=\"sideType.open\">{{sideType.open}}&nbsp;\n               <input type=\"radio\" [value]=\"sideType.closed\">{{sideType.closed}}<br/>\n             </radio-group>\n          </fieldset>\n      </div>\n      <ng-content></ng-content>      \n    </template-panel>\n  ",
+            inputs: ['item', 'dependencies', 'ignore'],
+            template: "\n    <template-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n           \n      <ng-content></ng-content>      \n    \n    </template-panel>\n  ",
             directives: [component_template_1.TemplateValue, component_general_1.SingleSelectInput, template_groupType_1.GroupTemplatePanel]
         }), 
         __metadata('design:paramtypes', [])

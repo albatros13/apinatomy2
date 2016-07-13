@@ -1,17 +1,18 @@
 /**
  * Created by Natallia on 6/28/2016.
  */
-import {Component, Output, EventEmitter} from '@angular/core';
+import {Component} from '@angular/core';
 import {CORE_DIRECTIVES, FORM_DIRECTIVES} from '@angular/common';
 import {ACCORDION_DIRECTIVES} from 'ng2-bootstrap/components/accordion';
 import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
-import {ItemHeader, EditToolbar} from '../component.general';
+import {ItemHeader, EditToolbar, FilterToolbar} from '../component.general';
 import {ResourceName, TemplateName,
   Template, BorderTemplate, NodeTemplate, CausalityTemplate, ProcessTemplate, MeasurableTemplate,
   GroupTemplate, OmegaTreeTemplate,
   LyphTemplate, CylindricalLyphTemplate} from '../../providers/service.apinatomy2';
 import {PanelTemplate} from "./panel.template";
 import {RepoAbstract} from "./repo.abstract";
+import {FilterBy} from "../../transformations/pipe.general";
 
 @Component({
   selector: 'repo-template',
@@ -21,21 +22,28 @@ import {RepoAbstract} from "./repo.abstract";
       <div class="panel-heading">{{caption}}</div>
       <div class="panel-body" >
         <edit-toolbar [options]="types" (added)="onAdded($event)"></edit-toolbar>
-      
+        <filter-toolbar [filter]="searchString" [options]="['Name', 'ID']" (applied)="onFiltered($event)"></filter-toolbar>
+          
         <accordion class="list-group" [closeOthers]="true" dnd-sortable-container [dropZones]="['lyphTemplate-zone']" [sortableData]="items">
           <accordion-group *ngFor="let item of items; let i = index" class="list-group-item" dnd-sortable 
            [sortableIndex]="i" (click)="selectedItem = item">
             <div accordion-heading><item-header [item]="item" [icon]="'images/lyphType.png'"></item-header></div>
 
             <div *ngIf="!options || !options.headersOnly">
-              <panel-template *ngIf="item == selectedItem" [item]="item" [dependencies]="dependencies" (saved)="onSaved(item, $event)" (removed)="onRemoved(item)"></panel-template>            
+              <panel-template *ngIf="item == selectedItem" 
+                [item]="item" 
+                [(dependencies)]="dependencies" 
+                (saved)="onSaved(item, $event)" 
+                (removed)="onRemoved(item)"></panel-template>            
             </div>
           </accordion-group>        
         </accordion>       
       </div>
     </div>
   `,
-  directives: [ItemHeader, EditToolbar, PanelTemplate, ACCORDION_DIRECTIVES, CORE_DIRECTIVES, FORM_DIRECTIVES, DND_DIRECTIVES]
+  directives: [ItemHeader, EditToolbar, FilterToolbar,
+    PanelTemplate, ACCORDION_DIRECTIVES, CORE_DIRECTIVES, FORM_DIRECTIVES, DND_DIRECTIVES],
+  pipes: [FilterBy]
 })
 export class RepoTemplate extends RepoAbstract{
   templateNames = TemplateName;

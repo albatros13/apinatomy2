@@ -1,7 +1,7 @@
 /**
  * Created by Natallia on 6/18/2016.
  */
-import {Component, Output, EventEmitter} from '@angular/core';
+import {Component} from '@angular/core';
 import {CORE_DIRECTIVES, FORM_DIRECTIVES} from '@angular/common';
 import {ACCORDION_DIRECTIVES} from 'ng2-bootstrap/components/accordion';
 import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
@@ -24,7 +24,7 @@ import {RepoAbstract} from "./repo.abstract";
         <div class="panel-body">
           <sort-toolbar [options]="['ID', 'Name']" (sorted)="onSorted($event)"></sort-toolbar>
           <edit-toolbar [options]="types" (added)="onAdded($event)"></edit-toolbar>
-          <filter-toolbar [filter]="searchString" [options]="['ID', 'Name']" (applied)="onFiltered($event)"></filter-toolbar>
+          <filter-toolbar [filter]="searchString" [options]="['Name', 'ID']" (applied)="onFiltered($event)"></filter-toolbar>
           
           <accordion class="list-group" [closeOthers]="true" 
           dnd-sortable-container [dropZones]="zones" [sortableData]="items">
@@ -34,7 +34,7 @@ import {RepoAbstract} from "./repo.abstract";
 
             <div *ngIf="!options || !options.headersOnly">
               <panel-general *ngIf="item == selectedItem" [item]="item" 
-                [dependencies]="dependencies" 
+                [(dependencies)]="dependencies" 
                 (saved)="onSaved(item, $event)" 
                 (canceled)="onCanceled($event)"
                 (removed)="onRemoved(item)">

@@ -29,7 +29,7 @@ var MeasurableTemplatePanel = (function (_super) {
         core_1.Component({
             selector: 'measurableTemplate-panel',
             inputs: ['item', 'dependencies'],
-            template: "\n    <template-panel [item]=\"item\" [dependencies]=\"dependencies\" \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n      <ng-content></ng-content>      \n    </template-panel>\n  ",
+            template: "\n    <template-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <ng-content></ng-content>      \n\n    </template-panel>\n  ",
             directives: [component_template_1.TemplateValue, component_general_1.SingleSelectInput, template_type_1.TemplatePanel]
         }), 
         __metadata('design:paramtypes', [])

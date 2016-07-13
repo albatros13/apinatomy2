@@ -5,29 +5,38 @@ import {Component} from '@angular/core';
 import {SingleSelectInput, MultiSelectInput} from '../component.general';
 import {TemplateValue} from '../component.template';
 import {ResourcePanel} from "../panels/panel.resource";
+import {TemplateName} from "../../providers/service.apinatomy2";
 
 @Component({
   selector: 'template-panel',
-  inputs: ['item', 'dependencies'],
+  inputs: ['item', 'dependencies', 'ignore'],
   template:`
     <resource-panel [item]="item" 
+      [dependencies]="dependencies.types"
       [ignore]="['externals']"  
-            (saved)    = "saved.emit($event)"
-            (canceled) = "canceled.emit($event)"
-            (removed)  = "removed.emit($event)">
+      (saved)    = "saved.emit($event)"
+      (canceled) = "canceled.emit($event)"
+      (removed)  = "removed.emit($event)"
+      (propertyUpdated) = "propertyUpdated.emit($event)">
+    
+      <!--Type-->
       <div class="input-control">
         <label for="type">Type: </label>
         <select-input-1 [item] = "item.type"
          (updated)="updateProperty('type', $event)"    
          [options] = "dependencies.types"></select-input-1>
       </div>
-      <fieldset>
-        <legend>Template:</legend>
+    
+      <!--Template-->
+      <div *ngIf="includeProperty('template')">
+
+        <!--Cardinality base-->
         <template-value caption="Cardinality base:" 
           [item]="item.cardinalityBase"
           (updated)="updateProperty('cardinalityBase', $event)"
           ></template-value>
         
+        <!--Cardinality multipliers-->
         <div class="input-control" *ngIf="includeProperty('cardinalityMultipliers')">
           <label for="cardinalityMultipliers">Cardinality multipliers: </label>
             <select-input [items]="item.cardinalityMultipliers" 
@@ -35,10 +44,12 @@ import {ResourcePanel} from "../panels/panel.resource";
             [options]="dependencies.templates"></select-input>  
         </div>
         <ng-content></ng-content>           
-      </fieldset>
+      </div>
     </resource-panel>
   `,
   directives: [TemplateValue, SingleSelectInput, MultiSelectInput, ResourcePanel]
 })
-export class TemplatePanel extends ResourcePanel{}
+export class TemplatePanel extends ResourcePanel{
+  protected templateName = TemplateName;
+}
 

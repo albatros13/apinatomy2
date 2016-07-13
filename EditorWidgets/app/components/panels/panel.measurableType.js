@@ -18,6 +18,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  */
 var core_1 = require('@angular/core');
 var panel_type_1 = require("./panel.type");
+var component_general_1 = require('../component.general');
 var MeasurableTypePanel = (function (_super) {
     __extends(MeasurableTypePanel, _super);
     function MeasurableTypePanel() {
@@ -27,8 +28,8 @@ var MeasurableTypePanel = (function (_super) {
         core_1.Component({
             selector: 'measurableType-panel',
             inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <type-panel [item]=\"item\" [dependencies]=\"dependencies\" \n      [ignore]=\"ignore\" \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n      <div class=\"input-control\">\n       <label for=\"quality\">Quality: </label>\n       <input type=\"text\" required [(ngModel)]=\"item.quality\">\n      </div>\n      <div class=\"input-control\" *ngIf=\"includeProperty('materials')\">\n        <label for=\"materials\">Materials: </label>\n        <select-input [items]=\"item.materials\" \n        (updated)=\"updateProperty('materials', $event)\"     \n        [options]=\"dependencies.materials\"></select-input>\n      </div>   \n      <ng-content></ng-content>      \n    </type-panel>\n  ",
-            directives: [panel_type_1.TypePanel]
+            template: "\n    <type-panel [item]=\"item\" \n      [(dependencies)]=\"dependencies\" \n      [ignore]=\"ignore\" \n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n       <!--Quality-->\n      <div class=\"input-control\">\n        <label for=\"quality\">Quality: </label>\n        <input type=\"text\" required [(ngModel)]=\"item.quality\">\n      </div>\n      \n      <!--Materials-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('materials')\">\n        <label for=\"materials\">Materials: </label>\n        <select-input [items]=\"item.materials\" \n        (updated)=\"updateProperty('materials', $event)\"     \n        [options]=\"dependencies.materials\"></select-input>\n      </div>   \n      \n      <ng-content></ng-content>   \n         \n    </type-panel>\n  ",
+            directives: [panel_type_1.TypePanel, component_general_1.MultiSelectInput]
         }), 
         __metadata('design:paramtypes', [])
     ], MeasurableTypePanel);

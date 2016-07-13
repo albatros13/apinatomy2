@@ -26,7 +26,7 @@ var FilterBy = (function () {
         var property = args[1];
         return items.filter(function (item) {
             return (typeof (item[property]) === 'string') ?
-                item[property].indexOf(filter) !== -1 :
+                item[property].toLowerCase().indexOf(filter.toLowerCase()) !== -1 :
                 item[property] == filter;
         });
     };

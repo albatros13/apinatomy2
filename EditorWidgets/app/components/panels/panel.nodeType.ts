@@ -10,15 +10,20 @@ import {RepoTemplate} from '../repos/repo.template';
   inputs: ['item', 'ignore', 'dependencies'],
   template:`
     <type-panel [item]="item" 
-      [dependencies]="dependencies" 
+      [(dependencies)]="dependencies" 
       [ignore]="ignore"
-            (saved)    = "saved.emit($event)"
-            (canceled) = "canceled.emit($event)"
-            (removed)  = "removed.emit($event)">
+      (saved)    = "saved.emit($event)"
+      (canceled) = "canceled.emit($event)"
+      (removed)  = "removed.emit($event)"
+      (propertyUpdated) = "propertyUpdated.emit($event)">
+
+      <!--Channels-->
       <repo-template caption="Channels" [items] = "item.channels" 
         (updated)="updateProperty('channels', $event)"     
         [dependencies] = "dependencies" [types]="[templateName.NodeTemplate]"></repo-template>
+      
       <ng-content></ng-content>      
+    
     </type-panel>
   `,
   directives: [TypePanel, RepoTemplate]

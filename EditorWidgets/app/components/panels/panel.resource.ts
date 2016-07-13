@@ -25,7 +25,7 @@ import {MultiSelectInput, FormToolbar} from '../component.general';
                 <input type="text" [(ngModel)]="item.name">
               </div>
               <div class="input-control" *ngIf="includeProperty('externals')">
-                <label for="externals">Externals: </label>
+                <label for="externals">Annotations: </label>
                 <select-input 
                 [items]="item.externals" 
                 (updated)="updateProperty('externals', $event)" 
@@ -44,6 +44,7 @@ export class ResourcePanel {
   @Output() saved = new EventEmitter();
   @Output() canceled = new EventEmitter();
   @Output() removed = new EventEmitter();
+  @Output() propertyUpdated = new EventEmitter();
 
   constructor(){}
 
@@ -54,5 +55,6 @@ export class ResourcePanel {
 
   updateProperty(property: string, selectedItems: Array<any>){
     this.item[property] = selectedItems;
+    this.propertyUpdated.emit({property: property, values: selectedItems});
   }
 }

@@ -87,9 +87,6 @@ interface ILyphType extends IMaterialType{
 }
 
 interface ICylindricalLyphType extends ILyphType{
-  plusSide?: Array<SideType>;
-  minusSide?: Array<SideType>;
-
   segmentProviders?: Array<ICylindricalLyphType>;
   segments?: Array<ICylindricalLyphTemplate>;
   minusBorder?: IBorderTemplate;
@@ -103,6 +100,7 @@ interface INodeType extends IType{
 interface IBorderType extends IType{
   position?: any;
   nodes?: Array<INodeTemplate>;
+  form?: Array<FormType>;
 }
 
 interface IProcessType extends IType{
@@ -130,10 +128,7 @@ interface IMeasurableType extends IType{
   materials?: Array<IMaterialType>;
 }
 
-interface ICausalityType extends IType{
-  cause?: IMeasurableTemplate;
-  effect?: IMeasurableTemplate;
-}
+interface ICausalityType extends IType{}
 
 interface IGroupType extends IType{
   elements?: Array<ITemplate>;
@@ -160,8 +155,6 @@ interface ILyphTemplate extends ITemplate{
 
 interface ICylindricalLyphTemplate extends ILyphTemplate{
   type?: ICylindricalLyphType;
-  plusSide?: SideType;
-  minusSide?: SideType;
 }
 
 interface INodeTemplate extends ITemplate{
@@ -172,6 +165,7 @@ interface INodeTemplate extends ITemplate{
 
 interface IBorderTemplate extends ITemplate{
   type?: IBorderType;
+  form?: FormType;
 }
 
 interface IProcessTemplate extends ITemplate{
@@ -186,6 +180,8 @@ interface IMeasurableTemplate extends ITemplate{
 
 interface ICausalityTemplate extends ITemplate{
   type?: ICausalityType;
+  cause?: IMeasurableTemplate;
+  effect?: IMeasurableTemplate;
 }
 
 interface IGroupTemplate extends ITemplate{
@@ -249,7 +245,7 @@ export enum DistributionType {
   BoundedNormal = <any>"BoundedNormal"
 }
 
-export enum SideType {
+export enum FormType {
   open       = <any>"open",
   closed     = <any>"closed"
 }
@@ -306,7 +302,7 @@ export class Resource implements IResource{
   public externals: Array<IExternalResource>;
 
   constructor(obj: IResource = {}){
-    this.id = (obj.id)? obj.id: 0;
+    this.id = obj.id;
     this.name = (obj.name)? obj.name: "New item";
     this.href = obj.href;
     this.externals = obj.externals;
@@ -388,8 +384,6 @@ export class LyphType extends MaterialType implements ILyphType{
 }
 
 export class CylindricalLyphType extends LyphType implements ICylindricalLyphType{
-  public plusSide: Array<SideType> = [SideType.closed];
-  public minusSide: Array<SideType> = [SideType.closed];
   public segmentProviders: Array<ICylindricalLyphType> = [];
   public segments: Array<ICylindricalLyphTemplate> = [];
   public minusBorder: IBorderTemplate = null;
@@ -398,8 +392,6 @@ export class CylindricalLyphType extends LyphType implements ICylindricalLyphTyp
   constructor(obj: ICylindricalLyphType){
     super(obj);
     this.class = ResourceName.CylindricalLyphType;
-    this.plusSide = (obj.plusSide)? obj.plusSide: [SideType.closed];
-    this.minusSide = (obj.minusSide)? obj.minusSide: [SideType.closed];
     this.segmentProviders = obj.segmentProviders;
     this.segments = obj.segments;
     this.minusBorder = obj.minusBorder;
@@ -441,14 +433,9 @@ export class MeasurableType extends Type implements IMeasurableType{
 }
 
 export class CausalityType extends Type implements ICausalityType{
-  public cause: IMeasurableTemplate;
-  public effect: IMeasurableTemplate;
-
   constructor(obj: ICausalityType){
     super(obj);
     this.class = ResourceName.CausalityType;
-    this.cause = obj.cause;
-    this.effect = obj.effect;
   }
 }
 
@@ -463,14 +450,16 @@ export class NodeType extends Type implements INodeType{
 }
 
 export class BorderType extends Type implements IBorderType{
-  public position: any;
+  public position: Template;
   public nodes: Array<INodeTemplate>;
+  public form: Array<FormType> = [FormType.open, FormType.closed];
 
   constructor(obj: IBorderType){
     super(obj);
     this.class = ResourceName.BorderType;
     this.position = obj.position;
     this.nodes = obj.nodes;
+    this.form = obj.form;
   }
 }
 
@@ -573,10 +562,14 @@ export class ProcessTemplate extends Template implements IProcessTemplate{
 
 export class CausalityTemplate extends Template implements ICausalityTemplate{
   public type: ICausalityType;
+  public cause: IMeasurableTemplate;
+  public effect: IMeasurableTemplate;
 
   constructor(obj: ICausalityTemplate){
     super(obj);
     this.class = TemplateName.CausalityTemplate;
+    this.cause = obj.cause;
+    this.effect = obj.effect;
   }
 }
 
@@ -595,10 +588,12 @@ export class NodeTemplate extends Template implements INodeTemplate{
 
 export class BorderTemplate extends Template implements IBorderTemplate{
   public type: IBorderType;
+  public form: FormType;
 
   constructor(obj: IBorderTemplate){
     super(obj);
     this.class = TemplateName.BorderTemplate;
+    this.form = obj.form;
   }
 }
 
@@ -637,14 +632,9 @@ export class LyphTemplate extends Template implements ILyphTemplate{
 
 export class CylindricalLyphTemplate extends LyphTemplate implements ICylindricalLyphTemplate{
   public type: IProcessType;
-  public plusSide: SideType = SideType.closed;
-  public minusSide: SideType = SideType.closed;
-
   constructor(obj: ICylindricalLyphTemplate){
     super(obj);
     this.class = TemplateName.CylindricalLyphTemplate;
-    this.plusSide = (obj.plusSide)? obj.plusSide: SideType.closed;
-    this.minusSide = (obj.minusSide)? obj.minusSide: SideType.closed;
   }
 }
 
@@ -679,11 +669,10 @@ var testProcesses = [
 ];
 
 var testBorders = [
-  new BorderType({id: 80, name: "Border Cytosol - Plasma"}),
-  new BorderType({id: 81, name: "Border Apical - Basolateral"}),
-  new BorderType({id: 82, name: "Border Luminal - Abluminal"})
+  new BorderType({id: 80, name: "Border Cytosol - Plasma", form: [FormType.open]}),
+  new BorderType({id: 81, name: "Border Apical - Basolateral", form: [FormType.open]}),
+  new BorderType({id: 82, name: "Border Luminal - Abluminal", form: [FormType.open]})
 ];
-
 
 @Injectable()
 export class ExternalResourceProvider {
@@ -765,11 +754,9 @@ export class CylindricalLyphTypeProvider {
 
     //let border = new BorderType();
     let cytosol =  new CylindricalLyphType(
-      {id: 1000, name: "Cytosol", materials: [ifl], plusSide: [SideType.closed], minusSide: [SideType.closed],
-      innerBorder: bt});
+      {id: 1000, name: "Cytosol", materials: [ifl], innerBorder: bt});
     let pm =  new CylindricalLyphType(
-      {id: 1001, name: "Plasma membrain", plusSide: [SideType.closed], minusSide: [SideType.closed],
-      outerBorder: bt});
+      {id: 1001, name: "Plasma membrain", outerBorder: bt});
 
     this.items = [cytosol, pm];
     this.items.forEach(x =>
@@ -778,18 +765,16 @@ export class CylindricalLyphTypeProvider {
     let cellLayers = this.items.slice(0,2);
 
     let cell = new CylindricalLyphType(
-      {id: 1002, name: "Cell", plusSide: [SideType.closed], minusSide: [SideType.closed], layers: cellLayers});
+      {id: 1002, name: "Cell", layers: cellLayers});
 
     this.items.push(cell);
 
     let bt1 = btp.templates.find(x => (x.name.indexOf("Border Apical - Basolateral") > -1));
 
     let sec_a = new CylindricalLyphType(
-      {id: 1006, name: "Apical region of the surface epithelial cell",
-        plusSide: [SideType.open], minusSide: [SideType.closed], plusBorder: bt1});
+      {id: 1006, name: "Apical region of the surface epithelial cell", plusBorder: bt1});
     let sec_b = new CylindricalLyphType(
-      {id: 1007, name: "Basolateral region of the epithelial cell",
-        plusSide: [SideType.open], minusSide: [SideType.closed], minusBorder: bt1});
+      {id: 1007, name: "Basolateral region of the epithelial cell", minusBorder: bt1});
 
     this.items.concat([sec_a, sec_b]);
 
@@ -798,25 +783,20 @@ export class CylindricalLyphTypeProvider {
     this.templates.concat([sec_at, sec_bt]);
 
     let sec = new CylindricalLyphType(
-      {id: 1004, name: "Surface epithelial cell", plusSide: [SideType.closed], minusSide: [SideType.closed],
-        supertypes: [cell], layerProviders: [cell], measurableProviders: [cell], segments: [sec_at, sec_bt]});
+      {id: 1004, name: "Surface epithelial cell", supertypes: [cell], layerProviders: [cell], measurableProviders: [cell], segments: [sec_at, sec_bt]});
 
     let rbc = new CylindricalLyphType(
-      {id: 1003, name: "Red blood cell", plusSide: [SideType.closed], minusSide: [SideType.closed],
-        supertypes: [cell], layerProviders: [cell], measurableProviders: [cell]});
+      {id: 1003, name: "Red blood cell", supertypes: [cell], layerProviders: [cell], measurableProviders: [cell]});
 
     let rsec = new CylindricalLyphType(
-      {id: 1005, name: "Renal surface epithelial cell", plusSide: [SideType.closed], minusSide: [SideType.closed],
-        supertypes: [sec], layerProviders: [sec], measurableProviders: [sec], segmentProviders: [sec]});
+      {id: 1005, name: "Renal surface epithelial cell", supertypes: [sec], layerProviders: [sec], measurableProviders: [sec], segmentProviders: [sec]});
 
     this.items.concat([rbc, sec, rsec]);
 
     let bt2 = btp.templates.find(x => x.name.indexOf("Border Luminal - Abluminal") > -1);
 
-    let sec_lum = new CylindricalLyphType({id: 1008, name: "Luminal region of the Surface Endothelial Cell",
-        plusSide: [SideType.open], minusSide: [SideType.closed], plusBorder: bt2});
-    let sec_ablum = new CylindricalLyphType({id: 1009, name: "Abluminal region of the Surface Endothelial Cell",
-        plusSide: [SideType.open], minusSide: [SideType.closed], minusBorder: bt2});
+    let sec_lum = new CylindricalLyphType({id: 1008, name: "Luminal region of the Surface Endothelial Cell", plusBorder: bt2});
+    let sec_ablum = new CylindricalLyphType({id: 1009, name: "Abluminal region of the Surface Endothelial Cell", minusBorder: bt2});
 
     this.items.concat([sec_lum, sec_ablum]);
 
@@ -825,18 +805,16 @@ export class CylindricalLyphTypeProvider {
     this.templates.concat([sec_lumt, sec_ablumt]);
 
     let ec = new CylindricalLyphType(
-      {id: 1010, name: "Endothelial Cell", plusSide: [SideType.closed], minusSide: [SideType.closed],
-        supertypes: [cell], layerProviders: [cell], measurableProviders: [cell], segments: [sec_lumt, sec_ablumt]});
+      {id: 1010, name: "Endothelial Cell", supertypes: [cell], layerProviders: [cell], measurableProviders: [cell], segments: [sec_lumt, sec_ablumt]});
 
     let smc = new CylindricalLyphType(
-      {id: 1011, name: "Smooth Muscle Cell", plusSide: [SideType.closed], minusSide: [SideType.closed],
+      {id: 1011, name: "Smooth Muscle Cell",
         supertypes: [cell], layerProviders: [cell], measurableProviders: [cell]});
 
     let cmc = new CylindricalLyphType(
-      {id: 1012, name: "Cardiac Muscle Cell", plusSide: [SideType.closed], minusSide: [SideType.closed],
-        supertypes: [sec], layerProviders: [sec], measurableProviders: [sec], segmentProviders: [sec]});
+      {id: 1012, name: "Cardiac Muscle Cell", supertypes: [sec], layerProviders: [sec], measurableProviders: [sec], segmentProviders: [sec]});
 
-    this.items.push([ec, smc, cmc]);
+    this.items.concat([ec, smc, cmc]);
   }
 }
 

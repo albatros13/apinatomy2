@@ -20,16 +20,21 @@ var core_1 = require('@angular/core');
 var component_general_1 = require('../component.general');
 var component_template_1 = require('../component.template');
 var template_type_1 = require("./template.type");
+var service_apinatomy2_1 = require("../../providers/service.apinatomy2");
 var BorderTemplatePanel = (function (_super) {
     __extends(BorderTemplatePanel, _super);
     function BorderTemplatePanel() {
-        _super.apply(this, arguments);
+        _super.call(this);
+        this.formType = service_apinatomy2_1.FormType;
+        if (!this.item) {
+            this.item = new service_apinatomy2_1.BorderTemplate({});
+        }
     }
     BorderTemplatePanel = __decorate([
         core_1.Component({
             selector: 'borderTemplate-panel',
             inputs: ['item', 'dependencies'],
-            template: "\n    <template-panel [item]=\"item\" [dependencies]=\"dependencies\"  \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n\n      <ng-content></ng-content>      \n    </template-panel>\n  ",
+            template: "\n    <template-panel [item]=\"item\" \n      [dependencies] = \"dependencies\"  \n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <!--Position: Template-->\n      <!--<template-value caption=\"Position:\" [item]=\"item.position\"-->\n      <!--(updated)=\"updateProperty('position', $event)\"></template-value>-->\n      \n      <!--Form: {open, closed}-->\n<!--      <div class=\"input-control\" *ngIf=\"includeProperty('form')\">\n        <fieldset>\n          <legend>Form:</legend>\n          <radio-group [(ngModel)]=\"item.form\" [required]=\"true\">\n             <input type=\"radio\" [value]=\"form.open\">{{formType.open}}&nbsp;\n             <input type=\"radio\" [value]=\"form.closed\">{{formType.closed}}<br/>\n          </radio-group>\n        </fieldset>\n      </div>-->\n      \n      <ng-content></ng-content>   \n         \n    </template-panel>\n  ",
             directives: [component_template_1.TemplateValue, component_general_1.SingleSelectInput, template_type_1.TemplatePanel]
         }), 
         __metadata('design:paramtypes', [])

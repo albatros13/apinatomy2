@@ -20,16 +20,18 @@ var core_1 = require('@angular/core');
 var component_general_1 = require('../component.general');
 var component_template_1 = require('../component.template');
 var panel_resource_1 = require("../panels/panel.resource");
+var service_apinatomy2_1 = require("../../providers/service.apinatomy2");
 var TemplatePanel = (function (_super) {
     __extends(TemplatePanel, _super);
     function TemplatePanel() {
         _super.apply(this, arguments);
+        this.templateName = service_apinatomy2_1.TemplateName;
     }
     TemplatePanel = __decorate([
         core_1.Component({
             selector: 'template-panel',
-            inputs: ['item', 'dependencies'],
-            template: "\n    <resource-panel [item]=\"item\" \n      [ignore]=\"['externals']\"  \n            (saved)    = \"saved.emit($event)\"\n            (canceled) = \"canceled.emit($event)\"\n            (removed)  = \"removed.emit($event)\">\n      <div class=\"input-control\">\n        <label for=\"type\">Type: </label>\n        <select-input-1 [item] = \"item.type\"\n         (updated)=\"updateProperty('type', $event)\"    \n         [options] = \"dependencies.types\"></select-input-1>\n      </div>\n      <fieldset>\n        <legend>Template:</legend>\n        <template-value caption=\"Cardinality base:\" \n          [item]=\"item.cardinalityBase\"\n          (updated)=\"updateProperty('cardinalityBase', $event)\"\n          ></template-value>\n        \n        <div class=\"input-control\" *ngIf=\"includeProperty('cardinalityMultipliers')\">\n          <label for=\"cardinalityMultipliers\">Cardinality multipliers: </label>\n            <select-input [items]=\"item.cardinalityMultipliers\" \n            (updated)=\"updateProperty('cardinalityMultipliers', $event)\"          \n            [options]=\"dependencies.templates\"></select-input>  \n        </div>\n        <ng-content></ng-content>           \n      </fieldset>\n    </resource-panel>\n  ",
+            inputs: ['item', 'dependencies', 'ignore'],
+            template: "\n    <resource-panel [item]=\"item\" \n      [dependencies]=\"dependencies.types\"\n      [ignore]=\"['externals']\"  \n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n    \n      <!--Type-->\n      <div class=\"input-control\">\n        <label for=\"type\">Type: </label>\n        <select-input-1 [item] = \"item.type\"\n         (updated)=\"updateProperty('type', $event)\"    \n         [options] = \"dependencies.types\"></select-input-1>\n      </div>\n    \n      <!--Template-->\n      <div *ngIf=\"includeProperty('template')\">\n\n        <!--Cardinality base-->\n        <template-value caption=\"Cardinality base:\" \n          [item]=\"item.cardinalityBase\"\n          (updated)=\"updateProperty('cardinalityBase', $event)\"\n          ></template-value>\n        \n        <!--Cardinality multipliers-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('cardinalityMultipliers')\">\n          <label for=\"cardinalityMultipliers\">Cardinality multipliers: </label>\n            <select-input [items]=\"item.cardinalityMultipliers\" \n            (updated)=\"updateProperty('cardinalityMultipliers', $event)\"          \n            [options]=\"dependencies.templates\"></select-input>  \n        </div>\n        <ng-content></ng-content>           \n      </div>\n    </resource-panel>\n  ",
             directives: [component_template_1.TemplateValue, component_general_1.SingleSelectInput, component_general_1.MultiSelectInput, panel_resource_1.ResourcePanel]
         }), 
         __metadata('design:paramtypes', [])

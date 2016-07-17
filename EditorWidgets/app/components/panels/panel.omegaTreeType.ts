@@ -19,12 +19,12 @@ import {FilterByClass} from "../../transformations/pipe.general";
       (propertyUpdated) = "propertyUpdated.emit($event)">
       
       <!--Root-->
-      <div class="input-control" *ngIf="includeProperty('root')">      
+      <!--<div class="input-control" *ngIf="includeProperty('root')">      
         <label for="cause">Root: </label>
         <select-input-1 [item] = "item.root" 
           (updated)="updateProperty('root', $event)"   
           [options] = "dependencies.templates | filterByClass: [templateName.NodeTemplate]"></select-input-1>
-      </div>
+      </div>-->
       
       <ng-content></ng-content>      
     

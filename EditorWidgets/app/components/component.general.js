@@ -54,7 +54,13 @@ var MultiSelectInput = (function () {
     };
     MultiSelectInput.prototype.refreshValue = function (value) {
         var selected = value.map(function (x) { return x.id; });
-        this.items = this.options.filter(function (y) { return (selected.indexOf(y.id + "-" + y.name) != -1); });
+        var options = this.options;
+        if (this.options[0] && this.options[0].children) {
+            //Flatten grouped options
+            options = [].concat.apply([], this.options.map(function (item) { return item.children; }));
+            console.dir(options);
+        }
+        this.items = options.filter(function (y) { return (selected.indexOf((y.id) ? y.id : y.name) != -1); });
         this.updated.emit(this.items);
     };
     __decorate([
@@ -93,7 +99,13 @@ var SingleSelectInput = (function () {
             this.items = [this.item];
     };
     SingleSelectInput.prototype.refreshValue = function (value) {
-        this.item = this.options.find(function (y) { return (value.id == (y.id + "-" + y.name)); });
+        var options = this.options;
+        if (this.options[0] && this.options[0].children) {
+            //Flatten grouped options
+            options = [].concat.apply([], this.options.map(function (item) { return item.children; }));
+            console.dir(options);
+        }
+        this.item = options.find(function (y) { return (value.id == ((y.id) ? y.id : y.name)); });
         this.updated.emit(this.item);
     };
     __decorate([
@@ -120,7 +132,7 @@ var ItemHeader = (function () {
         core_1.Component({
             selector: 'item-header',
             inputs: ['item', 'icon'],
-            template: "\n      <i class=\"pull-left glyphicon\"\n        [ngClass]=\"{'glyphicon-chevron-down': item == selectedItem, 'glyphicon-chevron-right': item != selectedItem}\"></i>&nbsp;\n        {{item.id}} - {{item.name}}\n        <img class=\"pull-right icon\" src=\"{{icon}}\"/>\n  "
+            template: "\n      <i class=\"pull-left glyphicon\"\n        [ngClass]=\"{'glyphicon-chevron-down': item == selectedItem, 'glyphicon-chevron-right': item != selectedItem}\"></i>&nbsp;\n        {{(item.id)? item.id: \"?\"}}: {{item.name}}\n        <img class=\"pull-right icon\" src=\"{{icon}}\"/>\n  "
         }), 
         __metadata('design:paramtypes', [])
     ], ItemHeader);
@@ -129,8 +141,13 @@ var ItemHeader = (function () {
 exports.ItemHeader = ItemHeader;
 var SortToolbar = (function () {
     function SortToolbar() {
+        this.sortByMode = "unsorted";
         this.sorted = new core_1.EventEmitter();
     }
+    SortToolbar.prototype.onClick = function (item) {
+        this.sortByMode = item;
+        this.sorted.emit(item);
+    };
     __decorate([
         core_1.Output(), 
         __metadata('design:type', Object)
@@ -139,7 +156,7 @@ var SortToolbar = (function () {
         core_1.Component({
             selector: 'sort-toolbar',
             inputs: ['options'],
-            template: "\n      <div class=\"btn-group\" dropdown>\n        <button type=\"button\" class=\"btn btn-default dropdown-toggle\" aria-label=\"SortAsc\" dropdownToggle>\n          <span class=\"glyphicon glyphicon-sort-by-attributes\" aria-hidden=\"true\"></span>\n        </button>\n        <ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"SortAsc\">\n          <li *ngFor=\"let option of options; let i = index\" role=\"menuitem\" (click)=\"sorted.emit(option)\">\n            <a class=\"dropdown-item\" href=\"#\">{{option}}</a>\n          </li>\n        </ul>\n      </div>\n      <div class=\"btn-group\" dropdown>\n        <button type=\"button\" class=\"btn btn-default dropdown-toggle\" aria-label=\"SortDesc\" dropdownToggle>\n          <span class=\"glyphicon glyphicon-sort-by-attributes-alt\" aria-hidden=\"true\"></span>\n        </button>\n        <ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"SortDesc\">\n          <li *ngFor=\"let option of options; let i = index\" role=\"menuitem\" (click)=\"sorted.emit('-'+option)\">\n            <a class=\"dropdown-item\" href=\"#\">{{option}}</a>\n          </li>\n        </ul>\n      </div>\n    ",
+            template: "\n      <div class=\"btn-group\" dropdown>\n        <button type=\"button\" class=\"btn btn-default dropdown-toggle\" aria-label=\"SortAsc\" dropdownToggle>\n          <span class=\"glyphicon glyphicon-sort-by-attributes\" aria-hidden=\"true\"></span>\n        </button>\n        <ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"SortAsc\">\n          <li role=\"menuitem\" (click)=\"onClick('unsorted')\">\n            <a class=\"dropdown-item\" href=\"#\">\n            <span *ngIf=\"sortByMode == 'unsorted'\">&#10004;</span>\n            (unsorted)</a>\n          </li>\n          <li class=\"divider\"></li>\n          <li *ngFor=\"let option of options; let i = index\" role=\"menuitem\" (click)=\"onClick(option)\">\n            <a class=\"dropdown-item\" href=\"#\">\n              <span *ngIf=\"sortByMode == option\">&#10004;</span>\n              {{option}}\n            </a>\n          </li>\n        </ul>\n      </div>\n      <div class=\"btn-group\" dropdown>\n        <button type=\"button\" class=\"btn btn-default dropdown-toggle\" aria-label=\"SortDesc\" dropdownToggle>\n          <span class=\"glyphicon glyphicon-sort-by-attributes-alt\" aria-hidden=\"true\"></span>\n        </button>\n        <ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"SortDesc\">\n          <li *ngFor=\"let option of options; let i = index\" role=\"menuitem\" (click)=\"onClick('-'+option)\">\n            <a class=\"dropdown-item\" href=\"#\">\n             <span *ngIf=\"sortByMode == '-'+option\">&#10004;</span>\n             {{option}}\n            </a>\n          </li>\n        </ul>\n      </div>\n    ",
             directives: [dropdown_1.DROPDOWN_DIRECTIVES, common_1.CORE_DIRECTIVES]
         }), 
         __metadata('design:paramtypes', [])

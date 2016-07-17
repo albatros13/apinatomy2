@@ -22,8 +22,8 @@ var RepoAbstract = (function () {
         this.items = [];
         this.types = [];
         this.zones = [];
-        this.sortByMode = "id";
-        this.filterByMode = "id";
+        this.sortByMode = "unsorted";
+        this.filterByMode = "Name";
         this.searchString = "";
     }
     Object.defineProperty(RepoAbstract.prototype, "selectedItem", {
@@ -48,9 +48,6 @@ var RepoAbstract = (function () {
             this.types = Array.from(new Set(this.items.map(function (item) { return item.class; })));
         this.zones = this.types.map(function (x) { return x + "_zone"; });
     };
-    // protected updateSelected(item: any){
-    //   this.selectedItem = item;
-    // }
     RepoAbstract.prototype.onSorted = function (prop) {
         this.sortByMode = prop.toLowerCase();
     };

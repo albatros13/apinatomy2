@@ -135,7 +135,9 @@ interface IGroupType extends IType{
 }
 
 interface IOmegaTreeType extends IGroupType{
-  root?: ITemplate;
+  //root?: INodeTemplate;
+  //levels?: Array<ICylindricalLyphTemplate>;
+  //subtrees?: Array<IOmegaTreeTemplate>;
 }
 
 //Templates
@@ -302,7 +304,7 @@ export class Resource implements IResource{
   public externals: Array<IExternalResource>;
 
   constructor(obj: IResource = {}){
-    this.id = obj.id;
+    this.id = (obj.id)? obj.id: 0;
     this.name = (obj.name)? obj.name: "New item";
     this.href = obj.href;
     this.externals = obj.externals;
@@ -474,12 +476,16 @@ export class GroupType extends Type implements IGroupType{
 }
 
 export class OmegaTreeType extends GroupType implements IOmegaTreeType{
-  public root: ITemplate;
+  //public root: INodeTemplate;
+  //public levels: Array<ICylindricalLyphTemplate>;
+  //public subtrees: Array<IOmegaTreeTemplate>;
 
   constructor(obj: IOmegaTreeType){
     super(obj);
     this.class = ResourceName.OmegaTreeType;
-    this.root = obj.root;
+    //this.levels = obj.levels;
+    //this.subtrees = obj.subtrees; //first (or any?) element of omega tree in a subtree must be among parent tree levels
+    //this.root = obj.root;
   }
 }
 
@@ -669,9 +675,9 @@ var testProcesses = [
 ];
 
 var testBorders = [
-  new BorderType({id: 80, name: "Border Cytosol - Plasma", form: [FormType.open]}),
-  new BorderType({id: 81, name: "Border Apical - Basolateral", form: [FormType.open]}),
-  new BorderType({id: 82, name: "Border Luminal - Abluminal", form: [FormType.open]})
+  new BorderType({id: 80, name: "General border", form: [FormType.open, FormType.closed]}),
+  new BorderType({id: 81, name: "Open border", form: [FormType.open]}),
+  new BorderType({id: 82, name: "Closed border", form: [FormType.closed]})
 ];
 
 @Injectable()
@@ -750,13 +756,12 @@ export class CylindricalLyphTypeProvider {
 
     let ifl = mtp.items.find(x => (x.name=="Intracellular fluid"));
 
-    let bt = btp.templates.find(x => x.name.indexOf("Border Cytosol - Plasma") > -1);
+    let border = btp.templates.find(x => x.name.indexOf("General") > -1);
 
-    //let border = new BorderType();
     let cytosol =  new CylindricalLyphType(
-      {id: 1000, name: "Cytosol", materials: [ifl], innerBorder: bt});
+      {id: 1000, name: "Cytosol", materials: [ifl], innerBorder: border});
     let pm =  new CylindricalLyphType(
-      {id: 1001, name: "Plasma membrain", outerBorder: bt});
+      {id: 1001, name: "Plasma membrain", outerBorder: border});
 
     this.items = [cytosol, pm];
     this.items.forEach(x =>
@@ -769,12 +774,12 @@ export class CylindricalLyphTypeProvider {
 
     this.items.push(cell);
 
-    let bt1 = btp.templates.find(x => (x.name.indexOf("Border Apical - Basolateral") > -1));
+    let openBorder = btp.templates.find(x => (x.name.indexOf("Open") > -1));
 
     let sec_a = new CylindricalLyphType(
-      {id: 1006, name: "Apical region of the surface epithelial cell", plusBorder: bt1});
+      {id: 1006, name: "Apical region of the surface epithelial cell", plusBorder: openBorder});
     let sec_b = new CylindricalLyphType(
-      {id: 1007, name: "Basolateral region of the epithelial cell", minusBorder: bt1});
+      {id: 1007, name: "Basolateral region of the epithelial cell", minusBorder: openBorder});
 
     this.items.concat([sec_a, sec_b]);
 
@@ -793,10 +798,10 @@ export class CylindricalLyphTypeProvider {
 
     this.items.concat([rbc, sec, rsec]);
 
-    let bt2 = btp.templates.find(x => x.name.indexOf("Border Luminal - Abluminal") > -1);
+    let closedBorder = btp.templates.find(x => x.name.indexOf("Closed") > -1);
 
-    let sec_lum = new CylindricalLyphType({id: 1008, name: "Luminal region of the Surface Endothelial Cell", plusBorder: bt2});
-    let sec_ablum = new CylindricalLyphType({id: 1009, name: "Abluminal region of the Surface Endothelial Cell", minusBorder: bt2});
+    let sec_lum = new CylindricalLyphType({id: 1008, name: "Luminal region of the Surface Endothelial Cell", plusBorder: closedBorder});
+    let sec_ablum = new CylindricalLyphType({id: 1009, name: "Abluminal region of the Surface Endothelial Cell", minusBorder: closedBorder});
 
     this.items.concat([sec_lum, sec_ablum]);
 
@@ -815,6 +820,18 @@ export class CylindricalLyphTypeProvider {
       {id: 1012, name: "Cardiac Muscle Cell", supertypes: [sec], layerProviders: [sec], measurableProviders: [sec], segmentProviders: [sec]});
 
     this.items.concat([ec, smc, cmc]);
+
+    //Lyphs for omega trees
+    let cnt = new CylindricalLyphType(
+      {id: 1050, name: "CNT", minusBorder: openBorder, plusBorder: openBorder});
+
+    let dnt = new CylindricalLyphType(
+      {id: 1051, name: "DNT", minusBorder: openBorder, plusBorder: openBorder});
+
+    let ctkal = new CylindricalLyphType(
+      {id: 1052, name: "CTkAL", minusBorder: openBorder, plusBorder: openBorder});
+
+    this.items.concat([cnt, dnt, ctkal]);
   }
 }
 
@@ -853,9 +870,16 @@ export class OmegaTreeTypeProvider {
   public templates: Array<IOmegaTreeTemplate> = [];
 
   constructor(cltp: CylindricalLyphTypeProvider){
-    let elements: Array<Template> = [];
 
-    //cltp.items.find();
+    function getLyph(id: number){
+      return cltp.items.find(x => (x.id == id));
+    }
+
+    let elements: Array<Template> = [
+      new CylindricalLyphTemplate({id: 2050, name: "T: CNT",   type: getLyph(1050)}),
+      new CylindricalLyphTemplate({id: 2051, name: "T: DNT",   type: getLyph(1051)}),
+      new CylindricalLyphTemplate({id: 2052, name: "T: CTkAL", type: getLyph(1052)})
+    ];
 
     let sln = new OmegaTreeType({id: 10000, name: "Short Looped Nephron", elements: elements});
     this.items.push(sln);

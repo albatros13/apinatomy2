@@ -11,19 +11,23 @@ import {MultiSelectInput, FormToolbar} from '../component.general';
     <div class="panel">
         <div class="panel-body">
           <form-toolbar  
-            (saved)    = "saved.emit($event)"
-            (canceled) = "canceled.emit($event)"
-            (removed)  = "removed.emit($event)">
+            (saved)    = "saved.emit(item)"
+            (canceled) = "canceled.emit(item)"
+            (removed)  = "removed.emit(item)">
           </form-toolbar>
           <div class="panel-content">
               <!--<div class="input-control" *ngIf="includeProperty('id')">-->
                 <!--<label for="id">ID: </label>-->
                 <!--<input type="text" disabled [(ngModel)]="item.id">-->
               <!--</div>-->
+              
+              <!--Name-->
               <div class="input-control" *ngIf="includeProperty('name')">
                 <label for="name">Name: </label>
                 <input type="text" [(ngModel)]="item.name">
               </div>
+              
+              <!--Externals-->
               <div class="input-control" *ngIf="includeProperty('externals')">
                 <label for="externals">Annotations: </label>
                 <select-input 

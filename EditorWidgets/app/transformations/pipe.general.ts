@@ -34,33 +34,46 @@ export class FilterByClass implements PipeTransform {
 })
 export class MapToOptions implements PipeTransform {
   transform(items: any[]): any {
-    if (!items) return [];
-    return items.map((entry: any) => ({id: entry.id + "-" + entry.name, text: entry.name? entry.name: entry.id}))
+    if (!items || (items.length == 0)) return [];
+    if (items[0].children){
+      //grouped
+      for (let i = 0; i < items.length; i++){
+        items[i].children = convert(items[i].children);
+      }
+      return items;
+    }
+    else
+      return convert(items);
+
+    function convert(items: any[]){
+      return items.map((entry: any) => ({id: (entry.id)? entry.id: entry.name, text: entry.name? entry.name: entry.id}))
+    }
   }
 }
 
 @Pipe({name: 'orderBy', pure: false})
 export class OrderBy implements PipeTransform {
 
-  transform(item: any, property: string): any {
-      var orderType = 'ask';
-      let currentField = property;
-      if (currentField[0] === '-') {
-        currentField = currentField.substring(1);
-        orderType = 'desc';
-      }
+  transform(items: any[], property: string): any {
+    var orderType = 'asc';
+    let currentField = property;
+    if (currentField.indexOf("unsorted") > -1) return items;
+    if (currentField[0] === '-') {
+      currentField = currentField.substring(1);
+      orderType = 'desc';
+    }
 
-      item.sort((a: any, b: any) => {
-        if (orderType === 'desc') {
-          if (a[currentField] > b[currentField]) return -1;
-          if (a[currentField] < b[currentField]) return 1;
-          return 0;
-        } else {
-          if (a[currentField] > b[currentField]) return 1;
-          if (a[currentField] < b[currentField]) return -1;
-          return 0;
-        }
-      });
-    return item;
+    items.sort((a: any, b: any) => {
+      if (orderType === 'desc') {
+        if (a[currentField] > b[currentField]) return -1;
+        if (a[currentField] < b[currentField]) return 1;
+        return 0;
+      } else {
+        if (a[currentField] > b[currentField]) return 1;
+        if (a[currentField] < b[currentField]) return -1;
+        return 0;
+      }
+    });
+    return items;
   }
 }

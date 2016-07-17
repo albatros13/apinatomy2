@@ -25,7 +25,7 @@ import {FilterBy} from "../../transformations/pipe.general";
         <filter-toolbar [filter]="searchString" [options]="['Name', 'ID']" (applied)="onFiltered($event)"></filter-toolbar>
           
         <accordion class="list-group" [closeOthers]="true" dnd-sortable-container [dropZones]="['lyphTemplate-zone']" [sortableData]="items">
-          <accordion-group *ngFor="let item of items; let i = index" class="list-group-item" dnd-sortable 
+          <accordion-group *ngFor="let item of items | filterBy: [searchString, filterByMode]; let i = index" class="list-group-item" dnd-sortable 
            [sortableIndex]="i" (click)="selectedItem = item">
             <div accordion-heading><item-header [item]="item" [icon]="'images/lyphType.png'"></item-header></div>
 

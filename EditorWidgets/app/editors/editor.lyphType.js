@@ -17,7 +17,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var core_1 = require('@angular/core');
 var repo_general_1 = require('../components/repos/repo.general');
 var service_apinatomy2_1 = require('../providers/service.apinatomy2');
-var widget_tree_1 = require('../widgets/widget.tree');
+var widget_hierarchy_1 = require('../widgets/widget.hierarchy');
 var LyphTypeEditor = (function () {
     function LyphTypeEditor(eResourceP, typeP, materialP, lyphP, cLyphP, measurableP, processP, borderP, groupP, omegaTreeP) {
         var allLyphs = lyphP.items.concat(cLyphP.items);
@@ -61,8 +61,8 @@ var LyphTypeEditor = (function () {
                 service_apinatomy2_1.GroupTypeProvider,
                 service_apinatomy2_1.OmegaTreeTypeProvider
             ],
-            template: "\n    <div class=\"row\">\n        <div class=\"col-sm-6\">\n            <repo-general \n              [items]=\"items\" \n              caption=\"Test resources\" \n              [dependencies]=\"dependency\" \n              (selected)=\"onItemSelect($event)\">\n            </repo-general>\n        </div>\n        <div class=\"col-sm-6\">\n          <tree [item]=\"selectedItem\" [options]=\"{transform: true, property: 'materials', depth: 2}\"></tree>\n        </div>\n    </div>\n  ",
-            directives: [repo_general_1.RepoGeneral, widget_tree_1.TreeWidget]
+            template: "\n    <div class=\"row\">\n        <div class=\"col-sm-6\">\n            <repo-general \n              [items]=\"items\" \n              caption=\"All resources\" \n              [dependencies]=\"dependency\" \n              (selected)=\"onItemSelect($event)\">\n            </repo-general>\n        </div>\n        <div class=\"col-sm-6\">\n          <hierarchy [item]=\"selectedItem\" [options]=\"{relation: 'materials'}\"></hierarchy>\n        </div>\n    </div>\n  ",
+            directives: [repo_general_1.RepoGeneral, widget_hierarchy_1.HierarchyWidget]
         }),
         __param(0, core_1.Inject(service_apinatomy2_1.ExternalResourceProvider)),
         __param(1, core_1.Inject(service_apinatomy2_1.TypeProvider)),

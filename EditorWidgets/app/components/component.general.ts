@@ -60,7 +60,13 @@ export class MultiSelectInput implements OnChanges{
 
   refreshValue(value: Array<any>):void {
     let selected = value.map(x => x.id);
-    this.items = this.options.filter(y => (selected.indexOf(y.id + "-" + y.name) != -1));
+    let options = this.options;
+    if (this.options[0] && this.options[0].children){
+      //Flatten grouped options
+      options = [].concat.apply([], this.options.map(item => item.children));
+      console.dir(options);
+    }
+    this.items = options.filter(y => (selected.indexOf((y.id)? y.id: y.name) != -1));
     this.updated.emit(this.items);
   }
 }
@@ -88,7 +94,6 @@ export class SingleSelectInput{
   @Output() updated = new EventEmitter();
 
   active: boolean = true;
-  prev: any;
 
   protected ngOnInit(){
     if (!this.options) this.options = [];
@@ -102,7 +107,13 @@ export class SingleSelectInput{
   }
 
   public refreshValue(value: any):void {
-    this.item = this.options.find(y => (value.id == (y.id + "-" + y.name)));
+    let options = this.options;
+    if (this.options[0] && this.options[0].children){
+      //Flatten grouped options
+      options = [].concat.apply([], this.options.map(item => item.children));
+      console.dir(options);
+    }
+    this.item = options.find(y => (value.id == ((y.id)? y.id: y.name)));
     this.updated.emit(this.item);
   }
 }
@@ -113,7 +124,7 @@ export class SingleSelectInput{
   template: `
       <i class="pull-left glyphicon"
         [ngClass]="{'glyphicon-chevron-down': item == selectedItem, 'glyphicon-chevron-right': item != selectedItem}"></i>&nbsp;
-        {{item.id}} - {{item.name}}
+        {{(item.id)? item.id: "?"}}: {{item.name}}
         <img class="pull-right icon" src="{{icon}}"/>
   `
 })
@@ -128,8 +139,17 @@ export class ItemHeader {}
           <span class="glyphicon glyphicon-sort-by-attributes" aria-hidden="true"></span>
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="SortAsc">
-          <li *ngFor="let option of options; let i = index" role="menuitem" (click)="sorted.emit(option)">
-            <a class="dropdown-item" href="#">{{option}}</a>
+          <li role="menuitem" (click)="onClick('unsorted')">
+            <a class="dropdown-item" href="#">
+            <span *ngIf="sortByMode == 'unsorted'">&#10004;</span>
+            (unsorted)</a>
+          </li>
+          <li class="divider"></li>
+          <li *ngFor="let option of options; let i = index" role="menuitem" (click)="onClick(option)">
+            <a class="dropdown-item" href="#">
+              <span *ngIf="sortByMode == option">&#10004;</span>
+              {{option}}
+            </a>
           </li>
         </ul>
       </div>
@@ -138,8 +158,11 @@ export class ItemHeader {}
           <span class="glyphicon glyphicon-sort-by-attributes-alt" aria-hidden="true"></span>
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="SortDesc">
-          <li *ngFor="let option of options; let i = index" role="menuitem" (click)="sorted.emit('-'+option)">
-            <a class="dropdown-item" href="#">{{option}}</a>
+          <li *ngFor="let option of options; let i = index" role="menuitem" (click)="onClick('-'+option)">
+            <a class="dropdown-item" href="#">
+             <span *ngIf="sortByMode == '-'+option">&#10004;</span>
+             {{option}}
+            </a>
           </li>
         </ul>
       </div>
@@ -147,8 +170,14 @@ export class ItemHeader {}
   directives: [DROPDOWN_DIRECTIVES, CORE_DIRECTIVES]
 })
 export class SortToolbar {
+  sortByMode = "unsorted";
   @Output() sorted = new EventEmitter();
   constructor(){}
+
+  onClick(item: any){
+    this.sortByMode = item;
+    this.sorted.emit(item);
+  }
 }
 
 @Component({

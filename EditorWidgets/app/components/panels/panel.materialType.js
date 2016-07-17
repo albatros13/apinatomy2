@@ -54,9 +54,7 @@ var MaterialTypePanel = (function (_super) {
             var measurable = _a[_i];
             var newMeasurable = new service_apinatomy2_1.MeasurableType(measurable);
             delete newMeasurable["id"];
-            //TODO: update material of supertype?
-            //if (newMeasurable.materials){
-            // }
+            //newMeasurable.materials = [this.item];
             if (this.dependencies && this.dependencies.measurables) {
                 this.dependencies.measurables.push(newMeasurable);
             }

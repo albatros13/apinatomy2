@@ -58,9 +58,20 @@ var MapToOptions = (function () {
     function MapToOptions() {
     }
     MapToOptions.prototype.transform = function (items) {
-        if (!items)
+        if (!items || (items.length == 0))
             return [];
-        return items.map(function (entry) { return ({ id: entry.id + "-" + entry.name, text: entry.name ? entry.name : entry.id }); });
+        if (items[0].children) {
+            //grouped
+            for (var i = 0; i < items.length; i++) {
+                items[i].children = convert(items[i].children);
+            }
+            return items;
+        }
+        else
+            return convert(items);
+        function convert(items) {
+            return items.map(function (entry) { return ({ id: (entry.id) ? entry.id : entry.name, text: entry.name ? entry.name : entry.id }); });
+        }
     };
     MapToOptions = __decorate([
         core_1.Pipe({
@@ -74,14 +85,16 @@ exports.MapToOptions = MapToOptions;
 var OrderBy = (function () {
     function OrderBy() {
     }
-    OrderBy.prototype.transform = function (item, property) {
-        var orderType = 'ask';
+    OrderBy.prototype.transform = function (items, property) {
+        var orderType = 'asc';
         var currentField = property;
+        if (currentField.indexOf("unsorted") > -1)
+            return items;
         if (currentField[0] === '-') {
             currentField = currentField.substring(1);
             orderType = 'desc';
         }
-        item.sort(function (a, b) {
+        items.sort(function (a, b) {
             if (orderType === 'desc') {
                 if (a[currentField] > b[currentField])
                     return -1;
@@ -97,7 +110,7 @@ var OrderBy = (function () {
                 return 0;
             }
         });
-        return item;
+        return items;
     };
     OrderBy = __decorate([
         core_1.Pipe({ name: 'orderBy', pure: false }), 

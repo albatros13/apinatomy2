@@ -22,7 +22,7 @@ import {RepoTemplate} from '../repos/repo.template';
          <repo-template caption="Elements" [items] = "item.elements" 
          (updated)="updateProperty('elements', $event)"
          [dependencies] = "dependencies" [types]="[
-            templateName.LyphTemplate, templateName.CylindricalLyphTemplate, templateName.OmegaTreeTemplate]"></repo-template>
+           templateName.CylindricalLyphTemplate, templateName.OmegaTreeTemplate]"></repo-template>
       </div>
       
       <ng-content></ng-content>      

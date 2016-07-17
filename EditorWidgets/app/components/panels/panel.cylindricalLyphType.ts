@@ -39,7 +39,12 @@ import {FilterByClass, FilterBy} from "../../transformations/pipe.general";
         <!--minusBorder-->
         <div class="input-control" *ngIf="includeProperty('minusBorder')">      
           <label for="item.minusBorder">Minus border: </label>
-          <borderTemplate-panel [item]="item.minusBorder" 
+           <button *ngIf="!item.minusBorder" 
+            (click)="addTemplate('minusBorder')" 
+            type="button" class="btn btn-default" aria-label="Add">
+            <span class="glyphicon glyphicon-plus"></span>
+          </button>
+          <borderTemplate-panel *ngIf="item.minusBorder" [item]="item.minusBorder" 
             [dependencies]="{types: dependencies.borders, templates: dependencies.templates}" 
             (saved)="updateProperty('minusBorder', $event)"    
             (removed)="updateProperty('minusBorder', null)">
@@ -49,7 +54,12 @@ import {FilterByClass, FilterBy} from "../../transformations/pipe.general";
         <!--plusBorder-->
         <div class="input-control" *ngIf="includeProperty('plusBorder')">   
            <label for="item.minusBorder">Plus border: </label>
-          <borderTemplate-panel [item]="item.plusBorder" 
+            <button *ngIf="!item.plusBorder" 
+            (click)="addTemplate('plusBorder')" 
+            type="button" class="btn btn-default" aria-label="Add">
+            <span class="glyphicon glyphicon-plus"></span>
+          </button>
+          <borderTemplate-panel *ngIf="item.plusBorder" [item]="item.plusBorder" 
             [dependencies]="{types: dependencies.borders, templates: dependencies.templates}" 
             (saved)="updateProperty('plusBorder', $event)"    
             (removed)="updateProperty('plusBorder', null)">

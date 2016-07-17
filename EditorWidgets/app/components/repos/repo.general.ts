@@ -22,7 +22,7 @@ import {RepoAbstract} from "./repo.abstract";
      <div class="panel panel-info repo">
         <div class="panel-heading">{{caption}}</div>
         <div class="panel-body">
-          <sort-toolbar [options]="['ID', 'Name']" (sorted)="onSorted($event)"></sort-toolbar>
+          <sort-toolbar [options]="['Name', 'ID']" (sorted)="onSorted($event)"></sort-toolbar>
           <edit-toolbar [options]="types" (added)="onAdded($event)"></edit-toolbar>
           <filter-toolbar [filter]="searchString" [options]="['Name', 'ID']" (applied)="onFiltered($event)"></filter-toolbar>
           

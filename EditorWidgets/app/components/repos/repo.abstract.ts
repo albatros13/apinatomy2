@@ -14,8 +14,8 @@ export abstract class RepoAbstract{
   items: Array<any> = [];
   types: Array<ResourceName | TemplateName> = [];
   zones: Array<string> = [];
-  sortByMode: string = "id";
-  filterByMode: string = "id";
+  sortByMode: string = "unsorted";
+  filterByMode: string = "Name";
   searchString: string = "";
 
   _selectedItem: any;
@@ -38,10 +38,6 @@ export abstract class RepoAbstract{
       this.types = Array.from(new Set(this.items.map(item => item.class)));
     this.zones = this.types.map(x => x + "_zone");
   }
-
-  // protected updateSelected(item: any){
-  //   this.selectedItem = item;
-  // }
 
   protected onSorted(prop: string){
     this.sortByMode = prop.toLowerCase();
@@ -80,6 +76,6 @@ export abstract class RepoAbstract{
   }
 
   protected abstract getIcon(item: any): string;
-  
+
   protected abstract onAdded(resourceType: ResourceName | TemplateName): void;
 }

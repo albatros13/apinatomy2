@@ -97,9 +97,7 @@ export class MaterialTypePanel extends TypePanel{
     for (let measurable of this.measurablesToReplicate){
       let newMeasurable = new MeasurableType(measurable);
       delete newMeasurable["id"];
-      //TODO: update material of supertype?
-      //if (newMeasurable.materials){
-      // }
+      //newMeasurable.materials = [this.item];
       if (this.dependencies && this.dependencies.measurables) {
         this.dependencies.measurables.push(newMeasurable);
       }

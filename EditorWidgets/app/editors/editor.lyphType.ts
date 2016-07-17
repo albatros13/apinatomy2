@@ -9,7 +9,7 @@ import {
   MeasurableTypeProvider, ProcessTypeProvider, BorderTypeProvider,
   GroupTypeProvider, OmegaTreeTypeProvider
 } from '../providers/service.apinatomy2'
-import {TreeWidget} from '../widgets/widget.tree';
+import {HierarchyWidget} from '../widgets/widget.hierarchy';
 
 @Component({
   selector: 'lyphType-editor',
@@ -30,17 +30,17 @@ import {TreeWidget} from '../widgets/widget.tree';
         <div class="col-sm-6">
             <repo-general 
               [items]="items" 
-              caption="Test resources" 
+              caption="All resources" 
               [dependencies]="dependency" 
               (selected)="onItemSelect($event)">
             </repo-general>
         </div>
         <div class="col-sm-6">
-          <tree [item]="selectedItem" [options]="{transform: true, property: 'materials', depth: 2}"></tree>
+          <hierarchy [item]="selectedItem" [options]="{relation: 'materials'}"></hierarchy>
         </div>
     </div>
   `,
-  directives: [RepoGeneral, TreeWidget]
+  directives: [RepoGeneral, HierarchyWidget]
 })
 export class LyphTypeEditor {
   items: Array<any>;

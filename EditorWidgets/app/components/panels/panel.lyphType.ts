@@ -97,20 +97,30 @@ import {FilterByClass, FilterBy} from "../../transformations/pipe.general";
         <!--InnerBorder-->
         <div class="input-control" *ngIf="includeProperty('innerBorder')">      
           <label for="item.innerBorder">Inner border: </label>
-          <borderTemplate-panel [item]="item.innerBorder" 
+          <button *ngIf="!item.innerBorder" 
+            (click)="addTemplate('innerBorder')" 
+            type="button" class="btn btn-default" aria-label="Add">
+            <span class="glyphicon glyphicon-plus"></span>
+          </button>
+          <borderTemplate-panel *ngIf="item.innerBorder" [item]="item.innerBorder" 
             [dependencies]="{types: dependencies.borders, templates: dependencies.templates}" 
             (saved)="updateProperty('innerBorder', $event)"    
-            (removed)="updateProperty('innerBorder', null)">
+            (removed)="removeTemplate('innerBorder', $event)">
           </borderTemplate-panel>
         </div>
         
         <!--OuterBorder-->
         <div class="input-control" *ngIf="includeProperty('outerBorder')">      
           <label for="item.outerBorder">Outer border: </label>
-          <borderTemplate-panel [item]="item.outerBorder" 
+          <button *ngIf="!item.outerBorder" 
+            (click)="addTemplate('outerBorder')" 
+            type="button" class="btn btn-default" aria-label="Add">
+            <span class="glyphicon glyphicon-plus"></span>
+          </button>
+          <borderTemplate-panel *ngIf="item.outerBorder" [item]="item.outerBorder" 
             [dependencies]="{types: dependencies.borders, templates: dependencies.templates}" 
             (saved)="updateProperty('outerBorder', $event)"    
-            (removed)="updateProperty('outerBorder', null)">
+            (removed)="removeTemplate('outerBorder', $event)">
           </borderTemplate-panel>
         </div>            
         
@@ -124,12 +134,20 @@ import {FilterByClass, FilterBy} from "../../transformations/pipe.general";
 export class LyphTypePanel extends MaterialTypePanel{
   dependencies: any;
 
-  addProperty(property: string){
+  addTemplate(property: string){
     this.item[property] = new BorderTemplate({name: "T: " + property + " " + this.item.name});
     if (this.dependencies) {
       if (!this.dependencies.templates) this.dependencies.templates = [];
       this.dependencies.templates.push(this.item[property]);
     }
+  }
+
+  removeTemplate(property: string, item: any){
+    if (this.dependencies && this.dependencies.templates) {
+      let index = this.dependencies.templates.indexOf(item);
+      if (index >= 0) {this.dependencies.templates.splice(index, 1);}
+    }
+    super.updateProperty(property, null);
   }
 
   onProcessAdded(process: ProcessTemplate){

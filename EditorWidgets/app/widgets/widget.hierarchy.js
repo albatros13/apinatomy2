@@ -15,44 +15,60 @@ var core_1 = require('@angular/core');
 var component_general_1 = require("../components/component.general");
 var hierarchy_graph_1 = require("./hierarchy.graph");
 var hierarchy_tree_1 = require("./hierarchy.tree");
+var common_1 = require('@angular/common');
+var dropdown_1 = require('ng2-bootstrap/components/dropdown');
 var HierarchyWidget = (function () {
     function HierarchyWidget() {
+        this.relation = "subtrees";
+        this.layout = "tree";
         //Parameter form
-        this.relation = { id: "subtypes", name: "subtypes" };
-        this.allRelations = [this.relation];
-        this.properties = [];
+        this.relations = [this.relation];
         this.allProperties = [];
-        this.layout = { id: "Bottom", name: "Bottom" };
-        this.layouts = [
-            { text: "Tree", children: ["Top", "Bottom", "Left", "Right", "Radial"].map(function (item) { return { id: item, name: item }; }) },
-            { text: "Graph", children: ["Force-directed"].map(function (item) { return { id: item, name: item }; }) }];
-        this.depth = -1;
+        this.depth = 2;
     }
     HierarchyWidget.prototype.ngOnInit = function () {
-        if (this.options) {
-            if (this.options.relation)
-                this.relation = { id: this.options.relation, name: this.options.relation };
-            if (this.options.depth)
-                this.depth = this.options.depth;
-            if (this.options.layout)
-                this.layout = { id: this.options.layout, name: this.options.layout };
-        }
-        //console.dir(this.item.constructor.name);
-    };
-    HierarchyWidget.prototype.updateView = function (item) {
-        if (item)
-            this.layout = item;
+        this.updateRelations();
     };
     HierarchyWidget.prototype.ngOnChanges = function (changes) {
+        this.updateRelations();
     };
-    HierarchyWidget.prototype.updateProperty = function (prop, item) {
+    HierarchyWidget.prototype.onRelationChanged = function (item) {
+        this.relation = item;
+        this.updateProperties();
+    };
+    HierarchyWidget.prototype.updateRelations = function () {
+        this.relations = [];
+        if (this.item) {
+            for (var relation in this.item) {
+                if (this.item[relation] instanceof Array) {
+                    this.relations.push(relation);
+                }
+            }
+        }
+    };
+    HierarchyWidget.prototype.updateProperties = function () {
+        this.allProperties = [];
+        var propertyNames = [];
+        if (this.relation) {
+            var obj = this.item[this.relation];
+            for (var i = 0; i < obj.length; i++) {
+                for (var property in obj[i])
+                    if (obj[i][property] instanceof Array)
+                        if (propertyNames.indexOf(property) == -1)
+                            propertyNames.push(property);
+            }
+        }
+        this.allProperties = propertyNames.map(function (item) { return { id: item, name: item }; });
+        if (this.allProperties.length > 0)
+            this.properties = [this.allProperties[0]];
     };
     HierarchyWidget = __decorate([
         core_1.Component({
             selector: 'hierarchy',
-            inputs: ['item', 'options'],
-            template: "\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">Configure relationship view</div>\n       <div class=\"panel-body\">\n          <div>\n            <!--Relation to show-->\n              <div class=\"input-control\">\n                <label for=\"relation\">Relation: </label>\n                <select-input-1 [item] = \"relation\"\n                   (updated)=\"updateProperty('relation', $event)\"    \n                   [options] = \"allRelations\">\n                </select-input-1>\n              </div>\n              \n              <!--Properties of resources to display-->\n              <div class=\"input-control\">\n                <label for=\"properties\">Properties to show: </label>\n                <select-input [item] = \"properties\"\n                   (updated)=\"updateProperty('properties', $event)\"    \n                   [options] = \"allProperties\">\n                </select-input>\n              </div>\n        \n              <!--Depth-->\n               <div class=\"input-control\">\n                 <label for=\"depth\">Depth: </label>\n                 <input type=\"number\" min=\"0\" max=\"100\" [(value)]=\"depth\">\n               </div>\n               \n              <!--Layout-->\n               <div class=\"input-control\">\n                <label for=\"relation\">Layout: </label>\n                 <select-input-1 [item] = \"layout\"\n                  (updated)=\"updateView($event)\"    \n                  [options] = \"layouts\"></select-input-1>\n              </div>\n            </div>\n         <div style=\"float: right; padding: 4px\">\n            <button type=\"submit\" class=\"btn btn-default\">Apply</button>\n         </div>\n       </div>\n    </div>      \n    <hierarchy-tree *ngIf=\"layout.id != 'Force-directed'\" [item]=\"item\" [options]=\"options\"></hierarchy-tree>\n    <hierarchy-graph *ngIf=\"layout.id == 'Force-directed'\" [item]=\"item\" [options]=\"options\"></hierarchy-graph>\n  ",
-            directives: [component_general_1.SingleSelectInput, component_general_1.MultiSelectInput, hierarchy_graph_1.HierarchyGraphWidget, hierarchy_tree_1.HierarchyTreeWidget]
+            inputs: ['item', 'relation'],
+            template: "\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">Resource relation{{(item)? ':' + item.id:''}} {{(item)? ':' + item.name:''}}</div>\n      <div class=\"controls-group\">\n          <!--Relation to show-->\n          <div class=\"btn-group\" style=\"float: left;\" dropdown>\n            <button type=\"button\" class=\"btn btn-default btn-sm dropdown-toggle\" aria-label=\"Relation\" dropdownToggle>\n              Relation <span class=\"caret\"></span>\n            </button>\n            <ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"Relation\">\n              <li *ngFor=\"let option of relations; let i = index\" role=\"menuitem\" (click)=\"onRelationChanged(option)\">\n                <a class=\"dropdown-item\" href=\"#\"> \n                  <span *ngIf=\"relation == option\">&#10004;</span>{{option}}</a>\n              </li>\n            </ul>\n          </div>\n\n          <!--Properties of resources to display-->\n          <!--<div class=\"input-control\">-->\n            <!--<label for=\"properties\">Property: </label>-->\n            <!--<select-input [item] = \"properties\"-->\n               <!--(updated)=\"properties = $event\"    -->\n               <!--[options] = \"allProperties\">-->\n            <!--</select-input>-->\n          <!--</div>-->\n        \n          <!--Depth-->\n          <div class=\"input-group input-group-sm\" style=\"width: 150px; float: left;\">\n            <span class=\"input-group-addon\" id=\"basic-addon1\">Depth</span>\n            <input type=\"number\" class=\"form-control\" aria-describedby=\"basic-addon1\"\n              min=\"0\" max=\"50\" [(value)]=\"depth\" >\n          </div>\n          \n          <!--Layout-->\n          <div class=\"btn-group\">\n            <button type=\"button\" class=\"btn btn-default\" \n              [ngClass]=\"{'active': layout == 'tree'}\" (click)=\"layout = 'tree'\">\n              <img class=\"icon\" src=\"images/tree.png\"/>\n            </button>\n            <button type=\"button\" class=\"btn btn-default\" \n              [ngClass]=\"{'active': layout == 'graph'}\" (click)=\"layout = 'graph'\">\n              <img class=\"icon\" src=\"images/graph.png\"/>\n            </button>\n          </div>\n              \n        </div>\n    <hierarchy-tree *ngIf=\"layout == 'tree'\" \n      [item]=\"item\" [relation]=\"relation\" [depth]=\"depth\" [properties]=\"properties\" ></hierarchy-tree>\n    <hierarchy-graph *ngIf=\"layout == 'graph'\" \n      [item]=\"item\" [relation]=\"relation\" [depth]=\"depth\" [properties]=\"properties\"></hierarchy-graph>\n    </div>      \n  ",
+            directives: [component_general_1.SingleSelectInput, component_general_1.MultiSelectInput, hierarchy_graph_1.HierarchyGraphWidget, hierarchy_tree_1.HierarchyTreeWidget,
+                dropdown_1.DROPDOWN_DIRECTIVES, common_1.CORE_DIRECTIVES]
         }), 
         __metadata('design:paramtypes', [])
     ], HierarchyWidget);

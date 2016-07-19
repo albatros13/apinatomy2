@@ -28,8 +28,8 @@ var NodeTemplatePanel = (function (_super) {
     NodeTemplatePanel = __decorate([
         core_1.Component({
             selector: 'nodeTemplate-panel',
-            inputs: ['item', 'dependencies'],
-            template: "\n    <template-panel [item]=\"item\" \n      [dependencies]=\"dependencies\"  \n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <ng-content></ng-content>      \n\n    </template-panel>\n  ",
+            inputs: ['item', 'dependencies', 'ignore'],
+            template: "\n    <template-panel [item]=\"item\" \n      [dependencies]=\"dependencies\"  \n      [ignore]=\"ignore\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <ng-content></ng-content>      \n\n    </template-panel>\n  ",
             directives: [component_template_1.TemplateValue, component_general_1.SingleSelectInput, template_type_1.TemplatePanel]
         }), 
         __metadata('design:paramtypes', [])

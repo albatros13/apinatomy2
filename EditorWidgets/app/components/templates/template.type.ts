@@ -13,7 +13,7 @@ import {TemplateName} from "../../providers/service.apinatomy2";
   template:`
     <resource-panel [item]="item" 
       [dependencies]="dependencies.types"
-      [ignore]="['externals']"  
+      [ignore]="ignore.concat(['externals'])"  
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"

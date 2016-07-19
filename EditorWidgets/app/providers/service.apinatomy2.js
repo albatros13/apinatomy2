@@ -133,8 +133,11 @@ var ExternalResource = (function (_super) {
         _super.call(this, obj);
         this.uri = "";
         this.type = "";
+        this.locals = [];
+        this.class = ResourceName.ExternalResource;
         this.type = obj.type;
         this.uri = obj.uri;
+        this.locals = obj.locals;
     }
     return ExternalResource;
 }(Resource));
@@ -287,14 +290,11 @@ var GroupType = (function (_super) {
 exports.GroupType = GroupType;
 var OmegaTreeType = (function (_super) {
     __extends(OmegaTreeType, _super);
-    //public root: INodeTemplate;
-    //public levels: Array<ICylindricalLyphTemplate>;
-    //public subtrees: Array<IOmegaTreeTemplate>;
     function OmegaTreeType(obj) {
         _super.call(this, obj);
         this.class = ResourceName.OmegaTreeType;
         //this.levels = obj.levels;
-        //this.subtrees = obj.subtrees; //first (or any?) element of omega tree in a subtree must be among parent tree levels
+        this.subtrees = obj.subtrees; //first (or any?) element of omega tree in a subtree must be among parent tree levels
         //this.root = obj.root;
     }
     return OmegaTreeType;
@@ -400,7 +400,7 @@ var BorderTemplate = (function (_super) {
     function BorderTemplate(obj) {
         _super.call(this, obj);
         this.class = TemplateName.BorderTemplate;
-        this.form = obj.form;
+        this.form = (obj.form) ? obj.form : FormType.open;
     }
     return BorderTemplate;
 }(Template));
@@ -479,7 +479,10 @@ var testBorders = [
 ];
 var ExternalResourceProvider = (function () {
     function ExternalResourceProvider() {
-        this.items = [];
+        this.items = [
+            new ExternalResource({ id: 3000, name: "FMA_44539: Third plantar metatarsal vein", type: "fma" }),
+            new ExternalResource({ id: 4000, name: "cocomac:98: Accessor basal nucleus (amygdala), ventromedial division", type: "cocomac" })
+        ];
     }
     ExternalResourceProvider = __decorate([
         core_1.Injectable(), 
@@ -573,7 +576,7 @@ var CylindricalLyphTypeProvider = (function () {
         this.items.forEach(function (x) {
             return _this.templates.push(new CylindricalLyphTemplate({ id: x.id + 100, name: "T: " + x.name, type: x }));
         });
-        var cellLayers = this.items.slice(0, 2);
+        var cellLayers = this.templates.slice(0, 2);
         var cell = new CylindricalLyphType({ id: 1002, name: "Cell", layers: cellLayers });
         this.items.push(cell);
         var openBorder = btp.templates.find(function (x) { return (x.name.indexOf("Open") > -1); });

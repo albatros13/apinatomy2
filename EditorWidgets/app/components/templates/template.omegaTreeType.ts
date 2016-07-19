@@ -10,8 +10,9 @@ import {GroupTemplatePanel} from "./template.groupType";
   selector: 'omegaTreeTemplate-panel',
   inputs: ['item', 'dependencies', 'ignore'],
   template:`
-    <template-panel [item]="item" 
-      [dependencies]="dependencies" 
+    <groupTemplate-panel [item]="item" 
+      [dependencies]="dependencies"
+      [ignore]="ignore"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"
@@ -19,7 +20,7 @@ import {GroupTemplatePanel} from "./template.groupType";
            
       <ng-content></ng-content>      
     
-    </template-panel>
+    </groupTemplate-panel>
   `,
   directives: [TemplateValue, SingleSelectInput, GroupTemplatePanel]
 })

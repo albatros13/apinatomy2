@@ -1,13 +1,12 @@
 /**
  * Created by Natallia on 7/8/2016.
  */
-/**
- * Created by Natallia on 6/18/2016.
- */
 import {Output, EventEmitter} from '@angular/core';
 import {ResourceName, TemplateName} from "../../providers/service.apinatomy2";
 
 export abstract class RepoAbstract{
+  @Output() added = new EventEmitter();
+  @Output() removed = new EventEmitter();
   @Output() updated = new EventEmitter();
   @Output() selected = new EventEmitter();
 
@@ -66,13 +65,14 @@ export abstract class RepoAbstract{
     if (!this.items) return;
     let index = this.items.indexOf(item);
     if (index > -1) this.items.splice(index, 1);
-    this.updated.emit(this.items);
     if (item == this.selectedItem){
       if (this.items.length > 0)
         this.selectedItem = this.items[0];
       else
         this.selectedItem = 0;
     }
+    this.removed.emit(item);
+    this.updated.emit(this.items);
   }
 
   protected abstract getIcon(item: any): string;

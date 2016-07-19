@@ -82,7 +82,9 @@ import {FilterByClass, FilterBy} from "../../transformations/pipe.general";
           <repo-template caption="Processes" 
           [items] = "item.processes" [dependencies] = "dependencies"
           (updated)="updateProperty('processes', $event)"           
-          [types] = "[templateName.ProcessTemplate]" (added)="onProcessAdded($event)"></repo-template>
+          [types] = "[templateName.ProcessTemplate]" 
+            (added)  ="onProcessAdded($event)" 
+            (removed)="onProcessRemoved($event)"></repo-template>
         </div>
         
         <!--Nodes-->
@@ -152,6 +154,10 @@ export class LyphTypePanel extends MaterialTypePanel{
 
   onProcessAdded(process: ProcessTemplate){
     if (process) process.conveyingLyph = this.item;
+  }
+
+  onProcessRemoved(process: ProcessTemplate){
+    if (process && (process.conveyingLyph == this.item)) process.conveyingLyph = null;
   }
 
 }

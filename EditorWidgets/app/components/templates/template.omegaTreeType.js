@@ -29,7 +29,7 @@ var OmegaTreeTemplatePanel = (function (_super) {
         core_1.Component({
             selector: 'omegaTreeTemplate-panel',
             inputs: ['item', 'dependencies', 'ignore'],
-            template: "\n    <template-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n           \n      <ng-content></ng-content>      \n    \n    </template-panel>\n  ",
+            template: "\n    <groupTemplate-panel [item]=\"item\" \n      [dependencies]=\"dependencies\"\n      [ignore]=\"ignore\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n           \n      <ng-content></ng-content>      \n    \n    </groupTemplate-panel>\n  ",
             directives: [component_template_1.TemplateValue, component_general_1.SingleSelectInput, template_groupType_1.GroupTemplatePanel]
         }), 
         __metadata('design:paramtypes', [])

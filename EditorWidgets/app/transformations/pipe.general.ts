@@ -46,8 +46,26 @@ export class MapToOptions implements PipeTransform {
       return convert(items);
 
     function convert(items: any[]){
-      return items.map((entry: any) => ({id: (entry.id)? entry.id: entry.name, text: entry.name? entry.name: entry.id}))
+      return items.map((entry: any) => ({
+        id: (entry.id)? entry.id: (entry.name)? entry.name: entry.text,
+        text: entry.name? entry.name: (entry.text)? entry.text: entry.id}))
     }
+  }
+}
+
+@Pipe({
+  name: 'mapToCategories'
+})
+export class MapToCategories implements PipeTransform {
+  transform(items: any[]): any {
+    if (!items || (items.length == 0)) return [];
+    let types = Array.from(new Set(items.map(item => item.type)));
+    let typedItems: any[] = [];
+    for (let type of types){
+      let typed = items.filter(item => (item.type == type));
+      typedItems.push({text: type, children: typed});
+    }
+    return typedItems;
   }
 }
 

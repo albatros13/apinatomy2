@@ -7,8 +7,7 @@ import {Injectable, Inject} from '@angular/core';
 
 //Components
 
-interface IDistribution{
-}
+interface IDistribution{}
 
 interface IUniformDistribution extends IDistribution{
   min: number;
@@ -41,6 +40,7 @@ interface IResource{
 interface IExternalResource extends IResource{
   uri?: string;
   type?: string;
+  locals?: Array<IResource>;
 }
 
 interface ICoalescence extends IResource{
@@ -136,8 +136,7 @@ interface IGroupType extends IType{
 
 interface IOmegaTreeType extends IGroupType{
   //root?: INodeTemplate;
-  //levels?: Array<ICylindricalLyphTemplate>;
-  //subtrees?: Array<IOmegaTreeTemplate>;
+  subtrees?: Array<IOmegaTreeTemplate>;
 }
 
 //Templates
@@ -315,11 +314,14 @@ export class Resource implements IResource{
 export class ExternalResource extends Resource implements IExternalResource{
   public uri: string = "";
   public type: string = "";
+  public locals: Array<any> = [];
 
   constructor(obj: IExternalResource = {}){
     super(obj);
+    this.class = ResourceName.ExternalResource;
     this.type = obj.type;
     this.uri = obj.uri;
+    this.locals = obj.locals;
   }
 }
 
@@ -478,13 +480,13 @@ export class GroupType extends Type implements IGroupType{
 export class OmegaTreeType extends GroupType implements IOmegaTreeType{
   //public root: INodeTemplate;
   //public levels: Array<ICylindricalLyphTemplate>;
-  //public subtrees: Array<IOmegaTreeTemplate>;
+  public subtrees: Array<IOmegaTreeTemplate>;
 
   constructor(obj: IOmegaTreeType){
     super(obj);
     this.class = ResourceName.OmegaTreeType;
     //this.levels = obj.levels;
-    //this.subtrees = obj.subtrees; //first (or any?) element of omega tree in a subtree must be among parent tree levels
+    this.subtrees = obj.subtrees; //first (or any?) element of omega tree in a subtree must be among parent tree levels
     //this.root = obj.root;
   }
 }
@@ -599,7 +601,7 @@ export class BorderTemplate extends Template implements IBorderTemplate{
   constructor(obj: IBorderTemplate){
     super(obj);
     this.class = TemplateName.BorderTemplate;
-    this.form = obj.form;
+    this.form = (obj.form)? obj.form: FormType.open;
   }
 }
 
@@ -682,8 +684,10 @@ var testBorders = [
 
 @Injectable()
 export class ExternalResourceProvider {
-  public items: Array<IExternalResource> = [];
-  constructor(){}
+  public items: Array<IExternalResource> = [
+    new ExternalResource({id: 3000, name: "FMA_44539: Third plantar metatarsal vein", type: "fma"}),
+    new ExternalResource({id: 4000, name: "cocomac:98: Accessor basal nucleus (amygdala), ventromedial division", type: "cocomac"})
+  ];
 }
 
 @Injectable()
@@ -767,7 +771,7 @@ export class CylindricalLyphTypeProvider {
     this.items.forEach(x =>
       this.templates.push(new CylindricalLyphTemplate({id: x.id + 100, name: "T: " + x.name, type: x}))
     );
-    let cellLayers = this.items.slice(0,2);
+    let cellLayers = this.templates.slice(0,2);
 
     let cell = new CylindricalLyphType(
       {id: 1002, name: "Cell", layers: cellLayers});

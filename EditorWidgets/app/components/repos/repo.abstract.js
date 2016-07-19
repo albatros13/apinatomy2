@@ -11,12 +11,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 /**
  * Created by Natallia on 7/8/2016.
  */
-/**
- * Created by Natallia on 6/18/2016.
- */
 var core_1 = require('@angular/core');
 var RepoAbstract = (function () {
     function RepoAbstract() {
+        this.added = new core_1.EventEmitter();
+        this.removed = new core_1.EventEmitter();
         this.updated = new core_1.EventEmitter();
         this.selected = new core_1.EventEmitter();
         this.items = [];
@@ -73,14 +72,23 @@ var RepoAbstract = (function () {
         var index = this.items.indexOf(item);
         if (index > -1)
             this.items.splice(index, 1);
-        this.updated.emit(this.items);
         if (item == this.selectedItem) {
             if (this.items.length > 0)
                 this.selectedItem = this.items[0];
             else
                 this.selectedItem = 0;
         }
+        this.removed.emit(item);
+        this.updated.emit(this.items);
     };
+    __decorate([
+        core_1.Output(), 
+        __metadata('design:type', Object)
+    ], RepoAbstract.prototype, "added", void 0);
+    __decorate([
+        core_1.Output(), 
+        __metadata('design:type', Object)
+    ], RepoAbstract.prototype, "removed", void 0);
     __decorate([
         core_1.Output(), 
         __metadata('design:type', Object)

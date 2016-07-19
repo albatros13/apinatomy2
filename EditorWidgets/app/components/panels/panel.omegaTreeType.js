@@ -20,6 +20,7 @@ var core_1 = require('@angular/core');
 var panel_groupType_1 = require("./panel.groupType");
 var component_general_1 = require('../component.general');
 var pipe_general_1 = require("../../transformations/pipe.general");
+var repo_template_1 = require('../repos/repo.template');
 var OmegaTreeTypePanel = (function (_super) {
     __extends(OmegaTreeTypePanel, _super);
     function OmegaTreeTypePanel() {
@@ -29,8 +30,8 @@ var OmegaTreeTypePanel = (function (_super) {
         core_1.Component({
             selector: 'omegaTreeType-panel',
             inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <groupType-panel [item]=\"item\" \n      [(dependencies)] = \"dependencies\" \n      [ignore] = \"ignore\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n      <!--Root-->\n      <!--<div class=\"input-control\" *ngIf=\"includeProperty('root')\">      \n        <label for=\"cause\">Root: </label>\n        <select-input-1 [item] = \"item.root\" \n          (updated)=\"updateProperty('root', $event)\"   \n          [options] = \"dependencies.templates | filterByClass: [templateName.NodeTemplate]\"></select-input-1>\n      </div>-->\n      \n      <ng-content></ng-content>      \n    \n    </groupType-panel>\n  ",
-            directives: [panel_groupType_1.GroupTypePanel, component_general_1.MultiSelectInput, component_general_1.SingleSelectInput],
+            template: "\n    <groupType-panel [item]=\"item\" \n      [(dependencies)] = \"dependencies\" \n      [ignore] = \"ignore.concat(['elements'])\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n      <!--Root-->\n      <!--<div class=\"input-control\" *ngIf=\"includeProperty('root')\">      \n        <label for=\"cause\">Root: </label>\n        <select-input-1 [item] = \"item.root\" \n          (updated)=\"updateProperty('root', $event)\"   \n          [options] = \"dependencies.templates | filterByClass: [templateName.NodeTemplate]\"></select-input-1>\n      </div>-->\n      \n      <!--Levels-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('levels')\">\n         <repo-template caption=\"Levels\" [items] = \"item.elements\" \n         (updated)=\"updateProperty('elements', $event)\"\n         [dependencies] = \"dependencies\" [types]=\"[\n           templateName.CylindricalLyphTemplate, templateName.OmegaTreeTemplate]\"></repo-template>\n      </div>\n      \n      <!--Subtrees-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('subtrees')\">\n         <repo-template caption=\"Subtrees\" [items] = \"item.subtrees\" \n         (updated)=\"updateProperty('subtrees', $event)\"\n         [dependencies] = \"dependencies\" [types]=\"[\n           templateName.OmegaTreeTemplate]\"></repo-template>\n      </div>\n      \n      <ng-content></ng-content>      \n    \n    </groupType-panel>\n  ",
+            directives: [panel_groupType_1.GroupTypePanel, component_general_1.MultiSelectInput, component_general_1.SingleSelectInput, repo_template_1.RepoTemplate],
             pipes: [pipe_general_1.FilterByClass]
         }), 
         __metadata('design:paramtypes', [])

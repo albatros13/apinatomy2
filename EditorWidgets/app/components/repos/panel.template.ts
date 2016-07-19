@@ -9,7 +9,6 @@ import {ProcessTemplatePanel} from '../templates/template.processType';
 import {CausalityTemplatePanel} from '../templates/template.causalityType';
 import {GroupTemplatePanel} from '../templates/template.groupType';
 import {OmegaTreeTemplatePanel} from '../templates/template.omegaTreeType';
-
 import {LyphTemplatePanel} from '../templates/template.lyphType';
 import {CylindricalLyphTemplatePanel} from '../templates/template.cylindricalLyphType';
 
@@ -19,52 +18,52 @@ import {CylindricalLyphTemplatePanel} from '../templates/template.cylindricalLyp
   inputs: ['item', 'dependencies'],
   template:`
       <!--Generic template-->
-      <template-panel *ngIf="item.class==templateNames.Template" [ignore]="['externals']"  
+      <template-panel *ngIf="item.class==templateName.Template" [ignore]="['externals']"  
        [item]="item"  [dependencies]="{types: dependencies.types, templates: dependencies.templates}" 
        (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></template-panel>
 
       <!--Lyph template-->
-      <lyphTemplate-panel *ngIf="item.class==templateNames.LyphTemplate"
+      <lyphTemplate-panel *ngIf="item.class==templateName.LyphTemplate"
       [item]="item"  [dependencies]="{types: dependencies.lyphs, templates: dependencies.templates}" 
       (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></lyphTemplate-panel>
     
       <!--Cylindrical lyphs-->      
-      <cylindricalLyphTemplate-panel *ngIf="item.class==templateNames.CylindricalLyphTemplate"
+      <cylindricalLyphTemplate-panel *ngIf="item.class==templateName.CylindricalLyphTemplate"
        [item]="item"  [dependencies]="{types: dependencies.cylindricalLyphs, templates: dependencies.templates}" 
        (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></cylindricalLyphTemplate-panel>
       
       <!--Processes-->      
-      <processTemplate-panel *ngIf="item.class==templateNames.ProcessTemplate"
+      <processTemplate-panel *ngIf="item.class==templateName.ProcessTemplate"
        [item]="item"  [dependencies]="{types: dependencies.processes, templates: dependencies.templates}" 
        (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></processTemplate-panel>
       
       <!--Mesurables-->
-      <measurableTemplate-panel *ngIf="item.class==templateNames.MeasurableTemplate"
+      <measurableTemplate-panel *ngIf="item.class==templateName.MeasurableTemplate"
        [item]="item"  [dependencies]="{types: dependencies.measurables, templates: dependencies.templates}" 
        (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></measurableTemplate-panel>
       
       <!--Causalities-->
-      <causalityTemplate-panel *ngIf="item.class==templateNames.CausalityTemplate"
+      <causalityTemplate-panel *ngIf="item.class==templateName.CausalityTemplate"
        [item]="item"  [dependencies]="{types: dependencies.causalities, templates: dependencies.templates}" 
        (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></causalityTemplate-panel>
       
       <!--Nodes-->
-      <nodeTemplate-panel *ngIf="item.class==templateNames.NodeTemplate"
+      <nodeTemplate-panel *ngIf="item.class==templateName.NodeTemplate"
        [item]="item"  [dependencies]="{types: dependencies.nodes, templates: dependencies.templates}" 
        (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></nodeTemplate-panel>
      
       <!--Borders-->
-      <borderTemplate-panel *ngIf="item.class==templateNames.BorderTemplate"
+      <borderTemplate-panel *ngIf="item.class==templateName.BorderTemplate"
        [item]="item"  [dependencies]="{types: dependencies.borders, templates: dependencies.templates}" 
        (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></borderTemplate-panel>
       
       <!--Groups-->
-      <groupTemplate-panel *ngIf="item.class==templateNames.GroupTemplate"
+      <groupTemplate-panel *ngIf="item.class==templateName.GroupTemplate"
        [item]="item"  [dependencies]="{types: dependencies.groups, templates: dependencies.templates}" 
        (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></groupTemplate-panel>
 
       <!--Omega trees-->
-      <omegaTreeTemplate-panel *ngIf="item.class==templateNames.OmegaTreeTemplate"
+      <omegaTreeTemplate-panel *ngIf="item.class==templateName.OmegaTreeTemplate"
        [item]="item"  [dependencies]="{types: dependencies.omegaTrees, templates: dependencies.templates}" 
        (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></omegaTreeTemplate-panel>
   `,
@@ -74,9 +73,10 @@ import {CylindricalLyphTemplatePanel} from '../templates/template.cylindricalLyp
     GroupTemplatePanel, OmegaTreeTemplatePanel]
 })
 export class PanelTemplate{
-  templateNames = TemplateName;
+  templateName = TemplateName;
   @Output() saved = new EventEmitter();
   @Output() removed = new EventEmitter();
+  @Output() canceled = new EventEmitter();
 
   constructor(protected restoreService: RestoreService){}
 
@@ -95,6 +95,7 @@ export class PanelTemplate{
 
   protected onCanceled() {
     this.item = this.restoreService.restoreItem();
+    this.canceled.emit(this.item);
   }
 
 }

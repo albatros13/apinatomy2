@@ -164,3 +164,24 @@ export class DynamicList{
   }
 }
 
+
+function getListData(item: any, property: string, depth: number){//Format: [{id: 1, name: "Parent"}, {id: 2, name: "Child"},...];
+  let data: any = {};
+  if (!item) return data;
+  if (!depth) depth = -1;
+  traverse(item, property, depth, data);
+  return data;
+
+  function traverse(root: any, property: string, depth: number, data: any) {
+    if (!root) return;
+    if (!root[property]) return;
+    if (depth == 0) return root;
+    var children = root[property];
+    for (let child of children){
+      if (data.indexOf(child) == -1)
+        data.push(child);
+      traverse(child, property, depth - 1, data);
+    }
+  }
+}
+

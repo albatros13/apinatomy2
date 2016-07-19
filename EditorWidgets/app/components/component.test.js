@@ -197,4 +197,28 @@ var DynamicList = (function () {
     return DynamicList;
 }());
 exports.DynamicList = DynamicList;
+function getListData(item, property, depth) {
+    var data = {};
+    if (!item)
+        return data;
+    if (!depth)
+        depth = -1;
+    traverse(item, property, depth, data);
+    return data;
+    function traverse(root, property, depth, data) {
+        if (!root)
+            return;
+        if (!root[property])
+            return;
+        if (depth == 0)
+            return root;
+        var children = root[property];
+        for (var _i = 0, children_1 = children; _i < children_1.length; _i++) {
+            var child = children_1[_i];
+            if (data.indexOf(child) == -1)
+                data.push(child);
+            traverse(child, property, depth - 1, data);
+        }
+    }
+}
 //# sourceMappingURL=component.test.js.map

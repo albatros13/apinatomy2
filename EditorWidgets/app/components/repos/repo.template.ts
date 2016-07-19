@@ -27,7 +27,7 @@ import {FilterBy} from "../../transformations/pipe.general";
         <accordion class="list-group" [closeOthers]="true" dnd-sortable-container [dropZones]="['lyphTemplate-zone']" [sortableData]="items">
           <accordion-group *ngFor="let item of items | filterBy: [searchString, filterByMode]; let i = index" class="list-group-item" dnd-sortable 
            [sortableIndex]="i" (click)="selectedItem = item">
-            <div accordion-heading><item-header [item]="item" [icon]="'images/lyphType.png'"></item-header></div>
+            <div accordion-heading><item-header [item]="item" [icon]="getIcon(item)"></item-header></div>
 
             <div *ngIf="!options || !options.headersOnly">
               <panel-template *ngIf="item == selectedItem" 
@@ -46,22 +46,22 @@ import {FilterBy} from "../../transformations/pipe.general";
   pipes: [FilterBy]
 })
 export class RepoTemplate extends RepoAbstract{
-  templateNames = TemplateName;
+  templateName = TemplateName;
 
   protected getIcon(item: any){
     switch (item.class){
-      case this.templateNames.Template          : return "images/type.png";
-      case this.templateNames.LyphTemplate      : return "images/lyphType.png";
-      case this.templateNames.CylindricalLyphTemplate: return "images/cylindricalLyphType.png";
+      case this.templateName.Template          : return "images/type.png";
+      case this.templateName.LyphTemplate      : return "images/lyphType.png";
+      case this.templateName.CylindricalLyphTemplate: return "images/cylindricalLyphType.png";
 
-      case this.templateNames.ProcessTemplate   : return "images/processType.png";
-      case this.templateNames.MeasurableTemplate: return "images/measurableType.png";
-      case this.templateNames.CausalityTemplate : return "images/causalityType.png";
-      case this.templateNames.NodeTemplate      : return "images/nodeType.png";
-      case this.templateNames.BorderTemplate    : return "images/borderType.png";
+      case this.templateName.ProcessTemplate   : return "images/processType.png";
+      case this.templateName.MeasurableTemplate: return "images/measurableType.png";
+      case this.templateName.CausalityTemplate : return "images/causalityType.png";
+      case this.templateName.NodeTemplate      : return "images/nodeType.png";
+      case this.templateName.BorderTemplate    : return "images/borderType.png";
 
-      case this.templateNames.GroupTemplate     : return "images/groupType.png";
-      case this.templateNames.OmegaTreeTemplate : return "images/omegaTreeType.png";
+      case this.templateName.GroupTemplate     : return "images/groupType.png";
+      case this.templateName.OmegaTreeTemplate : return "images/omegaTreeType.png";
 
     }
     return "images/resource.png";
@@ -70,30 +70,31 @@ export class RepoTemplate extends RepoAbstract{
   protected onAdded(resourceType: ResourceName | TemplateName){
     let newItem: any;
     switch (resourceType){
-      case this.templateNames.CausalityTemplate  : newItem =
+      case this.templateName.CausalityTemplate  : newItem =
         new CausalityTemplate({name: "New causality template"}); break;
-      case this.templateNames.BorderTemplate  :
+      case this.templateName.BorderTemplate  :
         newItem = new BorderTemplate({name: "New border template"}); break;
-      case this.templateNames.NodeTemplate  :
+      case this.templateName.NodeTemplate  :
         newItem = new NodeTemplate({name: "New node template"}); break;
-      case this.templateNames.MeasurableTemplate  :
+      case this.templateName.MeasurableTemplate  :
         newItem = new MeasurableTemplate({name: "New Measurable template"}); break;
-      case this.templateNames.ProcessTemplate  :
+      case this.templateName.ProcessTemplate  :
         newItem = new ProcessTemplate({name: "New process template"}); break;
 
-      case this.templateNames.LyphTemplate  :
+      case this.templateName.LyphTemplate  :
         newItem = new LyphTemplate({name: "New lyph template"}); break;
-      case this.templateNames.CylindricalLyphTemplate  :
+      case this.templateName.CylindricalLyphTemplate  :
         newItem = new CylindricalLyphTemplate({name: "New cylindrical lyph template"}); break;
 
-      case this.templateNames.GroupTemplate  :
+      case this.templateName.GroupTemplate  :
         newItem = new GroupTemplate({name: "New group template"}); break;
-      case this.templateNames.OmegaTreeTemplate  :
+      case this.templateName.OmegaTreeTemplate  :
         newItem = new OmegaTreeTemplate({name: "New omega tree template"}); break;
 
       default: newItem = new Template({name: "New template"});
     }
     this.items.push(newItem);
+    this.added.emit(newItem);
     this.updated.emit(this.items);
     this.selectedItem = newItem;
   }

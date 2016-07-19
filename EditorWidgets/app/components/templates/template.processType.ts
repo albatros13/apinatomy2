@@ -6,7 +6,7 @@ import {SingleSelectInput} from '../component.general';
 import {TemplateValue} from '../component.template';
 import {TemplatePanel} from "./template.type";
 import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
-import {TransportPhenomenon} from "../../providers/service.apinatomy2";
+import {TransportPhenomenon, NodeTemplate} from "../../providers/service.apinatomy2";
 import {FilterByClass} from "../../transformations/pipe.general";
 
 @Component({
@@ -15,6 +15,7 @@ import {FilterByClass} from "../../transformations/pipe.general";
   template:`
     <template-panel [item]="item" 
       [dependencies]="dependencies" 
+      [ignore]="ignore"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"
@@ -43,7 +44,7 @@ import {FilterByClass} from "../../transformations/pipe.general";
       <div class="input-control" *ngIf="includeProperty('source')">      
         <label for="source">Source: </label>
         <select-input-1 [item] = "item.source" 
-          (updated)="updateProperty('source', $event)"   
+          (updated)="onSourceChanged($event)"   
           [options] = "dependencies.templates | filterByClass: [templateName.NodeTemplate]"></select-input-1>
       </div>
       
@@ -51,7 +52,7 @@ import {FilterByClass} from "../../transformations/pipe.general";
       <div class="input-control" *ngIf="includeProperty('target')">      
         <label for="target">Target: </label>
         <select-input-1 [item] = "item.target" 
-          (updated)="updateProperty('target', $event)"   
+          (updated)="onTargetChanged($event)"   
           [options] = "dependencies.templates | filterByClass: [templateName.NodeTemplate]"></select-input-1>
       </div>        
       
@@ -65,5 +66,31 @@ import {FilterByClass} from "../../transformations/pipe.general";
 export class ProcessTemplatePanel extends TemplatePanel{
   transportPhenomenon = TransportPhenomenon;
 
-  //TODO: set properties of nodes: incomingProcesses, outgoingProcesses
+  onSourceChanged(node: NodeTemplate){
+    if (this.item.source) {
+      let index = this.item.source.outgoingProcesses.indexOf(this.item);
+      if (index > -1) this.item.source.outgoingProcesses.slice(index, 1);
+    }
+    super.updateProperty("source", node);
+    if (node){
+      if (!node.outgoingProcesses) node.outgoingProcesses = [];
+      node.outgoingProcesses.push(this.item);
+    }
+  }
+
+  onTargetChanged(node: NodeTemplate){
+    if (this.item.target) {
+      let index = this.item.target.incomingProcesses.indexOf(this.item);
+      if (index > -1) this.item.target.incomingProcesses.slice(index, 1);
+    }
+    super.updateProperty("target", node);
+    if (node){
+      if (!node.incomingProcesses) node.incomingProcesses = [];
+      node.incomingProcesses.push(this.item);
+    }
+  }
+
+
+
+
 }

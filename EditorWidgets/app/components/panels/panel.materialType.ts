@@ -75,7 +75,7 @@ export class MaterialTypePanel extends TypePanel{
   dependencies: any;
 
   onPropertyUpdated(event: any){
-    let property = event.property;
+    let property = event.properties;
     if (property == "supertypes"){
       let supertypes = event.values;
       this.supertypeMeasurables = [];

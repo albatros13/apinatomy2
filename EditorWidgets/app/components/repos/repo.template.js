@@ -29,57 +29,58 @@ var RepoTemplate = (function (_super) {
     __extends(RepoTemplate, _super);
     function RepoTemplate() {
         _super.apply(this, arguments);
-        this.templateNames = service_apinatomy2_1.TemplateName;
+        this.templateName = service_apinatomy2_1.TemplateName;
     }
     RepoTemplate.prototype.getIcon = function (item) {
         switch (item.class) {
-            case this.templateNames.Template: return "images/type.png";
-            case this.templateNames.LyphTemplate: return "images/lyphType.png";
-            case this.templateNames.CylindricalLyphTemplate: return "images/cylindricalLyphType.png";
-            case this.templateNames.ProcessTemplate: return "images/processType.png";
-            case this.templateNames.MeasurableTemplate: return "images/measurableType.png";
-            case this.templateNames.CausalityTemplate: return "images/causalityType.png";
-            case this.templateNames.NodeTemplate: return "images/nodeType.png";
-            case this.templateNames.BorderTemplate: return "images/borderType.png";
-            case this.templateNames.GroupTemplate: return "images/groupType.png";
-            case this.templateNames.OmegaTreeTemplate: return "images/omegaTreeType.png";
+            case this.templateName.Template: return "images/type.png";
+            case this.templateName.LyphTemplate: return "images/lyphType.png";
+            case this.templateName.CylindricalLyphTemplate: return "images/cylindricalLyphType.png";
+            case this.templateName.ProcessTemplate: return "images/processType.png";
+            case this.templateName.MeasurableTemplate: return "images/measurableType.png";
+            case this.templateName.CausalityTemplate: return "images/causalityType.png";
+            case this.templateName.NodeTemplate: return "images/nodeType.png";
+            case this.templateName.BorderTemplate: return "images/borderType.png";
+            case this.templateName.GroupTemplate: return "images/groupType.png";
+            case this.templateName.OmegaTreeTemplate: return "images/omegaTreeType.png";
         }
         return "images/resource.png";
     };
     RepoTemplate.prototype.onAdded = function (resourceType) {
         var newItem;
         switch (resourceType) {
-            case this.templateNames.CausalityTemplate:
+            case this.templateName.CausalityTemplate:
                 newItem =
                     new service_apinatomy2_1.CausalityTemplate({ name: "New causality template" });
                 break;
-            case this.templateNames.BorderTemplate:
+            case this.templateName.BorderTemplate:
                 newItem = new service_apinatomy2_1.BorderTemplate({ name: "New border template" });
                 break;
-            case this.templateNames.NodeTemplate:
+            case this.templateName.NodeTemplate:
                 newItem = new service_apinatomy2_1.NodeTemplate({ name: "New node template" });
                 break;
-            case this.templateNames.MeasurableTemplate:
+            case this.templateName.MeasurableTemplate:
                 newItem = new service_apinatomy2_1.MeasurableTemplate({ name: "New Measurable template" });
                 break;
-            case this.templateNames.ProcessTemplate:
+            case this.templateName.ProcessTemplate:
                 newItem = new service_apinatomy2_1.ProcessTemplate({ name: "New process template" });
                 break;
-            case this.templateNames.LyphTemplate:
+            case this.templateName.LyphTemplate:
                 newItem = new service_apinatomy2_1.LyphTemplate({ name: "New lyph template" });
                 break;
-            case this.templateNames.CylindricalLyphTemplate:
+            case this.templateName.CylindricalLyphTemplate:
                 newItem = new service_apinatomy2_1.CylindricalLyphTemplate({ name: "New cylindrical lyph template" });
                 break;
-            case this.templateNames.GroupTemplate:
+            case this.templateName.GroupTemplate:
                 newItem = new service_apinatomy2_1.GroupTemplate({ name: "New group template" });
                 break;
-            case this.templateNames.OmegaTreeTemplate:
+            case this.templateName.OmegaTreeTemplate:
                 newItem = new service_apinatomy2_1.OmegaTreeTemplate({ name: "New omega tree template" });
                 break;
             default: newItem = new service_apinatomy2_1.Template({ name: "New template" });
         }
         this.items.push(newItem);
+        this.added.emit(newItem);
         this.updated.emit(this.items);
         this.selectedItem = newItem;
     };
@@ -87,7 +88,7 @@ var RepoTemplate = (function (_super) {
         core_1.Component({
             selector: 'repo-template',
             inputs: ['items', 'caption', 'dependencies', 'types', 'options'],
-            template: "\n    <div class=\"panel panel-warning repo-template\">\n      <div class=\"panel-heading\">{{caption}}</div>\n      <div class=\"panel-body\" >\n        <edit-toolbar [options]=\"types\" (added)=\"onAdded($event)\"></edit-toolbar>\n        <filter-toolbar [filter]=\"searchString\" [options]=\"['Name', 'ID']\" (applied)=\"onFiltered($event)\"></filter-toolbar>\n          \n        <accordion class=\"list-group\" [closeOthers]=\"true\" dnd-sortable-container [dropZones]=\"['lyphTemplate-zone']\" [sortableData]=\"items\">\n          <accordion-group *ngFor=\"let item of items | filterBy: [searchString, filterByMode]; let i = index\" class=\"list-group-item\" dnd-sortable \n           [sortableIndex]=\"i\" (click)=\"selectedItem = item\">\n            <div accordion-heading><item-header [item]=\"item\" [icon]=\"'images/lyphType.png'\"></item-header></div>\n\n            <div *ngIf=\"!options || !options.headersOnly\">\n              <panel-template *ngIf=\"item == selectedItem\" \n                [item]=\"item\" \n                [(dependencies)]=\"dependencies\" \n                (saved)=\"onSaved(item, $event)\" \n                (removed)=\"onRemoved(item)\"></panel-template>            \n            </div>\n          </accordion-group>        \n        </accordion>       \n      </div>\n    </div>\n  ",
+            template: "\n    <div class=\"panel panel-warning repo-template\">\n      <div class=\"panel-heading\">{{caption}}</div>\n      <div class=\"panel-body\" >\n        <edit-toolbar [options]=\"types\" (added)=\"onAdded($event)\"></edit-toolbar>\n        <filter-toolbar [filter]=\"searchString\" [options]=\"['Name', 'ID']\" (applied)=\"onFiltered($event)\"></filter-toolbar>\n          \n        <accordion class=\"list-group\" [closeOthers]=\"true\" dnd-sortable-container [dropZones]=\"['lyphTemplate-zone']\" [sortableData]=\"items\">\n          <accordion-group *ngFor=\"let item of items | filterBy: [searchString, filterByMode]; let i = index\" class=\"list-group-item\" dnd-sortable \n           [sortableIndex]=\"i\" (click)=\"selectedItem = item\">\n            <div accordion-heading><item-header [item]=\"item\" [icon]=\"getIcon(item)\"></item-header></div>\n\n            <div *ngIf=\"!options || !options.headersOnly\">\n              <panel-template *ngIf=\"item == selectedItem\" \n                [item]=\"item\" \n                [(dependencies)]=\"dependencies\" \n                (saved)=\"onSaved(item, $event)\" \n                (removed)=\"onRemoved(item)\"></panel-template>            \n            </div>\n          </accordion-group>        \n        </accordion>       \n      </div>\n    </div>\n  ",
             directives: [component_general_1.ItemHeader, component_general_1.EditToolbar, component_general_1.FilterToolbar,
                 panel_template_1.PanelTemplate, accordion_1.ACCORDION_DIRECTIVES, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES, ng2_dnd_1.DND_DIRECTIVES],
             pipes: [pipe_general_1.FilterBy]

@@ -6,45 +6,42 @@ import {SingleSelectInput} from '../component.general';
 import {TemplateValue} from '../component.template';
 import {TemplatePanel} from "./template.type";
 import {FormType, BorderTemplate} from "../../providers/service.apinatomy2";
+import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
 
 @Component({
   selector: 'borderTemplate-panel',
-  inputs: ['item', 'dependencies'],
+  inputs: ['item', 'dependencies', 'ignore'],
   template:`
     <template-panel [item]="item" 
       [dependencies] = "dependencies"  
+      [ignore]="ignore"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"
       (propertyUpdated) = "propertyUpdated.emit($event)">
 
       <!--Position: Template-->
-      <!--<template-value caption="Position:" [item]="item.position"-->
-      <!--(updated)="updateProperty('position', $event)"></template-value>-->
+      <template-value caption="Position:" [item]="item.position"
+      (updated)="updateProperty('position', $event)"></template-value>
       
       <!--Form: {open, closed}-->
-<!--      <div class="input-control" *ngIf="includeProperty('form')">
+      <div class="input-control" *ngIf="includeProperty('form') && item.form">
         <fieldset>
           <legend>Form:</legend>
           <radio-group [(ngModel)]="item.form" [required]="true">
-             <input type="radio" [value]="form.open">{{formType.open}}&nbsp;
-             <input type="radio" [value]="form.closed">{{formType.closed}}<br/>
+             <input type="radio" [value]="formType.open">{{formType.open}}&nbsp;
+             <input type="radio" [value]="formType.closed">{{formType.closed}}<br/>
           </radio-group>
         </fieldset>
-      </div>-->
+      </div>
       
       <ng-content></ng-content>   
          
     </template-panel>
   `,
-  directives: [TemplateValue, SingleSelectInput, TemplatePanel]
+  directives: [TemplateValue, SingleSelectInput, TemplatePanel, RADIO_GROUP_DIRECTIVES]
 })
 export class BorderTemplatePanel extends TemplatePanel{
   public formType = FormType;
   item: any;
-
-  constructor(){
-    super();
-    if (!this.item) {this.item = new BorderTemplate({});}
-  }
 }

@@ -70,7 +70,9 @@ var MapToOptions = (function () {
         else
             return convert(items);
         function convert(items) {
-            return items.map(function (entry) { return ({ id: (entry.id) ? entry.id : entry.name, text: entry.name ? entry.name : entry.id }); });
+            return items.map(function (entry) { return ({
+                id: (entry.id) ? entry.id : (entry.name) ? entry.name : entry.text,
+                text: entry.name ? entry.name : (entry.text) ? entry.text : entry.id }); });
         }
     };
     MapToOptions = __decorate([
@@ -82,6 +84,33 @@ var MapToOptions = (function () {
     return MapToOptions;
 }());
 exports.MapToOptions = MapToOptions;
+var MapToCategories = (function () {
+    function MapToCategories() {
+    }
+    MapToCategories.prototype.transform = function (items) {
+        if (!items || (items.length == 0))
+            return [];
+        var types = Array.from(new Set(items.map(function (item) { return item.type; })));
+        var typedItems = [];
+        var _loop_1 = function(type) {
+            var typed = items.filter(function (item) { return (item.type == type); });
+            typedItems.push({ text: type, children: typed });
+        };
+        for (var _i = 0, types_1 = types; _i < types_1.length; _i++) {
+            var type = types_1[_i];
+            _loop_1(type);
+        }
+        return typedItems;
+    };
+    MapToCategories = __decorate([
+        core_1.Pipe({
+            name: 'mapToCategories'
+        }), 
+        __metadata('design:paramtypes', [])
+    ], MapToCategories);
+    return MapToCategories;
+}());
+exports.MapToCategories = MapToCategories;
 var OrderBy = (function () {
     function OrderBy() {
     }

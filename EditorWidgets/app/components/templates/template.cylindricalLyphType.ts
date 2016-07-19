@@ -8,10 +8,11 @@ import {LyphTemplatePanel} from "./template.lyphType";
 
 @Component({
   selector: 'cylindricalLyphTemplate-panel',
-  inputs: ['item', 'dependencies'],
+  inputs: ['item', 'dependencies', 'ignore'],
   template:`
     <lyphTemplate-panel [item]="item" 
       [dependencies]="dependencies" 
+      [ignore]="ignore"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"

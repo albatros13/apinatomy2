@@ -7,9 +7,10 @@ import {
   ExternalResourceProvider,
   TypeProvider, MaterialTypeProvider, LyphTypeProvider, CylindricalLyphTypeProvider,
   MeasurableTypeProvider, ProcessTypeProvider, BorderTypeProvider,
-  GroupTypeProvider, OmegaTreeTypeProvider
+  GroupTypeProvider, OmegaTreeTypeProvider, ResourceName
 } from '../providers/service.apinatomy2'
 import {HierarchyWidget} from '../widgets/widget.hierarchy';
+import {OmegaTreeWidget} from '../widgets/widget.omegaTree';
 
 @Component({
   selector: 'lyphType-editor',
@@ -36,16 +37,19 @@ import {HierarchyWidget} from '../widgets/widget.hierarchy';
             </repo-general>
         </div>
         <div class="col-sm-6">
-          <hierarchy [item]="selectedItem" [options]="{relation: 'materials'}"></hierarchy>
+          <hierarchy [item]="selectedItem" [relation]="materials"></hierarchy>
+          <omega-tree *ngIf="selectedItem && (selectedItem.class == resourceName.OmegaTreeType)" 
+            [item]="selectedItem"></omega-tree>          
         </div>
     </div>
   `,
-  directives: [RepoGeneral, HierarchyWidget]
+  directives: [RepoGeneral, HierarchyWidget, OmegaTreeWidget]
 })
 export class LyphTypeEditor {
   items: Array<any>;
   selectedItem: any;
   dependency: any;
+  resourceName = ResourceName;
 
   constructor(
     @Inject(ExternalResourceProvider) eResourceP: ExternalResourceProvider,
@@ -55,9 +59,9 @@ export class LyphTypeEditor {
     @Inject(CylindricalLyphTypeProvider) cLyphP: CylindricalLyphTypeProvider,
     @Inject(MeasurableTypeProvider) measurableP: MeasurableTypeProvider,
     @Inject(ProcessTypeProvider) processP: ProcessTypeProvider,
-   @Inject(BorderTypeProvider) borderP: BorderTypeProvider,
-   @Inject(GroupTypeProvider) groupP: GroupTypeProvider,
-   @Inject(OmegaTreeTypeProvider) omegaTreeP: OmegaTreeTypeProvider
+    @Inject(BorderTypeProvider) borderP: BorderTypeProvider,
+    @Inject(GroupTypeProvider) groupP: GroupTypeProvider,
+    @Inject(OmegaTreeTypeProvider) omegaTreeP: OmegaTreeTypeProvider
   ) {
 
    let allLyphs = lyphP.items.concat(cLyphP.items);
@@ -87,22 +91,11 @@ export class LyphTypeEditor {
   }
 
   onItemSelect(item: any){
-    this.selectedItem = item;
+    setTimeout(() => {this.selectedItem = null;}, 0);
+    //this.selectedItem = item;
+    setTimeout(() => {this.selectedItem = item;}, 0);
+
   }
-
-  // height: number = 600;
-  // ngOnInit(){
-  //   this.setPanelSize(window.innerWidth, window.innerHeight);
-  // }
-  //
-  // onResize(event: any){
-  //   this.setPanelSize(window.innerWidth, window.innerHeight);
-  // }
-  //
-  // setPanelSize(innerWidth: number, innerHeight: number){
-  //   if (innerHeight > 300) this.height = innerHeight - 40;
-  // }
-
 }
 
 

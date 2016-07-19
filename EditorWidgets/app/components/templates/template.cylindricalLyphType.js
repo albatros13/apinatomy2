@@ -28,8 +28,8 @@ var CylindricalLyphTemplatePanel = (function (_super) {
     CylindricalLyphTemplatePanel = __decorate([
         core_1.Component({
             selector: 'cylindricalLyphTemplate-panel',
-            inputs: ['item', 'dependencies'],
-            template: "\n    <lyphTemplate-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n    \n      <ng-content></ng-content>      \n    \n    </lyphTemplate-panel>\n  ",
+            inputs: ['item', 'dependencies', 'ignore'],
+            template: "\n    <lyphTemplate-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      [ignore]=\"ignore\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n    \n      <ng-content></ng-content>      \n    \n    </lyphTemplate-panel>\n  ",
             directives: [component_template_1.TemplateValue, component_general_1.SingleSelectInput, template_lyphType_1.LyphTemplatePanel]
         }), 
         __metadata('design:paramtypes', [])

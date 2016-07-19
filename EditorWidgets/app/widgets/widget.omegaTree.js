@@ -1,9 +1,4 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -17,27 +12,55 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  * Created by Natallia on 7/14/2016.
  */
 var core_1 = require('@angular/core');
-var hierarchy_general_1 = require("./hierarchy.general");
-var OmegaTreeWidget = (function (_super) {
-    __extends(OmegaTreeWidget, _super);
+var color = d3.scale.category20();
+//Resource visualization widget stub
+var TemplateBox = (function () {
+    function TemplateBox(model) {
+        this.model = model;
+    }
+    TemplateBox.prototype.render = function (svg, options) {
+        return svg.append("rect")
+            .attr("x", options.center.x).attr("y", options.center.y)
+            .attr("width", options.size.width).attr("height", options.size.height)
+            .style("stroke", "black").style("fill", "white");
+    };
+    return TemplateBox;
+}());
+exports.TemplateBox = TemplateBox;
+var OmegaTreeWidget = (function () {
     function OmegaTreeWidget(renderer, el, vc, resolver) {
-        _super.call(this);
         this.renderer = renderer;
         this.el = el;
         this.vc = vc;
         this.resolver = resolver;
         this.caption = "Omega function ";
+        this.depth = -1;
+        this.vp = { size: { width: 400, height: 600 },
+            margin: { x: 20, y: 20 },
+            node: { size: { width: 40, height: 20 } } };
         this.setNode = new core_1.EventEmitter();
     }
+    OmegaTreeWidget.prototype.ngOnInit = function () {
+        this.setPanelSize(window.innerWidth, window.innerHeight);
+    };
+    OmegaTreeWidget.prototype.onResize = function (event) {
+        this.setPanelSize(event.target.innerWidth, event.target.innerHeight);
+    };
+    OmegaTreeWidget.prototype.setPanelSize = function (innerWidth, innerHeight) {
+        var w = innerWidth / 2 - 2 * this.vp.margin.x;
+        var h = innerHeight / 2 - 2 * this.vp.margin.y;
+        var delta = 10;
+        if ((Math.abs(this.vp.size.width - w) > delta) || (Math.abs(this.vp.size.height - h) > delta)) {
+            this.vp.size = { width: w, height: h };
+            this.draw(this.svg, this.vp, this.data);
+        }
+    };
     OmegaTreeWidget.prototype.ngOnChanges = function (changes) {
-        //changes['item'].currentValue;
         this.svg = d3.select(this.el.nativeElement).select('svg');
         if (this.item) {
             this.caption = "Omega function: " + this.item.id + " - " + this.item.name;
-            if (this.options) {
-                this.data = this.getOmegaTreeData(this.item);
-                this.draw(this.svg, this.vp, this.data);
-            }
+            this.data = this.getOmegaTreeData(this.item);
+            this.draw(this.svg, this.vp, this.data);
         }
         else {
             this.data = {};
@@ -47,39 +70,39 @@ var OmegaTreeWidget = (function (_super) {
     OmegaTreeWidget.prototype.draw = function (svg, vp, data) {
         var w = vp.size.width - 2 * vp.margin.x;
         var h = vp.size.height - 2 * vp.margin.y;
-        svg.selectAll("g").remove();
-        var treeSvg = svg.append("g").attr("class", "tree").attr("width", vp.size.width).attr("height", vp.size.height)
-            .attr("transform", "translate(" + vp.margin.x + "," + vp.margin.y + ")");
-        var tree = d3.layout.tree().size([w, h]);
-        var diagonal = d3.svg.diagonal().projection(function (d) { return [d.x, d.y]; });
-        var nodes = tree.nodes(data);
-        var links = tree.links(nodes);
         var dx = vp.node.size.width / 2;
         var dy = vp.node.size.height / 2;
-        var link = treeSvg.selectAll(".treeLink")
+        svg.selectAll(".tree").remove();
+        var diagonal = d3.svg.diagonal().projection(function (d) { return [d.x, d.y]; });
+        var tree = d3.layout.tree().size([w, h]);
+        var treeSvg = svg.append("g").attr("class", "tree").attr("width", vp.size.width).attr("height", vp.size.height)
+            .attr("transform", "translate(" + vp.margin.x + "," + vp.margin.y + ")");
+        var nodes = tree.nodes(data);
+        var links = tree.links(nodes);
+        var link = treeSvg.selectAll(".link")
             .data(links)
             .enter().append("path")
-            .attr("class", "treeLink")
+            .attr("class", "link")
             .attr("d", diagonal);
-        var node = treeSvg.selectAll(".treeNode")
+        var node = treeSvg.selectAll(".node")
             .data(nodes)
             .enter()
             .append("g")
-            .attr("class", "treeNode")
+            .attr("class", "node")
             .attr("transform", transform)
             .each(function (d) {
-            var item = new hierarchy_general_1.TemplateBox(d.resource);
+            var item = new TemplateBox(d.resource);
             item.render(treeSvg, { center: { x: d.x - dx, y: d.y - dy }, size: vp.node.size });
         });
-        var text = treeSvg.selectAll("treeLabel").data(nodes)
+        var text = treeSvg.selectAll("nodeLabel").data(nodes)
             .enter()
             .append("g")
-            .attr("class", "treeLabel")
+            .attr("class", "nodeLabel")
             .append("text")
-            .attr("dx", 0).style("text-anchor", "middle")
+            .attr("dx", -dx - 4).style("text-anchor", "end")
             .attr("dy", 2)
             .attr("transform", transform)
-            .text(function (d) { return d.id; });
+            .text(function (d) { return ((d.id) ? d.id : "?") + ": " + d.name; });
         function transform(d) {
             return "translate(" + d.x + "," + d.y + ")";
         }
@@ -92,6 +115,7 @@ var OmegaTreeWidget = (function (_super) {
             return data;
         var obj = item.elements[0];
         var parent = { id: obj.id, name: obj.name, resource: obj };
+        data = parent;
         for (var i = 1; i < item.elements.length; i++) {
             var obj_1 = item.elements[i];
             var child = { id: obj_1.id, name: obj_1.name, resource: obj_1 };
@@ -107,13 +131,13 @@ var OmegaTreeWidget = (function (_super) {
     OmegaTreeWidget = __decorate([
         core_1.Component({
             selector: 'omega-tree',
-            inputs: ['item', 'options'],
-            template: "\n    <div class=\"panel panel-success\">\n      <div class=\"panel-heading\">{{caption}}</div>\n      <div class=\"panel-body\" (window:resize)=\"onResize($event)\">\n        <svg #treeSvg class=\"svg-widget\"></svg>\n      </div>\n    </div>\n  ",
+            inputs: ['item'],
+            template: "\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">{{caption}}</div>\n      <div class=\"panel-body\" (window:resize)=\"onResize($event)\">\n        <svg #treeSvg class=\"svg-widget\"></svg>\n      </div>\n    </div>\n  ",
             directives: []
         }), 
         __metadata('design:paramtypes', [core_1.Renderer, core_1.ElementRef, core_1.ViewContainerRef, core_1.ComponentResolver])
     ], OmegaTreeWidget);
     return OmegaTreeWidget;
-}(hierarchy_general_1.AbstractHierarchyWidget));
+}());
 exports.OmegaTreeWidget = OmegaTreeWidget;
 //# sourceMappingURL=widget.omegaTree.js.map

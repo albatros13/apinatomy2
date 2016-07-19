@@ -18,8 +18,10 @@ var core_1 = require('@angular/core');
 var repo_general_1 = require('../components/repos/repo.general');
 var service_apinatomy2_1 = require('../providers/service.apinatomy2');
 var widget_hierarchy_1 = require('../widgets/widget.hierarchy');
+var widget_omegaTree_1 = require('../widgets/widget.omegaTree');
 var LyphTypeEditor = (function () {
     function LyphTypeEditor(eResourceP, typeP, materialP, lyphP, cLyphP, measurableP, processP, borderP, groupP, omegaTreeP) {
+        this.resourceName = service_apinatomy2_1.ResourceName;
         var allLyphs = lyphP.items.concat(cLyphP.items);
         var allMaterials = materialP.items.concat(allLyphs);
         var allGroups = groupP.items.concat(omegaTreeP.items);
@@ -44,7 +46,10 @@ var LyphTypeEditor = (function () {
         this.items = allTypes;
     }
     LyphTypeEditor.prototype.onItemSelect = function (item) {
-        this.selectedItem = item;
+        var _this = this;
+        setTimeout(function () { _this.selectedItem = null; }, 0);
+        //this.selectedItem = item;
+        setTimeout(function () { _this.selectedItem = item; }, 0);
     };
     LyphTypeEditor = __decorate([
         core_1.Component({
@@ -61,8 +66,8 @@ var LyphTypeEditor = (function () {
                 service_apinatomy2_1.GroupTypeProvider,
                 service_apinatomy2_1.OmegaTreeTypeProvider
             ],
-            template: "\n    <div class=\"row\">\n        <div class=\"col-sm-6\">\n            <repo-general \n              [items]=\"items\" \n              caption=\"All resources\" \n              [dependencies]=\"dependency\" \n              (selected)=\"onItemSelect($event)\">\n            </repo-general>\n        </div>\n        <div class=\"col-sm-6\">\n          <hierarchy [item]=\"selectedItem\" [options]=\"{relation: 'materials'}\"></hierarchy>\n        </div>\n    </div>\n  ",
-            directives: [repo_general_1.RepoGeneral, widget_hierarchy_1.HierarchyWidget]
+            template: "\n    <div class=\"row\">\n        <div class=\"col-sm-6\">\n            <repo-general \n              [items]=\"items\" \n              caption=\"All resources\" \n              [dependencies]=\"dependency\" \n              (selected)=\"onItemSelect($event)\">\n            </repo-general>\n        </div>\n        <div class=\"col-sm-6\">\n          <hierarchy [item]=\"selectedItem\" [relation]=\"materials\"></hierarchy>\n          <omega-tree *ngIf=\"selectedItem && (selectedItem.class == resourceName.OmegaTreeType)\" \n            [item]=\"selectedItem\"></omega-tree>          \n        </div>\n    </div>\n  ",
+            directives: [repo_general_1.RepoGeneral, widget_hierarchy_1.HierarchyWidget, widget_omegaTree_1.OmegaTreeWidget]
         }),
         __param(0, core_1.Inject(service_apinatomy2_1.ExternalResourceProvider)),
         __param(1, core_1.Inject(service_apinatomy2_1.TypeProvider)),

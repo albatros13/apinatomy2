@@ -21,6 +21,7 @@ var MultiSelectInput = (function () {
         this.options = [];
         this.updated = new core_1.EventEmitter();
         this.active = true;
+        this.externalChange = false;
     }
     MultiSelectInput.prototype.ngOnInit = function () {
         if (!this.options)
@@ -29,23 +30,9 @@ var MultiSelectInput = (function () {
             this.items = [];
     };
     MultiSelectInput.prototype.ngOnChanges = function (changes) {
-        //console.log('onChanges - items = ', changes['items'].currentValue);
-        if (this.selectionChanged(this.prev, this.items)) {
-            this.prev = this.items;
+        if (this.externalChange)
             this.refresh();
-        }
-    };
-    MultiSelectInput.prototype.selectionChanged = function (prev, current) {
-        if (!prev && !current)
-            return false;
-        if (!prev != !current)
-            return true;
-        if (prev.length != current.length)
-            return true;
-        var diff = prev.filter(function (item) { return (current.indexOf(item) == -1); });
-        if (diff && (diff.length > 0))
-            return true;
-        return false;
+        this.externalChange = true;
     };
     MultiSelectInput.prototype.refresh = function () {
         var _this = this;
@@ -54,12 +41,13 @@ var MultiSelectInput = (function () {
     };
     MultiSelectInput.prototype.refreshValue = function (value) {
         var selected = value.map(function (x) { return x.id; });
-        var options = this.options;
+        var options = [];
         if (this.options[0] && this.options[0].children) {
-            //Flatten grouped options
             options = [].concat.apply([], this.options.map(function (item) { return item.children; }));
-            console.dir(options);
         }
+        else
+            options = this.options;
+        this.externalChange = false;
         this.items = options.filter(function (y) { return (selected.indexOf((y.id) ? y.id : y.name) != -1); });
         this.updated.emit(this.items);
     };
@@ -85,6 +73,7 @@ var SingleSelectInput = (function () {
         this.options = [];
         this.updated = new core_1.EventEmitter();
         this.active = true;
+        this.externalChange = false;
     }
     SingleSelectInput.prototype.ngOnInit = function () {
         if (!this.options)
@@ -97,14 +86,24 @@ var SingleSelectInput = (function () {
         this.items = [];
         if (this.item)
             this.items = [this.item];
+        if (this.externalChange)
+            this.refresh();
+        this.externalChange = true;
+    };
+    SingleSelectInput.prototype.refresh = function () {
+        var _this = this;
+        setTimeout(function () { _this.active = false; }, 0);
+        setTimeout(function () { _this.active = true; }, 0);
     };
     SingleSelectInput.prototype.refreshValue = function (value) {
-        var options = this.options;
+        var options = [];
         if (this.options[0] && this.options[0].children) {
             //Flatten grouped options
             options = [].concat.apply([], this.options.map(function (item) { return item.children; }));
-            console.dir(options);
         }
+        else
+            options = this.options;
+        this.externalChange = false;
         this.item = options.find(function (y) { return (value.id == ((y.id) ? y.id : y.name)); });
         this.updated.emit(this.item);
     };
@@ -190,7 +189,7 @@ var FilterToolbar = (function () {
         core_1.Component({
             selector: 'filter-toolbar',
             inputs: ['filter', 'options'],
-            template: "\n      <input type=\"text\" [value]=\"filter\" (input)=\"updateValue($event)\" (keyup.enter)=\"applied.emit({filter: filter, mode: mode});\"/>\n      <div class=\"btn-group\" dropdown>\n        <button type=\"button\" class=\"btn btn-default dropdown-toggle\" aria-label=\"Filter\" dropdownToggle>\n          <span class=\"glyphicon glyphicon-filter\" aria-hidden=\"true\"></span>\n        </button>\n        <ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"Filter\">\n          <li *ngFor=\"let option of options; let i = index\" role=\"menuitem\" (click)=\"updateMode(option)\">\n            <a class=\"dropdown-item\" href=\"#\">{{option}}</a>\n          </li>\n        </ul>\n      </div>\n    ",
+            template: "\n      <div class=\"input-group input-group-sm\" style=\"width: 300px;\">\n        <input type=\"text\" class=\"form-control\" \n        [value]=\"filter\" (input)=\"updateValue($event)\" (keyup.enter)=\"applied.emit({filter: filter, mode: mode});\"/>\n        <div class=\"input-group-btn\" dropdown>\n          <button type=\"button\" class=\"btn btn-secondary dropdown-toggle\" aria-label=\"Filter\" dropdownToggle\n            aria-haspopup=\"true\" aria-expanded=\"false\">\n             <span class=\"glyphicon glyphicon-filter\" aria-hidden=\"true\"></span>\n          </button>\n          <ul class=\"dropdown-menu dropdown-menu-right\" role=\"menu\" aria-labelledby=\"Filter\">\n            <li *ngFor=\"let option of options; let i = index\" (click)=\"updateMode(option)\">\n              <a class=\"dropdown-item\" href=\"#\"> <span *ngIf=\"mode == option\">&#10004;</span>{{option}}</a>\n            </li>            \n          </ul>\n        </div>\n      </div>\n    ",
             styles: [':host {float: right;}'],
             directives: [dropdown_1.DROPDOWN_DIRECTIVES, common_1.CORE_DIRECTIVES]
         }), 

@@ -1,8 +1,9 @@
 /**
  * Created by Natallia on 6/14/2016.
  */
-import {Component, EventEmitter, Output, Inject} from '@angular/core';
+import {Component, EventEmitter, Output} from '@angular/core';
 import {MultiSelectInput, FormToolbar} from '../component.general';
+import {MapToCategories} from "../../transformations/pipe.general";
 
 @Component({
   selector: 'resource-panel',
@@ -20,11 +21,16 @@ import {MultiSelectInput, FormToolbar} from '../component.general';
                 <!--<label for="id">ID: </label>-->
                 <!--<input type="text" disabled [(ngModel)]="item.id">-->
               <!--</div>-->
-              
+
+              <!--<div class="input-control" *ngIf="includeProperty('href')">-->
+                <!--<label for="href">Reference: </label>-->
+                <!--<input type="text" class="form-control" disabled [(ngModel)]="item.href">-->
+              <!--</div>-->
+
               <!--Name-->
               <div class="input-control" *ngIf="includeProperty('name')">
                 <label for="name">Name: </label>
-                <input type="text" [(ngModel)]="item.name">
+                <input type="text" class="form-control" [(ngModel)]="item.name">
               </div>
               
               <!--Externals-->
@@ -33,14 +39,15 @@ import {MultiSelectInput, FormToolbar} from '../component.general';
                 <select-input 
                 [items]="item.externals" 
                 (updated)="updateProperty('externals', $event)" 
-                [options]="dependencies.externals"></select-input>
+                [options]="dependencies.externals | mapToCategories"></select-input>
               </div>
               <ng-content></ng-content>
           </div>
         </div>
     </div>
   `,
-  directives: [FormToolbar, MultiSelectInput]
+  directives: [FormToolbar, MultiSelectInput],
+  pipes: [MapToCategories]
 })
 export class ResourcePanel {
   item: any;
@@ -57,8 +64,8 @@ export class ResourcePanel {
     return true;
   }
 
-  updateProperty(property: string, selectedItems: Array<any>){
-    this.item[property] = selectedItems;
-    this.propertyUpdated.emit({property: property, values: selectedItems});
+  updateProperty(property: string, item: any){
+    this.item[property] = item;
+    this.propertyUpdated.emit({property: property, values: item});
   }
 }

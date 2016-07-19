@@ -1,9 +1,9 @@
 body { margin: 4px;}
 
 .icon {
-  height: 2.025rem;
-  width: 2.025rem;
-  padding: .325rem;
+  height: 16px;
+  width: 16px;
+  padding: 0px;
 }
 
 .accordion-toggle:hover{
@@ -81,54 +81,6 @@ input[type=number] {
   height: 100%;
 }
 
-.treeNode rect {
-  stroke: steelblue;
-  stroke-width: 2px;
-  cursor: pointer;
-}
-
-.treeNode circle {
-  stroke: steelblue;
-  stroke-width: 2px;
-  cursor: pointer;
-}
-
-.treeLabel text {
-  font: 12px sans-serif;
-  pointer-events: none;
-}
-
-.treeLink {
-  fill: none;
-  stroke: steelblue;
-  stroke-width: 2px;
-}
-
-.graphLink{
-  fill: none;
-  stroke-width: 1.5px;
-}
-
-.graphNode .selected{
-  stroke-width: 2px;
-}
-
-.graphNode circle {
-  fill: #ccc;
-  stroke: #fff;
-  stroke-width: 1.5px;
-}
-
-.graphNode circle.selected{
-  stroke: #f00
-}
-
-.graphNode text {
-  font: 10px sans-serif;
-  pointer-events: none;
-  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
-}
-
 div .tooltip {
   position: absolute;
   padding: 2px;
@@ -152,3 +104,36 @@ div .dotted {
   padding: 4px;
 }
 
+.dropdown-toggle{
+  padding: 6px;
+}
+
+
+.node {
+  stroke-width: 1.5px;
+}
+
+.nodeLabel {
+  font-size:10px;
+  font-family:sans-serif;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}
+
+.tempLink {
+  fill: none;
+  stroke: red;
+  stroke-width: 3px;
+}
+
+.ghostCircle.show {
+  display:block;
+}
+
+.ghostCircle, .activeDrag .ghostCircle {
+  display: none;
+}

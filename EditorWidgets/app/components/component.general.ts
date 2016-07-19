@@ -29,7 +29,7 @@ export class MultiSelectInput implements OnChanges{
   @Output() updated = new EventEmitter();
 
   active: boolean = true;
-  prev: Array<any>;
+  externalChange = false;
 
   protected ngOnInit(){
     if (!this.options) this.options = [];
@@ -37,20 +37,9 @@ export class MultiSelectInput implements OnChanges{
   }
 
   ngOnChanges(changes: {[propName: string]: any}) {
-    //console.log('onChanges - items = ', changes['items'].currentValue);
-    if (this.selectionChanged(this.prev, this.items)){//Fixes bug in the component!
-      this.prev = this.items;
+    if (this.externalChange)
       this.refresh();
-    }
-  }
-
-  selectionChanged(prev: Array<any>, current: Array<any>){
-    if (!prev && !current) return false;
-    if (!prev != !current) return true;
-    if (prev.length != current.length) return true;
-    var diff = prev.filter((item: any) => {return (current.indexOf(item) == -1);});
-    if (diff && (diff.length > 0)) return true;
-    return false;
+    this.externalChange = true;
   }
 
   refresh(){
@@ -60,12 +49,12 @@ export class MultiSelectInput implements OnChanges{
 
   refreshValue(value: Array<any>):void {
     let selected = value.map(x => x.id);
-    let options = this.options;
-    if (this.options[0] && this.options[0].children){
-      //Flatten grouped options
+    let options: any[] = [];
+    if (this.options[0] && this.options[0].children){//Flatten grouped options
       options = [].concat.apply([], this.options.map(item => item.children));
-      console.dir(options);
-    }
+    } else
+      options = this.options;
+    this.externalChange = false;
     this.items = options.filter(y => (selected.indexOf((y.id)? y.id: y.name) != -1));
     this.updated.emit(this.items);
   }
@@ -94,6 +83,7 @@ export class SingleSelectInput{
   @Output() updated = new EventEmitter();
 
   active: boolean = true;
+  externalChange = false;
 
   protected ngOnInit(){
     if (!this.options) this.options = [];
@@ -104,15 +94,24 @@ export class SingleSelectInput{
   ngOnChanges(changes: {[propName: string]: any}) {
     this.items = [];
     if (this.item) this.items = [this.item];
+
+    if (this.externalChange)
+      this.refresh();
+    this.externalChange = true;
+  }
+
+  refresh(){
+    setTimeout(() => {this.active = false}, 0);
+    setTimeout(() => {this.active = true}, 0);
   }
 
   public refreshValue(value: any):void {
-    let options = this.options;
+    let options: any[] = [];
     if (this.options[0] && this.options[0].children){
       //Flatten grouped options
       options = [].concat.apply([], this.options.map(item => item.children));
-      console.dir(options);
-    }
+    } else options = this.options;
+    this.externalChange = false;
     this.item = options.find(y => (value.id == ((y.id)? y.id: y.name)));
     this.updated.emit(this.item);
   }
@@ -184,16 +183,20 @@ export class SortToolbar {
   selector: 'filter-toolbar',
   inputs: ['filter', 'options'],
   template: `
-      <input type="text" [value]="filter" (input)="updateValue($event)" (keyup.enter)="applied.emit({filter: filter, mode: mode});"/>
-      <div class="btn-group" dropdown>
-        <button type="button" class="btn btn-default dropdown-toggle" aria-label="Filter" dropdownToggle>
-          <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
-        </button>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="Filter">
-          <li *ngFor="let option of options; let i = index" role="menuitem" (click)="updateMode(option)">
-            <a class="dropdown-item" href="#">{{option}}</a>
-          </li>
-        </ul>
+      <div class="input-group input-group-sm" style="width: 300px;">
+        <input type="text" class="form-control" 
+        [value]="filter" (input)="updateValue($event)" (keyup.enter)="applied.emit({filter: filter, mode: mode});"/>
+        <div class="input-group-btn" dropdown>
+          <button type="button" class="btn btn-secondary dropdown-toggle" aria-label="Filter" dropdownToggle
+            aria-haspopup="true" aria-expanded="false">
+             <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="Filter">
+            <li *ngFor="let option of options; let i = index" (click)="updateMode(option)">
+              <a class="dropdown-item" href="#"> <span *ngIf="mode == option">&#10004;</span>{{option}}</a>
+            </li>            
+          </ul>
+        </div>
       </div>
     `,
   styles: [':host {float: right;}'],

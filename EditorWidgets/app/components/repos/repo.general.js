@@ -29,75 +29,76 @@ var RepoGeneral = (function (_super) {
     __extends(RepoGeneral, _super);
     function RepoGeneral() {
         _super.apply(this, arguments);
-        this.resourceNames = service_apinatomy2_1.ResourceName;
+        this.resourceName = service_apinatomy2_1.ResourceName;
     }
     RepoGeneral.prototype.getIcon = function (item) {
         switch (item.class) {
-            case this.resourceNames.Type: return "images/type.png";
-            case this.resourceNames.MaterialType: return "images/materialType.png";
-            case this.resourceNames.LyphType: return "images/lyphType.png";
-            case this.resourceNames.CylindricalLyphType: return "images/cylindricalLyphType.png";
-            case this.resourceNames.ProcessType: return "images/processType.png";
-            case this.resourceNames.MeasurableType: return "images/measurableType.png";
-            case this.resourceNames.CausalityType: return "images/causalityType.png";
-            case this.resourceNames.NodeType: return "images/nodeType.png";
-            case this.resourceNames.BorderType: return "images/borderType.png";
-            case this.resourceNames.GroupType: return "images/groupType.png";
-            case this.resourceNames.OmegaTreeType: return "images/omegaTreeType.png";
-            case this.resourceNames.Publication: return "images/publication.png";
-            case this.resourceNames.Correlation: return "images/correlation.png";
-            case this.resourceNames.ClinicalIndex: return "images/clinicalIndex.png";
+            case this.resourceName.Type: return "images/type.png";
+            case this.resourceName.MaterialType: return "images/materialType.png";
+            case this.resourceName.LyphType: return "images/lyphType.png";
+            case this.resourceName.CylindricalLyphType: return "images/cylindricalLyphType.png";
+            case this.resourceName.ProcessType: return "images/processType.png";
+            case this.resourceName.MeasurableType: return "images/measurableType.png";
+            case this.resourceName.CausalityType: return "images/causalityType.png";
+            case this.resourceName.NodeType: return "images/nodeType.png";
+            case this.resourceName.BorderType: return "images/borderType.png";
+            case this.resourceName.GroupType: return "images/groupType.png";
+            case this.resourceName.OmegaTreeType: return "images/omegaTreeType.png";
+            case this.resourceName.Publication: return "images/publication.png";
+            case this.resourceName.Correlation: return "images/correlation.png";
+            case this.resourceName.ClinicalIndex: return "images/clinicalIndex.png";
         }
         return "images/resource.png";
     };
     RepoGeneral.prototype.onAdded = function (resourceType) {
         var newItem;
         switch (resourceType) {
-            case this.resourceNames.Type:
+            case this.resourceName.Type:
                 newItem = new service_apinatomy2_1.Type({});
                 break;
-            case this.resourceNames.MaterialType:
+            case this.resourceName.MaterialType:
                 newItem = new service_apinatomy2_1.MaterialType({ name: "New material" });
                 break;
-            case this.resourceNames.LyphType:
+            case this.resourceName.LyphType:
                 newItem = new service_apinatomy2_1.LyphType({ name: "New lyph" });
                 break;
-            case this.resourceNames.CylindricalLyphType:
+            case this.resourceName.CylindricalLyphType:
                 newItem = new service_apinatomy2_1.CylindricalLyphType({ name: "New cylindrical lyph" });
                 break;
-            case this.resourceNames.ProcessType:
+            case this.resourceName.ProcessType:
                 newItem = new service_apinatomy2_1.ProcessType({ name: "New process" });
                 break;
-            case this.resourceNames.MeasurableType:
+            case this.resourceName.MeasurableType:
                 newItem = new service_apinatomy2_1.MeasurableType({ name: "New measurable" });
                 break;
-            case this.resourceNames.CausalityType:
+            case this.resourceName.CausalityType:
                 newItem = new service_apinatomy2_1.CausalityType({ name: "New casuality" });
                 break;
-            case this.resourceNames.NodeType:
+            case this.resourceName.NodeType:
                 newItem = new service_apinatomy2_1.NodeType({ name: "New node" });
                 break;
-            case this.resourceNames.BorderType:
+            case this.resourceName.BorderType:
                 newItem = new service_apinatomy2_1.BorderType({ name: "New border" });
                 break;
-            case this.resourceNames.GroupType:
+            case this.resourceName.GroupType:
                 newItem = new service_apinatomy2_1.GroupType({ name: "New group" });
                 break;
-            case this.resourceNames.OmegaTreeType:
+            case this.resourceName.OmegaTreeType:
                 newItem = new service_apinatomy2_1.OmegaTreeType({ name: "New omge tree" });
                 break;
-            case this.resourceNames.Publication:
+            case this.resourceName.Publication:
                 newItem = new service_apinatomy2_1.Publication({ name: "New publication" });
                 break;
-            case this.resourceNames.Correlation:
+            case this.resourceName.Correlation:
                 newItem = new service_apinatomy2_1.Correlation({ name: "New correlation" });
                 break;
-            case this.resourceNames.ClinicalIndex:
+            case this.resourceName.ClinicalIndex:
                 newItem = new service_apinatomy2_1.ClinicalIndex({ name: "New clinical index" });
                 break;
             default: newItem = new service_apinatomy2_1.Resource();
         }
         this.items.push(newItem);
+        this.added.emit(newItem);
         this.updated.emit(this.items);
         this.selectedItem = newItem;
     };

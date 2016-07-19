@@ -3,7 +3,6 @@
  */
 import {Component, EventEmitter, Output} from '@angular/core';
 import {ValueDistribution, BoundedNormalDistribution, UniformDistribution, DistributionType} from '../providers/service.apinatomy2'
-import {RestoreService} from "../providers/service.restore";
 import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
 import {FormToolbar} from "./component.general";
 
@@ -14,11 +13,11 @@ import {FormToolbar} from "./component.general";
     <fieldset>
       <div class="input-control">
         <label for="min">Min: </label>
-        <input type="number" min="0" max="100" step="0.1" required [value]="item.min" (input)="updateValue('min', $event)">
+        <input type="number" class="form-control" min="0" max="100" step="0.1" required [value]="item.min" (input)="updateValue('min', $event)">
       </div>
       <div class="input-control">
         <label for="max">Max: </label>
-        <input type="number" min="0" max="100" step="0.1" required [value]="item.max" (input)="updateValue('max', $event)">
+        <input type="number" class="form-control" min="0" max="100" step="0.1" required [value]="item.max" (input)="updateValue('max', $event)">
       </div>
       <ng-content></ng-content>
     </fieldset>
@@ -45,11 +44,11 @@ export class UniformDistributionInput {
     <uniformDistribution-input [item]="item" (updated)="updated.emit($event)">
       <div class="input-control">
         <label for="mean">Mean: </label>
-        <input type="number" min="0" max="100" step="0.1" required [value]="item.mean" (input)="updateValue('mean', $event)">
+        <input type="number" class="form-control" min="0" max="100" step="0.1" required [value]="item.mean" (input)="updateValue('mean', $event)">
       </div>
       <div class="input-control">
         <label for="std">Std: </label>
-        <input type="number" min="0" max="100" step="0.1" required [value]="item.std" (input)="updateValue('std', $event)">
+        <input type="number" class="form-control" min="0" max="100" step="0.1" required [value]="item.std" (input)="updateValue('std', $event)">
       </div>
       <ng-content></ng-content>
     </uniformDistribution-input>
@@ -69,7 +68,7 @@ export class BoundedNormalDistributionInput extends UniformDistributionInput{
     <fieldset>
       <radio-group [(ngModel)]="item.type" [required]="true">
         <input type="radio" [value]="distributionType.Uniform" (click)="toUniform($event)">Uniform&nbsp;
-        <input type="radio" [value]="distributionType.BoundedNormal" (click)="toBoundedNormal($event)">Bounded normal<br/>
+        <input type="radio" [value]="distributionType.BoundedNormal" (click)="toBoundedNormal($event)">Normal<br/>
       </radio-group>
       <uniformDistribution-input [item]="item.distribution" (updated)="updateValue($event)"
         *ngIf="item.type == distributionType.Uniform">
@@ -113,27 +112,30 @@ export class DistributionInput{
 
 @Component({
   "inputs": ["caption", "item"],
-  "providers": [RestoreService],
   "selector": "template-value",
   "template": `
-     <fieldset>
-       <legend>{{caption}}</legend>
-       <radio-group [(ngModel)]="valueType" [required]="true">
-         <input type="radio" value="Value">Value&nbsp;
-         <input type="radio" value="Distribution">Distribution<br/>
-       </radio-group>
-       <input type="number" min="0" max="100" [value]="item" (input)="updateValue($event)" *ngIf="valueType == 'Value'"/>
-       <distribution-input [item]="item" (updated)="notifyParent($event)" *ngIf="valueType == 'Distribution'"></distribution-input>       
-     </fieldset>
+      <div class="input-control">
+        <label for="caption">{{caption}}: </label>
+        <div class="btn-group" style="float: left;">
+          <button type="button" class="btn btn-default" 
+            [ngClass]="{'active': valueType == 'Value'}" (click)="valueType = 'Value'">
+            <img class="icon" src="images/numbers.png"/>
+          </button>
+          <button type="button" class="btn btn-default" 
+            [ngClass]="{'active': valueType == 'Distribution'}" (click)="valueType = 'Distribution'">
+            <img class="icon" src="images/distribution.png"/>
+          </button>
+        </div>
+        <input type="number" class="form-control"  style="width: 100px;" min="0" max="100" [value]="item" (input)="updateValue($event)" *ngIf="valueType == 'Value'"/>
+        <distribution-input [item]="item" (updated)="notifyParent($event)" *ngIf="valueType == 'Distribution'"></distribution-input>       
+     </div>
    `,
-  "directives": [RADIO_GROUP_DIRECTIVES, DistributionInput, FormToolbar]
+  "directives": [DistributionInput, FormToolbar]
 })
 export class TemplateValue{
   item: any;
   valueType: string = "Value";
   @Output() updated = new EventEmitter();
-
-  constructor(protected restoreService: RestoreService){}
 
   ngOnInit(){
     if (this.item && this.item['distribution']) this.valueType = "Distribution";

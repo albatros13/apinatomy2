@@ -29,7 +29,7 @@ var RestoreService = (function () {
     RestoreService.prototype.clone = function (obj) {
         if (!obj)
             return obj;
-        if (obj.constructor === Array) {
+        if (obj instanceof Array) {
             var out = [];
             for (var i = 0; i < obj.length; i++)
                 out[i] = this.clone(obj[i]);

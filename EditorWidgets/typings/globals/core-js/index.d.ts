@@ -521,14 +521,14 @@ declare var Symbol: SymbolConstructor;
 
 interface Object {
     /**
-      * Determines whether an object has a property with the specified name.
-      * @param v A property name.
+      * Determines whether an object has a properties with the specified name.
+      * @param v A properties name.
       */
     hasOwnProperty(v: PropertyKey): boolean;
 
     /**
-      * Determines whether a specified property is enumerable.
-      * @param v A property name.
+      * Determines whether a specified properties is enumerable.
+      * @param v A properties name.
       */
     propertyIsEnumerable(v: PropertyKey): boolean;
 }
@@ -541,21 +541,21 @@ interface ObjectConstructor {
     getOwnPropertySymbols(o: any): symbol[];
 
     /**
-      * Gets the own property descriptor of the specified object.
-      * An own property descriptor is one that is defined directly on the object and is not
+      * Gets the own properties descriptor of the specified object.
+      * An own properties descriptor is one that is defined directly on the object and is not
       * inherited from the object's prototype.
-      * @param o Object that contains the property.
-      * @param p Name of the property.
+      * @param o Object that contains the properties.
+      * @param p Name of the properties.
     */
     getOwnPropertyDescriptor(o: any, propertyKey: PropertyKey): PropertyDescriptor;
 
     /**
-      * Adds a property to an object, or modifies attributes of an existing property.
-      * @param o Object on which to add or modify the property. This can be a native JavaScript
+      * Adds a properties to an object, or modifies attributes of an existing properties.
+      * @param o Object on which to add or modify the properties. This can be a native JavaScript
       * object (that is, a user-defined object or a built in object) or a DOM object.
-      * @param p The property name.
-      * @param attributes Descriptor for the property. It can be for a data property or an accessor
-      *  property.
+      * @param p The properties name.
+      * @param attributes Descriptor for the properties. It can be for a data properties or an accessor
+      *  properties.
       */
     defineProperty(o: any, propertyKey: PropertyKey, attributes: PropertyDescriptor): any;
 }
@@ -837,7 +837,7 @@ declare namespace Reflect {
 // #############################################################################################
 // ECMAScript 7
 // Modules: es7.array.includes, es7.string.at, es7.string.lpad, es7.string.rpad,
-//          es7.object.to-array, es7.object.get-own-property-descriptors, es7.regexp.escape,
+//          es7.object.to-array, es7.object.get-own-properties-descriptors, es7.regexp.escape,
 //          es7.map.to-json, and es7.set.to-json
 // #############################################################################################
 

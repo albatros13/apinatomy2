@@ -30,7 +30,7 @@ var MaterialTypePanel = (function (_super) {
         this.supertypeMeasurables = [];
     }
     MaterialTypePanel.prototype.onPropertyUpdated = function (event) {
-        var property = event.property;
+        var property = event.properties;
         if (property == "supertypes") {
             var supertypes = event.values;
             this.supertypeMeasurables = [];

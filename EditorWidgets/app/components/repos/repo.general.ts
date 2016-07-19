@@ -55,27 +55,27 @@ import {RepoAbstract} from "./repo.abstract";
   pipes: [OrderBy, FilterBy]
 })
 export class RepoGeneral extends RepoAbstract{
-  resourceNames = ResourceName;
+  resourceName = ResourceName;
 
   protected getIcon(item: any){
     switch (item.class){
-      case this.resourceNames.Type          : return "images/type.png";
-      case this.resourceNames.MaterialType  : return "images/materialType.png";
-      case this.resourceNames.LyphType      : return "images/lyphType.png";
-      case this.resourceNames.CylindricalLyphType: return "images/cylindricalLyphType.png";
+      case this.resourceName.Type          : return "images/type.png";
+      case this.resourceName.MaterialType  : return "images/materialType.png";
+      case this.resourceName.LyphType      : return "images/lyphType.png";
+      case this.resourceName.CylindricalLyphType: return "images/cylindricalLyphType.png";
 
-      case this.resourceNames.ProcessType   : return "images/processType.png";
-      case this.resourceNames.MeasurableType: return "images/measurableType.png";
-      case this.resourceNames.CausalityType : return "images/causalityType.png";
-      case this.resourceNames.NodeType      : return "images/nodeType.png";
-      case this.resourceNames.BorderType    : return "images/borderType.png";
+      case this.resourceName.ProcessType   : return "images/processType.png";
+      case this.resourceName.MeasurableType: return "images/measurableType.png";
+      case this.resourceName.CausalityType : return "images/causalityType.png";
+      case this.resourceName.NodeType      : return "images/nodeType.png";
+      case this.resourceName.BorderType    : return "images/borderType.png";
 
-      case this.resourceNames.GroupType     : return "images/groupType.png";
-      case this.resourceNames.OmegaTreeType : return "images/omegaTreeType.png";
+      case this.resourceName.GroupType     : return "images/groupType.png";
+      case this.resourceName.OmegaTreeType : return "images/omegaTreeType.png";
 
-      case this.resourceNames.Publication   : return "images/publication.png";
-      case this.resourceNames.Correlation   : return "images/correlation.png";
-      case this.resourceNames.ClinicalIndex : return "images/clinicalIndex.png";
+      case this.resourceName.Publication   : return "images/publication.png";
+      case this.resourceName.Correlation   : return "images/correlation.png";
+      case this.resourceName.ClinicalIndex : return "images/clinicalIndex.png";
     }
     return "images/resource.png";
   }
@@ -83,26 +83,27 @@ export class RepoGeneral extends RepoAbstract{
   protected onAdded(resourceType: ResourceName | TemplateName){
     let newItem: any;
     switch (resourceType){
-      case this.resourceNames.Type          : newItem = new Type({}); break;
-      case this.resourceNames.MaterialType  : newItem = new MaterialType({name: "New material"}); break;
-      case this.resourceNames.LyphType      : newItem = new LyphType({name: "New lyph"}); break;
-      case this.resourceNames.CylindricalLyphType: newItem = new CylindricalLyphType({name: "New cylindrical lyph"}); break;
+      case this.resourceName.Type          : newItem = new Type({}); break;
+      case this.resourceName.MaterialType  : newItem = new MaterialType({name: "New material"}); break;
+      case this.resourceName.LyphType      : newItem = new LyphType({name: "New lyph"}); break;
+      case this.resourceName.CylindricalLyphType: newItem = new CylindricalLyphType({name: "New cylindrical lyph"}); break;
 
-      case this.resourceNames.ProcessType   : newItem = new ProcessType({name: "New process"}); break;
-      case this.resourceNames.MeasurableType: newItem = new MeasurableType({name: "New measurable"}); break;
-      case this.resourceNames.CausalityType : newItem = new CausalityType({name: "New casuality"}); break;
-      case this.resourceNames.NodeType      : newItem = new NodeType({name: "New node"}); break;
-      case this.resourceNames.BorderType    : newItem = new BorderType({name: "New border"}); break;
+      case this.resourceName.ProcessType   : newItem = new ProcessType({name: "New process"}); break;
+      case this.resourceName.MeasurableType: newItem = new MeasurableType({name: "New measurable"}); break;
+      case this.resourceName.CausalityType : newItem = new CausalityType({name: "New casuality"}); break;
+      case this.resourceName.NodeType      : newItem = new NodeType({name: "New node"}); break;
+      case this.resourceName.BorderType    : newItem = new BorderType({name: "New border"}); break;
 
-      case this.resourceNames.GroupType     : newItem = new GroupType({name: "New group"}); break;
-      case this.resourceNames.OmegaTreeType : newItem = new OmegaTreeType({name: "New omge tree"}); break;
+      case this.resourceName.GroupType     : newItem = new GroupType({name: "New group"}); break;
+      case this.resourceName.OmegaTreeType : newItem = new OmegaTreeType({name: "New omge tree"}); break;
 
-      case this.resourceNames.Publication   : newItem = new Publication({name: "New publication"}); break;
-      case this.resourceNames.Correlation   : newItem = new Correlation({name: "New correlation"}); break;
-      case this.resourceNames.ClinicalIndex : newItem = new ClinicalIndex({name: "New clinical index"}); break;
+      case this.resourceName.Publication   : newItem = new Publication({name: "New publication"}); break;
+      case this.resourceName.Correlation   : newItem = new Correlation({name: "New correlation"}); break;
+      case this.resourceName.ClinicalIndex : newItem = new ClinicalIndex({name: "New clinical index"}); break;
       default: newItem = new Resource();
     }
     this.items.push(newItem);
+    this.added.emit(newItem);
     this.updated.emit(this.items);
     this.selectedItem = newItem;
   }

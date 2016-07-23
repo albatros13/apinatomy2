@@ -1,19 +1,20 @@
-/**
- * Created by Natallia on 6/8/2016.
- */
-import {Component, Inject} from '@angular/core';
-import {RepoGeneral} from '../components/repos/repo.general';
+import {Component, Inject, ElementRef, Renderer, Output, EventEmitter} from '@angular/core';
+import {RepoGeneral} from '../repos/repo.general';
 import {
   ExternalResourceProvider,
   TypeProvider, MaterialTypeProvider, LyphTypeProvider, CylindricalLyphTypeProvider,
   MeasurableTypeProvider, ProcessTypeProvider, BorderTypeProvider,
-  GroupTypeProvider, OmegaTreeTypeProvider, ResourceName
+  GroupTypeProvider, OmegaTreeTypeProvider
 } from '../providers/service.apinatomy2'
 import {HierarchyWidget} from '../widgets/widget.hierarchy';
-import {OmegaTreeWidget} from '../widgets/widget.omegaTree';
+import {ResourceWidget} from '../widgets/widget.resource';
+import * as model from "open-physiology-model";
+
+declare var GoldenLayout:any;
+declare var $: any;
 
 @Component({
-  selector: 'lyphType-editor',
+  selector: 'app',
   providers: [
     ExternalResourceProvider,
     MeasurableTypeProvider,
@@ -27,31 +28,73 @@ import {OmegaTreeWidget} from '../widgets/widget.omegaTree';
     OmegaTreeTypeProvider
   ],
   template: `
-    <div class="row">
-        <div class="col-sm-6">
-            <repo-general 
-              [items]="items" 
-              caption="All resources" 
-              [dependencies]="dependency" 
-              (selected)="onItemSelect($event)">
-            </repo-general>
-        </div>
-        <div class="col-sm-6">
-          <hierarchy [item]="selectedItem" [relation]="materials"></hierarchy>
-          <omega-tree *ngIf="selectedItem && (selectedItem.class == resourceName.OmegaTreeType)" 
-            [item]="selectedItem"></omega-tree>          
-        </div>
-    </div>
+    <repo-general id="repo"
+      [items]="items" 
+      [caption]="'All resources'" 
+      [dependencies]="dependency" 
+      (selected)="onItemSelect($event)">
+    </repo-general>
+    <hierarchy-widget id = "hierarchy" [item]="selectedItem" [relation]="materials"></hierarchy-widget>
+    <resource-widget id = "resource" [item]="selectedItem"></resource-widget>          
+    <div id="main"></div>
   `,
-  directives: [RepoGeneral, HierarchyWidget, OmegaTreeWidget]
+  styles: [`#main {width: 100%; height: 100%; border: 0; margin: 0; padding: 0}`],
+  directives: [RepoGeneral, HierarchyWidget, ResourceWidget]
 })
 export class LyphTypeEditor {
   items: Array<any>;
   selectedItem: any;
   dependency: any;
-  resourceName = ResourceName;
+  @Output() resized: EventEmitter;
+
+  layoutConfig = {
+    settings:{
+      hasHeaders: false,
+      constrainDragToContainer: true,
+      reorderEnabled: true,
+      showMaximiseIcon: true,
+      showCloseIcon: true,
+      selectionEnabled: false,
+      popoutWholeStack: false,
+      showPopoutIcon: false
+      },
+    dimensions: {
+      borderWidth: 2
+    },
+    content: [{
+      type: 'row',
+      content:[
+        {
+          type: 'column',
+          width: 50,
+          content: [{
+            type: 'component',
+            componentName: 'RepoPanel'
+          }]
+        },
+        {
+          type: 'column',
+          width: 50,
+          content: [
+            {
+              type: 'component',
+              componentName: 'HierarchyPanel'
+            },
+            {
+              type: 'component',
+              componentName: 'ResourcePanel'
+            }
+          ]
+        }]
+    }]
+  };
+
+  mainLayout: any;
 
   constructor(
+
+    public renderer: Renderer,
+    public el: ElementRef,
     @Inject(ExternalResourceProvider) eResourceP: ExternalResourceProvider,
     @Inject(TypeProvider) typeP: TypeProvider,
     @Inject(MaterialTypeProvider) materialP: MaterialTypeProvider,
@@ -88,13 +131,50 @@ export class LyphTypeEditor {
       templates: allTemplates
     };
     this.items = allTypes;
+
+    var sodiumIonP = model.MaterialType.new({name: "Sodium ion"});
+    sodiumIonP.then(
+      (w: any) => {
+        this.items.push(w);
+        setTimeout(() => {}, 0);
+      }
+    );
   }
 
   onItemSelect(item: any){
     setTimeout(() => {this.selectedItem = null;}, 0);
-    //this.selectedItem = item;
     setTimeout(() => {this.selectedItem = item;}, 0);
+  }
 
+  ngOnInit(){
+    let main = $('app > #main');
+    this.mainLayout = new GoldenLayout(this.layoutConfig, main);
+
+    this.mainLayout.registerComponent('RepoPanel', function(container:any, componentState:any) {
+      let panel = container.getElement();
+      let content = $('app > #repo');
+      content.detach().appendTo(panel);
+    });
+
+    this.mainLayout.registerComponent('ResourcePanel', function (container:any, componentState:any) {
+      let panel = container.getElement();
+      let component = $('app > #resource');
+      component.detach().appendTo(panel);
+      container.on('resize', function () {
+        //emit event
+        //this.emit.resized();
+      });
+    });
+
+    this.mainLayout.registerComponent('HierarchyPanel', function (container:any, componentState:any) {
+      let panel = container.getElement();
+      let component = $('app > #hierarchy');
+      component.detach().appendTo(panel);
+      container.on('resize', function () {
+        //emit event
+      });
+    });
+    this.mainLayout.init();
   }
 }
 

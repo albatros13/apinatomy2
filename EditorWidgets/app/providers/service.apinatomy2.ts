@@ -1,7 +1,24 @@
-/**
- * Created by Natallia on 6/8/2016.
- */
-import {Injectable, Inject} from '@angular/core';
+"use strict";
+import {Injectable} from '@angular/core';
+import * as model from "open-physiology-model";
+
+//var waterP = model.MaterialType.new({name: "Water"});
+
+// (async function(){
+//   let water = await waterP;
+//
+//   console.log("1", water.name);
+//   water.name = "WATER";
+//   console.log("2", water.name);
+//   await water.rollback();
+//   console.log("3", water.name);
+//   water.name = "WATER";
+//   await water.commit();
+//   await water.rollback();
+//   console.log("4", water.name);
+//
+// })();
+
 
 /*INTERFACES*/
 
@@ -740,7 +757,7 @@ export class MaterialTypeProvider {
     this.items.push(urine);
     let tfl = new MaterialType({id: 26, name: "Tissue fluid", supertypes: [ifl], materialProviders: [ifl], measurableProviders: [ifl]});
     this.items.push(tfl);
- }
+  }
 }
 
 @Injectable()

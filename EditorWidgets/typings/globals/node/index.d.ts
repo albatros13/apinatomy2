@@ -127,12 +127,12 @@ declare var Buffer: {
      */
     from(array: any[]): Buffer;
     /**
-     * When passed a reference to the .buffer properties of a TypedArray instance,
+     * When passed a reference to the .buffer property of a TypedArray instance,
      * the newly created Buffer will share the same allocated memory as the TypedArray.
      * The optional {byteOffset} and {length} arguments specify a memory range
      * within the {arrayBuffer} that will be shared by the Buffer.
      *
-     * @param arrayBuffer The .buffer properties of a TypedArray or a new ArrayBuffer()
+     * @param arrayBuffer The .buffer property of a TypedArray or a new ArrayBuffer()
      * @param byteOffset
      * @param length
      */
@@ -1535,7 +1535,7 @@ declare module "fs" {
      * Asynchronous readFile - Asynchronously reads the entire contents of a file.
      *
      * @param fileName
-     * @param options An object with optional {encoding} and {externalChange} properties.  If {encoding} is specified, readFile returns a string; otherwise it returns a Buffer.
+     * @param options An object with optional {encoding} and {flag} properties.  If {encoding} is specified, readFile returns a string; otherwise it returns a Buffer.
      * @param callback - The callback is passed two arguments (err, data), where data is the contents of the file.
      */
     export function readFile(filename: string, options: { encoding: string; flag?: string; }, callback: (err: NodeJS.ErrnoException, data: string) => void): void;
@@ -1543,7 +1543,7 @@ declare module "fs" {
      * Asynchronous readFile - Asynchronously reads the entire contents of a file.
      *
      * @param fileName
-     * @param options An object with optional {encoding} and {externalChange} properties.  If {encoding} is specified, readFile returns a string; otherwise it returns a Buffer.
+     * @param options An object with optional {encoding} and {flag} properties.  If {encoding} is specified, readFile returns a string; otherwise it returns a Buffer.
      * @param callback - The callback is passed two arguments (err, data), where data is the contents of the file.
      */
     export function readFile(filename: string, options: { flag?: string; }, callback: (err: NodeJS.ErrnoException, data: Buffer) => void): void;
@@ -1565,14 +1565,14 @@ declare module "fs" {
      * Synchronous readFile - Synchronously reads the entire contents of a file.
      *
      * @param fileName
-     * @param options An object with optional {encoding} and {externalChange} properties.  If {encoding} is specified, readFileSync returns a string; otherwise it returns a Buffer.
+     * @param options An object with optional {encoding} and {flag} properties.  If {encoding} is specified, readFileSync returns a string; otherwise it returns a Buffer.
      */
     export function readFileSync(filename: string, options: { encoding: string; flag?: string; }): string;
     /*
      * Synchronous readFile - Synchronously reads the entire contents of a file.
      *
      * @param fileName
-     * @param options An object with optional {encoding} and {externalChange} properties.  If {encoding} is specified, readFileSync returns a string; otherwise it returns a Buffer.
+     * @param options An object with optional {encoding} and {flag} properties.  If {encoding} is specified, readFileSync returns a string; otherwise it returns a Buffer.
      */
     export function readFileSync(filename: string, options?: { flag?: string; }): Buffer;
     export function writeFile(filename: string, data: any, callback?: (err: NodeJS.ErrnoException) => void): void;

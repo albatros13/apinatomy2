@@ -34,7 +34,7 @@ export class FilterByClass implements PipeTransform {
 })
 export class MapToOptions implements PipeTransform {
   transform(items: any[]): any {
-    if (!items || (items.length == 0)) return [];
+    if (!items || !items[0]) return [];
     if (items[0].children){
       //grouped
       for (let i = 0; i < items.length; i++){

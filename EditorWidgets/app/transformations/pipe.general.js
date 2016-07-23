@@ -58,7 +58,7 @@ var MapToOptions = (function () {
     function MapToOptions() {
     }
     MapToOptions.prototype.transform = function (items) {
-        if (!items || (items.length == 0))
+        if (!items || !items[0])
             return [];
         if (items[0].children) {
             //grouped

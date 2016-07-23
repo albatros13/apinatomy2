@@ -1,19 +1,21 @@
 /**
  * Created by Natallia on 7/15/2016.
  */
-import {Component, OnInit, OnChanges} from '@angular/core';
-import {SingleSelectInput, MultiSelectInput} from "../components/component.general";
-import {HierarchyGraphWidget} from "./hierarchy.graph";
-import {HierarchyTreeWidget}  from "./hierarchy.tree";
+import {Component, OnChanges} from '@angular/core';
+import {SingleSelectInput, MultiSelectInput} from "../components/component.select";
+import {HierarchyGraphWidget} from "./view.hierarchyGraph";
+import {HierarchyTreeWidget}  from "./view.hierarchyTree";
 import {CORE_DIRECTIVES} from '@angular/common';
 import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/components/dropdown';
 
 @Component({
-  selector: 'hierarchy',
+  selector: 'hierarchy-widget',
   inputs: ['item', 'relation'],
   template : `
     <div class="panel panel-default">
-      <div class="panel-heading">Resource relation{{(item)? ':' + item.id:''}} {{(item)? ':' + item.name:''}}</div>
+      <div class="panel-heading">
+        <em>{{firstToCapital(relation)}}</em>{{(relation)? ' of ': ''}}<strong>{{(item)? item.id: ''}}{{(item)? ': ' + item.name : ''}}</strong>
+      </div>
       <div class="controls-group">
           <!--Relation to show-->
           <div class="btn-group" style="float: left;" dropdown>
@@ -57,10 +59,10 @@ import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/components/dropdown';
           </div>
               
         </div>
-    <hierarchy-tree *ngIf="layout == 'tree'" 
-      [item]="item" [relation]="relation" [depth]="depth" [properties]="properties" ></hierarchy-tree>
-    <hierarchy-graph *ngIf="layout == 'graph'" 
-      [item]="item" [relation]="relation" [depth]="depth" [properties]="properties"></hierarchy-graph>
+      <hierarchy-tree *ngIf="layout == 'tree'" 
+        [item]="item" [relation]="relation" [depth]="depth" [properties]="properties" ></hierarchy-tree>
+      <hierarchy-graph *ngIf="layout == 'graph'" 
+        [item]="item" [relation]="relation" [depth]="depth" [properties]="properties"></hierarchy-graph>
     </div>      
   `,
   directives: [SingleSelectInput, MultiSelectInput, HierarchyGraphWidget, HierarchyTreeWidget,
@@ -118,6 +120,11 @@ export class HierarchyWidget implements OnChanges{
     this.allProperties = propertyNames.map(item => {return {id: item, name: item}});
     if (this.allProperties.length > 0)
       this.properties = [this.allProperties[0]];
+  }
+
+  firstToCapital(str: string){
+    if (!str || (str.length == 0)) return str;
+    return str[0].toUpperCase() + str.substring(1);
   }
 
 }

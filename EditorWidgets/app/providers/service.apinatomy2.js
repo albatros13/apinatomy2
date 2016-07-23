@@ -13,9 +13,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-/**
- * Created by Natallia on 6/8/2016.
- */
 var core_1 = require('@angular/core');
 /*ENUMERATIONS*/
 (function (ResourceName) {

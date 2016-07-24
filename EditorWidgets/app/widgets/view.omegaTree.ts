@@ -3,8 +3,6 @@
  */
 import {Component, OnChanges, Input, Output, ViewChild, ElementRef, Renderer, EventEmitter} from '@angular/core';
 
-import "d3";
-
 declare var d3:any;
 const color = d3.scale.category20();
 
@@ -76,7 +74,7 @@ export class OmegaTreeWidget implements OnChanges {
     this.svg = d3.select(this.el.nativeElement).select('svg');
     if (this.item) {
       this.caption = "Omega function: " + this.item.id + " - " + this.item.name;
-      this.data = this.getOmegaTreeData(this.item);
+      this.data = this.getOmegaTreeData(this.item, "levels");
       this.draw(this.svg, this.vp, this.data);
     } else {
       this.data = {};
@@ -87,8 +85,6 @@ export class OmegaTreeWidget implements OnChanges {
   draw(svg: any, vp: any, data: any): void{
     let w = vp.size.width - 2 * vp.margin.x;
     let h = vp.size.height - 2 * vp.margin.y;
-    let dx = vp.node.size.width / 2;
-    let dy = vp.node.size.height / 2;
 
     svg.selectAll(".tree").remove();
 
@@ -114,8 +110,16 @@ export class OmegaTreeWidget implements OnChanges {
       .enter()
       .append("circle")
       .attr("class", "node")
-      .attr("r", "4.5")
+      .attr("r", function (d: any) {
+        return d.children ? 4.5: 0;
+      })
+      .style("fill", function(d: any){
+        return color(d.class);
+      })
       .attr("transform", transform);
+
+    let dx = vp.node.size.width / 2;
+    let dy = vp.node.size.height / 2;
 
     let icon = treeSvg.selectAll(".icon")
       .data(links)
@@ -138,30 +142,35 @@ export class OmegaTreeWidget implements OnChanges {
       .append("g")
       .attr("class", "nodeLabel")
       .append("text")
-      .attr("dx", -dx - 4).style("text-anchor", "end")
-      .attr("dy", 2)
-      .attr("transform", transform)
-      .text((d: any) => ((d.id)? d.id: "?") + ": " + d.name);
+      .attr("dx", -5)
+      .style("text-anchor", "end")
+      .attr("x", function(d: any){return (d.source.x + d.target.x) / 2 - dx; })
+      .attr("y", function(d: any){return (d.source.y + d.target.y) / 2; })
+      .text((d: any) => ((d.source.id)? d.source.id: "?") + ": " + d.source.name);
 
     function transform(d: any): string {
       return "translate(" + d.x + "," + d.y + ")";
     }
   }
 
-  getOmegaTreeData(item: any) {
+  getOmegaTreeData(item: any, property: string) {
     let data:any = {};
     if (!item) return data;
-    if (!item.elements || !item.elements[0]) return data;
-    let obj = item.elements[0];
+    if (!property) return data;
+    if (!item[property] || !item[property][0]) return data;
+    let obj = item[property][0];
     let parent: any = {id: obj.id, name: obj.name, resource: obj};
     data = parent;
 
-    for (let i = 1; i < item.elements.length; i++) {
-      let obj = item.elements[i];
+    for (let i = 1; i < item[property].length; i++) {
+      let obj = item[property][i];
       let child = {id: obj.id, name: obj.name, resource: obj};
       parent.children = [child];
       parent = child;
     }
+    //fake node
+    parent.children = [{skip: true}];
+
     return data;
   }
 }

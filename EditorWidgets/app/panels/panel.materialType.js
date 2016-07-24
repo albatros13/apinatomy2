@@ -17,11 +17,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  * Created by Natallia on 6/17/2016.
  */
 var core_1 = require('@angular/core');
-var service_restore_1 = require("../providers/service.restore");
+var service_restore_1 = require("../services/service.restore");
 var panel_type_1 = require("./panel.type");
 var component_select_1 = require('../components/component.select');
 var repo_template_1 = require('../repos/repo.template');
-var service_apinatomy2_1 = require("../providers/service.apinatomy2");
+var service_apinatomy2_1 = require("../services/service.apinatomy2");
 var MaterialTypePanel = (function (_super) {
     __extends(MaterialTypePanel, _super);
     function MaterialTypePanel() {

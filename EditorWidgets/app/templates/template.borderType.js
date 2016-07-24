@@ -20,20 +20,23 @@ var core_1 = require('@angular/core');
 var component_select_1 = require('../components/component.select');
 var component_template_1 = require('../components/component.template');
 var template_type_1 = require("./template.type");
-var service_apinatomy2_1 = require("../providers/service.apinatomy2");
+var service_apinatomy2_1 = require("../services/service.apinatomy2");
 var ng2_radio_group_1 = require("ng2-radio-group");
+var pipe_general_1 = require("../transformations/pipe.general");
 var BorderTemplatePanel = (function (_super) {
     __extends(BorderTemplatePanel, _super);
     function BorderTemplatePanel() {
         _super.apply(this, arguments);
         this.formType = service_apinatomy2_1.FormType;
+        this.templateName = service_apinatomy2_1.TemplateName;
     }
     BorderTemplatePanel = __decorate([
         core_1.Component({
             selector: 'borderTemplate-panel',
             inputs: ['item', 'dependencies', 'ignore'],
-            template: "\n    <template-panel [item]=\"item\" \n      [dependencies] = \"dependencies\"  \n      [ignore]=\"ignore\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <!--Position: Template-->\n      <template-value caption=\"Position:\" [item]=\"item.position\"\n      (updated)=\"updateProperty('position', $event)\"></template-value>\n      \n      <!--Form: {open, closed}-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('form') && item.form\">\n        <fieldset>\n          <legend>Form:</legend>\n          <radio-group [(ngModel)]=\"item.form\" [required]=\"true\">\n             <input type=\"radio\" [value]=\"formType.open\">{{formType.open}}&nbsp;\n             <input type=\"radio\" [value]=\"formType.closed\">{{formType.closed}}<br/>\n          </radio-group>\n        </fieldset>\n      </div>\n      \n      <ng-content></ng-content>   \n         \n    </template-panel>\n  ",
-            directives: [component_template_1.TemplateValue, component_select_1.SingleSelectInput, template_type_1.TemplatePanel, ng2_radio_group_1.RADIO_GROUP_DIRECTIVES]
+            template: "\n    <template-panel [item]=\"item\" \n      [dependencies] = \"dependencies\"  \n      [ignore]=\"ignore\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <!--Position: Template-->\n      <template-value caption=\"Position:\" [item]=\"item.position\"\n      (updated)=\"updateProperty('position', $event)\"></template-value>\n      \n      <!--Form: {open, closed}-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('form') && item.form\">\n        <fieldset>\n          <legend>Form:</legend>\n          <radio-group [(ngModel)]=\"item.form\" [required]=\"true\">\n             <input type=\"radio\" [value]=\"formType.open\">{{formType.open}}&nbsp;\n             <input type=\"radio\" [value]=\"formType.closed\">{{formType.closed}}<br/>\n          </radio-group>\n        </fieldset>\n      </div>\n      \n      <!--Nodes-->\n       <div class=\"input-control\" *ngIf=\"includeProperty('nodes')\">\n          <label for=\"nodes\">Nodes: </label>\n            <select-input [items]=\"item.nodes\" \n            (updated)=\"updateProperty('nodes', $event)\"          \n            [options]=\"dependencies.templates  | filterByClass: [templateName.NodeTemplate]\"></select-input>  \n        </div>\n      \n      <ng-content></ng-content>   \n         \n    </template-panel>\n  ",
+            directives: [component_template_1.TemplateValue, component_select_1.SingleSelectInput, component_select_1.MultiSelectInput, template_type_1.TemplatePanel, ng2_radio_group_1.RADIO_GROUP_DIRECTIVES],
+            pipes: [pipe_general_1.FilterByClass]
         }), 
         __metadata('design:paramtypes', [])
     ], BorderTemplatePanel);

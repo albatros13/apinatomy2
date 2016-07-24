@@ -1,8 +1,9 @@
 /**
  * Created by Natallia on 7/7/2016.
  */
-import {Component, ComponentRef, Directive, ContentChild, TemplateRef, ElementRef,
+import {Component, Directive, ContentChild, TemplateRef, ElementRef,
   Input, ViewChild, ViewContainerRef, ComponentResolver, ComponentFactory} from '@angular/core';
+import {DynamicLoader} from "../directives/directive.dynamicLoader";
 
 @Component({
   selector: '[node]',
@@ -22,47 +23,13 @@ export class List {
   @ContentChild(TemplateRef) contentTemplate: TemplateRef<any>;
 }
 
-@Directive({
-  selector: '[dcl-wrapper]'
-})
-export class DclWrapperComponent {
-  @Input() target: any;
-  @Input() type: any;
-  @Input() input: any;
-  cmpRef: ComponentRef<any>;
-  private isViewInitialized: boolean = false;
-
-  constructor(private resolver: ComponentResolver) { }
-
-  updateComponent() {
-    if (!this.isViewInitialized) {return;}
-    if (this.cmpRef) {this.cmpRef.destroy();}
-    this.resolver.resolveComponent(this.type).then((factory: ComponentFactory<any>) => {
-      this.cmpRef = this.target.createComponent(factory);
-      this.cmpRef.instance.input = this.input;
-    });
-  }
-  ngOnChanges() {
-    this.updateComponent();
-  }
-  ngAfterViewInit() {
-    this.isViewInitialized = true;
-    this.updateComponent();
-  }
-  ngOnDestroy() {
-    if (this.cmpRef) {
-      this.cmpRef.destroy();
-    }
-  }
-}
-
 @Component({
   selector: 'dynamic-list',
   inputs: ['items', 'renderer'],
   template:`
       <g *ngFor="let item of items; let i = index" dcl-wrapper [target]="target" [type]="renderer[i]" [input]="item"></g>
  `,
-  directives: [DclWrapperComponent]
+  directives: [DynamicLoader]
 })
 export class DynamicList{
   target: any;

@@ -20,7 +20,7 @@ var core_1 = require('@angular/core');
 var component_select_1 = require('../components/component.select');
 var component_template_1 = require('../components/component.template');
 var panel_resource_1 = require("../panels/panel.resource");
-var service_apinatomy2_1 = require("../providers/service.apinatomy2");
+var service_apinatomy2_1 = require("../services/service.apinatomy2");
 var TemplatePanel = (function (_super) {
     __extends(TemplatePanel, _super);
     function TemplatePanel() {

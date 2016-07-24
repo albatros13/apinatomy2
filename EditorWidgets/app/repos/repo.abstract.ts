@@ -2,7 +2,7 @@
  * Created by Natallia on 7/8/2016.
  */
 import {Component, Output, EventEmitter} from '@angular/core';
-import {ResourceName, TemplateName} from "../providers/service.apinatomy2";
+import {ResourceName, TemplateName} from "../services/service.apinatomy2";
 
 @Component({
   selector: 'item-header',
@@ -31,6 +31,7 @@ export abstract class RepoAbstract{
   searchString: string = "";
 
   _selectedItem: any;
+  isSelectedOpen: boolean = false;
 
   public set selectedItem (item: any) {
     if (this._selectedItem != item){
@@ -49,6 +50,11 @@ export abstract class RepoAbstract{
     if (!this.types || (this.types.length == 0))
       this.types = Array.from(new Set(this.items.map(item => item.class)));
     this.zones = this.types.map(x => x + "_zone");
+  }
+
+  protected onHeaderClick(item: any){
+    this.selectedItem = item;
+    this.isSelectedOpen = !this.isSelectedOpen;
   }
 
   protected onSorted(prop: string){

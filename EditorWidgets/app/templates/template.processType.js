@@ -21,7 +21,7 @@ var component_select_1 = require('../components/component.select');
 var component_template_1 = require('../components/component.template');
 var template_type_1 = require("./template.type");
 var ng2_radio_group_1 = require("ng2-radio-group");
-var service_apinatomy2_1 = require("../providers/service.apinatomy2");
+var service_apinatomy2_1 = require("../services/service.apinatomy2");
 var pipe_general_1 = require("../transformations/pipe.general");
 var ProcessTemplatePanel = (function (_super) {
     __extends(ProcessTemplatePanel, _super);

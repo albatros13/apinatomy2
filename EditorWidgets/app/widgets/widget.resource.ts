@@ -1,9 +1,11 @@
 /**
  * Created by Natallia on 7/23/2016.
  */
-import {Component} from '@angular/core';
+import {Component, OnChanges, OnDestroy} from '@angular/core';
 import {OmegaTreeWidget} from './view.omegaTree';
-import {ResourceName} from '../providers/service.apinatomy2';
+import {ResourceName} from '../services/service.apinatomy2';
+import {ResizeService} from '../services/service.resize';
+import { Subscription}   from 'rxjs/Subscription';
 
 //Component visualization widget stub
 export class TemplateBox{
@@ -28,7 +30,28 @@ export class TemplateBox{
   `,
   directives: [OmegaTreeWidget]
 })
-export class ResourceWidget {
+export class ResourceWidget implements OnChanges, OnDestroy {
   resourceName = ResourceName;
+  subscription: Subscription;
+
+  constructor(public resizeService: ResizeService) {
+    this.subscription = resizeService.resize$.subscribe(
+      (event: any) => {
+        if (event.target == "resource-widget"){
+          this.onSetPanelSize(event);
+        }
+      });
+  }
+
+  onSetPanelSize(event: any){
+    this.resizeService.announceResize({target: "omega-tree", size: event.size});
+  }
+
+  ngOnChanges(changes: { [propName: string]: any }){}
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
+
 
 }

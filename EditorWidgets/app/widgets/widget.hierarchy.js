@@ -17,15 +17,27 @@ var view_hierarchyGraph_1 = require("./view.hierarchyGraph");
 var view_hierarchyTree_1 = require("./view.hierarchyTree");
 var common_1 = require('@angular/common');
 var dropdown_1 = require('ng2-bootstrap/components/dropdown');
+var service_resize_1 = require('../services/service.resize');
 var HierarchyWidget = (function () {
-    function HierarchyWidget() {
+    function HierarchyWidget(resizeService) {
+        var _this = this;
+        this.resizeService = resizeService;
         this.relation = "subtrees";
         this.layout = "tree";
         //Parameter form
         this.relations = [this.relation];
         this.allProperties = [];
         this.depth = 2;
+        this.subscription = resizeService.resize$.subscribe(function (event) {
+            if (event.target == "hierarchy-widget") {
+                _this.onSetPanelSize(event);
+            }
+        });
     }
+    HierarchyWidget.prototype.onSetPanelSize = function (event) {
+        this.resizeService.announceResize({ target: "hierarchy-tree", size: event.size });
+        this.resizeService.announceResize({ target: "hierarchy-graph", size: event.size });
+    };
     HierarchyWidget.prototype.ngOnInit = function () {
         this.updateRelations();
     };
@@ -67,6 +79,9 @@ var HierarchyWidget = (function () {
             return str;
         return str[0].toUpperCase() + str.substring(1);
     };
+    HierarchyWidget.prototype.ngOnDestroy = function () {
+        this.subscription.unsubscribe();
+    };
     HierarchyWidget = __decorate([
         core_1.Component({
             selector: 'hierarchy-widget',
@@ -75,7 +90,7 @@ var HierarchyWidget = (function () {
             directives: [component_select_1.SingleSelectInput, component_select_1.MultiSelectInput, view_hierarchyGraph_1.HierarchyGraphWidget, view_hierarchyTree_1.HierarchyTreeWidget,
                 dropdown_1.DROPDOWN_DIRECTIVES, common_1.CORE_DIRECTIVES]
         }), 
-        __metadata('design:paramtypes', [])
+        __metadata('design:paramtypes', [service_resize_1.ResizeService])
     ], HierarchyWidget);
     return HierarchyWidget;
 }());

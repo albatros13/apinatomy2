@@ -38,6 +38,7 @@ var RepoAbstract = (function () {
         this.sortByMode = "unsorted";
         this.filterByMode = "Name";
         this.searchString = "";
+        this.isSelectedOpen = false;
     }
     Object.defineProperty(RepoAbstract.prototype, "selectedItem", {
         get: function () {
@@ -60,6 +61,10 @@ var RepoAbstract = (function () {
         if (!this.types || (this.types.length == 0))
             this.types = Array.from(new Set(this.items.map(function (item) { return item.class; })));
         this.zones = this.types.map(function (x) { return x + "_zone"; });
+    };
+    RepoAbstract.prototype.onHeaderClick = function (item) {
+        this.selectedItem = item;
+        this.isSelectedOpen = !this.isSelectedOpen;
     };
     RepoAbstract.prototype.onSorted = function (prop) {
         this.sortByMode = prop.toLowerCase();

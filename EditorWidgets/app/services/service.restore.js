@@ -42,7 +42,6 @@ var RestoreService = (function () {
             return out;
         }
         return obj;
-        //return Object.assign({}, obj);
     };
     RestoreService = __decorate([
         core_1.Injectable(), 

@@ -17,7 +17,7 @@ import {GroupTemplatePanel} from "./template.groupType";
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"
       (propertyUpdated) = "propertyUpdated.emit($event)">
-           
+          
       <ng-content></ng-content>      
     
     </groupTemplate-panel>

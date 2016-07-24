@@ -13,7 +13,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  */
 var core_1 = require('@angular/core');
 var view_omegaTree_1 = require('./view.omegaTree');
-var service_apinatomy2_1 = require('../providers/service.apinatomy2');
+var service_apinatomy2_1 = require('../services/service.apinatomy2');
+var service_resize_1 = require('../services/service.resize');
 //Component visualization widget stub
 var TemplateBox = (function () {
     function TemplateBox(model) {
@@ -29,9 +30,23 @@ var TemplateBox = (function () {
 }());
 exports.TemplateBox = TemplateBox;
 var ResourceWidget = (function () {
-    function ResourceWidget() {
+    function ResourceWidget(resizeService) {
+        var _this = this;
+        this.resizeService = resizeService;
         this.resourceName = service_apinatomy2_1.ResourceName;
+        this.subscription = resizeService.resize$.subscribe(function (event) {
+            if (event.target == "resource-widget") {
+                _this.onSetPanelSize(event);
+            }
+        });
     }
+    ResourceWidget.prototype.onSetPanelSize = function (event) {
+        this.resizeService.announceResize({ target: "omega-tree", size: event.size });
+    };
+    ResourceWidget.prototype.ngOnChanges = function (changes) { };
+    ResourceWidget.prototype.ngOnDestroy = function () {
+        this.subscription.unsubscribe();
+    };
     ResourceWidget = __decorate([
         core_1.Component({
             selector: 'resource-widget',
@@ -39,7 +54,7 @@ var ResourceWidget = (function () {
             template: "\n    <omega-tree *ngIf=\"item && (item.class == resourceName.OmegaTreeType)\" [item]=\"item\" [template]=\"TemplateBox\"></omega-tree>   \n  ",
             directives: [view_omegaTree_1.OmegaTreeWidget]
         }), 
-        __metadata('design:paramtypes', [])
+        __metadata('design:paramtypes', [service_resize_1.ResizeService])
     ], ResourceWidget);
     return ResourceWidget;
 }());

@@ -12,6 +12,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  * Created by Natallia on 7/7/2016.
  */
 var core_1 = require('@angular/core');
+var directive_dynamicLoader_1 = require("../directives/directive.dynamicLoader");
 var Node = (function () {
     function Node() {
     }
@@ -44,57 +45,6 @@ var List = (function () {
     return List;
 }());
 exports.List = List;
-var DclWrapperComponent = (function () {
-    function DclWrapperComponent(resolver) {
-        this.resolver = resolver;
-        this.isViewInitialized = false;
-    }
-    DclWrapperComponent.prototype.updateComponent = function () {
-        var _this = this;
-        if (!this.isViewInitialized) {
-            return;
-        }
-        if (this.cmpRef) {
-            this.cmpRef.destroy();
-        }
-        this.resolver.resolveComponent(this.type).then(function (factory) {
-            _this.cmpRef = _this.target.createComponent(factory);
-            _this.cmpRef.instance.input = _this.input;
-        });
-    };
-    DclWrapperComponent.prototype.ngOnChanges = function () {
-        this.updateComponent();
-    };
-    DclWrapperComponent.prototype.ngAfterViewInit = function () {
-        this.isViewInitialized = true;
-        this.updateComponent();
-    };
-    DclWrapperComponent.prototype.ngOnDestroy = function () {
-        if (this.cmpRef) {
-            this.cmpRef.destroy();
-        }
-    };
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], DclWrapperComponent.prototype, "target", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], DclWrapperComponent.prototype, "type", void 0);
-    __decorate([
-        core_1.Input(), 
-        __metadata('design:type', Object)
-    ], DclWrapperComponent.prototype, "input", void 0);
-    DclWrapperComponent = __decorate([
-        core_1.Directive({
-            selector: '[dcl-wrapper]'
-        }), 
-        __metadata('design:paramtypes', [core_1.ComponentResolver])
-    ], DclWrapperComponent);
-    return DclWrapperComponent;
-}());
-exports.DclWrapperComponent = DclWrapperComponent;
 var DynamicList = (function () {
     function DynamicList(vc) {
         this.target = vc;
@@ -104,7 +54,7 @@ var DynamicList = (function () {
             selector: 'dynamic-list',
             inputs: ['items', 'renderer'],
             template: "\n      <g *ngFor=\"let item of items; let i = index\" dcl-wrapper [target]=\"target\" [type]=\"renderer[i]\" [input]=\"item\"></g>\n ",
-            directives: [DclWrapperComponent]
+            directives: [directive_dynamicLoader_1.DynamicLoader]
         }), 
         __metadata('design:paramtypes', [core_1.ViewContainerRef])
     ], DynamicList);

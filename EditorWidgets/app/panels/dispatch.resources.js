@@ -9,8 +9,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require('@angular/core');
-var service_restore_1 = require("../providers/service.restore");
-var service_apinatomy2_1 = require("../providers/service.apinatomy2");
+var service_restore_1 = require("../services/service.restore");
+var service_apinatomy2_1 = require("../services/service.apinatomy2");
 var panel_resource_1 = require('./panel.resource');
 var panel_type_1 = require('./panel.type');
 var panel_materialType_1 = require('./panel.materialType');
@@ -25,15 +25,15 @@ var panel_omegaTreeType_1 = require('./panel.omegaTreeType');
 var panel_measurableType_1 = require('./panel.measurableType');
 var panel_correlation_1 = require('./panel.correlation');
 var panel_coalescence_1 = require('./panel.coalescence');
-var PanelGeneral = (function () {
-    function PanelGeneral(restoreService) {
+var PanelDispatchResources = (function () {
+    function PanelDispatchResources(restoreService) {
         this.restoreService = restoreService;
         this.resourceName = service_apinatomy2_1.ResourceName;
         this.saved = new core_1.EventEmitter();
         this.removed = new core_1.EventEmitter();
         this.canceled = new core_1.EventEmitter();
     }
-    Object.defineProperty(PanelGeneral.prototype, "item", {
+    Object.defineProperty(PanelDispatchResources.prototype, "item", {
         get: function () {
             return this.restoreService.getItem();
         },
@@ -43,27 +43,27 @@ var PanelGeneral = (function () {
         enumerable: true,
         configurable: true
     });
-    PanelGeneral.prototype.onSaved = function () {
+    PanelDispatchResources.prototype.onSaved = function () {
         this.item = this.restoreService.getItem();
         this.saved.emit(this.item);
     };
-    PanelGeneral.prototype.onCanceled = function () {
+    PanelDispatchResources.prototype.onCanceled = function () {
         this.item = this.restoreService.restoreItem();
         this.canceled.emit(this.item);
     };
     __decorate([
         core_1.Output(), 
         __metadata('design:type', Object)
-    ], PanelGeneral.prototype, "saved", void 0);
+    ], PanelDispatchResources.prototype, "saved", void 0);
     __decorate([
         core_1.Output(), 
         __metadata('design:type', Object)
-    ], PanelGeneral.prototype, "removed", void 0);
+    ], PanelDispatchResources.prototype, "removed", void 0);
     __decorate([
         core_1.Output(), 
         __metadata('design:type', Object)
-    ], PanelGeneral.prototype, "canceled", void 0);
-    PanelGeneral = __decorate([
+    ], PanelDispatchResources.prototype, "canceled", void 0);
+    PanelDispatchResources = __decorate([
         core_1.Component({
             providers: [service_restore_1.RestoreService],
             selector: 'panel-general',
@@ -75,8 +75,8 @@ var PanelGeneral = (function () {
                 panel_correlation_1.CorrelationPanel, panel_coalescence_1.CoalescencePanel]
         }), 
         __metadata('design:paramtypes', [service_restore_1.RestoreService])
-    ], PanelGeneral);
-    return PanelGeneral;
+    ], PanelDispatchResources);
+    return PanelDispatchResources;
 }());
-exports.PanelGeneral = PanelGeneral;
+exports.PanelDispatchResources = PanelDispatchResources;
 //# sourceMappingURL=dispatch.resources.js.map

@@ -9,30 +9,33 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require('@angular/core');
+var service_resize_1 = require('../services/service.resize');
 var color = d3.scale.category20();
 var HierarchyTreeWidget = (function () {
-    function HierarchyTreeWidget(el, vc, resolver) {
+    function HierarchyTreeWidget(el, vc, resolver, resizeService) {
         this.el = el;
         this.vc = vc;
         this.resolver = resolver;
+        this.resizeService = resizeService;
         this.depth = -1;
-        this.vp = { size: { width: 400, height: 600 },
+        this.vp = { size: { width: 600, height: 400 },
             margin: { x: 20, y: 20 },
             node: { size: { width: 40, height: 20 } } };
         this.selected = new core_1.EventEmitter();
+        var self = this;
+        this.subscription = resizeService.resize$.subscribe(function (event) {
+            if (event.target == "hierarchy-tree") {
+                self.setPanelSize(event.size);
+            }
+        });
     }
-    HierarchyTreeWidget.prototype.ngOnInit = function () {
-        this.setPanelSize(window.innerWidth, window.innerHeight);
+    HierarchyTreeWidget.prototype.ngOnDestroy = function () {
+        this.subscription.unsubscribe();
     };
-    HierarchyTreeWidget.prototype.onResize = function (event) {
-        this.setPanelSize(event.target.innerWidth, event.target.innerHeight);
-    };
-    HierarchyTreeWidget.prototype.setPanelSize = function (innerWidth, innerHeight) {
-        var w = innerWidth / 2 - 2 * this.vp.margin.x;
-        var h = innerHeight / 2 - 2 * this.vp.margin.y;
+    HierarchyTreeWidget.prototype.setPanelSize = function (size) {
         var delta = 10;
-        if ((Math.abs(this.vp.size.width - w) > delta) || (Math.abs(this.vp.size.height - h) > delta)) {
-            this.vp.size = { width: w, height: h };
+        if ((Math.abs(this.vp.size.width - size.width) > delta) || (Math.abs(this.vp.size.height - size.height) > delta)) {
+            this.vp.size = size;
             if (this.svg) {
                 this.draw(this.svg, this.vp, this.data);
             }
@@ -52,7 +55,7 @@ var HierarchyTreeWidget = (function () {
     HierarchyTreeWidget.prototype.draw = function (svg, vp, data) {
         var w = vp.size.width - 2 * vp.margin.x;
         var h = vp.size.height - 2 * vp.margin.y;
-        svg.selectAll("g").remove();
+        svg.selectAll(".tree").remove();
         var selectedNode = null;
         var draggingNode = null;
         var panSpeed = 200;
@@ -113,9 +116,10 @@ var HierarchyTreeWidget = (function () {
             svgGroup.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
         }
         // define the zoomListener which calls the zoom function on the "zoom" event constrained within the scaleExtents
-        var zoomListener = d3.behavior.zoom().scaleExtent([0.1, 3]).on("zoom", zoom);
+        var zoomListener = d3.behavior.zoom().scaleExtent([0.5, 3]).on("zoom", zoom);
         // define the baseSvg, attaching a class for styling and the zoomListener
-        var treeSvg = svg.append("g").attr("class", "tree").attr("width", vp.size.width).attr("height", vp.size.height)
+        var treeSvg = svg.append("g").attr("class", "tree")
+            .attr("width", vp.size.width).attr("height", vp.size.height)
             .attr("transform", "translate(" + vp.margin.x + "," + vp.margin.y + ")")
             .call(zoomListener);
         function initiateDrag(d, domNode) {
@@ -169,13 +173,15 @@ var HierarchyTreeWidget = (function () {
             d3.event.sourceEvent.stopPropagation();
         })
             .on("drag", function (d) {
-            // if (d == root) {return;}
+            if (d == root) {
+                return;
+            }
             if (dragStarted) {
                 domNode = this;
                 initiateDrag(d, domNode);
             }
             // get coords of mouseEvent relative to svg container to allow for panning
-            var el = svg; //d3.select('svg').get(0);
+            var el = svg;
             var relCoords = d3.mouse(el);
             if (relCoords[0] < panBoundary) {
                 panTimer = true;
@@ -300,8 +306,8 @@ var HierarchyTreeWidget = (function () {
         // Function to center node when clicked/dropped so node doesn't get lost when collapsing/moving with large amount of children.
         function centerNode(source) {
             var scale = zoomListener.scale();
-            var x = -source.x0 * scale + vp.size.width / 2;
-            var y = -source.y0 * scale + vp.size.height / 2;
+            var x = -source.y0 * scale + vp.size.width / 2;
+            var y = -source.x0 * scale + vp.size.height / 2;
             d3.select('g').transition()
                 .duration(duration)
                 .attr("transform", "translate(" + x + "," + y + ")scale(" + scale + ")");
@@ -522,11 +528,11 @@ var HierarchyTreeWidget = (function () {
         core_1.Component({
             selector: 'hierarchy-tree',
             inputs: ['item', 'relation', 'depth', 'properties'],
-            template: "\n    <div class=\"panel-body\" (window:resize)=\"onResize($event)\">\n      <svg #treeSvg class=\"svg-widget\"></svg>\n    </div>\n  "
+            template: "\n    <div class=\"panel-body\">\n      <svg #treeSvg class=\"svg-widget\"></svg>\n    </div>\n  "
         }), 
-        __metadata('design:paramtypes', [core_1.ElementRef, core_1.ViewContainerRef, core_1.ComponentResolver])
+        __metadata('design:paramtypes', [core_1.ElementRef, core_1.ViewContainerRef, core_1.ComponentResolver, service_resize_1.ResizeService])
     ], HierarchyTreeWidget);
     return HierarchyTreeWidget;
 }());
 exports.HierarchyTreeWidget = HierarchyTreeWidget;
-//# sourceMappingURL=view.hierarchyTree.jse.js.map
+//# sourceMappingURL=view.hierarchyTree.js.map

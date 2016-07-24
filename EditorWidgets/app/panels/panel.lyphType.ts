@@ -7,7 +7,7 @@ import {MultiSelectInput, SingleSelectInput} from '../components/component.selec
 import {EditToolbar} from '../components/component.toolbars';
 
 import {RepoTemplate} from '../repos/repo.template';
-import {ProcessTemplate, BorderTemplate} from '../providers/service.apinatomy2';
+import {ProcessTemplate, BorderTemplate} from '../services/service.apinatomy2';
 import {BorderTemplatePanel} from '../templates/template.borderType';
 import {FilterByClass, FilterBy} from "../transformations/pipe.general";
 

@@ -40,6 +40,7 @@
     "golden-layout": "^1.5.1",
     "jquery-layout": "^1.0.0",
     "ng2-bootstrap": "^1.0.17",
+    "ng2-bs3-modal": "^0.6.1",
     "ng2-dnd": "^1.8.2",
     "ng2-dragula": "^1.1.10",
     "ng2-nvd3": "^1.1.0",

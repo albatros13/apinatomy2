@@ -2,7 +2,7 @@
  * Created by Natallia on 6/19/2016.
  */
 import {Component, Output, EventEmitter} from '@angular/core';
-import {TransportPhenomenon} from "../providers/service.apinatomy2";
+import {TransportPhenomenon} from "../services/service.apinatomy2";
 import {TypePanel} from "./panel.type";
 import {MultiSelectInput, SingleSelectInput} from '../components/component.select';
 import {EditToolbar} from '../components/component.toolbars';

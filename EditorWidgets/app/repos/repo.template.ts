@@ -8,9 +8,9 @@ import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
 import {ResourceName, TemplateName,
   Template, BorderTemplate, NodeTemplate, CausalityTemplate, ProcessTemplate, MeasurableTemplate,
   GroupTemplate, OmegaTreeTemplate,
-  LyphTemplate, CylindricalLyphTemplate} from '../providers/service.apinatomy2';
+  LyphTemplate, CylindricalLyphTemplate} from '../services/service.apinatomy2';
 import {EditToolbar, FilterToolbar} from '../components/component.toolbars';
-import {PanelTemplate} from "../templates/dispatch.templates";
+import {PanelDispatchTemplates} from "../templates/dispatch.templates";
 import {ItemHeader, RepoAbstract} from "./repo.abstract";
 import {FilterBy} from "../transformations/pipe.general";
 
@@ -26,8 +26,9 @@ import {FilterBy} from "../transformations/pipe.general";
           
         <accordion class="list-group" [closeOthers]="true" 
           dnd-sortable-container [dropZones]="zones" [sortableData]="items">
-          <accordion-group *ngFor="let item of items | filterBy: [searchString, filterByMode]; let i = index" class="list-group-item" dnd-sortable 
-           [sortableIndex]="i" (click)="selectedItem = item">
+          <accordion-group *ngFor="let item of items | filterBy: [searchString, filterByMode]; let i = index" 
+            class="list-group-item" dnd-sortable 
+           [sortableIndex]="i" (click)="onHeaderClick(item)">
             <div accordion-heading><item-header [item]="item" [icon]="getIcon(item)"></item-header></div>
 
             <div *ngIf="!options || !options.headersOnly">
@@ -43,7 +44,7 @@ import {FilterBy} from "../transformations/pipe.general";
     </div>
   `,
   directives: [ItemHeader, EditToolbar, FilterToolbar,
-    PanelTemplate, ACCORDION_DIRECTIVES, CORE_DIRECTIVES, FORM_DIRECTIVES, DND_DIRECTIVES],
+    PanelDispatchTemplates, ACCORDION_DIRECTIVES, CORE_DIRECTIVES, FORM_DIRECTIVES, DND_DIRECTIVES],
   pipes: [FilterBy]
 })
 export class RepoTemplate extends RepoAbstract{

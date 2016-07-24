@@ -1,6 +1,6 @@
 import {Component, Output, EventEmitter} from '@angular/core';
-import {RestoreService} from "../providers/service.restore";
-import {TemplateName} from "../providers/service.apinatomy2";
+import {RestoreService} from "../services/service.restore";
+import {TemplateName} from "../services/service.apinatomy2";
 import {TemplatePanel} from './template.type';
 import {MeasurableTemplatePanel} from './template.measurableType';
 import {NodeTemplatePanel} from './template.nodeType';
@@ -72,7 +72,7 @@ import {CylindricalLyphTemplatePanel} from './template.cylindricalLyphType';
     LyphTemplatePanel, CylindricalLyphTemplatePanel,
     GroupTemplatePanel, OmegaTreeTemplatePanel]
 })
-export class PanelTemplate{
+export class PanelDispatchTemplates{
   templateName = TemplateName;
   @Output() saved = new EventEmitter();
   @Output() removed = new EventEmitter();

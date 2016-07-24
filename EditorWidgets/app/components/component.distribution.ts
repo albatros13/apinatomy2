@@ -2,7 +2,7 @@
  * Created by Natallia on 6/21/2016.
  */
 import {Component, EventEmitter, Output} from '@angular/core';
-import {ValueDistribution, BoundedNormalDistribution, UniformDistribution, DistributionType} from '../providers/service.apinatomy2'
+import {ValueDistribution, BoundedNormalDistribution, UniformDistribution, DistributionType} from '../services/service.apinatomy2'
 import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
 
 @Component({

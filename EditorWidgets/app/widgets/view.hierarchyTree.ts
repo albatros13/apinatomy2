@@ -1,5 +1,7 @@
-import {Component, Directive, OnChanges, Input, Output, ViewChild, ElementRef, Renderer,
+import {Component, Directive, OnChanges, OnDestroy, Input, Output, ViewChild, ElementRef, Renderer,
   ViewContainerRef, EventEmitter, ComponentResolver} from '@angular/core';
+import {ResizeService} from '../services/service.resize';
+import {Subscription}   from 'rxjs/Subscription';
 
 declare var d3:any;
 const color = d3.scale.category20();
@@ -8,12 +10,12 @@ const color = d3.scale.category20();
   selector: 'hierarchy-tree',
   inputs: ['item', 'relation', 'depth', 'properties'],
   template : `
-    <div class="panel-body" (window:resize)="onResize($event)">
+    <div class="panel-body">
       <svg #treeSvg class="svg-widget"></svg>
     </div>
   `
 })
-export class HierarchyTreeWidget implements OnChanges{
+export class HierarchyTreeWidget implements OnChanges, OnDestroy{
   item: any;
 
   relation: string;
@@ -21,32 +23,35 @@ export class HierarchyTreeWidget implements OnChanges{
   layout  : string;
 
   svg : any;
-  vp  : any = {size: {width: 400, height: 600},
+  vp  : any = {size: {width: 600, height: 400},
     margin: {x: 20, y: 20},
     node: {size: {width: 40, height: 20}}};
   data: any;
 
   @Output() selected = new EventEmitter();
+  subscription: Subscription;
 
   constructor(public el: ElementRef,
               public vc: ViewContainerRef,
-              private resolver: ComponentResolver){
+              private resolver: ComponentResolver,
+              private resizeService: ResizeService){
+    let self = this;
+    this.subscription = resizeService.resize$.subscribe(
+      (event: any) => {
+        if (event.target == "hierarchy-tree"){
+          self.setPanelSize(event.size);
+        }
+      });
   }
 
-  ngOnInit(){
-    this.setPanelSize(window.innerWidth, window.innerHeight);
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
-  onResize(event: any){
-   this.setPanelSize(event.target.innerWidth, event.target.innerHeight);
-  }
-
-  setPanelSize(innerWidth: number, innerHeight: number){
-    let w = innerWidth / 2 - 2 * this.vp.margin.x;
-    let h = innerHeight / 2 - 2 * this.vp.margin.y;
+  setPanelSize(size: any){
     let delta = 10;
-    if ((Math.abs(this.vp.size.width - w) > delta) || (Math.abs(this.vp.size.height - h) > delta)){
-      this.vp.size = {width: w, height: h};
+    if ((Math.abs(this.vp.size.width - size.width) > delta) || (Math.abs(this.vp.size.height - size.height) > delta)){
+      this.vp.size = size;
       if (this.svg){
         this.draw(this.svg, this.vp, this.data);
       }
@@ -67,7 +72,7 @@ export class HierarchyTreeWidget implements OnChanges{
   draw(svg: any, vp: any, data: any): void {
     let w = vp.size.width - 2 * vp.margin.x;
     let h = vp.size.height - 2 * vp.margin.y;
-    svg.selectAll("g").remove();
+    svg.selectAll(".tree").remove();
 
     var selectedNode:any = null;
     var draggingNode:any = null;
@@ -136,10 +141,11 @@ export class HierarchyTreeWidget implements OnChanges{
     }
 
     // define the zoomListener which calls the zoom function on the "zoom" event constrained within the scaleExtents
-    var zoomListener = d3.behavior.zoom().scaleExtent([0.1, 3]).on("zoom", zoom);
+    var zoomListener = d3.behavior.zoom().scaleExtent([0.5, 3]).on("zoom", zoom);
 
     // define the baseSvg, attaching a class for styling and the zoomListener
-    let treeSvg = svg.append("g").attr("class", "tree").attr("width", vp.size.width).attr("height", vp.size.height)
+    let treeSvg = svg.append("g").attr("class", "tree")
+      .attr("width", vp.size.width).attr("height", vp.size.height)
         .attr("transform", "translate(" + vp.margin.x + "," + vp.margin.y + ")")
       .call(zoomListener);
 
@@ -194,14 +200,14 @@ export class HierarchyTreeWidget implements OnChanges{
         d3.event.sourceEvent.stopPropagation();
       })
       .on("drag", function (d: any) {
-       // if (d == root) {return;}
+        if (d == root) {return;}
         if (dragStarted) {
           domNode = this;
           initiateDrag(d, domNode);
         }
 
         // get coords of mouseEvent relative to svg container to allow for panning
-        let el = svg; //d3.select('svg').get(0);
+        let el = svg;
         let relCoords = d3.mouse(el);
         if (relCoords[0] < panBoundary) {
           panTimer = true;
@@ -331,8 +337,8 @@ export class HierarchyTreeWidget implements OnChanges{
 
     function centerNode(source:any) {
       let scale = zoomListener.scale();
-      let x = -source.x0 * scale + vp.size.width / 2;
-      let y = -source.y0 * scale + vp.size.height / 2;
+      let x = -source.y0 * scale + vp.size.width / 2;
+      let y = -source.x0 * scale + vp.size.height / 2;
       d3.select('g').transition()
         .duration(duration)
         .attr("transform", "translate(" + x + "," + y + ")scale(" + scale + ")");

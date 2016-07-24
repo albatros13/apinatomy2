@@ -2,11 +2,11 @@
  * Created by Natallia on 6/17/2016.
  */
 import {Component} from '@angular/core';
-import {RestoreService} from "../providers/service.restore";
+import {RestoreService} from "../services/service.restore";
 import {TypePanel} from "./panel.type";
 import {MultiSelectInput} from '../components/component.select';
 import {RepoTemplate} from '../repos/repo.template';
-import {MeasurableType} from "../providers/service.apinatomy2";
+import {MeasurableType} from "../services/service.apinatomy2";
 
 @Component({
   providers: [RestoreService],

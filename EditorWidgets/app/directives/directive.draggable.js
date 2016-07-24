@@ -168,4 +168,4 @@ var Draggable = (function () {
     return Draggable;
 }());
 exports.Draggable = Draggable;
-//# sourceMappingURL=draggable.js.map
+//# sourceMappingURL=directive.draggable.js.map

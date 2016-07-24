@@ -29,19 +29,22 @@ import {RepoTemplate} from '../repos/repo.template';
       
       <!--Levels-->
       <div class="input-control" *ngIf="includeProperty('levels')">
-         <repo-template caption="Levels" [items] = "item.elements" 
-         (updated)="updateProperty('elements', $event)"
-         [dependencies] = "dependencies" [types]="[
-           templateName.CylindricalLyphTemplate, templateName.OmegaTreeTemplate]"></repo-template>
+         <repo-template caption="Levels" [items] = "item.levels" 
+         (updated)="updateProperty('levels', $event)"
+         [dependencies] = "dependencies" 
+         [types]="[templateName.CylindricalLyphTemplate]">
+         <!--Lyphs or other omega trees-->
+         <!--[types]="[templateName.CylindricalLyphTemplate, templateName.OmegaTreeTemplate]">-->
+        </repo-template>
       </div>
       
       <!--Subtrees-->
-      <div class="input-control" *ngIf="includeProperty('subtrees')">
-         <repo-template caption="Subtrees" [items] = "item.subtrees" 
-         (updated)="updateProperty('subtrees', $event)"
-         [dependencies] = "dependencies" [types]="[
-           templateName.OmegaTreeTemplate]"></repo-template>
-      </div>
+      <!--<div class="input-control" *ngIf="includeProperty('subtrees')">-->
+         <!--<repo-template caption="Subtrees" [items] = "item.subtrees" -->
+         <!--(updated)="updateProperty('subtrees', $event)"-->
+         <!--[dependencies] = "dependencies" [types]="[-->
+           <!--templateName.OmegaTreeTemplate]"></repo-template>-->
+      <!--</div>-->
       
       <ng-content></ng-content>      
     

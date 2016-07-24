@@ -14,6 +14,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require('@angular/core');
+//var waterP = model.MaterialType.new({name: "Water"});
+// (async function(){
+//   let water = await waterP;
+//
+//   console.log("1", water.name);
+//   water.name = "WATER";
+//   console.log("2", water.name);
+//   await water.rollback();
+//   console.log("3", water.name);
+//   water.name = "WATER";
+//   await water.commit();
+//   await water.rollback();
+//   console.log("4", water.name);
+//
+// })();
 /*ENUMERATIONS*/
 (function (ResourceName) {
     ResourceName[ResourceName["Resource"] = "Resource"] = "Resource";
@@ -67,7 +82,6 @@ var FormType = exports.FormType;
 //Components
 var Distribution = (function () {
     function Distribution(obj) {
-        if (obj === void 0) { obj = {}; }
     }
     return Distribution;
 }());
@@ -75,8 +89,7 @@ exports.Distribution = Distribution;
 var UniformDistribution = (function (_super) {
     __extends(UniformDistribution, _super);
     function UniformDistribution(obj) {
-        if (obj === void 0) { obj = { min: 0, max: 0 }; }
-        _super.call(this);
+        _super.call(this, obj);
         this.min = obj.min;
         this.max = obj.max;
     }
@@ -86,7 +99,6 @@ exports.UniformDistribution = UniformDistribution;
 var BoundedNormalDistribution = (function (_super) {
     __extends(BoundedNormalDistribution, _super);
     function BoundedNormalDistribution(obj) {
-        if (obj === void 0) { obj = { mean: 0, std: 0, min: 0, max: 0 }; }
         _super.call(this, obj);
         this.mean = 0;
         this.std = 0;
@@ -98,7 +110,6 @@ var BoundedNormalDistribution = (function (_super) {
 exports.BoundedNormalDistribution = BoundedNormalDistribution;
 var ValueDistribution = (function () {
     function ValueDistribution(obj) {
-        if (obj === void 0) { obj = { type: DistributionType.Uniform, distribution: new UniformDistribution() }; }
         //this.unit = obj.unit;
         this.type = obj.type;
         this.distribution = obj.distribution;
@@ -109,7 +120,6 @@ exports.ValueDistribution = ValueDistribution;
 //Entities
 var Resource = (function () {
     function Resource(obj) {
-        if (obj === void 0) { obj = {}; }
         this.id = 0;
         this.name = "";
         this.href = "";
@@ -126,7 +136,6 @@ exports.Resource = Resource;
 var ExternalResource = (function (_super) {
     __extends(ExternalResource, _super);
     function ExternalResource(obj) {
-        if (obj === void 0) { obj = {}; }
         _super.call(this, obj);
         this.uri = "";
         this.type = "";
@@ -195,6 +204,12 @@ var LyphType = (function (_super) {
         this.nodes = obj.nodes;
         this.innerBorder = obj.innerBorder;
         this.outerBorder = obj.outerBorder;
+        if (!this.innerBorder) {
+            this.innerBorder = new BorderTemplate({ name: "T inner: " + testBorders[0].name, type: testBorders[0] });
+        }
+        if (!this.outerBorder) {
+            this.outerBorder = new BorderTemplate({ name: "T outer: " + testBorders[0].name, type: testBorders[0] });
+        }
     }
     return LyphType;
 }(MaterialType));
@@ -212,6 +227,12 @@ var CylindricalLyphType = (function (_super) {
         this.segments = obj.segments;
         this.minusBorder = obj.minusBorder;
         this.plusBorder = obj.plusBorder;
+        if (!this.minusBorder) {
+            this.minusBorder = new BorderTemplate({ name: "T minus: " + testBorders[0].name, type: testBorders[0] });
+        }
+        if (!this.plusBorder) {
+            this.plusBorder = new BorderTemplate({ name: "T plus: " + testBorders[0].name, type: testBorders[0] });
+        }
     }
     return CylindricalLyphType;
 }(LyphType));
@@ -269,7 +290,6 @@ var BorderType = (function (_super) {
         this.form = [FormType.open, FormType.closed];
         this.class = ResourceName.BorderType;
         this.position = obj.position;
-        this.nodes = obj.nodes;
         this.form = obj.form;
     }
     return BorderType;
@@ -290,9 +310,52 @@ var OmegaTreeType = (function (_super) {
     function OmegaTreeType(obj) {
         _super.call(this, obj);
         this.class = ResourceName.OmegaTreeType;
-        //this.levels = obj.levels;
-        this.subtrees = obj.subtrees; //first (or any?) element of omega tree in a subtree must be among parent tree levels
-        //this.root = obj.root;
+        this.levels = obj.levels;
+        if (!obj.elements) {
+            //If elements are not assigned, this is not a copy constructor, elements have to be generated from levels
+            this.elements = [];
+            var genericNodeType = new NodeType({ name: "Generic node" }); //TODO: how to get node types?
+            if (this.levels[0]) {
+                var l1 = this.levels[0];
+                var nodeX = new NodeTemplate({ type: genericNodeType });
+                if (l1.type)
+                    addNodes(l1.type.minusBorder, [nodeX]);
+            }
+            //Create group structure
+            for (var i = 0; i < this.levels.length - 1; i++) {
+                var l1 = this.levels[i]; //TODO: extend for the case of a nested omega tree, get leaf
+                var l2 = this.levels[i + 1]; //TODO: extend for the case of a nested omega tree, get root
+                var nodeX = new NodeTemplate({ type: genericNodeType });
+                //let nodeA = new NodeTemplate({type: genericNodeType});
+                //let nodeB = new NodeTemplate({type: genericNodeType});
+                if (l1.type) {
+                    addNodes(l1.type.plusBorder, [nodeX]);
+                }
+                if (l2.type) {
+                    addNodes(l1.type.minusBorder, [nodeX]);
+                }
+                this.elements.push(nodeX);
+                //this.elements.push(nodeA);
+                //this.elements.push(nodeB);
+                this.elements.push(l2);
+            }
+        }
+        function addNodes(border, nodeSet) {
+            if (!border)
+                return;
+            if (!border.nodes)
+                border.nodes = [];
+            var _loop_1 = function(node) {
+                //? how to identify elements?
+                if (border.nodes.find(function (item) { return (item == node); })) {
+                    border.nodes.push(node);
+                }
+            };
+            for (var _i = 0, nodeSet_1 = nodeSet; _i < nodeSet_1.length; _i++) {
+                var node = nodeSet_1[_i];
+                _loop_1(node);
+            }
+        }
     }
     return OmegaTreeType;
 }(GroupType));
@@ -398,6 +461,7 @@ var BorderTemplate = (function (_super) {
         _super.call(this, obj);
         this.class = TemplateName.BorderTemplate;
         this.form = (obj.form) ? obj.form : FormType.open;
+        this.nodes = obj.nodes;
     }
     return BorderTemplate;
 }(Template));
@@ -660,12 +724,12 @@ var OmegaTreeTypeProvider = (function () {
         function getLyph(id) {
             return cltp.items.find(function (x) { return (x.id == id); });
         }
-        var elements = [
+        var levels = [
             new CylindricalLyphTemplate({ id: 2050, name: "T: CNT", type: getLyph(1050) }),
             new CylindricalLyphTemplate({ id: 2051, name: "T: DNT", type: getLyph(1051) }),
             new CylindricalLyphTemplate({ id: 2052, name: "T: CTkAL", type: getLyph(1052) })
         ];
-        var sln = new OmegaTreeType({ id: 10000, name: "Short Looped Nephron", elements: elements });
+        var sln = new OmegaTreeType({ id: 10000, name: "Short Looped Nephron", levels: levels });
         this.items.push(sln);
     }
     OmegaTreeTypeProvider = __decorate([

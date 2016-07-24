@@ -1,6 +1,6 @@
 import {Component, Output, EventEmitter} from '@angular/core';
-import {RestoreService} from "../providers/service.restore";
-import {ResourceName} from "../providers/service.apinatomy2";
+import {RestoreService} from "../services/service.restore";
+import {ResourceName} from "../services/service.apinatomy2";
 import {ResourcePanel} from './panel.resource';
 import {TypePanel} from './panel.type';
 import {MaterialTypePanel} from './panel.materialType';
@@ -98,7 +98,7 @@ import {CoalescencePanel} from './panel.coalescence';
     MeasurableTypePanel, ProcessTypePanel, CausalityTypePanel, NodeTypePanel, BorderTypePanel,
     CorrelationPanel, CoalescencePanel]
 })
-export class PanelGeneral{
+export class PanelDispatchResources{
   resourceName = ResourceName;
   @Output() saved = new EventEmitter();
   @Output() removed = new EventEmitter();

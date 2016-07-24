@@ -6,7 +6,7 @@ import {SingleSelectInput} from '../components/component.select';
 import {TemplateValue} from '../components/component.template';
 import {TemplatePanel} from "./template.type";
 import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
-import {TransportPhenomenon, NodeTemplate} from "../providers/service.apinatomy2";
+import {TransportPhenomenon, NodeTemplate} from "../services/service.apinatomy2";
 import {FilterByClass} from "../transformations/pipe.general";
 
 @Component({

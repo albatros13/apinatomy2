@@ -1,7 +1,8 @@
-import {Component, Directive, OnChanges, Input, Output, ViewChild, ElementRef, Renderer,
+import {Component, Directive, OnChanges, OnDestroy, Input, Output, ViewChild, ElementRef, Renderer,
   ViewContainerRef, EventEmitter, ComponentResolver} from '@angular/core';
-//import {DclWrapperComponent} from "../components/component.test";
 import {nvD3} from 'ng2-nvd3/lib/ng2-nvd3';
+import {ResizeService} from '../services/service.resize';
+import {Subscription}   from 'rxjs/Subscription';
 
 declare let d3: any;
 const color = d3.scale.category20();
@@ -10,14 +11,14 @@ const color = d3.scale.category20();
   selector: 'hierarchy-graph',
   inputs: ['item', 'relation', 'depth', 'properties'],
   template : `
-    <div class="panel-body" (window:resize)="onResize($event)">
+    <div class="panel-body">
       <!--<svg #graphSvg class="svg-widget"></svg>-->
       <nvd3 *ngIf="active" [options]="graphOptions" [data]="data"></nvd3>
     </div>
   `,
   directives: [nvD3],
 })
-export class HierarchyGraphWidget implements OnChanges{
+export class HierarchyGraphWidget implements OnChanges, OnDestroy{
   item: any;
   properties: string[] = [];
 
@@ -28,50 +29,60 @@ export class HierarchyGraphWidget implements OnChanges{
 
   svg: any;
   data: any;
-  vp: any = {size: {width: 400, height: 600},
+  vp: any = {size: {width: 600, height: 400},
     margin: {x: 20, y: 20},
     node: {size: {width: 40, height: 20}}};
 
   graphOptions: any;
   @Output() setNode = new EventEmitter();
+  subscription: Subscription;
 
   constructor(public renderer: Renderer,
               public el: ElementRef,
-              public vc: ViewContainerRef,
-              private resolver: ComponentResolver){
+              private resizeService: ResizeService){
+    let self = this;
+    this.subscription = resizeService.resize$.subscribe(
+      (event: any) => {
+        if (event.target == "hierarchy-graph"){
+          self.setPanelSize(event.size);
+        }
+      });
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
   ngOnInit(){
-    this.setPanelSize(window.innerWidth, window.innerHeight);
     this.setGraphOptions();
   }
 
-  onResize(event: any){
-   this.setPanelSize(event.target.innerWidth, event.target.innerHeight);
+  ngOnChanges(changes: { [propName: string]: any }) {
+    if (this.item) {
+      this.data = this.getGraphData(this.item, this.relation, this.depth);
+    } else {
+      this.data = {};
+    }
   }
 
-  //TODO: replace
-  setPanelSize(innerWidth: number, innerHeight: number){
-    let w = innerWidth / 2 - 2 * this.vp.margin.x;
-    let h = innerHeight / 2 - 2 * this.vp.margin.y;
+  setPanelSize(size: any){
     let delta = 10;
-    if ((Math.abs(this.vp.size.width - w) > delta) || (Math.abs(this.vp.size.height - h) > delta)){
-      this.vp.size = {width: w, height: h};
+    if ((Math.abs(this.vp.size.width - size.width) > delta) || (Math.abs(this.vp.size.height - size.height) > delta)){
+      this.vp.size = size;
       if (this.graphOptions){
-        this.graphOptions.width = w;
-        this.graphOptions.height = h;
+        this.graphOptions.width = this.vp.size.width;
+        this.graphOptions.height = this.vp.size.height;
         this.refresh();
       }
     }
   }
 
   refresh(){
-    setTimeout(() => {this.active = false}, 0);
-    setTimeout(() => {this.active = true}, 0);
+    setTimeout(() => {this.active = false}, 10);
+    setTimeout(() => {this.active = true}, 10);
   }
 
   setGraphOptions(){
-
     let visibleProperties = this.properties;
 
     function formatValue(value: any){
@@ -119,18 +130,6 @@ export class HierarchyGraphWidget implements OnChanges{
       }
     };
   }
-
-
-
-  ngOnChanges(changes: { [propName: string]: any }) {
-    if (this.item) {
-      this.data = this.getGraphData(this.item, this.relation, this.depth);
-    } else {
-      this.data = {};
-    }
-  }
-
-  draw(){}
 
   getGraphData(item: any, property: string, depth: number) {
     let data:any = {nodes: [], links  : []};

@@ -1,12 +1,14 @@
 /**
  * Created by Natallia on 7/15/2016.
  */
-import {Component, OnChanges} from '@angular/core';
+import {Component, OnChanges, OnDestroy} from '@angular/core';
 import {SingleSelectInput, MultiSelectInput} from "../components/component.select";
 import {HierarchyGraphWidget} from "./view.hierarchyGraph";
 import {HierarchyTreeWidget}  from "./view.hierarchyTree";
 import {CORE_DIRECTIVES} from '@angular/common';
 import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/components/dropdown';
+import {ResizeService} from '../services/service.resize';
+import {Subscription}   from 'rxjs/Subscription';
 
 @Component({
   selector: 'hierarchy-widget',
@@ -68,7 +70,7 @@ import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/components/dropdown';
   directives: [SingleSelectInput, MultiSelectInput, HierarchyGraphWidget, HierarchyTreeWidget,
     DROPDOWN_DIRECTIVES, CORE_DIRECTIVES]
 })
-export class HierarchyWidget implements OnChanges{
+export class HierarchyWidget implements OnChanges, OnDestroy{
   //Input
   item: any;
   relation: string = "subtrees";
@@ -80,6 +82,21 @@ export class HierarchyWidget implements OnChanges{
   allProperties: any[] = [];
 
   depth = 2;
+  subscription: Subscription;
+
+  constructor(public resizeService: ResizeService) {
+      this.subscription = resizeService.resize$.subscribe(
+        (event: any) => {
+          if (event.target == "hierarchy-widget") {
+            this.onSetPanelSize(event);
+          }
+        });
+  }
+
+  onSetPanelSize(event: any){
+    this.resizeService.announceResize({target: "hierarchy-tree", size: event.size});
+    this.resizeService.announceResize({target: "hierarchy-graph", size: event.size});
+  }
 
   ngOnInit(){
     this.updateRelations();
@@ -125,6 +142,10 @@ export class HierarchyWidget implements OnChanges{
   firstToCapital(str: string){
     if (!str || (str.length == 0)) return str;
     return str[0].toUpperCase() + str.substring(1);
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
 }

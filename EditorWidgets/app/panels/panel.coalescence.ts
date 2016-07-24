@@ -23,7 +23,7 @@ import {RepoTemplate} from '../repos/repo.template';
           <label for="interfaceLayers">Interface layers: </label>
           <select-input [items]="item.interfaceLayers" 
           (updated)="updateProperty('interfaceLayers', $event)"          
-          [options]="dependencies.interfaceLayers"></select-input>
+          [options]="dependencies.lyphs"></select-input>
         </div>
         
       <!--Lyphs-->

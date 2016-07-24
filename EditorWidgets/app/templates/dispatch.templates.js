@@ -9,8 +9,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require('@angular/core');
-var service_restore_1 = require("../providers/service.restore");
-var service_apinatomy2_1 = require("../providers/service.apinatomy2");
+var service_restore_1 = require("../services/service.restore");
+var service_apinatomy2_1 = require("../services/service.apinatomy2");
 var template_type_1 = require('./template.type');
 var template_measurableType_1 = require('./template.measurableType');
 var template_nodeType_1 = require('./template.nodeType');
@@ -21,15 +21,15 @@ var template_groupType_1 = require('./template.groupType');
 var template_omegaTreeType_1 = require('./template.omegaTreeType');
 var template_lyphType_1 = require('./template.lyphType');
 var template_cylindricalLyphType_1 = require('./template.cylindricalLyphType');
-var PanelTemplate = (function () {
-    function PanelTemplate(restoreService) {
+var PanelDispatchTemplates = (function () {
+    function PanelDispatchTemplates(restoreService) {
         this.restoreService = restoreService;
         this.templateName = service_apinatomy2_1.TemplateName;
         this.saved = new core_1.EventEmitter();
         this.removed = new core_1.EventEmitter();
         this.canceled = new core_1.EventEmitter();
     }
-    Object.defineProperty(PanelTemplate.prototype, "item", {
+    Object.defineProperty(PanelDispatchTemplates.prototype, "item", {
         get: function () {
             return this.restoreService.getItem();
         },
@@ -39,27 +39,27 @@ var PanelTemplate = (function () {
         enumerable: true,
         configurable: true
     });
-    PanelTemplate.prototype.onSaved = function () {
+    PanelDispatchTemplates.prototype.onSaved = function () {
         this.item = this.restoreService.getItem();
         this.saved.emit(this.item);
     };
-    PanelTemplate.prototype.onCanceled = function () {
+    PanelDispatchTemplates.prototype.onCanceled = function () {
         this.item = this.restoreService.restoreItem();
         this.canceled.emit(this.item);
     };
     __decorate([
         core_1.Output(), 
         __metadata('design:type', Object)
-    ], PanelTemplate.prototype, "saved", void 0);
+    ], PanelDispatchTemplates.prototype, "saved", void 0);
     __decorate([
         core_1.Output(), 
         __metadata('design:type', Object)
-    ], PanelTemplate.prototype, "removed", void 0);
+    ], PanelDispatchTemplates.prototype, "removed", void 0);
     __decorate([
         core_1.Output(), 
         __metadata('design:type', Object)
-    ], PanelTemplate.prototype, "canceled", void 0);
-    PanelTemplate = __decorate([
+    ], PanelDispatchTemplates.prototype, "canceled", void 0);
+    PanelDispatchTemplates = __decorate([
         core_1.Component({
             providers: [service_restore_1.RestoreService],
             selector: 'panel-template',
@@ -71,8 +71,8 @@ var PanelTemplate = (function () {
                 template_groupType_1.GroupTemplatePanel, template_omegaTreeType_1.OmegaTreeTemplatePanel]
         }), 
         __metadata('design:paramtypes', [service_restore_1.RestoreService])
-    ], PanelTemplate);
-    return PanelTemplate;
+    ], PanelDispatchTemplates);
+    return PanelDispatchTemplates;
 }());
-exports.PanelTemplate = PanelTemplate;
+exports.PanelDispatchTemplates = PanelDispatchTemplates;
 //# sourceMappingURL=dispatch.templates.js.map

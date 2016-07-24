@@ -2,11 +2,12 @@
  * Created by Natallia on 6/21/2016.
  */
 import {Component} from '@angular/core';
-import {SingleSelectInput} from '../components/component.select';
+import {SingleSelectInput, MultiSelectInput} from '../components/component.select';
 import {TemplateValue} from '../components/component.template';
 import {TemplatePanel} from "./template.type";
-import {FormType} from "../providers/service.apinatomy2";
+import {FormType, TemplateName} from "../services/service.apinatomy2";
 import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
+import {FilterByClass} from "../transformations/pipe.general";
 
 @Component({
   selector: 'borderTemplate-panel',
@@ -35,13 +36,22 @@ import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
         </fieldset>
       </div>
       
+      <!--Nodes-->
+       <div class="input-control" *ngIf="includeProperty('nodes')">
+          <label for="nodes">Nodes: </label>
+            <select-input [items]="item.nodes" 
+            (updated)="updateProperty('nodes', $event)"          
+            [options]="dependencies.templates  | filterByClass: [templateName.NodeTemplate]"></select-input>  
+        </div>
+      
       <ng-content></ng-content>   
          
     </template-panel>
   `,
-  directives: [TemplateValue, SingleSelectInput, TemplatePanel, RADIO_GROUP_DIRECTIVES]
+  directives: [TemplateValue, SingleSelectInput, MultiSelectInput, TemplatePanel, RADIO_GROUP_DIRECTIVES],
+  pipes: [FilterByClass]
 })
 export class BorderTemplatePanel extends TemplatePanel{
   public formType = FormType;
-  item: any;
+  protected templateName = TemplateName;
 }

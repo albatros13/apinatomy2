@@ -3,8 +3,8 @@
  */
 import {Component} from '@angular/core';
 import {TypePanel} from "./panel.type";
-import {RepoTemplate} from '../repos/repo.template';
-import {FormType} from "../providers/service.apinatomy2";
+//import {RepoTemplate} from '../repos/repo.template';
+import {FormType} from "../services/service.apinatomy2";
 
 @Component({
   selector: 'borderType-panel',
@@ -35,14 +35,14 @@ import {FormType} from "../providers/service.apinatomy2";
       </div>
       
       <!--Nodes-->
-      <repo-template caption="Nodes" [items] = "item.nodes" 
-        (updated)="updateProperty('nodes', $event)"          
-        [dependencies] = "dependencies" [types]="[templateName.NodeTemplate]"></repo-template>
-      <ng-content></ng-content>           
+      <!--<repo-template caption="Nodes" [items] = "item.nodes" -->
+        <!--(updated)="updateProperty('nodes', $event)"          -->
+        <!--[dependencies] = "dependencies" [types]="[templateName.NodeTemplate]"></repo-template>-->
+      <!--<ng-content></ng-content>           -->
        
     </type-panel>
   `,
-  directives: [TypePanel, RepoTemplate]
+  directives: [TypePanel/*, RepoTemplate*/]
 })
 export class BorderTypePanel extends TypePanel{
   public formType = FormType;

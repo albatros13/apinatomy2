@@ -4,7 +4,7 @@
 import {Component, ElementRef, EventEmitter, Renderer} from '@angular/core';
 import { CORE_DIRECTIVES} from '@angular/common';
 
-import {DragEvent, Draggable} from "./draggable";
+import {DragEvent, Draggable} from "./directive.draggable";
 
 @Component({
   selector: '[resizable]',

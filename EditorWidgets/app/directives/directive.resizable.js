@@ -13,7 +13,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  */
 var core_1 = require('@angular/core');
 var common_1 = require('@angular/common');
-var draggable_1 = require("./draggable");
+var directive_draggable_1 = require("./directive.draggable");
 var Resizable = (function () {
     function Resizable(_element, _renderer) {
         this._element = _element;
@@ -100,11 +100,11 @@ var Resizable = (function () {
             inputs: ['config:resizable'],
             outputs: ['resize', 'resizeStart', 'resizeStop'],
             template: "\n  <ng-content></ng-content>\n  <div *ngFor=\"let handle of handles\" \n    [ngClass]=\"'resize-handle resize-handle-' + handle\" draggable \n    (drag)=\"onDrag($event, handle)\" \n    (dragStart)=\"onDragStart($event)\" \n    (dragStop)=\"onDragStop($event)\"></div>\n  ",
-            directives: [draggable_1.Draggable, common_1.CORE_DIRECTIVES]
+            directives: [directive_draggable_1.Draggable, common_1.CORE_DIRECTIVES]
         }), 
         __metadata('design:paramtypes', [core_1.ElementRef, core_1.Renderer])
     ], Resizable);
     return Resizable;
 }());
 exports.Resizable = Resizable;
-//# sourceMappingURL=resizable.js.map
+//# sourceMappingURL=directive.resizable.js.map

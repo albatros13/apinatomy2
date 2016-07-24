@@ -230,6 +230,7 @@ div .dotted {
 /* golden-layout content panels */
 .lm_content {
   overflow-y:       scroll;
+  background-color: white;
 }
 
 /* if splitters have any width other than 0, the column layout renders incorrectly */

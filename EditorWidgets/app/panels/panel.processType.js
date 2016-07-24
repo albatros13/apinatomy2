@@ -17,7 +17,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  * Created by Natallia on 6/19/2016.
  */
 var core_1 = require('@angular/core');
-var service_apinatomy2_1 = require("../providers/service.apinatomy2");
+var service_apinatomy2_1 = require("../services/service.apinatomy2");
 var panel_type_1 = require("./panel.type");
 var component_select_1 = require('../components/component.select');
 var component_toolbars_1 = require('../components/component.toolbars');

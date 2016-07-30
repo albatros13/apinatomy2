@@ -21,7 +21,7 @@ import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
       <ng-content></ng-content>
     </fieldset>
   `,
-  directives: []
+  styles: [`.form-control {width: 80px;}`]
 })
 export class UniformDistributionInput {
   item: any;
@@ -52,6 +52,7 @@ export class UniformDistributionInput {
       <ng-content></ng-content>
     </uniformDistribution-input>
   `,
+  styles: [`.form-control {width: 80px;}`],
   directives: [UniformDistributionInput]
 })
 export class BoundedNormalDistributionInput extends UniformDistributionInput{
@@ -67,7 +68,7 @@ export class BoundedNormalDistributionInput extends UniformDistributionInput{
     <fieldset>
       <radio-group [(ngModel)]="item.type" [required]="true">
         <input type="radio" [value]="distributionType.Uniform" (click)="toUniform($event)">Uniform&nbsp;
-        <input type="radio" [value]="distributionType.BoundedNormal" (click)="toBoundedNormal($event)">Normal<br/>
+        <input type="radio" [value]="distributionType.BoundedNormal" (click)="toBoundedNormal($event)">Normal
       </radio-group>
       <uniformDistribution-input [item]="item.distribution" (updated)="updateValue($event)"
         *ngIf="item.type == distributionType.Uniform">
@@ -77,6 +78,7 @@ export class BoundedNormalDistributionInput extends UniformDistributionInput{
         </boundedNormalDistribution-input>
     </fieldset>
   `,
+  styles: [`:host {min-width: 200px;}`],
   directives: [RADIO_GROUP_DIRECTIVES, UniformDistributionInput, BoundedNormalDistributionInput]
 })
 export class DistributionInput{
@@ -91,15 +93,17 @@ export class DistributionInput{
 
   toBoundedNormal(item: any){
     this.item.type = item;
-    this.item.distribution = new BoundedNormalDistribution(
-      {min: this.item.distribution.min, max: this.item.distribution.max, mean: 0, std: 0});
+    let min = (this.item.distribution)? this.item.distribution.min: 0;
+    let max = (this.item.distribution)? this.item.distribution.max: 0;
+    this.item.distribution = new BoundedNormalDistribution({min: min, max: max, mean: 0, std: 0});
     this.updated.emit(this.item);
   }
 
   toUniform(item: any){
     this.item.type = item;
-    this.item.distribution = new UniformDistribution(
-      {min: this.item.distribution.min, max: this.item.distribution.max});
+    let min = (this.item.distribution)? this.item.distribution.min: 0;
+    let max = (this.item.distribution)? this.item.distribution.max: 0;
+    this.item.distribution = new UniformDistribution({min: min, max: max});
     this.updated.emit(this.item);
   }
 

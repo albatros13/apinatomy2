@@ -8,11 +8,12 @@ import {RepoTemplate} from '../repos/repo.template';
 
 @Component({
   selector: 'correlation-panel',
-  inputs: ['item', 'ignore', 'dependencies'],
+  inputs: ['item', 'ignore', 'dependencies', 'options'],
   template:`
     <resource-panel [item]="item" 
-      [(dependencies)]="dependencies" 
+      [dependencies]="dependencies" 
       [ignore]="ignore" 
+      [options] ="options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"

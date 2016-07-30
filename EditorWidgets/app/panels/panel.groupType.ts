@@ -7,11 +7,12 @@ import {RepoTemplate} from '../repos/repo.template';
 
 @Component({
   selector: 'groupType-panel',
-  inputs: ['item', 'ignore', 'dependencies'],
+  inputs: ['item', 'ignore', 'dependencies', 'options'],
   template:`
     <type-panel [item]="item" 
       [ignore]="ignore"
-      [(dependencies)]="dependencies" 
+      [options] ="options"
+      [dependencies]="dependencies" 
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"

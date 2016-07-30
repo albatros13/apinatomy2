@@ -2,17 +2,18 @@
  * Created by Natallia on 6/19/2016.
  */
 import {Component} from '@angular/core';
-import {TypePanel} from "./panel.type";
-//import {RepoTemplate} from '../repos/repo.template';
+import {MeasurableLocationPanel} from "./panel.measurableLocation";
 import {FormType} from "../services/service.apinatomy2";
+import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
 
 @Component({
   selector: 'borderType-panel',
-  inputs: ['item', 'ignore', 'dependencies'],
+  inputs: ['item', 'dependencies', 'ignore', 'options'],
   template:`
-    <type-panel [item] = "item" 
-      [(dependencies)] = "dependencies" 
-      [ignore] = "ignore"
+    <measurableLocation-panel [item] = "item" 
+      [dependencies] = "dependencies" 
+      [ignore] = "ignore.add('supertypes').add('subtypes')"
+      [options]  = "options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"
@@ -25,25 +26,22 @@ import {FormType} from "../services/service.apinatomy2";
       
       <!--Form-->
       <div class="input-control" *ngIf="includeProperty('form')">
-          <fieldset>
-            <legend>Form:</legend>
-            <checkbox-group [(ngModel)]="item.form" [required]="true">
-               <input type="checkbox" [value]="formType.open">{{formType.open}}&nbsp;
-               <input type="checkbox" [value]="formType.closed">{{formType.closed}}<br/>
-            </checkbox-group>
-          </fieldset>
+      <fieldset>
+        <legend>Form:</legend>
+         <checkbox-group [(ngModel)]="item.form" [required]="true">
+           <input type="checkbox" value="open">open&nbsp;
+           <input type="checkbox" value="closed">closed<br/>
+         </checkbox-group>
+      </fieldset>
       </div>
-      
-      <!--Nodes-->
-      <!--<repo-template caption="Nodes" [items] = "item.nodes" -->
-        <!--(updated)="updateProperty('nodes', $event)"          -->
-        <!--[dependencies] = "dependencies" [types]="[templateName.NodeTemplate]"></repo-template>-->
-      <!--<ng-content></ng-content>           -->
-       
-    </type-panel>
+    </measurableLocation-panel>
   `,
-  directives: [TypePanel/*, RepoTemplate*/]
+  directives: [MeasurableLocationPanel, RADIO_GROUP_DIRECTIVES]
 })
-export class BorderTypePanel extends TypePanel{
+export class BorderTypePanel extends MeasurableLocationPanel{
   public formType = FormType;
+  
+  ngOnInit(){
+    if (!this.item.form) this.item.form = [];
+  }
 }

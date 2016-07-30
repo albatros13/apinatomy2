@@ -43,6 +43,8 @@ var FilterByClass = (function () {
     function FilterByClass() {
     }
     FilterByClass.prototype.transform = function (items, classNames) {
+        if (!items)
+            return items;
         return items.filter(function (item) { return (classNames.indexOf(item.class) !== -1); });
     };
     FilterByClass = __decorate([

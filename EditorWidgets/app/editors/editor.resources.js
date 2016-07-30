@@ -10,15 +10,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require('@angular/core');
 var repo_general_1 = require('../repos/repo.general');
-var service_resourceProvider_1 = require('../services/service.resourceProvider');
 var widget_hierarchy_1 = require('../widgets/widget.hierarchy');
 var widget_resource_1 = require('../widgets/widget.resource');
 var service_resize_1 = require('../services/service.resize');
+var service_asyncResourceProvider_1 = require('../services/service.asyncResourceProvider');
 var ResourceEditor = (function () {
-    function ResourceEditor(resizeService, el, resourceP) {
+    function ResourceEditor(resizeService, el, resourceProvider) {
+        var _this = this;
         this.resizeService = resizeService;
         this.el = el;
-        this.resourceP = resourceP;
+        this.resourceProvider = resourceProvider;
+        this.dependencies = {};
         this.layoutConfig = {
             settings: {
                 hasHeaders: false,
@@ -55,10 +57,16 @@ var ResourceEditor = (function () {
                         }]
                 }]
         };
-        this.dependency = resourceP.data;
-        this.items = this.dependency.types;
+        this.subscription = resourceProvider.data$.subscribe(function (updatedData) {
+            _this.dependencies = updatedData;
+            _this.items = updatedData.types;
+        });
+        setTimeout(function () { resourceProvider.loadExtra(); }, 1000);
     }
-    ResourceEditor.prototype.onItemSelect = function (item) {
+    ResourceEditor.prototype.ngOnDestroy = function () {
+        this.subscription.unsubscribe();
+    };
+    ResourceEditor.prototype.onItemSelected = function (item) {
         var _this = this;
         setTimeout(function () {
             _this.selectedItem = null;
@@ -66,6 +74,17 @@ var ResourceEditor = (function () {
         setTimeout(function () {
             _this.selectedItem = item;
         }, 0);
+    };
+    ResourceEditor.prototype.onItemAdded = function (item) {
+        //this.resourceProvider.addResource(item);
+        //item.commit();
+    };
+    ResourceEditor.prototype.onItemRemoved = function (item) {
+        //this.resourceProvider.removeResource(item);
+    };
+    ResourceEditor.prototype.onItemUpdated = function (item) {
+        //maybe not needed
+        //this.resourceProvider.addResource(item);
     };
     ResourceEditor.prototype.ngOnInit = function () {
         var self = this;
@@ -111,13 +130,13 @@ var ResourceEditor = (function () {
             selector: 'app',
             providers: [
                 service_resize_1.ResizeService,
-                service_resourceProvider_1.ResourceProvider
+                service_asyncResourceProvider_1.AsyncResourceProvider
             ],
-            template: "\n    <repo-general id=\"repo\"\n      [items]=\"items\" \n      [caption]=\"'All resources'\" \n      [dependencies]=\"dependency\" \n      (selected)=\"onItemSelect($event)\">\n    </repo-general>\n    <hierarchy-widget id = \"hierarchy\" [item]=\"selectedItem\" [relation]=\"materials\"></hierarchy-widget>\n    <resource-widget id = \"resource\" [item]=\"selectedItem\"></resource-widget>          \n    <div id=\"main\"></div>\n  ",
+            template: "\n    <repo-general id=\"repo\"\n      [items]=\"items\" \n      [caption]=\"'All resources'\" \n      [dependencies]=\"dependencies\" \n      (selected)=\"onItemSelected($event)\"\n      (added)=\"onItemAdded($event)\"\n      (removed)=\"onItemRemoved($event)\"\n      (updated)=\"onItemUpdated($event)\"\n    >\n    </repo-general>\n    <hierarchy-widget id = \"hierarchy\" [item]=\"selectedItem\"></hierarchy-widget>\n    <resource-widget id = \"resource\" [item]=\"selectedItem\"></resource-widget>          \n    <div id=\"main\"></div>\n  ",
             styles: ["#main {width: 100%; height: 100%; border: 0; margin: 0; padding: 0}"],
             directives: [repo_general_1.RepoGeneral, widget_hierarchy_1.HierarchyWidget, widget_resource_1.ResourceWidget]
         }), 
-        __metadata('design:paramtypes', [service_resize_1.ResizeService, core_1.ElementRef, service_resourceProvider_1.ResourceProvider])
+        __metadata('design:paramtypes', [service_resize_1.ResizeService, core_1.ElementRef, service_asyncResourceProvider_1.AsyncResourceProvider])
     ], ResourceEditor);
     return ResourceEditor;
 }());

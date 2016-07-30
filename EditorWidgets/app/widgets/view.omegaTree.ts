@@ -2,6 +2,8 @@
  * Created by Natallia on 7/14/2016.
  */
 import {Component, OnChanges, Input, Output, ViewChild, ElementRef, Renderer, EventEmitter} from '@angular/core';
+import {ResizeService} from '../services/service.resize';
+import {Subscription}   from 'rxjs/Subscription';
 
 declare var d3:any;
 const color = d3.scale.category20();
@@ -27,7 +29,7 @@ export class TemplateBox{
   template : `
     <div class="panel panel-default">
       <div class="panel-heading">{{caption}}</div>
-      <div class="panel-body" (window:resize)="onResize($event)">
+      <div class="panel-body">
           <svg #treeSvg class="svg-widget"></svg>
        </div>
     </div>
@@ -46,27 +48,31 @@ export class OmegaTreeWidget implements OnChanges {
   data: any;
   vp: any = {size: {width: 400, height: 600},
     margin: {x: 20, y: 20},
-    node: {size: {width: 40, height: 20}}};
+    node: {size: {width: 40, height: 40}}};
+  subscription: Subscription;
 
   constructor(public renderer: Renderer,
-              public el: ElementRef){
+              public el: ElementRef,
+              private resizeService: ResizeService) {
+    this.subscription = resizeService.resize$.subscribe(
+    (event:any) => {
+      if (event.target == "omega-tree") {
+        this.setPanelSize(event.size);
+      }
+    });
   }
 
-  ngOnInit(){
-    this.setPanelSize(window.innerWidth, window.innerHeight);
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
-  onResize(event: any){
-    this.setPanelSize(event.target.innerWidth, event.target.innerHeight);
-  }
-
-  setPanelSize(innerWidth: number, innerHeight: number){
-    let w = innerWidth / 2 - 2 * this.vp.margin.x;
-    let h = innerHeight / 2 - 2 * this.vp.margin.y;
+  setPanelSize(size: any){
     let delta = 10;
-    if ((Math.abs(this.vp.size.width - w) > delta) || (Math.abs(this.vp.size.height - h) > delta)){
-      this.vp.size = {width: w, height: h};
-      this.draw(this.svg, this.vp, this.data);
+    if ((Math.abs(this.vp.size.width - size.width) > delta) || (Math.abs(this.vp.size.height - size.height) > delta)){
+      this.vp.size = {width: size.width, height: size.height - 40};
+      if (this.svg){
+        this.draw(this.svg, this.vp, this.data);
+      }
     }
   }
 
@@ -74,7 +80,7 @@ export class OmegaTreeWidget implements OnChanges {
     this.svg = d3.select(this.el.nativeElement).select('svg');
     if (this.item) {
       this.caption = "Omega function: " + this.item.id + " - " + this.item.name;
-      this.data = this.getOmegaTreeData(this.item, "levels");
+      this.data = this.getOmegaTreeData(this.item, "parts");
       this.draw(this.svg, this.vp, this.data);
     } else {
       this.data = {};

@@ -9,11 +9,12 @@ import {RepoTemplate} from '../repos/repo.template';
 
 @Component({
   selector: 'omegaTreeType-panel',
-  inputs: ['item', 'ignore', 'dependencies'],
+  inputs: ['item', 'ignore', 'dependencies', 'options'],
   template:`
     <groupType-panel [item]="item" 
-      [(dependencies)] = "dependencies" 
-      [ignore] = "ignore.concat(['elements'])"
+      [dependencies] = "dependencies" 
+      [ignore] = "ignore.add('elements').add('supertypes').add('subtypes')"
+      [options] ="options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"
@@ -27,24 +28,14 @@ import {RepoTemplate} from '../repos/repo.template';
           [options] = "dependencies.templates | filterByClass: [templateName.NodeTemplate]"></select-input-1>
       </div>-->
       
-      <!--Levels-->
-      <div class="input-control" *ngIf="includeProperty('levels')">
-         <repo-template caption="Levels" [items] = "item.levels" 
-         (updated)="updateProperty('levels', $event)"
+      <!--parts-->
+      <div class="input-control" *ngIf="includeProperty('parts')">
+         <repo-template caption="parts" [items] = "item.parts" 
+         (updated)="updateProperty('parts', $event)"
          [dependencies] = "dependencies" 
-         [types]="[templateName.CylindricalLyphTemplate]">
-         <!--Lyphs or other omega trees-->
-         <!--[types]="[templateName.CylindricalLyphTemplate, templateName.OmegaTreeTemplate]">-->
+         [types]="[templateName.CylindricalLyphTemplate, templateName.OmegaTreeTemplate]">
         </repo-template>
       </div>
-      
-      <!--Subtrees-->
-      <!--<div class="input-control" *ngIf="includeProperty('subtrees')">-->
-         <!--<repo-template caption="Subtrees" [items] = "item.subtrees" -->
-         <!--(updated)="updateProperty('subtrees', $event)"-->
-         <!--[dependencies] = "dependencies" [types]="[-->
-           <!--templateName.OmegaTreeTemplate]"></repo-template>-->
-      <!--</div>-->
       
       <ng-content></ng-content>      
     

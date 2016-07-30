@@ -2,50 +2,42 @@
  * Created by Natallia on 7/15/2016.
  */
 import {Component, OnChanges, OnDestroy} from '@angular/core';
-import {SingleSelectInput, MultiSelectInput} from "../components/component.select";
 import {HierarchyGraphWidget} from "./view.hierarchyGraph";
 import {HierarchyTreeWidget}  from "./view.hierarchyTree";
 import {CORE_DIRECTIVES} from '@angular/common';
 import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/components/dropdown';
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
+import {PropertyToolbar} from '../components/toolbar.propertySettings';
 
 @Component({
   selector: 'hierarchy-widget',
-  inputs: ['item', 'relation'],
+  inputs: ['item', 'relations', 'properties'],
   template : `
     <div class="panel panel-default">
       <div class="panel-heading">
-        <em>{{firstToCapital(relation)}}</em>{{(relation)? ' of ': ''}}<strong>{{(item)? item.id: ''}}{{(item)? ': ' + item.name : ''}}</strong>
+        Relations of <strong>{{(item)? item.id: ''}}{{(item)? ': ' + item.name : ''}}</strong>
       </div>
       <div class="controls-group">
-          <!--Relation to show-->
-          <div class="btn-group" style="float: left;" dropdown>
-            <button type="button" class="btn btn-default btn-sm dropdown-toggle" aria-label="Relation" dropdownToggle>
-              Relation <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu" aria-labelledby="Relation">
-              <li *ngFor="let option of relations; let i = index" role="menuitem" (click)="onRelationChanged(option)">
-                <a class="dropdown-item" href="#"> 
-                  <span *ngIf="relation == option">&#10004;</span>{{option}}</a>
-              </li>
-            </ul>
-          </div>
+          <!--Relations-->
+          <property-toolbar  
+            [options] = "relations"
+            caption = 'Relations'
+            >
+          </property-toolbar>
+          
+          <!--Properties-->
+          <property-toolbar  
+            [options] = "properties"
+            caption = 'Properties'
+            >
+          </property-toolbar>
 
-          <!--Properties of resources to display-->
-          <!--<div class="input-control">-->
-            <!--<label for="properties">Property: </label>-->
-            <!--<select-input [item] = "properties"-->
-               <!--(updated)="properties = $event"    -->
-               <!--[options] = "allProperties">-->
-            <!--</select-input>-->
-          <!--</div>-->
-        
           <!--Depth-->
           <div class="input-group input-group-sm" style="width: 150px; float: left;">
             <span class="input-group-addon" id="basic-addon1">Depth</span>
             <input type="number" class="form-control" aria-describedby="basic-addon1"
-              min="0" max="50" [(value)]="depth" >
+              min="0" max="50" [(ngModel)]="depth" >
           </div>
           
           <!--Layout-->
@@ -59,38 +51,39 @@ import {Subscription}   from 'rxjs/Subscription';
               <img class="icon" src="images/graph.png"/>
             </button>
           </div>
-              
-        </div>
+      </div>
+
       <hierarchy-tree *ngIf="layout == 'tree'" 
-        [item]="item" [relation]="relation" [depth]="depth" [properties]="properties" ></hierarchy-tree>
+        [item]="item" [relation]="relations" [depth]="depth" [properties]="properties"></hierarchy-tree>
       <hierarchy-graph *ngIf="layout == 'graph'" 
-        [item]="item" [relation]="relation" [depth]="depth" [properties]="properties"></hierarchy-graph>
+        [item]="item" [relation]="relations"  [depth]="depth" [properties]="properties"></hierarchy-graph>
     </div>      
   `,
-  directives: [SingleSelectInput, MultiSelectInput, HierarchyGraphWidget, HierarchyTreeWidget,
-    DROPDOWN_DIRECTIVES, CORE_DIRECTIVES]
+  directives: [HierarchyGraphWidget, HierarchyTreeWidget,
+    DROPDOWN_DIRECTIVES, CORE_DIRECTIVES, PropertyToolbar]
 })
 export class HierarchyWidget implements OnChanges, OnDestroy{
   //Input
   item: any;
-  relation: string = "subtrees";
-  layout = "tree";
+  relations: Array<any> = [];
 
-  //Parameter form
-  relations = [this.relation];
+  layout = "tree";
   properties: any;
-  allProperties: any[] = [];
 
   depth = 2;
   subscription: Subscription;
 
   constructor(public resizeService: ResizeService) {
-      this.subscription = resizeService.resize$.subscribe(
-        (event: any) => {
-          if (event.target == "hierarchy-widget") {
-            this.onSetPanelSize(event);
-          }
-        });
+    this.subscription = resizeService.resize$.subscribe(
+      (event: any) => {
+        if (event.target == "hierarchy-widget") {
+          this.onSetPanelSize(event);
+        }
+      });
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
   onSetPanelSize(event: any){
@@ -106,46 +99,32 @@ export class HierarchyWidget implements OnChanges, OnDestroy{
     this.updateRelations();
   }
 
-  onRelationChanged(item: any){
-    this.relation = item;
-    this.updateProperties();
-  }
-
   updateRelations(){
     this.relations = [];
     if (this.item){
-      for (let relation in this.item){//TODO: replace with relations in the manifest
-        if (this.item[relation] instanceof Array){
-          this.relations.push(relation);
-        }
+      let relations = Object.assign({}, this.item.constructor.relationshipShortcuts);
+      for (let relation in relations) {
+        this.relations.push({value: relation, selected: false});
       }
+      if (this.relations.length > 0) this.relations[0].selected = true;
     }
   }
 
   updateProperties(){
-    this.allProperties = [];
-    let propertyNames: string[] = [];
-    if (this.relation){
-      let obj = this.item[this.relation];
-      for (let i = 0; i < obj.length; i++){
-        for (let property in obj[i])
-          if (obj[i][property] instanceof Array)
-            if (propertyNames.indexOf(property) == - 1) propertyNames.push(property);
+    this.properties = [];
+    if (this.relations){
+      for (let relation in this.relations){
+        let target = this.item[relation];
+        if (target.constructor){
+          let properties = Object.assign({}, target.constructor.relationshipShortcuts);
+          for (let property in properties){
+            if (this.properties.find((x: any) => (x.value == property))){
+              this.properties.push({value: property, selected: false});
+            }
+          }
+        }
       }
+      if (this.properties.length > 0) this.properties[0].selected = true;
     }
-
-    this.allProperties = propertyNames.map(item => {return {id: item, name: item}});
-    if (this.allProperties.length > 0)
-      this.properties = [this.allProperties[0]];
   }
-
-  firstToCapital(str: string){
-    if (!str || (str.length == 0)) return str;
-    return str[0].toUpperCase() + str.substring(1);
-  }
-
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
-  }
-
 }

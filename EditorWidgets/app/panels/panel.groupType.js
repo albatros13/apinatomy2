@@ -27,8 +27,8 @@ var GroupTypePanel = (function (_super) {
     GroupTypePanel = __decorate([
         core_1.Component({
             selector: 'groupType-panel',
-            inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <type-panel [item]=\"item\" \n      [ignore]=\"ignore\"\n      [(dependencies)]=\"dependencies\" \n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <!--Elements-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('elements')\">\n         <repo-template caption=\"Elements\" [items] = \"item.elements\" \n         (updated)=\"updateProperty('elements', $event)\"\n         [dependencies] = \"dependencies\" [types]=\"[\n           templateName.CylindricalLyphTemplate, templateName.OmegaTreeTemplate]\"></repo-template>\n      </div>\n      \n      <ng-content></ng-content>      \n    \n    </type-panel>\n  ",
+            inputs: ['item', 'ignore', 'dependencies', 'options'],
+            template: "\n    <type-panel [item]=\"item\" \n      [ignore]=\"ignore\"\n      [options] =\"options\"\n      [dependencies]=\"dependencies\" \n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <!--Elements-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('elements')\">\n         <repo-template caption=\"Elements\" [items] = \"item.elements\" \n         (updated)=\"updateProperty('elements', $event)\"\n         [dependencies] = \"dependencies\" [types]=\"[\n           templateName.CylindricalLyphTemplate, templateName.OmegaTreeTemplate]\"></repo-template>\n      </div>\n      \n      <ng-content></ng-content>      \n    \n    </type-panel>\n  ",
             directives: [panel_type_1.TypePanel, repo_template_1.RepoTemplate]
         }), 
         __metadata('design:paramtypes', [])

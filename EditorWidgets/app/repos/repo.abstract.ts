@@ -2,14 +2,15 @@
  * Created by Natallia on 7/8/2016.
  */
 import {Component, Output, EventEmitter} from '@angular/core';
-import {ResourceName, TemplateName} from "../services/service.apinatomy2";
 
 @Component({
   selector: 'item-header',
-  inputs: ['item', 'icon'],
+  inputs: ['item', 'selectedItem', 'isSelectedOpen', 'icon'],
   template: `
       <i class="pull-left glyphicon"
-        [ngClass]="{'glyphicon-chevron-down': item == selectedItem, 'glyphicon-chevron-right': item != selectedItem}"></i>&nbsp;
+        [ngClass]="{
+          'glyphicon-chevron-down': (item == selectedItem) && isSelectedOpen, 
+          'glyphicon-chevron-right': (item != selectedItem) || !isSelectedOpen}"></i>&nbsp;
         {{(item.id)? item.id: "?"}}: {{item.name}}
         <img class="pull-right icon" src="{{icon}}"/>
   `
@@ -24,12 +25,14 @@ export abstract class RepoAbstract{
   @Output() selected = new EventEmitter();
 
   items: Array<any> = [];
-  types: Array<ResourceName | TemplateName> = [];
+  types: Array<any> = [];
   zones: Array<string> = [];
+
+  ignore: Set<string> = new Set<string>();
+
   sortByMode: string = "unsorted";
   filterByMode: string = "Name";
   searchString: string = "";
-
   _selectedItem: any;
   isSelectedOpen: boolean = false;
 
@@ -46,10 +49,11 @@ export abstract class RepoAbstract{
 
   ngOnInit(){
     if (!this.items) this.items = [];
-    if (this.items[0]) this.selectedItem = this.items[0];
-    if (!this.types || (this.types.length == 0))
+    if (this.items[0] || !this.selectedItem)
+      this.selectedItem = this.items[0];
+    if (!this.types || (this.types.length == 0)){
       this.types = Array.from(new Set(this.items.map(item => item.class)));
-    this.zones = this.types.map(x => x + "_zone");
+    }
   }
 
   protected onHeaderClick(item: any){
@@ -66,12 +70,21 @@ export abstract class RepoAbstract{
     this.searchString = config.filter;
   }
 
+  protected abstract getIcon(item: any): string;
+
+  protected abstract onAdded(resourceType: any): void;
+
   protected onSaved(item: any, updatedItem: any){
-    for (var key in updatedItem){
-      if (updatedItem.hasOwnProperty(key)) {
-        item[key] = updatedItem[key];
-      }
-    }
+    // for (var key in updatedItem){
+    //   if (updatedItem.hasOwnProperty(key)) {
+    //     if (item.constructor &&
+    //       item.constructor.properties &&
+    //       item.constructor.properties[key]
+    //       && item.constructor.properties[key].readonly) continue;
+    //
+    //     item[key] = updatedItem[key];
+    //   }
+    // }
     this.updated.emit(this.items);
     if (item == this.selectedItem){
        this.selected.emit(this.selectedItem);
@@ -94,7 +107,4 @@ export abstract class RepoAbstract{
     this.updated.emit(this.items);
   }
 
-  protected abstract getIcon(item: any): string;
-
-  protected abstract onAdded(resourceType: ResourceName | TemplateName): void;
 }

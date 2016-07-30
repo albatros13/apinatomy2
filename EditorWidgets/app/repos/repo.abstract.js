@@ -18,8 +18,8 @@ var ItemHeader = (function () {
     ItemHeader = __decorate([
         core_1.Component({
             selector: 'item-header',
-            inputs: ['item', 'icon'],
-            template: "\n      <i class=\"pull-left glyphicon\"\n        [ngClass]=\"{'glyphicon-chevron-down': item == selectedItem, 'glyphicon-chevron-right': item != selectedItem}\"></i>&nbsp;\n        {{(item.id)? item.id: \"?\"}}: {{item.name}}\n        <img class=\"pull-right icon\" src=\"{{icon}}\"/>\n  "
+            inputs: ['item', 'selectedItem', 'isSelectedOpen', 'icon'],
+            template: "\n      <i class=\"pull-left glyphicon\"\n        [ngClass]=\"{\n          'glyphicon-chevron-down': (item == selectedItem) && isSelectedOpen, \n          'glyphicon-chevron-right': (item != selectedItem) || !isSelectedOpen}\"></i>&nbsp;\n        {{(item.id)? item.id: \"?\"}}: {{item.name}}\n        <img class=\"pull-right icon\" src=\"{{icon}}\"/>\n  "
         }), 
         __metadata('design:paramtypes', [])
     ], ItemHeader);
@@ -35,6 +35,7 @@ var RepoAbstract = (function () {
         this.items = [];
         this.types = [];
         this.zones = [];
+        this.ignore = new Set();
         this.sortByMode = "unsorted";
         this.filterByMode = "Name";
         this.searchString = "";
@@ -56,11 +57,11 @@ var RepoAbstract = (function () {
     RepoAbstract.prototype.ngOnInit = function () {
         if (!this.items)
             this.items = [];
-        if (this.items[0])
+        if (this.items[0] || !this.selectedItem)
             this.selectedItem = this.items[0];
-        if (!this.types || (this.types.length == 0))
+        if (!this.types || (this.types.length == 0)) {
             this.types = Array.from(new Set(this.items.map(function (item) { return item.class; })));
-        this.zones = this.types.map(function (x) { return x + "_zone"; });
+        }
     };
     RepoAbstract.prototype.onHeaderClick = function (item) {
         this.selectedItem = item;
@@ -74,11 +75,16 @@ var RepoAbstract = (function () {
         this.searchString = config.filter;
     };
     RepoAbstract.prototype.onSaved = function (item, updatedItem) {
-        for (var key in updatedItem) {
-            if (updatedItem.hasOwnProperty(key)) {
-                item[key] = updatedItem[key];
-            }
-        }
+        // for (var key in updatedItem){
+        //   if (updatedItem.hasOwnProperty(key)) {
+        //     if (item.constructor &&
+        //       item.constructor.properties &&
+        //       item.constructor.properties[key]
+        //       && item.constructor.properties[key].readonly) continue;
+        //
+        //     item[key] = updatedItem[key];
+        //   }
+        // }
         this.updated.emit(this.items);
         if (item == this.selectedItem) {
             this.selected.emit(this.selectedItem);

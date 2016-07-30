@@ -9,10 +9,9 @@ const color = d3.scale.category20();
 
 @Component({
   selector: 'hierarchy-graph',
-  inputs: ['item', 'relation', 'depth', 'properties'],
+  inputs: ['item', 'relations', 'properties', 'depth'],
   template : `
     <div class="panel-body">
-      <!--<svg #graphSvg class="svg-widget"></svg>-->
       <nvd3 *ngIf="active" [options]="graphOptions" [data]="data"></nvd3>
     </div>
   `,
@@ -20,12 +19,11 @@ const color = d3.scale.category20();
 })
 export class HierarchyGraphWidget implements OnChanges, OnDestroy{
   item: any;
-  properties: string[] = [];
+  relations : Array<any> = [];
+  properties: Array<any> = [];
 
-  relation: string;
-  depth: number = -1;
-  layout: string;
-  active: boolean = true;
+  depth    : number = -1;
+  active   : boolean = true;
 
   svg: any;
   data: any;
@@ -54,12 +52,14 @@ export class HierarchyGraphWidget implements OnChanges, OnDestroy{
   }
 
   ngOnInit(){
+    if (!this.relations) this.relations = [];
+    if (!this.properties) this.properties = [];
     this.setGraphOptions();
   }
 
   ngOnChanges(changes: { [propName: string]: any }) {
     if (this.item) {
-      this.data = this.getGraphData(this.item, this.relation, this.depth);
+      this.data = this.getGraphData(this.item, this.relations, this.depth);
     } else {
       this.data = {};
     }
@@ -72,18 +72,14 @@ export class HierarchyGraphWidget implements OnChanges, OnDestroy{
       if (this.graphOptions){
         this.graphOptions.width = this.vp.size.width;
         this.graphOptions.height = this.vp.size.height;
-        this.refresh();
+        setTimeout(() => {this.active = false}, 0);
+        setTimeout(() => {this.active = true}, 0);
       }
     }
   }
 
-  refresh(){
-    setTimeout(() => {this.active = false}, 10);
-    setTimeout(() => {this.active = true}, 10);
-  }
-
   setGraphOptions(){
-    let visibleProperties = this.properties;
+    let visibleProperties = this.properties.filter(x => x.selected).map(x => x.value);
 
     function formatValue(value: any){
       let res = "[";
@@ -131,25 +127,29 @@ export class HierarchyGraphWidget implements OnChanges, OnDestroy{
     };
   }
 
-  getGraphData(item: any, property: string, depth: number) {
+  getGraphData(item: any, relations: Array<any>, depth: number) {
     let data:any = {nodes: [], links  : []};
     if (!item) return data;
     data.nodes.push(item);
-    if (!property) return data;
+    if (!relations || (relations.length == 0)) return data;
     if (!depth) depth = -1;
-    traverse(item, property, depth, data);
+    let fields = this.relations.filter(x => x.selected).map(x => x.value);
+    if (!depth) depth = -1;
+    traverse(item, depth, data);
     return data;
 
-    function traverse(root: any, property: string, depth: number, data: any) {
+    function traverse(root: any, depth: number, data: any) {
       if (!root) return;
-      if (!root[property]) return;
       if (depth == 0) return root;
-      var children = root[property];
-      for (let child of children){
-        data.links.push({source: root, target: child});
-        if (data.nodes.indexOf(child) == -1){
-          data.nodes.push(child);
-          traverse(child, property, depth - 1, data);
+      for (let fieldName of fields) {
+        if (!root[fieldName]) return;
+        var children = root[fieldName];
+        for (let child of children) {
+          data.links.push({source: root, target: child});
+          if (data.nodes.indexOf(child) == -1) {
+            data.nodes.push(child);
+            traverse(child, depth - 1, data);
+          }
         }
       }
     }

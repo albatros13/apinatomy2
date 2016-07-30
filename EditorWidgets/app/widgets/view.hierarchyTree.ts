@@ -1,4 +1,4 @@
-import {Component, Directive, OnChanges, OnDestroy, Input, Output, ViewChild, ElementRef, Renderer,
+import {Component, OnChanges, OnDestroy, Input, Output, ViewChild, ElementRef, Renderer,
   ViewContainerRef, EventEmitter, ComponentResolver} from '@angular/core';
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
@@ -8,7 +8,7 @@ const color = d3.scale.category20();
 
 @Component({
   selector: 'hierarchy-tree',
-  inputs: ['item', 'relation', 'depth', 'properties'],
+  inputs: ['item', 'relations', 'properties', 'depth'],
   template : `
     <div class="panel-body">
       <svg #treeSvg class="svg-widget"></svg>
@@ -16,11 +16,12 @@ const color = d3.scale.category20();
   `
 })
 export class HierarchyTreeWidget implements OnChanges, OnDestroy{
-  item: any;
+  item       : any;
+  relations  : Array<any> = [];
+  properties : Array<any> = [];
+  depth      : number = -1;
 
-  relation: string;
-  depth   : number = -1;
-  layout  : string;
+  //layout  : string;
 
   svg : any;
   vp  : any = {size: {width: 600, height: 400},
@@ -35,13 +36,17 @@ export class HierarchyTreeWidget implements OnChanges, OnDestroy{
               public vc: ViewContainerRef,
               private resolver: ComponentResolver,
               private resizeService: ResizeService){
-    let self = this;
     this.subscription = resizeService.resize$.subscribe(
       (event: any) => {
         if (event.target == "hierarchy-tree"){
-          self.setPanelSize(event.size);
+          this.setPanelSize(event.size);
         }
       });
+  }
+
+  ngOnInit(){
+    if (!this.relations) this.relations = [];
+    if (!this.properties) this.properties = [];
   }
 
   ngOnDestroy() {
@@ -51,7 +56,7 @@ export class HierarchyTreeWidget implements OnChanges, OnDestroy{
   setPanelSize(size: any){
     let delta = 10;
     if ((Math.abs(this.vp.size.width - size.width) > delta) || (Math.abs(this.vp.size.height - size.height) > delta)){
-      this.vp.size = size;
+      this.vp.size = {width: size.width, height: size.height - 40};
       if (this.svg){
         this.draw(this.svg, this.vp, this.data);
       }
@@ -61,7 +66,7 @@ export class HierarchyTreeWidget implements OnChanges, OnDestroy{
   ngOnChanges(changes: { [propName: string]: any }) {
     this.svg = d3.select(this.el.nativeElement).select('svg');
     if (this.item) {
-      this.data = this.getTreeData(this.item, this.relation, this.depth);
+      this.data = this.getTreeData(this.item, this.relations, 3);
       this.draw(this.svg, this.vp, this.data);
     } else {
       this.data = {};
@@ -88,6 +93,7 @@ export class HierarchyTreeWidget implements OnChanges, OnDestroy{
     var dragStarted:any;
     var domNode:any;
 
+/*
     function coordinates(d: any){
       switch(this.layout){
         case "top-to-bottom": return [d.x, d.y];
@@ -97,6 +103,7 @@ export class HierarchyTreeWidget implements OnChanges, OnDestroy{
       }
       return  [d.x, d.y];
     }
+*/
 
     let tree = d3.layout.tree().size([h, w]);
     var diagonal = d3.svg.diagonal().projection(function (d:any) {
@@ -106,7 +113,9 @@ export class HierarchyTreeWidget implements OnChanges, OnDestroy{
     // sort the tree according to the node names
     function sortTree() {
       tree.sort(function (a:any, b:any) {
-        return b.name.toLowerCase() < a.name.toLowerCase() ? 1 : -1;
+        if (a.name && b.name)
+          return b.name.toLowerCase() < a.name.toLowerCase() ? 1 : -1;
+        return 0;
       });
     }
     sortTree();
@@ -370,8 +379,6 @@ export class HierarchyTreeWidget implements OnChanges, OnDestroy{
 
     function update(source:any) {
       // Compute the new height, function counts total children of root node and sets tree height accordingly.
-      // This prevents the layout looking squashed when new nodes are made visible or looking sparse when nodes are removed
-      // This makes the layout more consistent.
       var levelWidth = [1];
       var childCount = function (level: any, n: any) {
 
@@ -389,17 +396,13 @@ export class HierarchyTreeWidget implements OnChanges, OnDestroy{
       var newHeight = d3.max(levelWidth) * 25; // 25 pixels per line
       tree = tree.size([newHeight, w]);
 
-
-      // Compute the new tree layout.
       nodes = tree.nodes(root).reverse();
       links = tree.links(nodes);
 
-      // Set widths between levels.
       nodes.forEach(function (d: any) {
          d.y = (d.depth * 50);
       });
 
-      // Update the nodes…
       let node = svgGroup.selectAll("g.node")
         .data(nodes, function (d: any) {
           return d.id || (d.id = ++i);
@@ -432,7 +435,7 @@ export class HierarchyTreeWidget implements OnChanges, OnDestroy{
         })
         .style("fill-opacity", 0);
 
-      // phantom node to give us mouseover in a radius around it
+      // phantom node for mouseover in a radius around it
       nodeEnter.append("circle")
         .attr('class', 'ghostCircle')
         .attr("r", 30)
@@ -552,24 +555,27 @@ export class HierarchyTreeWidget implements OnChanges, OnDestroy{
     centerNode(root);
   }
 
-  getTreeData(item: any, property: string, depth: number) {//Format: {id: 1, name: "Parent", children: [{id: 2, name: "Child"},...]};
+  getTreeData(item: any, relations: Array<any>, depth: number) {//Format: {id: 1, name: "Parent", children: [{id: 2, name: "Child"},...]};
     let data:any = {};
     if (!item) return data;
     data = {id: item.id, name: item.name, resource: item.root, children: []};
-    if (!property) return data;
+    if (!relations || (relations.length == 0)) return data;
     if (!depth) depth = -1;
-    traverse(item, property, 0, data);
+    let fields = this.relations.filter(x => x.selected).map(x => x.value);
+    traverse(item, 0, data);
     return data;
 
-    function traverse(root:any, property:string, level:number, data:any) {
+    function traverse(root:any, level:number, data:any) {
       if (!root) return;
-      if (!root[property]) return;
-      if ((depth - level) == 0) return;
-      if (!data.children) data.children = [];
-      for (let obj of root[property]) {
-        var child = {id: obj.id, name: obj.name, resource: obj, depth: level};
-        data.children.push(child);
-        traverse(obj, property, level + 1, child);
+      for (let fieldName of fields){
+        if (!root[fieldName]) return;
+        if ((depth - level) == 0) return;
+        if (!data.children) data.children = [];
+        for (let obj of root[fieldName]) {
+          var child = {id: obj.id, name: obj.name, resource: obj, depth: level};
+          data.children.push(child);
+          traverse(obj, level + 1, child);
+        }
       }
     }
   }

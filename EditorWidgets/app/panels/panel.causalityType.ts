@@ -1,16 +1,17 @@
 /**
  * Created by Natallia on 6/19/2016.
  */
-import {Component} from '@angular/core';
+import {Component, Output} from '@angular/core';
 import {TypePanel} from "./panel.type";
-
 
 @Component({
   selector: 'causalityType-panel',
-  inputs: ['item', 'ignore', 'dependencies'],
+  inputs: ['item', 'ignore', 'dependencies', 'options'],
   template:`
     <type-panel [item]="item" 
-      [(dependencies)]="dependencies" [ignore]="ignore"
+      [dependencies]="dependencies" 
+      [ignore]   = "ignore"
+      [options]  = "options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"

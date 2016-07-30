@@ -1,7 +1,7 @@
 /**
  * Created by Natallia on 6/15/2016.
  */
-import {Injectable, Inject} from '@angular/core';
+import {Injectable} from '@angular/core';
 
 @Injectable()
 export class RestoreService {
@@ -27,16 +27,15 @@ export class RestoreService {
     if (obj instanceof Array) {
       let out: any[] = [];
       for (let i = 0; i < obj.length; i++)
-        out[i] = this.clone(obj[i]);
+       out[i] = this.clone(obj[i]);
       return out;
     } else
       if (typeof obj === 'object') {
         let out = {};
         for (let i in obj)
           out[i] = this.clone(obj[i]);
-        return out;
+          return out;
       }
     return obj;
-
   }
 }

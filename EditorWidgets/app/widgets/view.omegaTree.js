@@ -12,6 +12,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  * Created by Natallia on 7/14/2016.
  */
 var core_1 = require('@angular/core');
+var service_resize_1 = require('../services/service.resize');
 var color = d3.scale.category20();
 //Resource visualization widget stub
 var TemplateBox = (function () {
@@ -28,34 +29,38 @@ var TemplateBox = (function () {
 }());
 exports.TemplateBox = TemplateBox;
 var OmegaTreeWidget = (function () {
-    function OmegaTreeWidget(renderer, el) {
+    function OmegaTreeWidget(renderer, el, resizeService) {
+        var _this = this;
         this.renderer = renderer;
         this.el = el;
+        this.resizeService = resizeService;
         this.caption = "Omega function ";
         this.vp = { size: { width: 400, height: 600 },
             margin: { x: 20, y: 20 },
-            node: { size: { width: 40, height: 20 } } };
+            node: { size: { width: 40, height: 40 } } };
+        this.subscription = resizeService.resize$.subscribe(function (event) {
+            if (event.target == "omega-tree") {
+                _this.setPanelSize(event.size);
+            }
+        });
     }
-    OmegaTreeWidget.prototype.ngOnInit = function () {
-        this.setPanelSize(window.innerWidth, window.innerHeight);
+    OmegaTreeWidget.prototype.ngOnDestroy = function () {
+        this.subscription.unsubscribe();
     };
-    OmegaTreeWidget.prototype.onResize = function (event) {
-        this.setPanelSize(event.target.innerWidth, event.target.innerHeight);
-    };
-    OmegaTreeWidget.prototype.setPanelSize = function (innerWidth, innerHeight) {
-        var w = innerWidth / 2 - 2 * this.vp.margin.x;
-        var h = innerHeight / 2 - 2 * this.vp.margin.y;
+    OmegaTreeWidget.prototype.setPanelSize = function (size) {
         var delta = 10;
-        if ((Math.abs(this.vp.size.width - w) > delta) || (Math.abs(this.vp.size.height - h) > delta)) {
-            this.vp.size = { width: w, height: h };
-            this.draw(this.svg, this.vp, this.data);
+        if ((Math.abs(this.vp.size.width - size.width) > delta) || (Math.abs(this.vp.size.height - size.height) > delta)) {
+            this.vp.size = { width: size.width, height: size.height - 40 };
+            if (this.svg) {
+                this.draw(this.svg, this.vp, this.data);
+            }
         }
     };
     OmegaTreeWidget.prototype.ngOnChanges = function (changes) {
         this.svg = d3.select(this.el.nativeElement).select('svg');
         if (this.item) {
             this.caption = "Omega function: " + this.item.id + " - " + this.item.name;
-            this.data = this.getOmegaTreeData(this.item, "levels");
+            this.data = this.getOmegaTreeData(this.item, "parts");
             this.draw(this.svg, this.vp, this.data);
         }
         else {
@@ -144,10 +149,10 @@ var OmegaTreeWidget = (function () {
         core_1.Component({
             selector: 'omega-tree',
             inputs: ['item'],
-            template: "\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">{{caption}}</div>\n      <div class=\"panel-body\" (window:resize)=\"onResize($event)\">\n          <svg #treeSvg class=\"svg-widget\"></svg>\n       </div>\n    </div>\n  ",
+            template: "\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">{{caption}}</div>\n      <div class=\"panel-body\">\n          <svg #treeSvg class=\"svg-widget\"></svg>\n       </div>\n    </div>\n  ",
             directives: []
         }), 
-        __metadata('design:paramtypes', [core_1.Renderer, core_1.ElementRef])
+        __metadata('design:paramtypes', [core_1.Renderer, core_1.ElementRef, service_resize_1.ResizeService])
     ], OmegaTreeWidget);
     return OmegaTreeWidget;
 }());

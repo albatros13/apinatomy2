@@ -5,14 +5,16 @@ import {Component} from '@angular/core';
 import {ResourcePanel} from "./panel.resource";
 import {MultiSelectInput} from '../components/component.select';
 import {RepoTemplate} from '../repos/repo.template';
+import {TemplateName} from "../services/service.apinatomy2";
 
 @Component({
   selector: 'coalescence-panel',
-  inputs: ['item', 'ignore', 'dependencies'],
+  inputs: ['item', 'ignore', 'dependencies', 'options'],
   template:`
     <resource-panel [item] = "item" 
-      [(dependencies)] = "dependencies" 
+      [dependencies] = "dependencies" 
       [ignore] = "ignore"
+      [options] ="options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"
@@ -40,4 +42,6 @@ import {RepoTemplate} from '../repos/repo.template';
   `,
   directives: [ResourcePanel, MultiSelectInput, RepoTemplate]
 })
-export class CoalescencePanel extends ResourcePanel{}
+export class CoalescencePanel extends ResourcePanel{
+  protected templateName = TemplateName;
+}

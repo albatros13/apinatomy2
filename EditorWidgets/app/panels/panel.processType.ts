@@ -3,20 +3,20 @@
  */
 import {Component, Output, EventEmitter} from '@angular/core';
 import {TransportPhenomenon} from "../services/service.apinatomy2";
-import {TypePanel} from "./panel.type";
+import {MeasurableLocationPanel} from "./panel.measurableLocation";
 import {MultiSelectInput, SingleSelectInput} from '../components/component.select';
-import {EditToolbar} from '../components/component.toolbars';
 import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
-import {NodeTemplatePanel} from '../templates/template.nodeType';
+import {NodeTemplatePanel} from '../templates/template.nodeTemplate';
 import {FilterByClass} from "../transformations/pipe.general";
 
 @Component({
   selector: 'processType-panel',
-  inputs: ['item', 'ignore', 'dependencies'],
+  inputs: ['item', 'ignore', 'dependencies', "options"],
   template:`
-    <type-panel [item]="item" 
-      [(dependencies)]="dependencies" 
-      [ignore]="ignore"
+    <measurableLocation-panel [item]="item" 
+      [dependencies]="dependencies" 
+      [ignore]  ="ignore"
+      [options] ="options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"
@@ -26,17 +26,17 @@ import {FilterByClass} from "../transformations/pipe.general";
         <div class="input-control" *ngIf="includeProperty('transportPhenomenon')">
           <fieldset>
             <legend>Transport phenomenon:</legend>
-            <check-group [(ngModel)]="item.transportPhenomenon" [required]="true">
+            <checkbox-group [(ngModel)]="item.transportPhenomenon" [required]="true">
                <input type="checkbox" [value]="transportPhenomenon.diffusion">{{transportPhenomenon.diffusion}}&nbsp;
                <input type="checkbox" [value]="transportPhenomenon.advection">{{transportPhenomenon.advection}}<br/>
-             </check-group>
+             </checkbox-group>
           </fieldset>
         </div>
         
         <!--Species-->
         <div class="input-control" *ngIf="includeProperty('species')">
           <label for="species">Species: </label>
-          <input type="text" [(ngModel)]="item.species">
+          <input type="text" class="form-control" [(ngModel)]="item.species">
         </div>
         
         <!--Measurables-->
@@ -74,7 +74,8 @@ import {FilterByClass} from "../transformations/pipe.general";
         <div class="input-control" *ngIf="includeProperty('segments')">
           <repo-template caption='Segments' [items]="item.segments" 
           (updated)="updateProperty('segments', $event)" 
-          [dependencies]="dependencies" [types]="[templateName.ProcessTemplate]"></repo-template>
+          [dependencies]="dependencies" [types]="[templateName.ProcessTemplate]">
+          </repo-template>
         </div>
         
         <!--SegmentProviders-->
@@ -101,14 +102,15 @@ import {FilterByClass} from "../transformations/pipe.general";
         </div>      
        
     <ng-content></ng-content>      
-    </type-panel>
+    </measurableLocation-panel>
   `,
-  directives: [TypePanel, MultiSelectInput, SingleSelectInput, RADIO_GROUP_DIRECTIVES, NodeTemplatePanel, EditToolbar],
+  directives: [MeasurableLocationPanel, MultiSelectInput, SingleSelectInput, RADIO_GROUP_DIRECTIVES, NodeTemplatePanel],
   pipes: [FilterByClass]
 })
-export class ProcessTypePanel extends TypePanel{
-  dependencies: any;
-  @Output() saved = new EventEmitter();
-  transportPhenomenon = TransportPhenomenon;
+export class ProcessTypePanel extends MeasurableLocationPanel{
+  public transportPhenomenon = TransportPhenomenon;
 
+  ngOnInit(){
+    if (!this.item.transportPhenomenon) this.item.transportPhenomenon = [];
+  }
 }

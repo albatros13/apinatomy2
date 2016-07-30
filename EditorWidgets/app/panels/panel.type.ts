@@ -1,18 +1,19 @@
 /**
  * Created by Natallia on 6/17/2016.
  */
-import {Component} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {ResourcePanel} from "./panel.resource";
 import {MultiSelectInput} from '../components/component.select';
 import {TemplateName} from "../services/service.apinatomy2";
 
 @Component({
   selector: 'type-panel',
-  inputs: ['item', 'ignore', 'dependencies'],
+  inputs: ['item', 'ignore', 'dependencies', 'options'],
   template:`
     <resource-panel [item]="item" 
-      [(dependencies)]="dependencies" 
-      [ignore]="ignore"
+      [dependencies]="dependencies" 
+      [ignore]      ="ignore"
+      [options]     ="options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"
@@ -25,6 +26,7 @@ import {TemplateName} from "../services/service.apinatomy2";
         (updated)="updateProperty('supertypes', $event)" 
         [options]="dependencies.types"></select-input>
       </div>
+      <ng-select select="generateFromSupertype"></ng-select>
 
       <!--Subtypes-->
       <div class="input-control" *ngIf="includeProperty('subtypes')">
@@ -40,6 +42,6 @@ import {TemplateName} from "../services/service.apinatomy2";
   `,
   directives: [ResourcePanel, MultiSelectInput]
 })
-export class TypePanel extends ResourcePanel{
+export class TypePanel extends ResourcePanel implements OnInit{
   protected templateName = TemplateName;
 }

@@ -17,6 +17,7 @@ var HierarchyGraphWidget = (function () {
         this.renderer = renderer;
         this.el = el;
         this.resizeService = resizeService;
+        this.relations = [];
         this.properties = [];
         this.depth = -1;
         this.active = true;
@@ -35,34 +36,35 @@ var HierarchyGraphWidget = (function () {
         this.subscription.unsubscribe();
     };
     HierarchyGraphWidget.prototype.ngOnInit = function () {
+        if (!this.relations)
+            this.relations = [];
+        if (!this.properties)
+            this.properties = [];
         this.setGraphOptions();
     };
     HierarchyGraphWidget.prototype.ngOnChanges = function (changes) {
         if (this.item) {
-            this.data = this.getGraphData(this.item, this.relation, this.depth);
+            this.data = this.getGraphData(this.item, this.relations, this.depth);
         }
         else {
             this.data = {};
         }
     };
     HierarchyGraphWidget.prototype.setPanelSize = function (size) {
+        var _this = this;
         var delta = 10;
         if ((Math.abs(this.vp.size.width - size.width) > delta) || (Math.abs(this.vp.size.height - size.height) > delta)) {
             this.vp.size = size;
             if (this.graphOptions) {
                 this.graphOptions.width = this.vp.size.width;
                 this.graphOptions.height = this.vp.size.height;
-                this.refresh();
+                setTimeout(function () { _this.active = false; }, 0);
+                setTimeout(function () { _this.active = true; }, 0);
             }
         }
     };
-    HierarchyGraphWidget.prototype.refresh = function () {
-        var _this = this;
-        setTimeout(function () { _this.active = false; }, 10);
-        setTimeout(function () { _this.active = true; }, 10);
-    };
     HierarchyGraphWidget.prototype.setGraphOptions = function () {
-        var visibleProperties = this.properties;
+        var visibleProperties = this.properties.filter(function (x) { return x.selected; }).map(function (x) { return x.value; });
         function formatValue(value) {
             var res = "[";
             for (var i = 0; i < value.length; i++) {
@@ -107,31 +109,37 @@ var HierarchyGraphWidget = (function () {
             }
         };
     };
-    HierarchyGraphWidget.prototype.getGraphData = function (item, property, depth) {
+    HierarchyGraphWidget.prototype.getGraphData = function (item, relations, depth) {
         var data = { nodes: [], links: [] };
         if (!item)
             return data;
         data.nodes.push(item);
-        if (!property)
+        if (!relations || (relations.length == 0))
             return data;
         if (!depth)
             depth = -1;
-        traverse(item, property, depth, data);
+        var fields = this.relations.filter(function (x) { return x.selected; }).map(function (x) { return x.value; });
+        if (!depth)
+            depth = -1;
+        traverse(item, depth, data);
         return data;
-        function traverse(root, property, depth, data) {
+        function traverse(root, depth, data) {
             if (!root)
-                return;
-            if (!root[property])
                 return;
             if (depth == 0)
                 return root;
-            var children = root[property];
-            for (var _i = 0, children_1 = children; _i < children_1.length; _i++) {
-                var child = children_1[_i];
-                data.links.push({ source: root, target: child });
-                if (data.nodes.indexOf(child) == -1) {
-                    data.nodes.push(child);
-                    traverse(child, property, depth - 1, data);
+            for (var _i = 0, fields_1 = fields; _i < fields_1.length; _i++) {
+                var fieldName = fields_1[_i];
+                if (!root[fieldName])
+                    return;
+                var children = root[fieldName];
+                for (var _a = 0, children_1 = children; _a < children_1.length; _a++) {
+                    var child = children_1[_a];
+                    data.links.push({ source: root, target: child });
+                    if (data.nodes.indexOf(child) == -1) {
+                        data.nodes.push(child);
+                        traverse(child, depth - 1, data);
+                    }
                 }
             }
         }
@@ -143,8 +151,8 @@ var HierarchyGraphWidget = (function () {
     HierarchyGraphWidget = __decorate([
         core_1.Component({
             selector: 'hierarchy-graph',
-            inputs: ['item', 'relation', 'depth', 'properties'],
-            template: "\n    <div class=\"panel-body\">\n      <!--<svg #graphSvg class=\"svg-widget\"></svg>-->\n      <nvd3 *ngIf=\"active\" [options]=\"graphOptions\" [data]=\"data\"></nvd3>\n    </div>\n  ",
+            inputs: ['item', 'relations', 'properties', 'depth'],
+            template: "\n    <div class=\"panel-body\">\n      <nvd3 *ngIf=\"active\" [options]=\"graphOptions\" [data]=\"data\"></nvd3>\n    </div>\n  ",
             directives: [ng2_nvd3_1.nvD3],
         }), 
         __metadata('design:paramtypes', [core_1.Renderer, core_1.ElementRef, service_resize_1.ResizeService])

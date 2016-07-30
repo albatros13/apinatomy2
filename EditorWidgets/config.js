@@ -13,10 +13,6 @@ System.config({
   },
 
   packages: {
-    // "app": {
-    //   "main": "main.js",
-    //   "defaultExtension": "js"
-    // },
     "angular2-in-memory-web-api": {
       "main": "index.js",
       "defaultExtension": "js"
@@ -39,6 +35,10 @@ System.config({
     },
     "ng2-slider": {
       "main": "ng2-slider.component.min.js",
+      "defaultExtension": "js"
+    },
+    "ng2-dropdown": {
+      "main": "index.js",
       "defaultExtension": "js"
     },
     "rx": {
@@ -101,6 +101,7 @@ System.config({
     "ng2-radio-group": "node_modules/ng2-radio-group",
     "ng2-select": "node_modules/ng2-select",
     "ng2-slider": "node_modules/ng2-slider-component",
+    "ng2-dropdown": "node_modules/ng2-dropdown",
     "nvd3": "npm:nvd3@1.8.4",
     "open-physiology-model": "node_modules/open-physiology-model/dist",
     "plugin-babel": "npm:systemjs-plugin-babel@0.0.12",

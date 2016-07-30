@@ -1,10 +1,12 @@
 import {Component, Inject, ElementRef, Renderer, Output, EventEmitter} from '@angular/core';
 import {RepoGeneral} from '../repos/repo.general';
 import {RepoTemplate} from '../repos/repo.template';
-import {ResourceProvider} from '../services/service.resourceProvider';
 import {HierarchyWidget} from '../widgets/widget.hierarchy';
 import {ResourceWidget} from '../widgets/widget.resource';
 import {ResizeService} from '../services/service.resize';
+import {Subscription}   from 'rxjs/Subscription';
+import {ResourceName, TemplateName} from '../services/service.apinatomy2';
+import {AsyncResourceProvider} from '../services/service.asyncResourceProvider';
 
 declare var GoldenLayout:any;
 declare var $: any;
@@ -13,22 +15,31 @@ declare var $: any;
   selector: 'app',
   providers: [
     ResizeService,
-    ResourceProvider
+    AsyncResourceProvider
   ],
   template: `
     <repo-general id="repo"
       [items]="items" 
       [caption]="'All resources'" 
-      [dependencies]="dependency" 
-      (selected)="onItemSelect($event)">
+      [dependencies]="dependencies" 
+      (selected)="onItemSelected($event)"
+      (added)="onItemAdded($event)"
+      (removed)="onItemRemoved($event)"
+      (updated)="onItemUpdated($event)"
+      >
     </repo-general>
-    <hierarchy-widget id = "hierarchy" [item]="selectedItem" [relation]="materials"></hierarchy-widget>
+    <hierarchy-widget id = "hierarchy" [item]="selectedItem"></hierarchy-widget>
     <resource-widget id = "resource" [item]="selectedItem"></resource-widget>   
     <repo-template id="repo2"
-      [items]="dependency.templates" 
+      [items]="dependencies.templates" 
       [caption]="'All templates'" 
-      [dependencies]="dependency" 
-      (selected)="onItemSelect($event)">
+      [dependencies]="dependencies" 
+      [options]="{showSortToolbar: true, showFilterToolbar: true}"
+      (selected)="onItemSelected($event)"
+      (added)="onItemAdded($event)"
+      (removed)="onItemRemoved($event)"
+      (updated)="onItemUpdated($event)"
+      >
     </repo-template>         
     <div id="main"></div>
   `,
@@ -36,9 +47,12 @@ declare var $: any;
   directives: [RepoGeneral, RepoTemplate, HierarchyWidget, ResourceWidget]
 })
 export class ResourceAndTemplateEditor {
-  items:Array<any>;
-  selectedItem:any;
-  dependency:any;
+  protected resourceName = ResourceName;
+  protected templateName = TemplateName;
+
+  items        :Array<any> = [];
+  selectedItem :any        = {};
+  dependencies :any        = {};
 
   layoutConfig = {
     settings: {
@@ -83,21 +97,44 @@ export class ResourceAndTemplateEditor {
   };
 
   mainLayout:any;
+  subscription: Subscription;
 
   constructor(private resizeService:ResizeService,
               public el:ElementRef,
-              @Inject(ResourceProvider) resourceP:ResourceProvider) {
-    this.dependency = resourceP.data;
-    this.items = this.dependency.types;
+              public resourceProvider:AsyncResourceProvider) {
+
+    this.subscription = resourceProvider.data$.subscribe(
+      (updatedData: any) => {
+        this.dependencies = updatedData;
+        this.items = updatedData.types;
+      });
+
+    setTimeout(() => {resourceProvider.loadExtra()}, 1000);
+  }
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
-  onItemSelect(item:any) {
+  onItemSelected(item:any) {
     setTimeout(() => {
       this.selectedItem = null;
     }, 0);
     setTimeout(() => {
       this.selectedItem = item;
     }, 0);
+  }
+
+  onItemAdded(item:any) {
+    this.resourceProvider.addResource(item);
+  }
+
+  onItemRemoved(item:any) {
+    this.resourceProvider.removeResource(item);
+  }
+
+  onItemUpdated(item:any) {
+    //maybe not needed
+    this.resourceProvider.addResource(item);
   }
 
   ngOnInit() {

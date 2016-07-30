@@ -26,8 +26,8 @@ var CausalityTypePanel = (function (_super) {
     CausalityTypePanel = __decorate([
         core_1.Component({
             selector: 'causalityType-panel',
-            inputs: ['item', 'ignore', 'dependencies'],
-            template: "\n    <type-panel [item]=\"item\" \n      [(dependencies)]=\"dependencies\" [ignore]=\"ignore\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n      <ng-content></ng-content>      \n    \n    </type-panel>\n  ",
+            inputs: ['item', 'ignore', 'dependencies', 'options'],
+            template: "\n    <type-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      [ignore]   = \"ignore\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n      <ng-content></ng-content>      \n    \n    </type-panel>\n  ",
             directives: [panel_type_1.TypePanel]
         }), 
         __metadata('design:paramtypes', [])

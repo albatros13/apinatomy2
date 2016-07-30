@@ -25,6 +25,7 @@ export class FilterBy implements PipeTransform {
 })
 export class FilterByClass implements PipeTransform {
   transform(items: any[], classNames: any[]): any {
+    if (!items) return items;
     return items.filter(item => (classNames.indexOf(item.class) !== -1));
   }
 }

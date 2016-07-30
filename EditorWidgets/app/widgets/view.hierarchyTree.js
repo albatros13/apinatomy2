@@ -13,29 +13,37 @@ var service_resize_1 = require('../services/service.resize');
 var color = d3.scale.category20();
 var HierarchyTreeWidget = (function () {
     function HierarchyTreeWidget(el, vc, resolver, resizeService) {
+        var _this = this;
         this.el = el;
         this.vc = vc;
         this.resolver = resolver;
         this.resizeService = resizeService;
+        this.relations = [];
+        this.properties = [];
         this.depth = -1;
         this.vp = { size: { width: 600, height: 400 },
             margin: { x: 20, y: 20 },
             node: { size: { width: 40, height: 20 } } };
         this.selected = new core_1.EventEmitter();
-        var self = this;
         this.subscription = resizeService.resize$.subscribe(function (event) {
             if (event.target == "hierarchy-tree") {
-                self.setPanelSize(event.size);
+                _this.setPanelSize(event.size);
             }
         });
     }
+    HierarchyTreeWidget.prototype.ngOnInit = function () {
+        if (!this.relations)
+            this.relations = [];
+        if (!this.properties)
+            this.properties = [];
+    };
     HierarchyTreeWidget.prototype.ngOnDestroy = function () {
         this.subscription.unsubscribe();
     };
     HierarchyTreeWidget.prototype.setPanelSize = function (size) {
         var delta = 10;
         if ((Math.abs(this.vp.size.width - size.width) > delta) || (Math.abs(this.vp.size.height - size.height) > delta)) {
-            this.vp.size = size;
+            this.vp.size = { width: size.width, height: size.height - 40 };
             if (this.svg) {
                 this.draw(this.svg, this.vp, this.data);
             }
@@ -44,7 +52,7 @@ var HierarchyTreeWidget = (function () {
     HierarchyTreeWidget.prototype.ngOnChanges = function (changes) {
         this.svg = d3.select(this.el.nativeElement).select('svg');
         if (this.item) {
-            this.data = this.getTreeData(this.item, this.relation, this.depth);
+            this.data = this.getTreeData(this.item, this.relations, 3);
             this.draw(this.svg, this.vp, this.data);
         }
         else {
@@ -68,15 +76,17 @@ var HierarchyTreeWidget = (function () {
         var links = [];
         var dragStarted;
         var domNode;
-        function coordinates(d) {
-            switch (this.layout) {
+        /*
+            function coordinates(d: any){
+              switch(this.layout){
                 case "top-to-bottom": return [d.x, d.y];
                 case "right-to-left": return [w - d.y, d.x];
                 case "bottom-to-top": return [d.x, h - d.y];
-                case "left-to-right": return [d.y, d.x];
+                case "left-to-right": return [d.y, d.x]
+              }
+              return  [d.x, d.y];
             }
-            return [d.x, d.y];
-        }
+        */
         var tree = d3.layout.tree().size([h, w]);
         var diagonal = d3.svg.diagonal().projection(function (d) {
             return [d.y, d.x];
@@ -84,7 +94,9 @@ var HierarchyTreeWidget = (function () {
         // sort the tree according to the node names
         function sortTree() {
             tree.sort(function (a, b) {
-                return b.name.toLowerCase() < a.name.toLowerCase() ? 1 : -1;
+                if (a.name && b.name)
+                    return b.name.toLowerCase() < a.name.toLowerCase() ? 1 : -1;
+                return 0;
             });
         }
         sortTree();
@@ -336,8 +348,6 @@ var HierarchyTreeWidget = (function () {
         }
         function update(source) {
             // Compute the new height, function counts total children of root node and sets tree height accordingly.
-            // This prevents the layout looking squashed when new nodes are made visible or looking sparse when nodes are removed
-            // This makes the layout more consistent.
             var levelWidth = [1];
             var childCount = function (level, n) {
                 if (n.children && n.children.length > 0) {
@@ -352,14 +362,11 @@ var HierarchyTreeWidget = (function () {
             childCount(0, root);
             var newHeight = d3.max(levelWidth) * 25; // 25 pixels per line
             tree = tree.size([newHeight, w]);
-            // Compute the new tree layout.
             nodes = tree.nodes(root).reverse();
             links = tree.links(nodes);
-            // Set widths between levels.
             nodes.forEach(function (d) {
                 d.y = (d.depth * 50);
             });
-            // Update the nodes…
             var node = svgGroup.selectAll("g.node")
                 .data(nodes, function (d) {
                 return d.id || (d.id = ++i);
@@ -388,7 +395,7 @@ var HierarchyTreeWidget = (function () {
                 return d.name;
             })
                 .style("fill-opacity", 0);
-            // phantom node to give us mouseover in a radius around it
+            // phantom node for mouseover in a radius around it
             nodeEnter.append("circle")
                 .attr('class', 'ghostCircle')
                 .attr("r", 30)
@@ -492,31 +499,35 @@ var HierarchyTreeWidget = (function () {
         update(root);
         centerNode(root);
     };
-    HierarchyTreeWidget.prototype.getTreeData = function (item, property, depth) {
+    HierarchyTreeWidget.prototype.getTreeData = function (item, relations, depth) {
         var data = {};
         if (!item)
             return data;
         data = { id: item.id, name: item.name, resource: item.root, children: [] };
-        if (!property)
+        if (!relations || (relations.length == 0))
             return data;
         if (!depth)
             depth = -1;
-        traverse(item, property, 0, data);
+        var fields = this.relations.filter(function (x) { return x.selected; }).map(function (x) { return x.value; });
+        traverse(item, 0, data);
         return data;
-        function traverse(root, property, level, data) {
+        function traverse(root, level, data) {
             if (!root)
                 return;
-            if (!root[property])
-                return;
-            if ((depth - level) == 0)
-                return;
-            if (!data.children)
-                data.children = [];
-            for (var _i = 0, _a = root[property]; _i < _a.length; _i++) {
-                var obj = _a[_i];
-                var child = { id: obj.id, name: obj.name, resource: obj, depth: level };
-                data.children.push(child);
-                traverse(obj, property, level + 1, child);
+            for (var _i = 0, fields_1 = fields; _i < fields_1.length; _i++) {
+                var fieldName = fields_1[_i];
+                if (!root[fieldName])
+                    return;
+                if ((depth - level) == 0)
+                    return;
+                if (!data.children)
+                    data.children = [];
+                for (var _a = 0, _b = root[fieldName]; _a < _b.length; _a++) {
+                    var obj = _b[_a];
+                    var child = { id: obj.id, name: obj.name, resource: obj, depth: level };
+                    data.children.push(child);
+                    traverse(obj, level + 1, child);
+                }
             }
         }
     };
@@ -527,7 +538,7 @@ var HierarchyTreeWidget = (function () {
     HierarchyTreeWidget = __decorate([
         core_1.Component({
             selector: 'hierarchy-tree',
-            inputs: ['item', 'relation', 'depth', 'properties'],
+            inputs: ['item', 'relations', 'properties', 'depth'],
             template: "\n    <div class=\"panel-body\">\n      <svg #treeSvg class=\"svg-widget\"></svg>\n    </div>\n  "
         }), 
         __metadata('design:paramtypes', [core_1.ElementRef, core_1.ViewContainerRef, core_1.ComponentResolver, service_resize_1.ResizeService])

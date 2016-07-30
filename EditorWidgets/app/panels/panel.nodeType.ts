@@ -2,16 +2,17 @@
  * Created by Natallia on 6/19/2016.
  */
 import {Component} from '@angular/core';
-import {TypePanel} from "./panel.type";
+import {MeasurableLocationPanel} from "./panel.measurableLocation";
 import {RepoTemplate} from '../repos/repo.template';
 
 @Component({
   selector: 'nodeType-panel',
-  inputs: ['item', 'ignore', 'dependencies'],
+  inputs: ['item', 'ignore', 'dependencies', 'options'],
   template:`
-    <type-panel [item]="item" 
-      [(dependencies)]="dependencies" 
+    <measurableLocation-panel [item]="item" 
+      [dependencies]="dependencies" 
       [ignore]="ignore"
+      [options] ="options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"
@@ -24,8 +25,8 @@ import {RepoTemplate} from '../repos/repo.template';
       
       <ng-content></ng-content>      
     
-    </type-panel>
+    </measurableLocation-panel>
   `,
-  directives: [TypePanel, RepoTemplate]
+  directives: [MeasurableLocationPanel, RepoTemplate]
 })
-export class NodeTypePanel extends TypePanel{}
+export class NodeTypePanel extends MeasurableLocationPanel{}

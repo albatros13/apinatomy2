@@ -55,6 +55,15 @@ export class MapToOptions implements PipeTransform {
 }
 
 @Pipe({
+  name: 'setToArray'
+})
+export class SetToArray implements PipeTransform {
+  transform(items: Set<any>): Array<any> {
+    return Array.from(items || []);
+  }
+}
+
+@Pipe({
   name: 'mapToCategories'
 })
 export class MapToCategories implements PipeTransform {

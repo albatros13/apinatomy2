@@ -86,6 +86,21 @@ var MapToOptions = (function () {
     return MapToOptions;
 }());
 exports.MapToOptions = MapToOptions;
+var SetToArray = (function () {
+    function SetToArray() {
+    }
+    SetToArray.prototype.transform = function (items) {
+        return Array.from(items || []);
+    };
+    SetToArray = __decorate([
+        core_1.Pipe({
+            name: 'setToArray'
+        }), 
+        __metadata('design:paramtypes', [])
+    ], SetToArray);
+    return SetToArray;
+}());
+exports.SetToArray = SetToArray;
 var MapToCategories = (function () {
     function MapToCategories() {
     }

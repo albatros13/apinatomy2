@@ -16,6 +16,7 @@ var component_select_1 = require('../components/component.select');
 var toolbar_panelEdit_1 = require('../components/toolbar.panelEdit');
 var pipe_general_1 = require("../transformations/pipe.general");
 var toolbar_propertySettings_1 = require('../components/toolbar.propertySettings');
+var open_physiology_model_1 = require("open-physiology-model");
 var ResourcePanel = (function () {
     function ResourcePanel() {
         this.ignore = new Set();
@@ -23,35 +24,34 @@ var ResourcePanel = (function () {
         this.canceled = new core_1.EventEmitter();
         this.removed = new core_1.EventEmitter();
         this.propertyUpdated = new core_1.EventEmitter();
+        this.ExternalResource = open_physiology_model_1.ExternalResource;
         this.properties = [];
     }
     ResourcePanel.prototype.ngOnInit = function () {
         if (!this.ignore)
             this.ignore = new Set();
         this.ignore = this.ignore.add("id").add("href");
-        var i = 1;
         if (this.item && this.item.constructor) {
             var properties = Object.assign({}, this.item.constructor.properties, this.item.constructor.relationshipShortcuts);
             for (var property in properties) {
-                var option = { value: property, selected: false };
-                if (!this.ignore.has(property)) {
-                    option.selected = true;
+                if (property == "class" || property == "themes")
+                    continue;
+                if (property.indexOf("Border") > -1) {
+                    if (!this.properties.find(function (x) { return (x.value == "border"); }))
+                        this.properties.push({ value: "border", selected: !this.ignore.has("border") });
                 }
-                this.properties.push(option);
+                this.properties.push({ value: property, selected: !this.ignore.has(property) });
             }
         }
     };
-    ResourcePanel.prototype.includeProperty = function (prop, group) {
-        // if (this.properties){
-        //   let option = this.properties.find((x:any) => (x.value == prop));
-        //   if (option && !option.selected) return false;
-        // } else {
-        if (this.ignore.has(prop))
-            return false;
-        if (group && this.ignore.has(group))
-            return false;
-        // }
-        return true;
+    ResourcePanel.prototype.selectionChanged = function (option) {
+        if (this.ignore.has(option.value) && option.selected)
+            this.ignore.delete(option.value);
+        if (!this.ignore.has(option.value) && !option.selected)
+            this.ignore.add(option.value);
+    };
+    ResourcePanel.prototype.includeProperty = function (prop) {
+        return !this.ignore.has(prop);
     };
     ResourcePanel.prototype.updateProperty = function (property, item) {
         if (this.item.constructor &&
@@ -63,25 +63,20 @@ var ResourcePanel = (function () {
         this.propertyUpdated.emit({ property: property, values: item });
     };
     ResourcePanel.prototype.addTemplate = function (property, Class) {
-        //TODO: rewrite using client library!
-        //TODO: replace with Class.new();
-        this.item[property] = new Class({ name: "T: " + property + " " + this.item.name });
-        if (this.dependencies) {
-            if (!this.dependencies.templates)
-                this.dependencies.templates = [];
-            this.dependencies.templates.push(this.item[property]);
-        }
+        this.item[property] = Class.new({ name: "T: " + property + " " + this.item.name });
     };
     ResourcePanel.prototype.removeTemplate = function (property, item) {
-        //TODO: rewrite using client library!
-        if (this.dependencies && this.dependencies.templates) {
-            var index = this.dependencies.templates.indexOf(item);
-            if (index >= 0) {
-                this.dependencies.templates.splice(index, 1);
-            }
-        }
+        item.delete();
         this.updateProperty(property, null);
     };
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Object)
+    ], ResourcePanel.prototype, "item", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Set)
+    ], ResourcePanel.prototype, "ignore", void 0);
     __decorate([
         core_1.Output(), 
         __metadata('design:type', Object)
@@ -101,8 +96,8 @@ var ResourcePanel = (function () {
     ResourcePanel = __decorate([
         core_1.Component({
             selector: 'resource-panel',
-            inputs: ['item', 'ignore', 'dependencies', 'options'],
-            template: "\n    <div class=\"panel\">\n        <div class=\"panel-body\">\n          <form-toolbar  \n            [options]  = \"options\"\n            (saved)    = \"saved.emit(item)\"\n            (canceled) = \"canceled.emit(item)\"\n            (removed)  = \"removed.emit(item)\">\n          </form-toolbar>\n          <property-toolbar  \n            [options] = \"properties\">\n          </property-toolbar>\n          \n          <div class=\"panel-content\">\n              <div class=\"input-control\" *ngIf=\"includeProperty('id')\">\n                <label for=\"id\">ID: </label>\n                <input type=\"text\" class=\"form-control\" disabled readonly [ngModel]=\"item.id\">\n              </div>\n\n              <div class=\"input-control\" *ngIf=\"includeProperty('href')\">\n                <label for=\"href\">Reference: </label>\n                <input type=\"text\" class=\"form-control\" disabled readonly [ngModel]=\"item.href\">\n              </div>\n\n              <!--Name-->\n              <div class=\"input-control\" *ngIf=\"includeProperty('name')\">\n                <label for=\"name\">Name: </label>\n                <input type=\"text\" class=\"form-control\" [(ngModel)]=\"item.name\">\n              </div>\n              \n              <!--Externals-->\n              <div class=\"input-control\" *ngIf=\"includeProperty('externals')\">\n                <label for=\"externals\">Annotations: </label>\n                <select-input \n                [items]=\"item.externals\" \n                (updated)=\"updateProperty('externals', $event)\" \n                [options]=\"dependencies.externals | mapToCategories\"></select-input>\n              </div>\n              <ng-content></ng-content>\n          </div>\n        </div>\n    </div>\n  ",
+            inputs: ['item', 'ignore', 'options'],
+            template: "\n    <div class=\"panel\">\n        <div class=\"panel-body\">\n          <form-toolbar  \n            [options]  = \"options\"\n            (saved)    = \"saved.emit(item)\"\n            (canceled) = \"canceled.emit(item)\"\n            (removed)  = \"removed.emit(item)\">\n          </form-toolbar>\n          <property-toolbar  \n            [options] = \"properties\"\n            (selectionChanged) = \"selectionChanged($event)\">\n          </property-toolbar>\n          \n          <div class=\"panel-content\">\n              <div class=\"input-control\" *ngIf=\"includeProperty('id')\">\n                <label for=\"id\">ID: </label>\n                <input type=\"text\" class=\"form-control\" disabled readonly [ngModel]=\"item.id\">\n              </div>\n\n              <div class=\"input-control\" *ngIf=\"includeProperty('href')\">\n                <label for=\"href\">Reference: </label>\n                <input type=\"text\" class=\"form-control\" disabled readonly [ngModel]=\"item.href\">\n              </div>\n\n              <!--Name-->\n              <div class=\"input-control\" *ngIf=\"includeProperty('name')\">\n                <label for=\"name\">Name: </label>\n                <input type=\"text\" class=\"form-control\" [(ngModel)]=\"item.name\">\n              </div>\n              \n              <!--Externals-->\n              <div class=\"input-control\" *ngIf=\"includeProperty('externals')\">\n                <label for=\"externals\">Annotations: </label>\n                <select-input \n                [items]=\"item.p('externals') | async\" \n                (updated)=\"updateProperty('externals', $event)\" \n                [options]=\"ExternalResource.p('all') | async\"></select-input>\n              </div>\n              \n              <ng-content></ng-content>\n              \n          </div>\n        </div>\n    </div>\n  ",
             directives: [toolbar_panelEdit_1.FormToolbar, toolbar_propertySettings_1.PropertyToolbar, component_select_1.MultiSelectInput],
             pipes: [pipe_general_1.MapToCategories]
         }), 

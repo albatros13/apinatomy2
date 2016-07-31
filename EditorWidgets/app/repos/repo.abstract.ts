@@ -27,7 +27,6 @@ export abstract class RepoAbstract{
   items: Array<any> = [];
   types: Array<any> = [];
   zones: Array<string> = [];
-
   ignore: Set<string> = new Set<string>();
 
   sortByMode: string = "unsorted";
@@ -70,9 +69,9 @@ export abstract class RepoAbstract{
     this.searchString = config.filter;
   }
 
-  protected abstract getIcon(item: any): string;
+  protected abstract getIcon(Class: any): string;
 
-  protected abstract onAdded(resourceType: any): void;
+  protected abstract onAdded(Class: any): void;
 
   protected onSaved(item: any, updatedItem: any){
     // for (var key in updatedItem){

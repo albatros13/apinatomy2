@@ -539,7 +539,7 @@ var HierarchyTreeWidget = (function () {
         core_1.Component({
             selector: 'hierarchy-tree',
             inputs: ['item', 'relations', 'properties', 'depth'],
-            template: "\n    <div class=\"panel-body\">\n      <svg #treeSvg class=\"svg-widget\"></svg>\n    </div>\n  "
+            template: "\n    <div class=\"panel-content\">\n      <svg #treeSvg class=\"svg-widget\"></svg>\n    </div>\n  "
         }), 
         __metadata('design:paramtypes', [core_1.ElementRef, core_1.ViewContainerRef, core_1.ComponentResolver, service_resize_1.ResizeService])
     ], HierarchyTreeWidget);

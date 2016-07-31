@@ -13,20 +13,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-/**
- * Created by Natallia on 6/21/2016.
- */
 var core_1 = require('@angular/core');
 var component_select_1 = require('../components/component.select');
 var component_templateValue_1 = require('../components/component.templateValue');
 var template_template_1 = require("./template.template");
-var service_apinatomy2_1 = require('../services/service.apinatomy2');
 var template_borderTemplate_1 = require("../templates/template.borderTemplate");
+var open_physiology_model_1 = require('open-physiology-model');
 var LyphTemplatePanel = (function (_super) {
     __extends(LyphTemplatePanel, _super);
     function LyphTemplatePanel() {
         _super.apply(this, arguments);
-        this.borderTemplate = service_apinatomy2_1.BorderTemplate;
+        this.borderTemplate = open_physiology_model_1.BorderTemplate;
     }
     LyphTemplatePanel = __decorate([
         core_1.Component({

@@ -23,7 +23,7 @@ import {TemplateName} from "../services/service.apinatomy2";
       <!--InterfaceLayers-->
         <div class="input-control" *ngIf="includeProperty('interfaceLayers')">
           <label for="interfaceLayers">Interface layers: </label>
-          <select-input [items]="item.interfaceLayers" 
+          <select-input [items]="item.p('interfaceLayers') | async" 
           (updated)="updateProperty('interfaceLayers', $event)"          
           [options]="dependencies.lyphs"></select-input>
         </div>

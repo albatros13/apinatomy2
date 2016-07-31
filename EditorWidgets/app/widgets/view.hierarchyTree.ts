@@ -10,7 +10,7 @@ const color = d3.scale.category20();
   selector: 'hierarchy-tree',
   inputs: ['item', 'relations', 'properties', 'depth'],
   template : `
-    <div class="panel-body">
+    <div class="panel-content">
       <svg #treeSvg class="svg-widget"></svg>
     </div>
   `

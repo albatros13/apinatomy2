@@ -2,8 +2,6 @@
  * Created by Natallia on 7/29/2016.
  */
 import {Component, Input, Output, EventEmitter} from '@angular/core';
-import {CORE_DIRECTIVES} from '@angular/common';
-import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/components/dropdown';
 
 @Component({
   selector: 'form-toolbar',

@@ -20,16 +20,18 @@ var core_1 = require('@angular/core');
 var panel_resource_1 = require("./panel.resource");
 var component_select_1 = require('../components/component.select');
 var repo_template_1 = require('../repos/repo.template');
+var open_physiology_model_1 = require("open-physiology-model");
 var ExternalResourcePanel = (function (_super) {
     __extends(ExternalResourcePanel, _super);
     function ExternalResourcePanel() {
         _super.apply(this, arguments);
+        this.Resource = open_physiology_model_1.Resource;
     }
     ExternalResourcePanel = __decorate([
         core_1.Component({
             selector: 'externalResource-panel',
             inputs: ['item', 'ignore', 'dependencies', 'options'],
-            template: "\n    <resource-panel [item] = \"item\" \n      [dependencies] = \"dependencies\" \n      [ignore] = \"ignore\"\n      [options] =\"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <!--URI-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('uri')\">\n        <label for=\"uri\">URI: </label>\n        <input type=\"text\" class=\"form-control\" disabled [(ngModel)]=\"item.uri\">\n      </div>\n  \n      <!--Type-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('type')\">\n        <label for=\"type\">Type: </label>\n        <input type=\"text\" class=\"form-control\" disabled [(ngModel)]=\"item.type\">\n      </div>\n\n      <ng-content></ng-content>      \n\n    </resource-panel>\n  ",
+            template: "\n    <resource-panel [item] = \"item\" \n      [dependencies] = \"dependencies\" \n      [ignore] = \"ignore.add('externals')\"\n      [options] =\"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <!--URI-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('uri')\">\n        <label for=\"uri\">URI: </label>\n        <input type=\"text\" class=\"form-control\" [(ngModel)]=\"item.uri\">\n      </div>\n  \n      <!--Type-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('type')\">\n        <label for=\"type\">Type: </label>\n        <input type=\"text\" class=\"form-control\" [(ngModel)]=\"item.type\">\n      </div>\n      \n      <!--Locals - TODO: map to categories-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('locals')\">\n        <label for=\"locals\">Local resources: </label>\n        <select-input \n        [items]=\"item.p('locals') | async\" \n        (updated)=\"updateProperty('locals', $event)\" \n        [options]=\"Resource.p('all') | async\"></select-input>\n      </div>\n\n      <ng-content></ng-content>      \n\n    </resource-panel>\n  ",
             directives: [panel_resource_1.ResourcePanel, component_select_1.MultiSelectInput, repo_template_1.RepoTemplate]
         }), 
         __metadata('design:paramtypes', [])

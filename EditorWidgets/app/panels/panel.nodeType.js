@@ -17,7 +17,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  * Created by Natallia on 6/19/2016.
  */
 var core_1 = require('@angular/core');
-var panel_measurableLocation_1 = require("./panel.measurableLocation");
+var panel_measurableLocationType_1 = require("./panel.measurableLocationType");
 var repo_template_1 = require('../repos/repo.template');
 var NodeTypePanel = (function (_super) {
     __extends(NodeTypePanel, _super);
@@ -28,12 +28,12 @@ var NodeTypePanel = (function (_super) {
         core_1.Component({
             selector: 'nodeType-panel',
             inputs: ['item', 'ignore', 'dependencies', 'options'],
-            template: "\n    <measurableLocation-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      [ignore]=\"ignore\"\n      [options] =\"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <!--Channels-->\n      <repo-template caption=\"Channels\" [items] = \"item.channels\" \n        (updated)=\"updateProperty('channels', $event)\"     \n        [dependencies] = \"dependencies\" [types]=\"[templateName.NodeTemplate]\"></repo-template>\n      \n      <ng-content></ng-content>      \n    \n    </measurableLocation-panel>\n  ",
-            directives: [panel_measurableLocation_1.MeasurableLocationPanel, repo_template_1.RepoTemplate]
+            template: "\n    <measurableLocationType-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      [ignore]=\"ignore\"\n      [options] =\"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <ng-content></ng-content>   \n      \n      <relationGroup>\n      <!--Channels-->\n      <repo-template caption=\"Channels\" [items] = \"item.channels\" \n        (updated)=\"updateProperty('channels', $event)\"     \n        [dependencies] = \"dependencies\" [types]=\"[templateName.NodeTemplate]\"></repo-template>\n  \n        <ng-content select=\"relationGroup\"></ng-content>\n      </relationGroup>\n    \n    </measurableLocationType-panel>\n  ",
+            directives: [panel_measurableLocationType_1.MeasurableLocationTypePanel, repo_template_1.RepoTemplate]
         }), 
         __metadata('design:paramtypes', [])
     ], NodeTypePanel);
     return NodeTypePanel;
-}(panel_measurableLocation_1.MeasurableLocationPanel));
+}(panel_measurableLocationType_1.MeasurableLocationTypePanel));
 exports.NodeTypePanel = NodeTypePanel;
 //# sourceMappingURL=panel.nodeType.js.map

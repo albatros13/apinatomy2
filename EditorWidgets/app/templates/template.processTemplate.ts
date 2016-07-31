@@ -1,13 +1,13 @@
-/**
- * Created by Natallia on 6/21/2016.
- */
+"use strict";
 import {Component} from '@angular/core';
 import {SingleSelectInput} from '../components/component.select';
 import {TemplateValue} from '../components/component.templateValue';
 import {TemplatePanel} from "./template.template";
 import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
-import {TransportPhenomenon, NodeTemplate} from "../services/service.apinatomy2";
+import {TransportPhenomenon} from "../services/service.apinatomy2";
 import {FilterByClass} from "../transformations/pipe.general";
+
+import {NodeTemplate} from "open-physiology.model";
 
 @Component({
   selector: 'processTemplate-panel',

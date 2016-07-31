@@ -1,7 +1,7 @@
 import {Component, ElementRef} from '@angular/core';
 import {RepoGeneral} from '../repos/repo.general';
-import {HierarchyWidget} from '../widgets/widget.hierarchy';
-import {ResourceWidget} from '../widgets/widget.resource';
+//import {HierarchyWidget} from '../widgets/widget.hierarchy';
+//import {ResourceWidget} from '../widgets/widget.resource';
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
 import {AsyncResourceProvider} from '../services/service.asyncResourceProvider';
@@ -23,15 +23,14 @@ declare var $: any;
       (selected)="onItemSelected($event)"
       (added)="onItemAdded($event)"
       (removed)="onItemRemoved($event)"
-      (updated)="onItemUpdated($event)"
-    >
+      (updated)="onItemUpdated($event)">
     </repo-general>
-    <hierarchy-widget id = "hierarchy" [item]="selectedItem"></hierarchy-widget>
-    <resource-widget id = "resource" [item]="selectedItem"></resource-widget>          
+    <!--<hierarchy-widget id = "hierarchy" [item]="selectedItem"></hierarchy-widget>-->
+    <!--<resource-widget id = "resource" [item]="selectedItem"></resource-widget>          -->
     <div id="main"></div>
   `,
   styles: [`#main {width: 100%; height: 100%; border: 0; margin: 0; padding: 0}`],
- directives: [RepoGeneral, HierarchyWidget, ResourceWidget]
+ directives: [RepoGeneral/*, HierarchyWidget, ResourceWidget*/]
 })
 export class ResourceEditor {
   items:Array<any>;

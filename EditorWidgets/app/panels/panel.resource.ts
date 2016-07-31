@@ -6,10 +6,11 @@ import {MultiSelectInput} from '../components/component.select';
 import {FormToolbar} from '../components/toolbar.panelEdit';
 import {MapToCategories} from "../transformations/pipe.general";
 import {PropertyToolbar} from '../components/toolbar.propertySettings';
+import {ExternalResource, Template} from "open-physiology-model";
 
 @Component({
   selector: 'resource-panel',
-  inputs: ['item', 'ignore', 'dependencies', 'options'],
+  inputs: ['item', 'ignore', 'options'],
   template:`
     <div class="panel">
         <div class="panel-body">
@@ -20,7 +21,8 @@ import {PropertyToolbar} from '../components/toolbar.propertySettings';
             (removed)  = "removed.emit(item)">
           </form-toolbar>
           <property-toolbar  
-            [options] = "properties">
+            [options] = "properties"
+            (selectionChanged) = "selectionChanged($event)">
           </property-toolbar>
           
           <div class="panel-content">
@@ -44,11 +46,13 @@ import {PropertyToolbar} from '../components/toolbar.propertySettings';
               <div class="input-control" *ngIf="includeProperty('externals')">
                 <label for="externals">Annotations: </label>
                 <select-input 
-                [items]="item.externals" 
+                [items]="item.p('externals') | async" 
                 (updated)="updateProperty('externals', $event)" 
-                [options]="dependencies.externals | mapToCategories"></select-input>
+                [options]="ExternalResource.p('all') | async"></select-input>
               </div>
+              
               <ng-content></ng-content>
+              
           </div>
         </div>
     </div>
@@ -57,43 +61,44 @@ import {PropertyToolbar} from '../components/toolbar.propertySettings';
   pipes: [MapToCategories]
 })
 export class ResourcePanel {
-  item: any;
-  ignore: Set<string> = new Set<string>();
-  dependencies: any;
+  @Input() item: any;
+  @Input() ignore: Set<string> = new Set<string>();
 
   @Output() saved = new EventEmitter();
   @Output() canceled = new EventEmitter();
   @Output() removed = new EventEmitter();
   @Output() propertyUpdated = new EventEmitter();
 
-  protected properties: any[] = [];
+  ExternalResource = ExternalResource;
+
+  properties: any[] = [];
 
   ngOnInit(){
     if (!this.ignore) this.ignore = new Set<string>();
     this.ignore = this.ignore.add("id").add("href");
-    let i = 1;
 
     if (this.item && this.item.constructor){
-      let properties = Object.assign({}, this.item.constructor.properties, this.item.constructor.relationshipShortcuts);
+      let properties = Object.assign({}, this.item.constructor.properties,
+        this.item.constructor.relationshipShortcuts);
+
       for (let property in properties){
-        let option = {value: property, selected: false};
-        if (!this.ignore.has(property)){
-          option.selected = true;
+        if (property == "class" || property == "themes") continue;
+        if (property.indexOf("Border") > -1) {
+          if (!this.properties.find(x => (x.value == "border")))
+            this.properties.push({value: "border", selected: !this.ignore.has("border")});
         }
-        this.properties.push(option);
+        this.properties.push({value: property, selected: !this.ignore.has(property)});
       }
     }
   }
 
-  protected includeProperty(prop: string, group: string){
-    // if (this.properties){
-    //   let option = this.properties.find((x:any) => (x.value == prop));
-    //   if (option && !option.selected) return false;
-    // } else {
-      if (this.ignore.has(prop)) return false;
-      if (group && this.ignore.has(group)) return false;
-    // }
-    return true;
+  selectionChanged(option: any){
+    if ( this.ignore.has(option.value) &&  option.selected) this.ignore.delete(option.value);
+    if (!this.ignore.has(option.value) && !option.selected) this.ignore.add(option.value);
+  }
+
+  protected includeProperty(prop: string){
+    return !this.ignore.has(prop);
   }
 
   updateProperty(property: string, item: any){
@@ -107,21 +112,11 @@ export class ResourcePanel {
   }
 
   addTemplate(property: string, Class: any){
-    //TODO: rewrite using client library!
-    //TODO: replace with Class.new();
-    this.item[property] = new Class({name: "T: " + property + " " + this.item.name});
-    if (this.dependencies) {
-      if (!this.dependencies.templates) this.dependencies.templates = [];
-      this.dependencies.templates.push(this.item[property]);
-    }
+    this.item[property] = Class.new({name: "T: " + property + " " + this.item.name});
   }
 
   removeTemplate(property: string, item: any){
-    //TODO: rewrite using client library!
-    if (this.dependencies && this.dependencies.templates) {
-      let index = this.dependencies.templates.indexOf(item);
-      if (index >= 0) {this.dependencies.templates.splice(index, 1);}
-    }
+    item.delete();
     this.updateProperty(property, null);
   }
 

@@ -154,23 +154,37 @@ export class AsyncResourceProvider {
     let self = this;
 
     (async function() {
+      /*Material type*/
       var water = model.MaterialType.new({name: "Water"});
+      await water.commit();
       var vWater = model.MeasurableType.new({name: "Concentration of water", quality: "concentration",
         materials: [water]});
+      await vWater.commit();
 
+      /*Measurable type*/
       var sodiumIon = model.MaterialType.new({name: "Sodium ion"});
+      await sodiumIon.commit();
       var vSodiumIon = model.MeasurableType.new({name: "Concentration of sodium ion", quality: "concentration",
         materials: [sodiumIon]});
+      await vSodiumIon.commit();
 
+      /*Process type*/
       var processes = [
         model.ProcessType.new({name: "Inflow Right Heart"}),
         model.ProcessType.new({name: "Outflow Right Heart"}),
         model.ProcessType.new({name: "Inflow Left Heart"}),
         model.ProcessType.new({name: "Outflow Left Heart"})];
 
+      await Promise.all(processes.map(p => p.commit()));
+
+      /*Causality type*/
+      var causality = model.CausalityType.new({name: "Causality relations", supertypes: [], subtypes: []});
+      await causality.commit();
+
       console.log("Material", water);
       console.log("Measurable", vWater);
       console.log("Process", processes[0]);
+      console.log("Causality", causality);
 
       self.addResource(water);
       self.addResource(sodiumIon);
@@ -179,6 +193,9 @@ export class AsyncResourceProvider {
       self.addResource(vSodiumIon);
 
       self.addResources(processes);
+
+      self.addResources(causality);
+
 
     })();
   }

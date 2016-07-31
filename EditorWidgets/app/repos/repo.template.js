@@ -27,6 +27,7 @@ var toolbar_sort_1 = require('../components/toolbar.sort');
 var dispatch_templates_1 = require("../templates/dispatch.templates");
 var repo_abstract_1 = require("./repo.abstract");
 var pipe_general_1 = require("../transformations/pipe.general");
+var model = require("open-physiology-model");
 var RepoTemplate = (function (_super) {
     __extends(RepoTemplate, _super);
     function RepoTemplate() {
@@ -36,13 +37,17 @@ var RepoTemplate = (function (_super) {
     RepoTemplate.prototype.ngOnInit = function () {
         _super.prototype.ngOnInit.call(this);
         if (this.types.length == 0) {
-            for (var x in service_apinatomy2_1.TemplateName)
+            for (var x in service_apinatomy2_1.TemplateName) {
+                if (x == service_apinatomy2_1.TemplateName.Template)
+                    continue;
                 this.types.push(x);
+            }
         }
+        //TODO - reset to be draggable according to relations
         this.zones = this.types.map(function (x) { return x + "_zone"; });
     };
-    RepoTemplate.prototype.getIcon = function (item) {
-        switch (item.class) {
+    RepoTemplate.prototype.getIcon = function (Class) {
+        switch (Class) {
             case this.templateName.Template: return "images/type.png";
             case this.templateName.LyphTemplate: return "images/lyphType.png";
             case this.templateName.CylindricalLyphTemplate: return "images/cylindricalLyphType.png";
@@ -57,37 +62,37 @@ var RepoTemplate = (function (_super) {
         }
         return "images/resource.png";
     };
-    RepoTemplate.prototype.onAdded = function (resourceType) {
+    RepoTemplate.prototype.onAdded = function (Class) {
         var newItem;
-        switch (resourceType) {
+        switch (Class) {
             case this.templateName.CausalityTemplate:
-                newItem = new service_apinatomy2_1.CausalityTemplate({ name: "(New) T: causality" });
+                newItem = model.CausalityTemplate.new({ name: "(New) T: causality" });
                 break;
             case this.templateName.BorderTemplate:
-                newItem = new service_apinatomy2_1.BorderTemplate({ name: "(New) T: border" });
+                newItem = model.BorderTemplate.new({ name: "(New) T: border" });
                 break;
             case this.templateName.NodeTemplate:
-                newItem = new service_apinatomy2_1.NodeTemplate({ name: "(New) T: node" });
+                newItem = model.NodeTemplate.new({ name: "(New) T: node" });
                 break;
             case this.templateName.MeasurableTemplate:
-                newItem = new service_apinatomy2_1.MeasurableTemplate({ name: "(New) T: measurable" });
+                newItem = model.MeasurableTemplate.new({ name: "(New) T: measurable" });
                 break;
             case this.templateName.ProcessTemplate:
-                newItem = new service_apinatomy2_1.ProcessTemplate({ name: "(New) T: process" });
+                newItem = model.ProcessTemplate.new({ name: "(New) T: process" });
                 break;
             case this.templateName.LyphTemplate:
-                newItem = new service_apinatomy2_1.LyphTemplate({ name: "(New) T: type" });
+                newItem = model.LyphTemplate.new({ name: "(New) T: type" });
                 break;
             case this.templateName.CylindricalLyphTemplate:
-                newItem = new service_apinatomy2_1.CylindricalLyphTemplate({ name: "(New) T: cylindrical lyph" });
+                newItem = model.CylindricalLyphTemplate.new({ name: "(New) T: cylindrical lyph" });
                 break;
             case this.templateName.GroupTemplate:
-                newItem = new service_apinatomy2_1.GroupTemplate({ name: "(New) T: group" });
+                newItem = model.GroupTemplate.new({ name: "(New) T: group" });
                 break;
             case this.templateName.OmegaTreeTemplate:
-                newItem = new service_apinatomy2_1.OmegaTreeTemplate({ name: "(New) T: omega tree" });
+                newItem = model.OmegaTreeTemplate.new({ name: "(New) T: omega tree" });
                 break;
-            default: newItem = new service_apinatomy2_1.Template({ name: "(New) T" });
+            default: newItem = model.Template({ name: "(New) T" });
         }
         this.items.push(newItem);
         this.added.emit(newItem);
@@ -98,7 +103,7 @@ var RepoTemplate = (function (_super) {
         core_1.Component({
             selector: 'repo-template',
             inputs: ['items', 'caption', 'dependencies', 'ignore', 'types', 'selectedItem', 'options'],
-            template: "\n    <div class=\"panel panel-warning repo-template\">\n      <div class=\"panel-heading\">{{caption}}</div>\n      <div class=\"panel-body\" >\n        <sort-toolbar *ngIf= \"options && options.showSortToolbar\" [options]=\"['Name', 'ID']\" (sorted)=\"onSorted($event)\"></sort-toolbar>\n        <edit-toolbar *ngIf= \"!(options && options.headersOnly)\" [options]=\"types\" (added)=\"onAdded($event)\"></edit-toolbar>\n        <filter-toolbar *ngIf= \"options && options.showFilterToolbar\" [filter]=\"searchString\" [options]=\"['Name', 'ID', 'Class']\" (applied)=\"onFiltered($event)\"></filter-toolbar>\n          \n        <accordion class=\"list-group\" [closeOthers]=\"true\" \n          dnd-sortable-container [dropZones]=\"zones\" [sortableData]=\"items\">\n          <accordion-group *ngFor=\"let item of items | orderBy : sortByMode | filterBy: [searchString, filterByMode]; let i = index\" \n            class=\"list-group-item\" dnd-sortable \n           [sortableIndex]=\"i\" (click)=\"onHeaderClick(item)\">\n            <div accordion-heading><item-header [item]=\"item\" [selectedItem]=\"selectedItem\" [isSelectedOpen]=\"isSelectedOpen\" [icon]=\"getIcon(item)\"></item-header></div>\n\n            <div *ngIf=\"!options || !options.headersOnly\">\n              <panel-template *ngIf=\"item == selectedItem\" \n                [item]=\"item\" \n                [ignore]=\"ignore\"\n                [dependencies]=\"dependencies\" \n                (saved)=\"onSaved(item, $event)\" \n                (removed)=\"onRemoved(item)\"></panel-template>            \n            </div>\n          </accordion-group>        \n        </accordion>       \n      </div>\n    </div>\n  ",
+            template: "\n    <div class=\"panel panel-warning repo-template\">\n      <div class=\"panel-heading\">{{caption}}</div>\n      <div class=\"panel-body\" >\n        <sort-toolbar *ngIf= \"options && options.showSortToolbar\" [options]=\"['Name', 'ID']\" (sorted)=\"onSorted($event)\"></sort-toolbar>\n        <edit-toolbar *ngIf= \"!(options && options.headersOnly)\" [options]=\"types\" (added)=\"onAdded($event)\"></edit-toolbar>\n        <filter-toolbar *ngIf= \"options && options.showFilterToolbar\" [filter]=\"searchString\" [options]=\"['Name', 'ID', 'Class']\" (applied)=\"onFiltered($event)\"></filter-toolbar>\n          \n        <accordion class=\"list-group\" [closeOthers]=\"true\" \n          dnd-sortable-container [dropZones]=\"zones\" [sortableData]=\"items\">\n          <accordion-group *ngFor=\"let item of items | orderBy : sortByMode | filterBy: [searchString, filterByMode]; let i = index\" \n            class=\"list-group-item\" dnd-sortable \n           [sortableIndex]=\"i\" (click)=\"onHeaderClick(item)\">\n            <div accordion-heading><item-header [item]=\"item\" [selectedItem]=\"selectedItem\" [isSelectedOpen]=\"isSelectedOpen\" [icon]=\"getIcon(item.class)\"></item-header></div>\n\n            <div *ngIf=\"!options || !options.headersOnly\">\n              <panel-template *ngIf=\"item == selectedItem\" \n                [item]=\"item\" \n                [ignore]=\"ignore\"\n                [dependencies]=\"dependencies\" \n                (saved)=\"onSaved(item, $event)\" \n                (removed)=\"onRemoved(item)\"></panel-template>            \n            </div>\n          </accordion-group>        \n        </accordion>       \n      </div>\n    </div>\n  ",
             directives: [repo_abstract_1.ItemHeader, toolbar_sort_1.SortToolbar, toolbar_repoEdit_1.EditToolbar, toolbar_filter_1.FilterToolbar,
                 dispatch_templates_1.PanelDispatchTemplates, accordion_1.ACCORDION_DIRECTIVES, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES, ng2_dnd_1.DND_DIRECTIVES],
             pipes: [pipe_general_1.OrderBy, pipe_general_1.FilterBy]

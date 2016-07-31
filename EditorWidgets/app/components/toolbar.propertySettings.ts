@@ -7,18 +7,16 @@ import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
 
 @Component({
   selector: 'property-toolbar',
-  inputs: ['options', 'caption'],
+  inputs: ['options'],
   template: `
     <div class="dropdown" dropdown>
-      <button *ngIf="caption" type="button" class="btn btn-default" dropdown-open>
-        {{caption}} <span class="caret"></span>
-      </button>
-      <button *ngIf="!caption" type="button" class="btn btn-default"  dropdown-open>
+      <button type="button" class="btn btn-default"  dropdown-open>
         <span class="glyphicon glyphicon-list"></span>
       </button>
       <ul class="dropdown-menu dropdown-menu-right" dropdown-not-closable-zone>
-        <li *ngFor="let option of options; let i = index">
-          <a class="small" href="#"><input type="checkbox" [(ngModel)]="option.selected"/>&nbsp;{{option.value}}</a>
+        <li *ngFor="let option of options">
+          <a class="small" href="#"><input type="checkbox" 
+          [(ngModel)]="option.selected" (ngModelChange)="selectionChanged.emit(option)"/>&nbsp;{{option.value}}</a>
         </li>
       </ul>
     </div>
@@ -27,5 +25,26 @@ import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
   directives:[DROPDOWN_DIRECTIVES, RADIO_GROUP_DIRECTIVES]
 })
 export class PropertyToolbar {
+  @Output() selectionChanged = new EventEmitter();
+}
+
+@Component({
+  selector: 'mult-property-toolbar',
+  inputs: ['options', 'caption'],
+  template: `
+    <div class="dropdown" dropdown>
+      <button type="button" class="btn btn-default" dropdown-open>
+        {{caption}} <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-right" dropdown-not-closable-zone>
+        <li *ngFor="let option of options; let i = index">
+          <a class="small" href="#"><input type="checkbox" [(ngModel)]="option.selected"/>&nbsp;{{option.value}}</a>
+        </li>
+      </ul>
+    </div>
+    `,
+  directives:[DROPDOWN_DIRECTIVES, RADIO_GROUP_DIRECTIVES]
+})
+export class CustomPropertyToolbar {
   constructor(){}
 }

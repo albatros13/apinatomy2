@@ -27,10 +27,11 @@ import {MultiSelectInput} from '../components/component.select';
       <!--Materials-->
       <div class="input-control" *ngIf="includeProperty('materials')">
         <label for="materials">Materials: </label>
-        <select-input [items]="item.materials" 
+        <select-input [items]="item.p('materials') | async" 
         (updated)="updateProperty('materials', $event)"     
         [options]="dependencies.materials"></select-input>
       </div>   
+       
       <ng-content></ng-content>   
          
     </type-panel>

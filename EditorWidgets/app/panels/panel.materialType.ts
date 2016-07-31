@@ -1,36 +1,31 @@
 /**
  * Created by Natallia on 6/17/2016.
  */
-import {Component, Input} from '@angular/core';
-import {RestoreService} from "../services/service.restore";
-import {MeasurableLocationPanel} from "./panel.measurableLocation";
+import {Component} from '@angular/core';
+import {MeasurableLocationTypePanel} from "./panel.measurableLocationType";
 import {MultiSelectInput} from '../components/component.select';
 import {RepoTemplate} from '../repos/repo.template';
-import {MeasurableType} from "../services/service.apinatomy2";
+import {MaterialType, MeasurableType} from "open-physiology-model";
 
 @Component({
-  providers: [RestoreService],
   selector: 'materialType-panel',
   inputs: ['item', 'ignore', 'dependencies', 'options'],
   template:`
-    <measurableLocation-panel [item]="item" 
-      [dependencies] = "dependencies" 
+    <measurableLocationType-panel [item]="item" 
       [ignore]="ignore"
       [options] ="options"
       (saved)    = "onSaved($event)"
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"
-      (propertyUpdated) = "onPropertyUpdated($event)">
-      
-        <ng-content select="headerGroup"></ng-content>
+      (propertyUpdated) = "onPropertyUpdated($event)">        
         
         <!--Materials-->
         <div class="input-control" *ngIf="includeProperty('materials')">
           <label for="materials">Materials: </label>
           <select-input 
-            [items]="item.materials" 
+            [items]="item.p('materials') | async" 
             (updated)="updateProperty('materials', $event)" 
-            [options]="dependencies.materials"></select-input>
+            [options]="materialTypeClass.p('all') | async"></select-input>
         </div>
         
         <providerGroup>             
@@ -38,9 +33,9 @@ import {MeasurableType} from "../services/service.apinatomy2";
           <div class="input-control" *ngIf="includeProperty('materialProviders')">
             <label for="materialProviders">Inherits materials from: </label>
             <select-input 
-              [items]="item.materialProviders" 
+              [items]="item.p('materialProviders') | async" 
               (updated)="updateProperty('materialProviders', $event)" 
-              [options]="dependencies.materials"></select-input>
+              [options]="materialTypeClass.p('all') | async"></select-input>
           </div>
           <ng-content select="providerGroup"></ng-content>
         </providerGroup>
@@ -58,17 +53,17 @@ import {MeasurableType} from "../services/service.apinatomy2";
         <!--</generateFromSupertype>-->
         
         <ng-content></ng-content>
-    </measurableLocation-panel>
+        
+    </measurableLocationType-panel>
   `,
-  directives: [MeasurableLocationPanel, MultiSelectInput, RepoTemplate]
+  directives: [MeasurableLocationTypePanel, MultiSelectInput, RepoTemplate]
 })
-export class MaterialTypePanel extends MeasurableLocationPanel{
+export class MaterialTypePanel extends MeasurableLocationTypePanel{
+  materialTypeClass   = MaterialType;
+  measurableTypeClass = MeasurableType;
+
   measurablesToReplicate: Array<any> = [];
   supertypeMeasurables: Array<any> = [];
-
-  ngOnInit(){
-    this.ignore = this.ignore.add("providers");
-  }
 
   //TODO: Move generation of measurables to modal window
   onPropertyUpdated(event: any){
@@ -92,12 +87,9 @@ export class MaterialTypePanel extends MeasurableLocationPanel{
 
   protected onSaved(event: any) {
     for (let measurable of this.measurablesToReplicate){
-      let newMeasurable = new MeasurableType(measurable);
-      delete newMeasurable["id"];
-      //newMeasurable.materials = [this.item];
-      if (this.dependencies && this.dependencies.measurables) {
-        this.dependencies.measurables.push(newMeasurable);
-      }
+      delete measurable["id"];
+      let newMeasurable = this.measurableTypeClass.new(measurable);
+      newMeasurable.location = this.item;
     }
     this.saved.emit(event);
   }

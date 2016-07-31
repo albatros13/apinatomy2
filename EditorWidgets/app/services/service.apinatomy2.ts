@@ -1,14 +1,9 @@
-"use strict";
-import {Injectable} from '@angular/core';
-
 /*ENUMERATIONS*/
-
 export enum ResourceName {
   Resource            = <any>"Resource",
   ExternalResource    = <any>"ExternalResource",
   Type                = <any>"Type",
-  MeasurableLocation  = <any>"MeasurableLocation",
-
+  MeasurableLocationType  = <any>"MeasurableLocationType",
   MaterialType        = <any>"MaterialType",
   LyphType            = <any>"LyphType",
   CylindricalLyphType = <any>"CylindricalLyphType",
@@ -103,7 +98,6 @@ export class ValueDistribution {
 }
 
 //Entities
-
 export class Resource {
   public id: number = 0;
   public name: string = "";
@@ -146,17 +140,17 @@ export class Type extends Resource {
   }
 }
 
-export class MeasurableLocation extends Type {
+export class MeasurableLocationType extends Type {
   public measurables:Array<MeasurableTemplate>;
 
   constructor(obj:any = {} ){
     super(obj);
-    this.class = ResourceName.MeasurableLocation;
+    this.class = ResourceName.MeasurableLocationType;
     this.measurables = obj.measurables;
   }
 }
 
-export class MaterialType extends MeasurableLocation {
+export class MaterialType extends MeasurableLocationType {
   public materialProviders: Array<MaterialType> = [];
   public materials: Array<MaterialType> = [];
   public measurableProviders: Array<LyphType> = [];
@@ -203,10 +197,10 @@ export class LyphType extends MaterialType {
     this.outerBorder = obj.outerBorder;
 
     if (!this.innerBorder){
-      this.innerBorder = new BorderTemplate({name: "T inner: " + testBorders[0].name, type:  testBorders[0]});
+      this.innerBorder = new BorderTemplate({name: "T inner: General"});
     }
     if (!this.outerBorder){
-      this.outerBorder = new BorderTemplate({name: "T outer: " + testBorders[0].name, type:  testBorders[0]});
+      this.outerBorder = new BorderTemplate({name: "T outer: General"});
     }
   }
 }
@@ -226,15 +220,15 @@ export class CylindricalLyphType extends LyphType {
     this.plusBorder = obj.plusBorder;
 
     if (!this.minusBorder){
-      this.minusBorder = new BorderTemplate({name: "T minus: " + testBorders[0].name, type:  testBorders[0]});
+      this.minusBorder = new BorderTemplate({name: "T minus: General"});
     }
     if (!this.plusBorder){
-      this.plusBorder = new BorderTemplate({name: "T plus: " + testBorders[0].name, type:  testBorders[0]});
+      this.plusBorder = new BorderTemplate({name: "T plus: General"});
     }
   }
 }
 
-export class ProcessType extends MeasurableLocation {
+export class ProcessType extends MeasurableLocationType {
   public transportPhenomenon: Array<TransportPhenomenon>;
   public species: string;
   public materials: Array<MaterialType>;
@@ -272,7 +266,7 @@ export class CausalityType extends Type {
   }
 }
 
-export class NodeType extends MeasurableLocation {
+export class NodeType extends MeasurableLocationType {
   public channels: Array<NodeTemplate>;
 
   constructor(obj:any = {} ){
@@ -282,7 +276,7 @@ export class NodeType extends MeasurableLocation {
   }
 }
 
-export class BorderType extends MeasurableLocation {
+export class BorderType extends MeasurableLocationType {
   public position: Template;
   _form: Array<FormType> = [FormType.open, FormType.closed];
 
@@ -396,7 +390,7 @@ export class Template extends Resource {
 
 export class MeasurableTemplate extends Template {
   public type: MeasurableType;
-  public location: MeasurableLocation;
+  public location: MeasurableLocationType;
 
   constructor(obj:any = {} ){
     super(obj);
@@ -507,34 +501,14 @@ export class CylindricalLyphTemplate extends LyphTemplate {
   }
 }
 
-var testBorders = [
-  new BorderType({id: 80, name: "General border", form: [FormType.open, FormType.closed]}),
-  new BorderType({id: 81, name: "Open border", form: [FormType.open]}),
-  new BorderType({id: 82, name: "Closed border", form: [FormType.closed]})
-];
+// @Injectable()
+// export class ExternalResourceProvider {
+//   public items: Array<ExternalResource> = [
+//     new ExternalResource({id: 3000, name: "FMA_44539: Third plantar metatarsal vein", type:  "fma"}),
+//     new ExternalResource({id: 4000, name: "cocomac:98: Accessor basal nucleus (amygdala), ventromedial division", type:  "cocomac"})
+//   ];
+// }
 
-@Injectable()
-export class ExternalResourceProvider {
-  public items: Array<ExternalResource> = [
-    new ExternalResource({id: 3000, name: "FMA_44539: Third plantar metatarsal vein", type:  "fma"}),
-    new ExternalResource({id: 4000, name: "cocomac:98: Accessor basal nucleus (amygdala), ventromedial division", type:  "cocomac"})
-  ];
-}
-
-@Injectable()
-export class BorderTypeProvider {
-  public items: Array<BorderType> = [];
-  public templates: Array<BorderTemplate> = [];
-
-  constructor(){
-    this.items = testBorders;
-    this.templates = this.items.map((item) =>
-      new BorderTemplate({id: item.id + 300, name: "T: " + item.name, type:  item}));
-  }
-}
-
-// Cylindrical lyph types
-// Omega tree types
 
 
 

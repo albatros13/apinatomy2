@@ -18,15 +18,20 @@ import {RepoTemplate} from '../repos/repo.template';
       (removed)  = "removed.emit($event)"
       (propertyUpdated) = "propertyUpdated.emit($event)">
 
-      <!--Elements-->
-      <div class="input-control" *ngIf="includeProperty('elements')">
-         <repo-template caption="Elements" [items] = "item.elements" 
-         (updated)="updateProperty('elements', $event)"
-         [dependencies] = "dependencies" [types]="[
-           templateName.CylindricalLyphTemplate, templateName.OmegaTreeTemplate]"></repo-template>
-      </div>
       
-      <ng-content></ng-content>      
+      
+      <relationGroup>
+        <!--Elements-->
+        <div class="input-control" *ngIf="includeProperty('elements')">
+           <repo-template caption="Elements" [items] = "item.elements" 
+           (updated)="updateProperty('elements', $event)"
+           [dependencies] = "dependencies" [types]="[
+             templateName.CylindricalLyphTemplate, templateName.OmegaTreeTemplate]"></repo-template>
+        </div>
+         <ng-content select="relationGroup"></ng-content> 
+      </relationGroup>
+      
+        <ng-content></ng-content>    
     
     </type-panel>
   `,

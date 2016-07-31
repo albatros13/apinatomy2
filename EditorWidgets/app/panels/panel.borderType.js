@@ -17,7 +17,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  * Created by Natallia on 6/19/2016.
  */
 var core_1 = require('@angular/core');
-var panel_measurableLocation_1 = require("./panel.measurableLocation");
+var panel_measurableLocationType_1 = require("./panel.measurableLocationType");
 var service_apinatomy2_1 = require("../services/service.apinatomy2");
 var ng2_radio_group_1 = require("ng2-radio-group");
 var BorderTypePanel = (function (_super) {
@@ -34,12 +34,12 @@ var BorderTypePanel = (function (_super) {
         core_1.Component({
             selector: 'borderType-panel',
             inputs: ['item', 'dependencies', 'ignore', 'options'],
-            template: "\n    <measurableLocation-panel [item] = \"item\" \n      [dependencies] = \"dependencies\" \n      [ignore] = \"ignore.add('supertypes').add('subtypes')\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n            \n      <div class=\"input-control\">\n        <label for=\"position\">Position: {{item.position}}</label>\n        <input type=\"range\" min=\"0\" max=\"100\" step=\"0.1\" required [(ngModel)]=\"item.position\">\n      </div>\n      \n      <!--Form-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('form')\">\n      <fieldset>\n        <legend>Form:</legend>\n         <checkbox-group [(ngModel)]=\"item.form\" [required]=\"true\">\n           <input type=\"checkbox\" value=\"open\">open&nbsp;\n           <input type=\"checkbox\" value=\"closed\">closed<br/>\n         </checkbox-group>\n      </fieldset>\n      </div>\n    </measurableLocation-panel>\n  ",
-            directives: [panel_measurableLocation_1.MeasurableLocationPanel, ng2_radio_group_1.RADIO_GROUP_DIRECTIVES]
+            template: "\n    <measurableLocationType-panel [item] = \"item\" \n      [dependencies] = \"dependencies\" \n      [ignore] = \"ignore.add('supertypes').add('subtypes')\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n            \n      <div class=\"input-control\">\n        <label for=\"position\">Position: {{item.position}}</label>\n        <input type=\"range\" min=\"0\" max=\"100\" step=\"0.1\" required [(ngModel)]=\"item.position\">\n      </div>\n      \n      <!--Form-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('form')\">\n      <fieldset>\n        <legend>Form:</legend>\n         <checkbox-group [(ngModel)]=\"item.form\" [required]=\"true\">\n           <input type=\"checkbox\" value=\"open\">open&nbsp;\n           <input type=\"checkbox\" value=\"closed\">closed<br/>\n         </checkbox-group>\n      </fieldset>\n      </div>\n      \n     <ng-content></ng-content>  \n            \n    </measurableLocationType-panel>\n  ",
+            directives: [panel_measurableLocationType_1.MeasurableLocationTypePanel, ng2_radio_group_1.RADIO_GROUP_DIRECTIVES]
         }), 
         __metadata('design:paramtypes', [])
     ], BorderTypePanel);
     return BorderTypePanel;
-}(panel_measurableLocation_1.MeasurableLocationPanel));
+}(panel_measurableLocationType_1.MeasurableLocationTypePanel));
 exports.BorderTypePanel = BorderTypePanel;
 //# sourceMappingURL=panel.borderType.js.map

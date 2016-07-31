@@ -1,12 +1,10 @@
-/**
- * Created by Natallia on 6/21/2016.
- */
+"use strict";
 import {Component} from '@angular/core';
 import {SingleSelectInput} from '../components/component.select';
 import {TemplateValue} from '../components/component.templateValue';
 import {TemplatePanel} from "./template.template";
-import {BorderTemplate} from '../services/service.apinatomy2';
 import {BorderTemplatePanel} from "../templates/template.borderTemplate";
+import {BorderTemplate} from 'open-physiology-model';
 
 @Component({
   selector: 'lyphTemplate-panel',

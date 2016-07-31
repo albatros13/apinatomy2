@@ -27,17 +27,14 @@ import {SELECT_DIRECTIVES} from 'ng2-select/ng2-select';
 })
 export class MultiSelectInput /*implements OnChanges*/ {
 
-  @Input()  options: Set<any>;
-  @Input()  items:   Set<any>;
+  @Input()  options: Set<any> = new Set<any>();
+  @Input()  items:   Set<any> = new Set<any>();
   @Output() updated = new EventEmitter();
 
   active: boolean = true;
 
   externalChange = false;
   ngOnChanges(changes: {[propName: string]: any}) {
-
-    console.log('--changes--', changes);
-
     if (this.externalChange){
       setTimeout(() => { this.active = false }, 0);
       setTimeout(() => { this.active = true  }, 0);
@@ -47,7 +44,7 @@ export class MultiSelectInput /*implements OnChanges*/ {
 
   refreshValue(value: Array<any>):void {
     let selected = value.map(x => x.id);
-    // this.externalChange = false;
+    this.externalChange = false;
     let newItems = Array.from(this.options).filter(y => (selected.indexOf((y.id)? y.id: y.name) != -1));
     this.updated.emit(new Set(newItems));
   }
@@ -88,9 +85,7 @@ export class SingleSelectInput {
   }
 
   ngOnChanges(changes: {[propName: string]: any}) {
-    this.items = [];
-    if (this.item) this.items = [this.item];
-
+    this.items = (this.item)? [this.item]: this.items = [];
     if (this.externalChange){
       setTimeout(() => {this.active = false}, 0);
       setTimeout(() => {this.active = true}, 0);

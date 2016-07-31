@@ -8,7 +8,7 @@ import {FilterByClass} from "../transformations/pipe.general";
 import {RepoTemplate} from '../repos/repo.template';
 
 @Component({
-  selector: 'measurableLocation-panel',
+  selector: 'measurableLocationType-panel',
   inputs: ['item', 'ignore', 'dependencies', 'options'],
   template:`
     <type-panel [item]="item" 
@@ -20,21 +20,19 @@ import {RepoTemplate} from '../repos/repo.template';
       (removed)  = "removed.emit($event)"
       (propertyUpdated) = "propertyUpdated.emit($event)">
       
-       <fieldset *ngIf="includeProperty('providers')">  
-          <legend>Providers</legend> 
-          <!--MeasurableProviders-->
+<!--       <providerGroup>
+          &lt;!&ndash;MeasurableProviders&ndash;&gt;
           <div class="input-control" *ngIf="includeProperty('measurableProviders')">
             <label for="measurableProviders">Inherits measurables from: </label>
-            <select-input [items]="item.measurableProviders" 
+            <select-input [items]="item.p('measurableProviders') | async" 
             (updated)="updateProperty('measurableProviders', $event)" 
             [options]="dependencies.materials"></select-input>
           </div>
           <ng-content select="providerGroup"></ng-content>
-        </fieldset>
+       </providerGroup>-->
         
-       <fieldset *ngIf="includeProperty('relations')">  
-        <legend>Relations</legend>  
-          <!--Measurables-->
+<!--       <relationGroup>
+          &lt;!&ndash;Measurables&ndash;&gt;
           <div class="input-control" *ngIf="includeProperty('measurables')">
             <repo-template caption='Measurables' 
             [items]="item.measurables" 
@@ -42,14 +40,15 @@ import {RepoTemplate} from '../repos/repo.template';
             [dependencies]="dependencies"
             [types]="[templateName.MeasurableTemplate]"></repo-template>
           </div>
-          <ng-content select="relationGroup"></ng-content>
-      </fieldset>
-  
-      <ng-content></ng-content>      
+           <ng-content select="relationGroup"></ng-content>
+       </relationGroup>-->
+       
+       <ng-content></ng-content>      
 
     </type-panel>
   `,
   directives: [TypePanel, MultiSelectInput, RepoTemplate],
   pipes: [FilterByClass]
 })
-export class MeasurableLocationPanel extends TypePanel{}
+export class MeasurableLocationTypePanel extends TypePanel{
+}

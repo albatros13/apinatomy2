@@ -36,7 +36,7 @@ import {RepoTemplate} from '../repos/repo.template';
         <!--ClinicalIndex-->
         <div class="input-control" *ngIf="includeProperty('clinicalIndices')">
           <label for="clinicalIndices">Clinical indices: </label>
-          <select-input [items]="item.clinicalIndices" 
+          <select-input [items]="item.p('clinicalIndices') | async" 
           (updated)="updateProperty('clinicalIndices', $event)"
           [options]="dependencies.clinicalIndices"></select-input>
         </div>

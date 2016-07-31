@@ -1,5 +1,5 @@
-import {Component, Directive, OnChanges, OnDestroy, Input, Output, ViewChild, ElementRef, Renderer,
-  ViewContainerRef, EventEmitter, ComponentResolver} from '@angular/core';
+import {Component, OnChanges, OnDestroy, Output, ElementRef, Renderer,
+  EventEmitter} from '@angular/core';
 import {nvD3} from 'ng2-nvd3/lib/ng2-nvd3';
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
@@ -53,7 +53,7 @@ export class HierarchyGraphWidget implements OnChanges, OnDestroy{
 
   ngOnInit(){
     if (!this.relations) this.relations = [];
-    if (!this.properties) this.properties = [];
+
     this.setGraphOptions();
   }
 

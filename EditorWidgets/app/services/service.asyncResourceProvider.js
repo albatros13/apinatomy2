@@ -140,25 +140,38 @@ var AsyncResourceProvider = (function () {
         var self = this;
         (function () {
             return __awaiter(this, void 0, void 0, function* () {
+                /*Material type*/
                 var water = model.MaterialType.new({ name: "Water" });
+                yield water.commit();
                 var vWater = model.MeasurableType.new({ name: "Concentration of water", quality: "concentration",
                     materials: [water] });
+                yield vWater.commit();
+                /*Measurable type*/
                 var sodiumIon = model.MaterialType.new({ name: "Sodium ion" });
+                yield sodiumIon.commit();
                 var vSodiumIon = model.MeasurableType.new({ name: "Concentration of sodium ion", quality: "concentration",
                     materials: [sodiumIon] });
+                yield vSodiumIon.commit();
+                /*Process type*/
                 var processes = [
                     model.ProcessType.new({ name: "Inflow Right Heart" }),
                     model.ProcessType.new({ name: "Outflow Right Heart" }),
                     model.ProcessType.new({ name: "Inflow Left Heart" }),
                     model.ProcessType.new({ name: "Outflow Left Heart" })];
+                yield Promise.all(processes.map(function (p) { return p.commit(); }));
+                /*Causality type*/
+                var causality = model.CausalityType.new({ name: "Causality relations", supertypes: [], subtypes: [] });
+                yield causality.commit();
                 console.log("Material", water);
                 console.log("Measurable", vWater);
                 console.log("Process", processes[0]);
+                console.log("Causality", causality);
                 self.addResource(water);
                 self.addResource(sodiumIon);
                 self.addResource(vWater);
                 self.addResource(vSodiumIon);
                 self.addResources(processes);
+                self.addResources(causality);
             });
         })();
     };

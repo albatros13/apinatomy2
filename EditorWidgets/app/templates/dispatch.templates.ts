@@ -1,5 +1,4 @@
 import {Component, Output, EventEmitter} from '@angular/core';
-import {RestoreService} from "../services/service.restore";
 import {TemplateName} from "../services/service.apinatomy2";
 import {TemplatePanel} from './template.template';
 import {MeasurableTemplatePanel} from './template.measurableTemplate';
@@ -13,7 +12,6 @@ import {LyphTemplatePanel} from './template.lyphTemplate';
 import {CylindricalLyphTemplatePanel} from './template.cylindricalLyphTemplate';
 
 @Component({
-  providers: [RestoreService],
   selector: 'panel-template',
   inputs: ['item', 'dependencies', 'ignore'],
   template:`
@@ -73,28 +71,19 @@ import {CylindricalLyphTemplatePanel} from './template.cylindricalLyphTemplate';
     GroupTemplatePanel, OmegaTreeTemplatePanel]
 })
 export class PanelDispatchTemplates{
+  item: any;
   templateName = TemplateName;
   @Output() saved = new EventEmitter();
   @Output() removed = new EventEmitter();
   @Output() canceled = new EventEmitter();
 
-  constructor(protected restoreService: RestoreService){}
-
-  protected set item (item: any) {
-    this.restoreService.setItem(item);
-  }
-
-  protected get item () {
-    return this.restoreService.getItem();
-  }
-
   protected onSaved() {
-    this.item = this.restoreService.getItem();
+    this.item.commit();
     this.saved.emit(this.item);
   }
 
   protected onCanceled() {
-    this.item = this.restoreService.restoreItem();
+    this.item.rollback();
     this.canceled.emit(this.item);
   }
 }

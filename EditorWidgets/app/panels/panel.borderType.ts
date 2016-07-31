@@ -2,7 +2,7 @@
  * Created by Natallia on 6/19/2016.
  */
 import {Component} from '@angular/core';
-import {MeasurableLocationPanel} from "./panel.measurableLocation";
+import {MeasurableLocationTypePanel} from "./panel.measurableLocationType";
 import {FormType} from "../services/service.apinatomy2";
 import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
 
@@ -10,7 +10,7 @@ import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
   selector: 'borderType-panel',
   inputs: ['item', 'dependencies', 'ignore', 'options'],
   template:`
-    <measurableLocation-panel [item] = "item" 
+    <measurableLocationType-panel [item] = "item" 
       [dependencies] = "dependencies" 
       [ignore] = "ignore.add('supertypes').add('subtypes')"
       [options]  = "options"
@@ -34,13 +34,16 @@ import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
          </checkbox-group>
       </fieldset>
       </div>
-    </measurableLocation-panel>
+      
+     <ng-content></ng-content>  
+            
+    </measurableLocationType-panel>
   `,
-  directives: [MeasurableLocationPanel, RADIO_GROUP_DIRECTIVES]
+  directives: [MeasurableLocationTypePanel, RADIO_GROUP_DIRECTIVES]
 })
-export class BorderTypePanel extends MeasurableLocationPanel{
+export class BorderTypePanel extends MeasurableLocationTypePanel{
   public formType = FormType;
-  
+
   ngOnInit(){
     if (!this.item.form) this.item.form = [];
   }

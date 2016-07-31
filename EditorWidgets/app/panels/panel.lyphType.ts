@@ -1,13 +1,14 @@
 /**
  * Created by Natallia on 6/17/2016.
  */
-import {Component, Output, EventEmitter} from '@angular/core';
+import {Component, Output} from '@angular/core';
 import {MaterialTypePanel} from "./panel.materialType";
 import {MultiSelectInput, SingleSelectInput} from '../components/component.select';
 import {RepoTemplate} from '../repos/repo.template';
-import {ProcessTemplate, BorderTemplate} from '../services/service.apinatomy2';
 import {FilterByClass, FilterBy} from "../transformations/pipe.general";
 import {BorderTemplatePanel} from "../templates/template.borderTemplate";
+
+import {ProcessTemplate, BorderTemplate} from "open-physiology-model";
 
 @Component({
   selector: 'lyphType-panel',
@@ -22,20 +23,19 @@ import {BorderTemplatePanel} from "../templates/template.borderTemplate";
         (removed)  = "removed.emit($event)"
         (propertyUpdated) = "propertyUpdated.emit($event)">
         
-        <headerGroup>
-          <!--Species-->
-          <div class="input-control" *ngIf="includeProperty('species')">
-            <label for="species">Species: </label>
-            <input type="text" class="form-control" [(ngModel)]="item.species">
-          </div>
-           <ng-content select="headerGroup"></ng-content>
-        </headerGroup>
+        <!--Species-->
+        <div class="input-control" *ngIf="includeProperty('species')">
+          <label for="species">Species: </label>
+          <input type="text" class="form-control" [(ngModel)]="item.species">
+        </div>
+         
+           
         
         <providerGroup>
           <!--LayerProviders-->
           <div class="input-control" *ngIf="includeProperty('layerProviders')">
             <label for="layerProviders">Inherits layers from: </label>
-            <select-input [items]="item.layerProviders" 
+            <select-input [items]="item.p('layerProviders') | async" 
             (updated)="updateProperty('layerProviders', $event)" 
             [options]="dependencies.lyphs"></select-input>
           </div>
@@ -43,7 +43,7 @@ import {BorderTemplatePanel} from "../templates/template.borderTemplate";
           <!--PatchProviders-->
           <div class="input-control" *ngIf="includeProperty('patchProviders')">
             <label for="patchProviders">Inherits patches from: </label>
-            <select-input [items]="item.patchProviders" 
+            <select-input [items]="item.p('patchProviders') | async" 
             (updated)="updateProperty('patchProviders', $event)" 
             [options]="dependencies.lyphs"></select-input>
           </div>
@@ -51,7 +51,7 @@ import {BorderTemplatePanel} from "../templates/template.borderTemplate";
           <!--PartProviders-->
           <div class="input-control" *ngIf="includeProperty('partProviders')">
             <label for="partProviders">Inherits parts from: </label>
-            <select-input [items]="item.partProviders"
+            <select-input [items]="item.p('partProviders') | async"
             (updated)="updateProperty('partProviders', $event)" 
             [options]="dependencies.lyphs"></select-input>
           </div>
@@ -142,7 +142,7 @@ import {BorderTemplatePanel} from "../templates/template.borderTemplate";
           <ng-content select="borderGroup"></ng-content>
         </fieldset>
         
-        <ng-content></ng-content>      
+       <ng-content></ng-content>   
         
     </materialType-panel>
   `,

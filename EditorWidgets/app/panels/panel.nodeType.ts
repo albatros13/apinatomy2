@@ -2,14 +2,14 @@
  * Created by Natallia on 6/19/2016.
  */
 import {Component} from '@angular/core';
-import {MeasurableLocationPanel} from "./panel.measurableLocation";
+import {MeasurableLocationTypePanel} from "./panel.measurableLocationType";
 import {RepoTemplate} from '../repos/repo.template';
 
 @Component({
   selector: 'nodeType-panel',
   inputs: ['item', 'ignore', 'dependencies', 'options'],
   template:`
-    <measurableLocation-panel [item]="item" 
+    <measurableLocationType-panel [item]="item" 
       [dependencies]="dependencies" 
       [ignore]="ignore"
       [options] ="options"
@@ -18,15 +18,19 @@ import {RepoTemplate} from '../repos/repo.template';
       (removed)  = "removed.emit($event)"
       (propertyUpdated) = "propertyUpdated.emit($event)">
 
+      <ng-content></ng-content>   
+      
+      <relationGroup>
       <!--Channels-->
       <repo-template caption="Channels" [items] = "item.channels" 
         (updated)="updateProperty('channels', $event)"     
         [dependencies] = "dependencies" [types]="[templateName.NodeTemplate]"></repo-template>
-      
-      <ng-content></ng-content>      
+  
+        <ng-content select="relationGroup"></ng-content>
+      </relationGroup>
     
-    </measurableLocation-panel>
+    </measurableLocationType-panel>
   `,
-  directives: [MeasurableLocationPanel, RepoTemplate]
+  directives: [MeasurableLocationTypePanel, RepoTemplate]
 })
-export class NodeTypePanel extends MeasurableLocationPanel{}
+export class NodeTypePanel extends MeasurableLocationTypePanel{}

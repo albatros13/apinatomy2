@@ -10,8 +10,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require('@angular/core');
 var repo_general_1 = require('../repos/repo.general');
-var widget_hierarchy_1 = require('../widgets/widget.hierarchy');
-var widget_resource_1 = require('../widgets/widget.resource');
+//import {HierarchyWidget} from '../widgets/widget.hierarchy';
+//import {ResourceWidget} from '../widgets/widget.resource';
 var service_resize_1 = require('../services/service.resize');
 var service_asyncResourceProvider_1 = require('../services/service.asyncResourceProvider');
 var ResourceEditor = (function () {
@@ -132,9 +132,9 @@ var ResourceEditor = (function () {
                 service_resize_1.ResizeService,
                 service_asyncResourceProvider_1.AsyncResourceProvider
             ],
-            template: "\n    <repo-general id=\"repo\"\n      [items]=\"items\" \n      [caption]=\"'All resources'\" \n      [dependencies]=\"dependencies\" \n      (selected)=\"onItemSelected($event)\"\n      (added)=\"onItemAdded($event)\"\n      (removed)=\"onItemRemoved($event)\"\n      (updated)=\"onItemUpdated($event)\"\n    >\n    </repo-general>\n    <hierarchy-widget id = \"hierarchy\" [item]=\"selectedItem\"></hierarchy-widget>\n    <resource-widget id = \"resource\" [item]=\"selectedItem\"></resource-widget>          \n    <div id=\"main\"></div>\n  ",
+            template: "\n    <repo-general id=\"repo\"\n      [items]=\"items\" \n      [caption]=\"'All resources'\" \n      [dependencies]=\"dependencies\" \n      (selected)=\"onItemSelected($event)\"\n      (added)=\"onItemAdded($event)\"\n      (removed)=\"onItemRemoved($event)\"\n      (updated)=\"onItemUpdated($event)\">\n    </repo-general>\n    <!--<hierarchy-widget id = \"hierarchy\" [item]=\"selectedItem\"></hierarchy-widget>-->\n    <!--<resource-widget id = \"resource\" [item]=\"selectedItem\"></resource-widget>          -->\n    <div id=\"main\"></div>\n  ",
             styles: ["#main {width: 100%; height: 100%; border: 0; margin: 0; padding: 0}"],
-            directives: [repo_general_1.RepoGeneral, widget_hierarchy_1.HierarchyWidget, widget_resource_1.ResourceWidget]
+            directives: [repo_general_1.RepoGeneral /*, HierarchyWidget, ResourceWidget*/]
         }), 
         __metadata('design:paramtypes', [service_resize_1.ResizeService, core_1.ElementRef, service_asyncResourceProvider_1.AsyncResourceProvider])
     ], ResourceEditor);

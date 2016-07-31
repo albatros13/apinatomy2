@@ -60,7 +60,7 @@ var OmegaTreeWidget = (function () {
         this.svg = d3.select(this.el.nativeElement).select('svg');
         if (this.item) {
             this.caption = "Omega function: " + this.item.id + " - " + this.item.name;
-            this.data = this.getOmegaTreeData(this.item, "parts");
+            this.data = this.getOmegaTreeData(this.item, "elements");
             this.draw(this.svg, this.vp, this.data);
         }
         else {

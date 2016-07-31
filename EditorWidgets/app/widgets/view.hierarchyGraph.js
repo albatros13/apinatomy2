@@ -38,8 +38,6 @@ var HierarchyGraphWidget = (function () {
     HierarchyGraphWidget.prototype.ngOnInit = function () {
         if (!this.relations)
             this.relations = [];
-        if (!this.properties)
-            this.properties = [];
         this.setGraphOptions();
     };
     HierarchyGraphWidget.prototype.ngOnChanges = function (changes) {

@@ -34,14 +34,16 @@ var RepoGeneral = (function (_super) {
     RepoGeneral.prototype.ngOnInit = function () {
         _super.prototype.ngOnInit.call(this);
         if (this.types.length == 0)
-            for (var x in service_apinatomy2_1.ResourceName)
+            for (var x in service_apinatomy2_1.ResourceName) {
+                if ((x == service_apinatomy2_1.ResourceName.Resource) || (x == service_apinatomy2_1.ResourceName.Type) || (x == service_apinatomy2_1.ResourceName.MeasurableLocationType))
+                    continue;
                 this.types.push(x);
+            }
         this.zones = this.types.map(function (x) { return x + "_zone"; });
     };
-    RepoGeneral.prototype.getIcon = function (item) {
-        switch (item.class) {
+    RepoGeneral.prototype.getIcon = function (Class) {
+        switch (Class) {
             case this.resourceName.ExternalResource: return "images/external.png";
-            case this.resourceName.Type: return "images/type.png";
             case this.resourceName.MaterialType: return "images/materialType.png";
             case this.resourceName.LyphType: return "images/lyphType.png";
             case this.resourceName.CylindricalLyphType: return "images/cylindricalLyphType.png";
@@ -59,124 +61,56 @@ var RepoGeneral = (function (_super) {
         }
         return "images/resource.png";
     };
-    RepoGeneral.prototype.onAdded = function (resourceType) {
+    RepoGeneral.prototype.onAdded = function (Class) {
         var newItem;
-        var clientLibrary = false;
-        if ((resourceType == this.resourceName.MaterialType)
-            || (resourceType == this.resourceName.MeasurableType)
-            || (resourceType == this.resourceName.ProcessType))
-            clientLibrary = true;
-        if (clientLibrary) {
-            switch (resourceType) {
-                case this.resourceName.ExternalResource:
-                    newItem = model.ExternalResource.new({ name: "New external resource" });
-                    break;
-                case this.resourceName.Type:
-                    newItem = model.Type.new({ name: "New typed resource" });
-                    break;
-                case this.resourceName.MeasurableLocation:
-                    newItem = model.MeasurableLocation.new({ name: "New measurable location" });
-                    break;
-                case this.resourceName.MaterialType:
-                    newItem = model.MaterialType.new({ name: "New material" });
-                    break;
-                case this.resourceName.LyphType:
-                    newItem = model.LyphType.new({ name: "New lyph" });
-                    break;
-                case this.resourceName.CylindricalLyphType:
-                    newItem = model.CylindricalLyphType.new({ name: "New cylindrical lyph" });
-                    break;
-                case this.resourceName.ProcessType:
-                    newItem = model.ProcessType.new({ name: "New process" });
-                    break;
-                case this.resourceName.MeasurableType:
-                    newItem = model.MeasurableType.new({ name: "New measurable" });
-                    break;
-                case this.resourceName.CausalityType:
-                    newItem = model.CausalityType.new({ name: "New casuality" });
-                    break;
-                case this.resourceName.NodeType:
-                    newItem = model.NodeType.new({ name: "New node" });
-                    break;
-                case this.resourceName.BorderType:
-                    newItem = model.BorderType.new({ name: "New border" });
-                    break;
-                case this.resourceName.Coalescence:
-                    newItem = model.Coalescence.new({ name: "New coalescence" });
-                    break;
-                case this.resourceName.GroupType:
-                    newItem = model.GroupType.new({ name: "New group" });
-                    break;
-                case this.resourceName.OmegaTreeType:
-                    newItem = model.OmegaTreeType.new({ name: "New omge tree" });
-                    break;
-                case this.resourceName.Publication:
-                    newItem = model.Publication.new({ name: "New publication" });
-                    break;
-                case this.resourceName.Correlation:
-                    newItem = model.Correlation.new({ name: "New correlation" });
-                    break;
-                case this.resourceName.ClinicalIndex:
-                    newItem = model.ClinicalIndex.new({ name: "New clinical index" });
-                    break;
-                default: newItem = model.Resource.new({ name: "New resource" });
-            }
-        }
-        else {
-            switch (resourceType) {
-                case this.resourceName.ExternalResource:
-                    newItem = new service_apinatomy2_1.ExternalResource({ name: "New external resource" });
-                    break;
-                case this.resourceName.Type:
-                    newItem = new service_apinatomy2_1.Type({ name: "New typed resource" });
-                    break;
-                case this.resourceName.MeasurableLocation:
-                    newItem = new service_apinatomy2_1.MeasurableLocation({ name: "New measurable location" });
-                    break;
-                case this.resourceName.MaterialType:
-                    newItem = new service_apinatomy2_1.MaterialType({ name: "New material" });
-                    break;
-                case this.resourceName.LyphType:
-                    newItem = new service_apinatomy2_1.LyphType({ name: "New lyph" });
-                    break;
-                case this.resourceName.CylindricalLyphType:
-                    newItem = new service_apinatomy2_1.CylindricalLyphType({ name: "New cylindrical lyph" });
-                    break;
-                case this.resourceName.ProcessType:
-                    newItem = new service_apinatomy2_1.ProcessType({ name: "New process" });
-                    break;
-                case this.resourceName.MeasurableType:
-                    newItem = new service_apinatomy2_1.MeasurableType({ name: "New measurable" });
-                    break;
-                case this.resourceName.CausalityType:
-                    newItem = new service_apinatomy2_1.CausalityType({ name: "New casuality" });
-                    break;
-                case this.resourceName.NodeType:
-                    newItem = new service_apinatomy2_1.NodeType({ name: "New node" });
-                    break;
-                case this.resourceName.BorderType:
-                    newItem = new service_apinatomy2_1.BorderType({ name: "New border" });
-                    break;
-                case this.resourceName.Coalescence:
-                    newItem = new service_apinatomy2_1.Coalescence({ name: "New coalescence" });
-                    break;
-                case this.resourceName.GroupType:
-                    newItem = new service_apinatomy2_1.GroupType({ name: "New group" });
-                    break;
-                case this.resourceName.OmegaTreeType:
-                    newItem = new service_apinatomy2_1.OmegaTreeType({ name: "New omega tree", levels: [] });
-                    break;
-                case this.resourceName.Publication:
-                    newItem = new service_apinatomy2_1.Publication({ name: "New publication" });
-                    break;
-                case this.resourceName.Correlation:
-                    newItem = new service_apinatomy2_1.Correlation({ name: "New correlation" });
-                    break;
-                case this.resourceName.ClinicalIndex:
-                    newItem = new service_apinatomy2_1.ClinicalIndex({ name: "New clinical index" });
-                    break;
-                default: newItem = new service_apinatomy2_1.Resource({ name: "New resource" });
-            }
+        switch (Class) {
+            case this.resourceName.ExternalResource:
+                newItem = model.ExternalResource.new({ name: "New external resource" });
+                break;
+            case this.resourceName.MaterialType:
+                newItem = model.MaterialType.new({ name: "New material",
+                    externals: [], supertypes: [], subtypes: [], materials: [], materialProviders: [] });
+                break;
+            case this.resourceName.LyphType:
+                newItem = model.LyphType.new({ name: "New lyph" });
+                break;
+            case this.resourceName.CylindricalLyphType:
+                newItem = model.CylindricalLyphType.new({ name: "New cylindrical lyph" });
+                break;
+            case this.resourceName.ProcessType:
+                newItem = model.ProcessType.new({ name: "New process" });
+                break;
+            case this.resourceName.MeasurableType:
+                newItem = model.MeasurableType.new({ name: "New measurable" });
+                break;
+            case this.resourceName.CausalityType:
+                newItem = model.CausalityType.new({ name: "New casuality" });
+                break;
+            case this.resourceName.NodeType:
+                newItem = model.NodeType.new({ name: "New node" });
+                break;
+            case this.resourceName.BorderType:
+                newItem = model.BorderType.new({ name: "New border" });
+                break;
+            case this.resourceName.Coalescence:
+                newItem = model.Coalescence.new({ name: "New coalescence" });
+                break;
+            case this.resourceName.GroupType:
+                newItem = model.GroupType.new({ name: "New group" });
+                break;
+            case this.resourceName.OmegaTreeType:
+                newItem = model.OmegaTreeType.new({ name: "New omge tree" });
+                break;
+            case this.resourceName.Publication:
+                newItem = model.Publication.new({ name: "New publication" });
+                break;
+            case this.resourceName.Correlation:
+                newItem = model.Correlation.new({ name: "New correlation" });
+                break;
+            case this.resourceName.ClinicalIndex:
+                newItem = model.ClinicalIndex.new({ name: "New clinical index" });
+                break;
+            default: newItem = model.Resource.new({ name: "New resource" });
         }
         this.items.push(newItem);
         this.added.emit(newItem);
@@ -187,7 +121,7 @@ var RepoGeneral = (function (_super) {
         core_1.Component({
             selector: 'repo-general',
             inputs: ['items', 'caption', 'dependencies', 'ignore', 'types', 'selectedItem', 'options'],
-            template: "\n     <div class=\"panel panel-info repo\">\n        <div class=\"panel-heading\">{{caption}}</div>\n        <div class=\"panel-body\">\n          <sort-toolbar [options]=\"['Name', 'ID']\" (sorted)=\"onSorted($event)\"></sort-toolbar>\n          <edit-toolbar [options]=\"types\" (added)=\"onAdded($event)\"></edit-toolbar>\n          <filter-toolbar [filter]=\"searchString\" [options]=\"['Name', 'ID', 'Class']\" (applied)=\"onFiltered($event)\"></filter-toolbar>\n          \n          <accordion class=\"list-group\" [closeOthers]=\"true\"> \n            <!--dnd-sortable-container [dropZones]=\"zones\" [sortableData]=\"items\">-->\n          <accordion-group *ngFor=\"let item of items | orderBy : sortByMode | filterBy: [searchString, filterByMode]; let i = index\">\n            <!--class=\"list-group-item\" dnd-sortable [sortableIndex]=\"i\"> -->\n            <div accordion-heading (click)=\"onHeaderClick(item)\"><item-header [item]=\"item\" [selectedItem]=\"selectedItem\" [isSelectedOpen]=\"isSelectedOpen\" [icon]=\"getIcon(item)\"></item-header></div>\n\n            <div *ngIf=\"!options || !options.headersOnly\">\n              <panel-general *ngIf=\"item == selectedItem\" [item]=\"item\"\n                [dependencies]=\"dependencies\" \n                [ignore]=\"ignore\"\n                (saved)=\"onSaved(item, $event)\" \n                (canceled)=\"onCanceled($event)\"\n                (removed)=\"onRemoved(item)\">\n               </panel-general>            \n            </div>\n                \n          </accordion-group>        \n          </accordion>       \n        </div>\n      </div>\n  ",
+            template: "\n     <div class=\"panel panel-info repo\">\n        <div class=\"panel-heading\">{{caption}}</div>\n        <div class=\"panel-body\">\n          <sort-toolbar [options]=\"['Name', 'ID']\" (sorted)=\"onSorted($event)\"></sort-toolbar>\n          <edit-toolbar [options]=\"types\" (added)=\"onAdded($event)\"></edit-toolbar>\n          <filter-toolbar [filter]=\"searchString\" [options]=\"['Name', 'ID', 'Class']\" (applied)=\"onFiltered($event)\"></filter-toolbar>\n          \n          <accordion class=\"list-group\" [closeOthers]=\"true\"> \n            <!--dnd-sortable-container [dropZones]=\"zones\" [sortableData]=\"items\">-->\n          <accordion-group *ngFor=\"let item of items | orderBy : sortByMode | filterBy: [searchString, filterByMode]; let i = index\">\n            <!--class=\"list-group-item\" dnd-sortable [sortableIndex]=\"i\"> -->\n            <div accordion-heading (click)=\"onHeaderClick(item)\"><item-header [item]=\"item\" [selectedItem]=\"selectedItem\" [isSelectedOpen]=\"isSelectedOpen\" [icon]=\"getIcon(item.class)\"></item-header></div>\n\n            <div *ngIf=\"!options || !options.headersOnly\">\n              <panel-general *ngIf=\"item == selectedItem\" [item]=\"item\"\n                [dependencies]=\"dependencies\" \n                [ignore]=\"ignore\"\n                (saved)=\"onSaved(item, $event)\" \n                (canceled)=\"onCanceled($event)\"\n                (removed)=\"onRemoved(item)\">\n               </panel-general>            \n            </div>\n                \n          </accordion-group>        \n          </accordion>       \n        </div>\n      </div>\n  ",
             styles: ['.repo{ width: 100%}'],
             directives: [
                 toolbar_sort_1.SortToolbar, toolbar_repoEdit_1.EditToolbar, toolbar_filter_1.FilterToolbar,

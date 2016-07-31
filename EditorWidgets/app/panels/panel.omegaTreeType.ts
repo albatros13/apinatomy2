@@ -28,16 +28,19 @@ import {RepoTemplate} from '../repos/repo.template';
           [options] = "dependencies.templates | filterByClass: [templateName.NodeTemplate]"></select-input-1>
       </div>-->
       
-      <!--parts-->
-      <div class="input-control" *ngIf="includeProperty('parts')">
-         <repo-template caption="parts" [items] = "item.parts" 
-         (updated)="updateProperty('parts', $event)"
+      <ng-content></ng-content> 
+      
+      <relationGroup>
+      <!--Part = Elements which is OmegaTreeTemplate or CylindricalLyphTemplate-->
+      <div class="input-control" *ngIf="includeProperty('elements')">
+         <repo-template caption="elements" [items] = "item.elements" 
+         (updated)="updateProperty('elements', $event)"
          [dependencies] = "dependencies" 
          [types]="[templateName.CylindricalLyphTemplate, templateName.OmegaTreeTemplate]">
         </repo-template>
       </div>
-      
-      <ng-content></ng-content>      
+      <ng-content select="relationGroup"></ng-content>      
+      </relationGroup>
     
     </groupType-panel>
   `,

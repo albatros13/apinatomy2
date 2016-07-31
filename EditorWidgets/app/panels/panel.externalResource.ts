@@ -5,6 +5,7 @@ import {Component} from '@angular/core';
 import {ResourcePanel} from "./panel.resource";
 import {MultiSelectInput} from '../components/component.select';
 import {RepoTemplate} from '../repos/repo.template';
+import {Resource} from "open-physiology-model";
 
 @Component({
   selector: 'externalResource-panel',
@@ -12,7 +13,7 @@ import {RepoTemplate} from '../repos/repo.template';
   template:`
     <resource-panel [item] = "item" 
       [dependencies] = "dependencies" 
-      [ignore] = "ignore"
+      [ignore] = "ignore.add('externals')"
       [options] ="options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
@@ -22,13 +23,22 @@ import {RepoTemplate} from '../repos/repo.template';
       <!--URI-->
       <div class="input-control" *ngIf="includeProperty('uri')">
         <label for="uri">URI: </label>
-        <input type="text" class="form-control" disabled [(ngModel)]="item.uri">
+        <input type="text" class="form-control" [(ngModel)]="item.uri">
       </div>
   
       <!--Type-->
       <div class="input-control" *ngIf="includeProperty('type')">
         <label for="type">Type: </label>
-        <input type="text" class="form-control" disabled [(ngModel)]="item.type">
+        <input type="text" class="form-control" [(ngModel)]="item.type">
+      </div>
+      
+      <!--Locals - TODO: map to categories-->
+      <div class="input-control" *ngIf="includeProperty('locals')">
+        <label for="locals">Local resources: </label>
+        <select-input 
+        [items]="item.p('locals') | async" 
+        (updated)="updateProperty('locals', $event)" 
+        [options]="Resource.p('all') | async"></select-input>
       </div>
 
       <ng-content></ng-content>      
@@ -37,4 +47,6 @@ import {RepoTemplate} from '../repos/repo.template';
   `,
   directives: [ResourcePanel, MultiSelectInput, RepoTemplate]
 })
-export class ExternalResourcePanel extends ResourcePanel{}
+export class ExternalResourcePanel extends ResourcePanel{
+  protected Resource = Resource;
+}

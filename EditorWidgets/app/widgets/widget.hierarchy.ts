@@ -8,7 +8,7 @@ import {CORE_DIRECTIVES} from '@angular/common';
 import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/components/dropdown';
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
-import {PropertyToolbar} from '../components/toolbar.propertySettings';
+import {MultiPropertyToolbar} from '../components/toolbar.propertySettings';
 
 @Component({
   selector: 'hierarchy-widget',
@@ -18,20 +18,21 @@ import {PropertyToolbar} from '../components/toolbar.propertySettings';
       <div class="panel-heading">
         Relations of <strong>{{(item)? item.id: ''}}{{(item)? ': ' + item.name : ''}}</strong>
       </div>
-      <div class="controls-group">
+      <div class="panel-body">
           <!--Relations-->
-          <property-toolbar  
+          <multi-property-toolbar  
             [options] = "relations"
-            caption = 'Relations'
-            >
-          </property-toolbar>
+            (change) = "updateRelations()"
+            caption = 'Relations'>
+          </multi-property-toolbar>
           
           <!--Properties-->
-          <property-toolbar  
+          <multi-property-toolbar  
             [options] = "properties"
+            (change) = "updateProperties()"
             caption = 'Properties'
             >
-          </property-toolbar>
+          </multi-property-toolbar>
 
           <!--Depth-->
           <div class="input-group input-group-sm" style="width: 150px; float: left;">
@@ -51,16 +52,15 @@ import {PropertyToolbar} from '../components/toolbar.propertySettings';
               <img class="icon" src="images/graph.png"/>
             </button>
           </div>
-      </div>
 
-      <hierarchy-tree *ngIf="layout == 'tree'" 
-        [item]="item" [relation]="relations" [depth]="depth" [properties]="properties"></hierarchy-tree>
-      <hierarchy-graph *ngIf="layout == 'graph'" 
-        [item]="item" [relation]="relations"  [depth]="depth" [properties]="properties"></hierarchy-graph>
+        <hierarchy-tree *ngIf="layout == 'tree'" 
+          [item]="item" [relation]="relations" [depth]="depth" [properties]="properties"></hierarchy-tree>
+        <hierarchy-graph *ngIf="layout == 'graph'" 
+          [item]="item" [relation]="relations"  [depth]="depth" [properties]="properties"></hierarchy-graph>
     </div>      
   `,
   directives: [HierarchyGraphWidget, HierarchyTreeWidget,
-    DROPDOWN_DIRECTIVES, CORE_DIRECTIVES, PropertyToolbar]
+    DROPDOWN_DIRECTIVES, CORE_DIRECTIVES, MultiPropertyToolbar]
 })
 export class HierarchyWidget implements OnChanges, OnDestroy{
   //Input

@@ -4,22 +4,12 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var core_1 = require('@angular/core');
 /*ENUMERATIONS*/
 (function (ResourceName) {
     ResourceName[ResourceName["Resource"] = "Resource"] = "Resource";
     ResourceName[ResourceName["ExternalResource"] = "ExternalResource"] = "ExternalResource";
     ResourceName[ResourceName["Type"] = "Type"] = "Type";
-    ResourceName[ResourceName["MeasurableLocation"] = "MeasurableLocation"] = "MeasurableLocation";
+    ResourceName[ResourceName["MeasurableLocationType"] = "MeasurableLocationType"] = "MeasurableLocationType";
     ResourceName[ResourceName["MaterialType"] = "MaterialType"] = "MaterialType";
     ResourceName[ResourceName["LyphType"] = "LyphType"] = "LyphType";
     ResourceName[ResourceName["CylindricalLyphType"] = "CylindricalLyphType"] = "CylindricalLyphType";
@@ -154,17 +144,17 @@ var Type = (function (_super) {
     return Type;
 }(Resource));
 exports.Type = Type;
-var MeasurableLocation = (function (_super) {
-    __extends(MeasurableLocation, _super);
-    function MeasurableLocation(obj) {
+var MeasurableLocationType = (function (_super) {
+    __extends(MeasurableLocationType, _super);
+    function MeasurableLocationType(obj) {
         if (obj === void 0) { obj = {}; }
         _super.call(this, obj);
-        this.class = ResourceName.MeasurableLocation;
+        this.class = ResourceName.MeasurableLocationType;
         this.measurables = obj.measurables;
     }
-    return MeasurableLocation;
+    return MeasurableLocationType;
 }(Type));
-exports.MeasurableLocation = MeasurableLocation;
+exports.MeasurableLocationType = MeasurableLocationType;
 var MaterialType = (function (_super) {
     __extends(MaterialType, _super);
     function MaterialType(obj) {
@@ -179,7 +169,7 @@ var MaterialType = (function (_super) {
         this.measurableProviders = obj.measurableProviders;
     }
     return MaterialType;
-}(MeasurableLocation));
+}(MeasurableLocationType));
 exports.MaterialType = MaterialType;
 var LyphType = (function (_super) {
     __extends(LyphType, _super);
@@ -209,10 +199,10 @@ var LyphType = (function (_super) {
         this.innerBorder = obj.innerBorder;
         this.outerBorder = obj.outerBorder;
         if (!this.innerBorder) {
-            this.innerBorder = new BorderTemplate({ name: "T inner: " + testBorders[0].name, type: testBorders[0] });
+            this.innerBorder = new BorderTemplate({ name: "T inner: General" });
         }
         if (!this.outerBorder) {
-            this.outerBorder = new BorderTemplate({ name: "T outer: " + testBorders[0].name, type: testBorders[0] });
+            this.outerBorder = new BorderTemplate({ name: "T outer: General" });
         }
     }
     return LyphType;
@@ -233,10 +223,10 @@ var CylindricalLyphType = (function (_super) {
         this.minusBorder = obj.minusBorder;
         this.plusBorder = obj.plusBorder;
         if (!this.minusBorder) {
-            this.minusBorder = new BorderTemplate({ name: "T minus: " + testBorders[0].name, type: testBorders[0] });
+            this.minusBorder = new BorderTemplate({ name: "T minus: General" });
         }
         if (!this.plusBorder) {
-            this.plusBorder = new BorderTemplate({ name: "T plus: " + testBorders[0].name, type: testBorders[0] });
+            this.plusBorder = new BorderTemplate({ name: "T plus: General" });
         }
     }
     return CylindricalLyphType;
@@ -256,7 +246,7 @@ var ProcessType = (function (_super) {
         this.target = obj.target;
     }
     return ProcessType;
-}(MeasurableLocation));
+}(MeasurableLocationType));
 exports.ProcessType = ProcessType;
 var MeasurableType = (function (_super) {
     __extends(MeasurableType, _super);
@@ -289,7 +279,7 @@ var NodeType = (function (_super) {
         this.channels = obj.channels;
     }
     return NodeType;
-}(MeasurableLocation));
+}(MeasurableLocationType));
 exports.NodeType = NodeType;
 var BorderType = (function (_super) {
     __extends(BorderType, _super);
@@ -312,7 +302,7 @@ var BorderType = (function (_super) {
         configurable: true
     });
     return BorderType;
-}(MeasurableLocation));
+}(MeasurableLocationType));
 exports.BorderType = BorderType;
 var GroupType = (function (_super) {
     __extends(GroupType, _super);
@@ -526,41 +516,11 @@ var CylindricalLyphTemplate = (function (_super) {
     return CylindricalLyphTemplate;
 }(LyphTemplate));
 exports.CylindricalLyphTemplate = CylindricalLyphTemplate;
-var testBorders = [
-    new BorderType({ id: 80, name: "General border", form: [FormType.open, FormType.closed] }),
-    new BorderType({ id: 81, name: "Open border", form: [FormType.open] }),
-    new BorderType({ id: 82, name: "Closed border", form: [FormType.closed] })
-];
-var ExternalResourceProvider = (function () {
-    function ExternalResourceProvider() {
-        this.items = [
-            new ExternalResource({ id: 3000, name: "FMA_44539: Third plantar metatarsal vein", type: "fma" }),
-            new ExternalResource({ id: 4000, name: "cocomac:98: Accessor basal nucleus (amygdala), ventromedial division", type: "cocomac" })
-        ];
-    }
-    ExternalResourceProvider = __decorate([
-        core_1.Injectable(), 
-        __metadata('design:paramtypes', [])
-    ], ExternalResourceProvider);
-    return ExternalResourceProvider;
-}());
-exports.ExternalResourceProvider = ExternalResourceProvider;
-var BorderTypeProvider = (function () {
-    function BorderTypeProvider() {
-        this.items = [];
-        this.templates = [];
-        this.items = testBorders;
-        this.templates = this.items.map(function (item) {
-            return new BorderTemplate({ id: item.id + 300, name: "T: " + item.name, type: item });
-        });
-    }
-    BorderTypeProvider = __decorate([
-        core_1.Injectable(), 
-        __metadata('design:paramtypes', [])
-    ], BorderTypeProvider);
-    return BorderTypeProvider;
-}());
-exports.BorderTypeProvider = BorderTypeProvider;
-// Cylindrical lyph types
-// Omega tree types
+// @Injectable()
+// export class ExternalResourceProvider {
+//   public items: Array<ExternalResource> = [
+//     new ExternalResource({id: 3000, name: "FMA_44539: Third plantar metatarsal vein", type:  "fma"}),
+//     new ExternalResource({id: 4000, name: "cocomac:98: Accessor basal nucleus (amygdala), ventromedial division", type:  "cocomac"})
+//   ];
+// }
 //# sourceMappingURL=service.apinatomy2.js.map

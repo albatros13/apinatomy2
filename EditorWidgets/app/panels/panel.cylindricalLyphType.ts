@@ -25,7 +25,7 @@ import {FilterByClass, FilterBy} from "../transformations/pipe.general";
           <!--SegmentProviders-->
           <div class="input-control" *ngIf="includeProperty('segmentProviders', 'providers')">
             <label for="segmentProviders">Inherits segments from: </label>
-            <select-input [items]="item.segmentProviders" 
+            <select-input [items]="item.p('segmentProviders') | async" 
             (updated)="updateProperty('segmentProviders', $event)"
             [options]="dependencies.cylindricalLyphs"></select-input>
           </div>

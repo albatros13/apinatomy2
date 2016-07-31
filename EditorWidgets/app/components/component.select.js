@@ -15,54 +15,18 @@ var core_1 = require('@angular/core');
 var common_1 = require('@angular/common');
 var pipe_general_1 = require("../transformations/pipe.general");
 var ng2_select_1 = require('ng2-select/ng2-select');
-var MultiSelectInput = (function () {
-    function MultiSelectInput() {
+////////////////////////////////////////////////////////////////////////////////
+// select-input ////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+var MultiSelectInput /*implements OnChanges*/ = (function () {
+    function MultiSelectInput /*implements OnChanges*/() {
+        this.options = new Set();
+        this.items = new Set();
         this.updated = new core_1.EventEmitter();
         this.active = true;
         this.externalChange = false;
-        this.isSet = false;
     }
-    Object.defineProperty(MultiSelectInput.prototype, "items", {
-        get: function () {
-            if (this._items && this.isSet)
-                return new Set(this._items);
-            return this._items;
-        },
-        set: function (items) {
-            if (items && (items instanceof Set)) {
-                this._items = Array.from(items);
-                this.isSet = true;
-            }
-            else
-                this._items = items;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(MultiSelectInput.prototype, "options", {
-        get: function () {
-            if (this._options && this.isSet)
-                return new Set(this._options);
-            return this._options;
-        },
-        set: function (options) {
-            if (options && (options instanceof Set)) {
-                this._options = Array.from(options);
-                this.isSet = true;
-            }
-            else
-                this._options = options;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    MultiSelectInput.prototype.ngOnInit = function () {
-        if (!this._options)
-            this._options = [];
-        if (!this._items)
-            this._items = [];
-    };
-    MultiSelectInput.prototype.ngOnChanges = function (changes) {
+    MultiSelectInput /*implements OnChanges*/.prototype.ngOnChanges = function (changes) {
         var _this = this;
         if (this.externalChange) {
             setTimeout(function () { _this.active = false; }, 0);
@@ -70,37 +34,39 @@ var MultiSelectInput = (function () {
         }
         this.externalChange = true;
     };
-    MultiSelectInput.prototype.refreshValue = function (value) {
+    MultiSelectInput /*implements OnChanges*/.prototype.refreshValue = function (value) {
         var selected = value.map(function (x) { return x.id; });
-        var options = [];
-        if (this._options[0] && this._options[0].children) {
-            //Flatten grouped options
-            options = [].concat.apply([], this._options.map(function (x) { return x.children; }));
-        }
-        else {
-            options = this._options;
-        }
         this.externalChange = false;
-        this._items = options.filter(function (y) { return (selected.indexOf((y.id) ? y.id : y.name) != -1); });
-        this.updated.emit(this.items);
+        var newItems = Array.from(this.options).filter(function (y) { return (selected.indexOf((y.id) ? y.id : y.name) != -1); });
+        this.updated.emit(new Set(newItems));
     };
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Set)
+    ], MultiSelectInput /*implements OnChanges*/.prototype, "options", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Set)
+    ], MultiSelectInput /*implements OnChanges*/.prototype, "items", void 0);
     __decorate([
         core_1.Output(), 
         __metadata('design:type', Object)
-    ], MultiSelectInput.prototype, "updated", void 0);
-    MultiSelectInput = __decorate([
+    ], MultiSelectInput /*implements OnChanges*/.prototype, "updated", void 0);
+    MultiSelectInput /*implements OnChanges*/ = __decorate([
         core_1.Component({
             selector: 'select-input',
-            inputs: ['items', 'options'],
-            template: "\n    <div *ngIf=\"active\">\n      <ng-select\n        [items]       = \"_options | mapToOptions\"\n        [initData]    = \"_items | mapToOptions\"\n        [multiple]    = true\n        (data)        = \"refreshValue($event)\"\n      ></ng-select>\n    </div>\n    ",
+            template: "\n    <div *ngIf=\"active\">\n      <ng-select\n        [items]       = \"options | setToArray | mapToOptions\"\n        [initData]    = \"items   | setToArray | mapToOptions\"\n        [multiple]    = \"true\"\n        (data)        = \"refreshValue($event)\"\n      ></ng-select>\n    </div>\n    ",
             directives: [ng2_select_1.SELECT_DIRECTIVES, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES],
-            pipes: [pipe_general_1.MapToOptions]
+            pipes: [pipe_general_1.MapToOptions, pipe_general_1.SetToArray]
         }), 
         __metadata('design:paramtypes', [])
-    ], MultiSelectInput);
-    return MultiSelectInput;
+    ], MultiSelectInput /*implements OnChanges*/);
+    return MultiSelectInput /*implements OnChanges*/;
 }());
-exports.MultiSelectInput = MultiSelectInput;
+exports.MultiSelectInput /*implements OnChanges*/ = MultiSelectInput /*implements OnChanges*/;
+////////////////////////////////////////////////////////////////////////////////
+// select-1-input //////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 var SingleSelectInput = (function () {
     function SingleSelectInput() {
         this.updated = new core_1.EventEmitter();
@@ -114,9 +80,7 @@ var SingleSelectInput = (function () {
     };
     SingleSelectInput.prototype.ngOnChanges = function (changes) {
         var _this = this;
-        this.items = [];
-        if (this.item)
-            this.items = [this.item];
+        this.items = (this.item) ? [this.item] : this.items = [];
         if (this.externalChange) {
             setTimeout(function () { _this.active = false; }, 0);
             setTimeout(function () { _this.active = true; }, 0);

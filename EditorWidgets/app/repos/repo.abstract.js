@@ -12,6 +12,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  * Created by Natallia on 7/8/2016.
  */
 var core_1 = require('@angular/core');
+var service_apinatomy2_1 = require("../services/service.apinatomy2");
+var model = require("open-physiology-model");
 var ItemHeader = (function () {
     function ItemHeader() {
     }
@@ -74,6 +76,36 @@ var RepoAbstract = (function () {
         this.filterByMode = config.mode.toLowerCase();
         this.searchString = config.filter;
     };
+    RepoAbstract.prototype.getIcon = function (Class) {
+        switch (Class) {
+            case service_apinatomy2_1.ResourceName.ExternalResource: return "images/external.png";
+            case service_apinatomy2_1.ResourceName.MaterialType: return "images/materialType.png";
+            case service_apinatomy2_1.ResourceName.LyphType: return "images/lyphType.png";
+            case service_apinatomy2_1.ResourceName.CylindricalLyphType: return "images/cylindricalLyphType.png";
+            case service_apinatomy2_1.ResourceName.ProcessType: return "images/processType.png";
+            case service_apinatomy2_1.ResourceName.MeasurableType: return "images/measurableType.png";
+            case service_apinatomy2_1.ResourceName.CausalityType: return "images/causalityType.png";
+            case service_apinatomy2_1.ResourceName.NodeType: return "images/nodeType.png";
+            case service_apinatomy2_1.ResourceName.BorderType: return "images/borderType.png";
+            case service_apinatomy2_1.ResourceName.Coalescence: return "images/coalescence.png";
+            case service_apinatomy2_1.ResourceName.GroupType: return "images/groupType.png";
+            case service_apinatomy2_1.ResourceName.OmegaTreeType: return "images/omegaTreeType.png";
+            case service_apinatomy2_1.ResourceName.Publication: return "images/publication.png";
+            case service_apinatomy2_1.ResourceName.Correlation: return "images/correlation.png";
+            case service_apinatomy2_1.ResourceName.ClinicalIndex: return "images/clinicalIndex.png";
+            case service_apinatomy2_1.TemplateName.LyphTemplate: return "images/lyphType.png";
+            case service_apinatomy2_1.TemplateName.CylindricalLyphTemplate: return "images/cylindricalLyphType.png";
+            case service_apinatomy2_1.TemplateName.ProcessTemplate: return "images/processType.png";
+            case service_apinatomy2_1.TemplateName.MeasurableTemplate: return "images/measurableType.png";
+            case service_apinatomy2_1.TemplateName.CausalityTemplate: return "images/causalityType.png";
+            case service_apinatomy2_1.TemplateName.NodeTemplate: return "images/nodeType.png";
+            case service_apinatomy2_1.TemplateName.BorderTemplate: return "images/borderType.png";
+            case service_apinatomy2_1.TemplateName.CausalityTemplate: return "images/causality.png";
+            case service_apinatomy2_1.TemplateName.GroupTemplate: return "images/groupType.png";
+            case service_apinatomy2_1.TemplateName.OmegaTreeTemplate: return "images/omegaTreeType.png";
+        }
+        return "images/resource.png";
+    };
     RepoAbstract.prototype.onSaved = function (item, updatedItem) {
         this.updated.emit(this.items);
         if (item == this.selectedItem) {
@@ -96,6 +128,17 @@ var RepoAbstract = (function () {
         this.removed.emit(item);
         this.updated.emit(this.items);
     };
+    RepoAbstract.prototype.onAdded = function (Class) {
+        var proto = { name: "New " + Class };
+        if (Class.indexOf("Template") > 0) {
+            proto = { name: "T: New " + Class, cardinality: 1 };
+        }
+        var newItem = model[Class].new(proto);
+        this.items.push(newItem);
+        this.added.emit(newItem);
+        this.updated.emit(this.items);
+        this.selectedItem = newItem;
+    };
     __decorate([
         core_1.Output(), 
         __metadata('design:type', Object)
@@ -112,6 +155,14 @@ var RepoAbstract = (function () {
         core_1.Output(), 
         __metadata('design:type', Object)
     ], RepoAbstract.prototype, "selected", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Array)
+    ], RepoAbstract.prototype, "items", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Array)
+    ], RepoAbstract.prototype, "types", void 0);
     return RepoAbstract;
 }());
 exports.RepoAbstract = RepoAbstract;

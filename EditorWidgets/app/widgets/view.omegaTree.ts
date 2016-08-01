@@ -27,17 +27,13 @@ export class TemplateBox{
   selector: 'omega-tree',
   inputs: ['item'],
   template : `
-    <div class="panel panel-default">
-      <div class="panel-heading">{{caption}}</div>
-      <div class="panel-body">
-          <svg #treeSvg class="svg-widget"></svg>
-       </div>
-    </div>
+     <div class="panel-body">
+        <svg #treeSvg class="svg-widget"></svg>
+     </div>
   `,
   directives: []
 })
 export class OmegaTreeWidget implements OnChanges {
-  caption: string = "Omega function ";
   item: any;
   template: any;
 
@@ -79,7 +75,6 @@ export class OmegaTreeWidget implements OnChanges {
   ngOnChanges(changes: { [propName: string]: any }) {
     this.svg = d3.select(this.el.nativeElement).select('svg');
     if (this.item) {
-      this.caption = "Omega function: " + this.item.id + " - " + this.item.name;
       this.data = this.getOmegaTreeData(this.item, "elements");
       this.draw(this.svg, this.vp, this.data);
     } else {

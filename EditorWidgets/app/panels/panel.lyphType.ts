@@ -6,7 +6,9 @@ import {MaterialTypePanel} from "./panel.materialType";
 import {MultiSelectInput, SingleSelectInput} from '../components/component.select';
 import {RepoTemplate} from '../repos/repo.template';
 import {SetToArray} from "../transformations/pipe.general";
-import {BorderTemplatePanel} from "../templates/template.borderTemplate";
+import {BorderTemplatePanel} from "./template.borderTemplate";
+import {TemplateValue} from '../components/component.templateValue';
+
 
 import {LyphType, ProcessTemplate, BorderTemplate} from "open-physiology-model";
 
@@ -28,7 +30,13 @@ import {LyphType, ProcessTemplate, BorderTemplate} from "open-physiology-model";
           <input type="text" class="form-control" [(ngModel)]="item.species">
         </div>
          
-           
+        <!--Thickness-->
+        <template-value *ngIf="includeProperty('thickness')" caption="Thickness" 
+          [item]="item.thickness"
+          (updated)="updateProperty('thickness', $event)"
+        ></template-value>
+        
+        <ng-content></ng-content>   
         
         <providerGroup>
           <!--LayerProviders-->
@@ -133,12 +141,10 @@ import {LyphType, ProcessTemplate, BorderTemplate} from "open-physiology-model";
           <ng-content select="borderGroup"></ng-content>
         </fieldset>
         
-       <ng-content></ng-content>   
-        
     </materialType-panel>
   `,
   directives: [MaterialTypePanel, MultiSelectInput, SingleSelectInput,
-    RepoTemplate, BorderTemplatePanel],
+    RepoTemplate, BorderTemplatePanel, TemplateValue],
   pipes: [SetToArray]
 })
 export class LyphTypePanel extends MaterialTypePanel{

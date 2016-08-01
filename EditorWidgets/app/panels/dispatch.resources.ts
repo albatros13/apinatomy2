@@ -22,7 +22,7 @@ import {ResourceName} from "../services/service.apinatomy2";
   selector: 'panel-general',
   inputs: ['item', 'ignore'],
   template:`
-       <!--Resources-->
+    <!--Resources-->
     <resource-panel *ngIf="item.class == resourceName.Resource"
      [item]="item" [ignore]="ignore"
      (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></resource-panel>
@@ -47,7 +47,7 @@ import {ResourceName} from "../services/service.apinatomy2";
      [item]="item" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></cylindricalLyphType-panel>
     
     <!--Processes-->      
-    <processType-panel *ngIf="item.class==resourceName.ProcessType" [ignore]="ignore.add('externals')"
+    <processType-panel *ngIf="item.class==resourceName.ProcessType" [ignore]="ignore"
      [item]="item" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></processType-panel>
    
     <!--Mesurables-->
@@ -55,19 +55,19 @@ import {ResourceName} from "../services/service.apinatomy2";
      [item]="item" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></measurableType-panel>
    
     <!--Causalities-->
-    <causalityType-panel *ngIf="item.class==resourceName.CausalityType" [ignore]="ignore.add('externals')"
+    <causalityType-panel *ngIf="item.class==resourceName.CausalityType" [ignore]="ignore"
      [item]="item" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></causalityType-panel>
     
     <!--Nodes-->
-    <nodeType-panel *ngIf="item.class==resourceName.NodeType" [ignore]="ignore.add('externals')" 
+    <nodeType-panel *ngIf="item.class==resourceName.NodeType" [ignore]="ignore" 
      [item]="item" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></nodeType-panel>
 
     <!--Borders-->
-    <borderType-panel *ngIf="item.class==resourceName.BorderType" [ignore]="ignore.add('externals')"
+    <borderType-panel *ngIf="item.class==resourceName.BorderType" [ignore]="ignore"
      [item]="item" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></borderType-panel>
     
     <!--Groups-->
-    <groupType-panel *ngIf="item.class==resourceName.GroupType" [ignore]="ignore.add('externals')"
+    <groupType-panel *ngIf="item.class==resourceName.GroupType" [ignore]="ignore"
      [item]="item" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></groupType-panel>
 
     <!--Omega trees-->
@@ -75,19 +75,19 @@ import {ResourceName} from "../services/service.apinatomy2";
      [item]="item" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></omegaTreeType-panel>
 
      <!--Publications: generic panel-->
-     <resource-panel *ngIf="item.class==resourceName.Publication" [ignore]="ignore.add('externals')"
+     <resource-panel *ngIf="item.class==resourceName.Publication" [ignore]="ignore"
      [item]="item" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></resource-panel>
 
      <!--Correlations-->
-     <correlation-panel *ngIf="item.class==resourceName.Correlation" [ignore]="ignore.add('externals')"
+     <correlation-panel *ngIf="item.class==resourceName.Correlation" [ignore]="ignore"
      [item]="item" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></correlation-panel>
 
      <!--Clinical indices: generic panel-->
-     <resource-panel *ngIf="item.class==resourceName.ClinicalIndex" [ignore]="ignore.add('externals')"
+     <resource-panel *ngIf="item.class==resourceName.ClinicalIndex" [ignore]="ignore"
      [item]="item" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></resource-panel>  
 
      <!--Coalescence-->
-     <coalescence-panel *ngIf="item.class==resourceName.Coalescence" [ignore]="ignore.add('externals')"
+     <coalescence-panel *ngIf="item.class==resourceName.Coalescence" [ignore]="ignore"
      [item]="item" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></coalescence-panel>
 
   `,

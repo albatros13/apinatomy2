@@ -43,6 +43,7 @@ var CustomPropertyToolbar = (function () {
             selector: 'custom-property-toolbar',
             inputs: ['options', 'caption'],
             template: "\n    <div class=\"dropdown\" dropdown>\n      <button type=\"button\" class=\"btn btn-default\" dropdown-open>\n        {{caption}} <span class=\"caret\"></span>\n      </button>\n      <ul class=\"dropdown-menu dropdown-menu-right\" dropdown-not-closable-zone>\n        <li *ngFor=\"let option of options; let i = index\">\n          <a class=\"small\" href=\"#\"><input type=\"checkbox\" [(ngModel)]=\"option.selected\"/>&nbsp;{{option.value}}</a>\n        </li>\n      </ul>\n    </div>\n    ",
+            styles: [':host {float: left;}'],
             directives: [ng2_dropdown_1.DROPDOWN_DIRECTIVES, ng2_radio_group_1.RADIO_GROUP_DIRECTIVES]
         }), 
         __metadata('design:paramtypes', [])

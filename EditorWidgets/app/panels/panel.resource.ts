@@ -81,6 +81,8 @@ export class ResourcePanel {
       let properties = Object.assign({}, this.item.constructor.properties,
         this.item.constructor.relationshipShortcuts);
 
+      //console.log("All properties of " + this.item.class, properties);
+
       for (let property in properties){
         if (property == "class" || property == "themes" || property == "nature") continue;
         if (property.indexOf("Border") > -1) {
@@ -96,6 +98,7 @@ export class ResourcePanel {
   selectionChanged(option: any){
     if ( this.ignore.has(option.value) &&  option.selected) this.ignore.delete(option.value);
     if (!this.ignore.has(option.value) && !option.selected) this.ignore.add(option.value);
+    console.log(this.ignore);
   }
 
   protected includeProperty(prop: string){

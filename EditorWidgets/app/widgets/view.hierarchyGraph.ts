@@ -79,7 +79,9 @@ export class HierarchyGraphWidget implements OnChanges, OnDestroy{
   }
 
   setGraphOptions(){
-    let visibleProperties = this.properties.filter(x => x.selected).map(x => x.value);
+    let visibleProperties = [];
+    if (this.properties)
+      visibleProperties = this.properties.filter(x => x.selected).map(x => x.value);
 
     function formatValue(value: any){
       let res = "[";
@@ -144,7 +146,10 @@ export class HierarchyGraphWidget implements OnChanges, OnDestroy{
       for (let fieldName of fields) {
         if (!root[fieldName]) return;
         var children = root[fieldName];
-        for (let child of children) {
+
+        //TODO: test
+        for (let child in children) {
+
           data.links.push({source: root, target: child});
           if (data.nodes.indexOf(child) == -1) {
             data.nodes.push(child);

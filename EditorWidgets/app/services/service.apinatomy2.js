@@ -1,9 +1,4 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
 /*ENUMERATIONS*/
 (function (ResourceName) {
     ResourceName[ResourceName["Resource"] = "Resource"] = "Resource";
@@ -44,64 +39,9 @@ var TemplateName = exports.TemplateName;
     TransportPhenomenon[TransportPhenomenon["advection"] = "advection"] = "advection";
 })(exports.TransportPhenomenon || (exports.TransportPhenomenon = {}));
 var TransportPhenomenon = exports.TransportPhenomenon;
-(function (DistributionType) {
-    DistributionType[DistributionType["Uniform"] = "Uniform"] = "Uniform";
-    DistributionType[DistributionType["BoundedNormal"] = "BoundedNormal"] = "BoundedNormal";
-})(exports.DistributionType || (exports.DistributionType = {}));
-var DistributionType = exports.DistributionType;
 (function (FormType) {
     FormType[FormType["open"] = "open"] = "open";
     FormType[FormType["closed"] = "closed"] = "closed";
 })(exports.FormType || (exports.FormType = {}));
 var FormType = exports.FormType;
-/*CLASSES*/
-//Components
-var Distribution = (function () {
-    function Distribution(obj) {
-        if (obj === void 0) { obj = {}; }
-    }
-    return Distribution;
-}());
-exports.Distribution = Distribution;
-var UniformDistribution = (function (_super) {
-    __extends(UniformDistribution, _super);
-    function UniformDistribution(obj) {
-        if (obj === void 0) { obj = {}; }
-        _super.call(this, obj);
-        this.min = obj.min;
-        this.max = obj.max;
-    }
-    return UniformDistribution;
-}(Distribution));
-exports.UniformDistribution = UniformDistribution;
-var BoundedNormalDistribution = (function (_super) {
-    __extends(BoundedNormalDistribution, _super);
-    function BoundedNormalDistribution(obj) {
-        if (obj === void 0) { obj = {}; }
-        _super.call(this, obj);
-        this.mean = 0;
-        this.std = 0;
-        this.max = obj.max;
-        this.std = obj.std;
-    }
-    return BoundedNormalDistribution;
-}(UniformDistribution));
-exports.BoundedNormalDistribution = BoundedNormalDistribution;
-var ValueDistribution = (function () {
-    function ValueDistribution(obj) {
-        if (obj === void 0) { obj = {}; }
-        //this.unit = obj.unit;
-        this.type = obj.type;
-        this.distribution = obj.distribution;
-    }
-    return ValueDistribution;
-}());
-exports.ValueDistribution = ValueDistribution;
-// @Injectable()
-// export class ExternalResourceProvider {
-//   public items: Array<ExternalResource> = [
-//     new ExternalResource({id: 3000, name: "FMA_44539: Third plantar metatarsal vein", type:  "fma"}),
-//     new ExternalResource({id: 4000, name: "cocomac:98: Accessor basal nucleus (amygdala), ventromedial division", type:  "cocomac"})
-//   ];
-// }
 //# sourceMappingURL=service.apinatomy2.js.map

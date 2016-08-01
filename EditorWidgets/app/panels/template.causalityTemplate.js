@@ -21,10 +21,12 @@ var component_templateValue_1 = require('../components/component.templateValue')
 var template_template_1 = require("./template.template");
 var component_select_1 = require('../components/component.select');
 var pipe_general_1 = require("../transformations/pipe.general");
+var open_physiology_model_1 = require("open-physiology-model");
 var CausalityTemplatePanel = (function (_super) {
     __extends(CausalityTemplatePanel, _super);
     function CausalityTemplatePanel() {
         _super.apply(this, arguments);
+        this.MeasurableTemplate = open_physiology_model_1.MeasurableTemplate;
     }
     CausalityTemplatePanel = __decorate([
         core_1.Component({

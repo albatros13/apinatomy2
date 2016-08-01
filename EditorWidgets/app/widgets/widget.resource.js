@@ -15,25 +15,12 @@ var core_1 = require('@angular/core');
 var view_omegaTree_1 = require('./view.omegaTree');
 var service_apinatomy2_1 = require('../services/service.apinatomy2');
 var service_resize_1 = require('../services/service.resize');
-//Component visualization widget stub
-var TemplateBox = (function () {
-    function TemplateBox(model) {
-        this.model = model;
-    }
-    TemplateBox.prototype.render = function (svg, options) {
-        return svg.append("rect")
-            .attr("x", options.center.x).attr("y", options.center.y)
-            .attr("width", options.size.width).attr("height", options.size.height)
-            .style("stroke", "black").style("fill", "white");
-    };
-    return TemplateBox;
-}());
-exports.TemplateBox = TemplateBox;
 var ResourceWidget = (function () {
     function ResourceWidget(resizeService) {
         var _this = this;
         this.resizeService = resizeService;
         this.resourceName = service_apinatomy2_1.ResourceName;
+        this.caption = "Resource";
         this.subscription = resizeService.resize$.subscribe(function (event) {
             if (event.target == "resource-widget") {
                 _this.onSetPanelSize(event);
@@ -43,15 +30,21 @@ var ResourceWidget = (function () {
     ResourceWidget.prototype.onSetPanelSize = function (event) {
         this.resizeService.announceResize({ target: "omega-tree", size: event.size });
     };
-    ResourceWidget.prototype.ngOnChanges = function (changes) { };
-    ResourceWidget.prototype.ngOnDestroy = function () {
-        this.subscription.unsubscribe();
+    ResourceWidget.prototype.ngOnInit = function () {
+        if (this.item)
+            this.caption = "Resource: " + this.item.id + " - " + this.item.name;
     };
+    ResourceWidget.prototype.ngOnChanges = function (changes) { };
+    ResourceWidget.prototype.ngOnDestroy = function () { this.subscription.unsubscribe(); };
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Object)
+    ], ResourceWidget.prototype, "item", void 0);
     ResourceWidget = __decorate([
         core_1.Component({
             selector: 'resource-widget',
             inputs: ['item'],
-            template: "\n    <omega-tree *ngIf=\"item && (item.class == resourceName.OmegaTreeType)\" [item]=\"item\" [template]=\"TemplateBox\"></omega-tree>   \n  ",
+            template: "\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">{{caption}}</div>\n      <omega-tree *ngIf=\"item && (item.class == resourceName.OmegaTreeType)\" [item]=\"item\"></omega-tree>   \n    </div>\n  ",
             directives: [view_omegaTree_1.OmegaTreeWidget]
         }), 
         __metadata('design:paramtypes', [service_resize_1.ResizeService])

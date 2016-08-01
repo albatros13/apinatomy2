@@ -34,7 +34,6 @@ var OmegaTreeWidget = (function () {
         this.renderer = renderer;
         this.el = el;
         this.resizeService = resizeService;
-        this.caption = "Omega function ";
         this.vp = { size: { width: 400, height: 600 },
             margin: { x: 20, y: 20 },
             node: { size: { width: 40, height: 40 } } };
@@ -59,7 +58,6 @@ var OmegaTreeWidget = (function () {
     OmegaTreeWidget.prototype.ngOnChanges = function (changes) {
         this.svg = d3.select(this.el.nativeElement).select('svg');
         if (this.item) {
-            this.caption = "Omega function: " + this.item.id + " - " + this.item.name;
             this.data = this.getOmegaTreeData(this.item, "elements");
             this.draw(this.svg, this.vp, this.data);
         }
@@ -149,7 +147,7 @@ var OmegaTreeWidget = (function () {
         core_1.Component({
             selector: 'omega-tree',
             inputs: ['item'],
-            template: "\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">{{caption}}</div>\n      <div class=\"panel-body\">\n          <svg #treeSvg class=\"svg-widget\"></svg>\n       </div>\n    </div>\n  ",
+            template: "\n     <div class=\"panel-body\">\n        <svg #treeSvg class=\"svg-widget\"></svg>\n     </div>\n  ",
             directives: []
         }), 
         __metadata('design:paramtypes', [core_1.Renderer, core_1.ElementRef, service_resize_1.ResizeService])

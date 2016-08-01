@@ -522,8 +522,8 @@ var HierarchyTreeWidget = (function () {
                     return;
                 if (!data.children)
                     data.children = [];
-                for (var _a = 0, _b = root[fieldName]; _a < _b.length; _a++) {
-                    var obj = _b[_a];
+                //TODO: test
+                for (var obj in root[fieldName]) {
                     var child = { id: obj.id, name: obj.name, resource: obj, depth: level };
                     data.children.push(child);
                     traverse(obj, level + 1, child);

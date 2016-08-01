@@ -18,11 +18,6 @@ import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
       (removed)  = "removed.emit($event)"
       (propertyUpdated) = "propertyUpdated.emit($event)">
             
-      <div class="input-control">
-        <label for="position">Position: {{item.position}}</label>
-        <input type="range" min="0" max="100" step="0.1" required [(ngModel)]="item.position">
-      </div>
-      
       <!--Form-->
       <div class="input-control" *ngIf="includeProperty('form')">
       <fieldset>

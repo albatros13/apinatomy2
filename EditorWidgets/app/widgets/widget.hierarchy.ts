@@ -22,14 +22,14 @@ import {CustomPropertyToolbar} from '../components/toolbar.propertySettings';
           <!--Relations-->
           <custom-property-toolbar  
             [options] = "relations"
-            (change) = "updateRelations()"
+            (change) = "relationsChanged()"
             caption = 'Relations'>
           </custom-property-toolbar>
           
           <!--Properties-->
           <custom-property-toolbar  
             [options] = "properties"
-            (change) = "updateProperties()"
+            (change) = "propertiesChanged()"
             caption = 'Properties'
             >
           </custom-property-toolbar>
@@ -54,10 +54,11 @@ import {CustomPropertyToolbar} from '../components/toolbar.propertySettings';
           </div>
 
         <hierarchy-tree *ngIf="layout == 'tree'" 
-          [item]="item" [relation]="relations" [depth]="depth" [properties]="properties"></hierarchy-tree>
+          [item]="item" [relations]="relations" [properties]="properties" [depth]="depth"></hierarchy-tree>
         <hierarchy-graph *ngIf="layout == 'graph'" 
-          [item]="item" [relation]="relations"  [depth]="depth" [properties]="properties"></hierarchy-graph>
-    </div>      
+          [item]="item" [relations]="relations" [properties]="properties" [depth]="depth"></hierarchy-graph>
+      </div>     
+    </div>
   `,
   directives: [HierarchyGraphWidget, HierarchyTreeWidget,
     DROPDOWN_DIRECTIVES, CORE_DIRECTIVES, CustomPropertyToolbar]
@@ -127,4 +128,8 @@ export class HierarchyWidget implements OnChanges, OnDestroy{
       if (this.properties.length > 0) this.properties[0].selected = true;
     }
   }
+
+  relationsChanged(){}
+
+  propertiesChanged(){}
 }

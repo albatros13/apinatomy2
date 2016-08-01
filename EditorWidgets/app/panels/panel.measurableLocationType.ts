@@ -20,8 +20,8 @@ import {SetToArray} from "../transformations/pipe.general";
       (removed)  = "removed.emit($event)"
       (propertyUpdated) = "propertyUpdated.emit($event)">
       
-       <providerGroup>
-          <!--MeasurableProviders-->
+       <!--<providerGroup>
+          &lt;!&ndash;MeasurableProviders&ndash;&gt;
           <div class="input-control" *ngIf="includeProperty('measurableProviders')">
             <label for="measurableProviders">Inherits measurables from: </label>
             <select-input [items]="item.p('measurableProviders') | async" 
@@ -32,7 +32,7 @@ import {SetToArray} from "../transformations/pipe.general";
        </providerGroup>
         
        <relationGroup>
-          <!--Measurables-->
+          &lt;!&ndash;Measurables&ndash;&gt;
           <div class="input-control" *ngIf="includeProperty('measurables')">
             <repo-template caption='Measurables' 
             [items]="item.p('measurables') | async | setToArray" 
@@ -40,7 +40,7 @@ import {SetToArray} from "../transformations/pipe.general";
             [types]="[templateName.MeasurableTemplate]"></repo-template>
           </div>
            <ng-content select="relationGroup"></ng-content>
-       </relationGroup>
+       </relationGroup>-->
        
        <ng-content></ng-content>      
 

@@ -12,7 +12,7 @@ import {RepoTemplate} from '../repos/repo.template';
   inputs: ['item', 'ignore', 'options'],
   template:`
     <groupType-panel [item]="item" 
-      [ignore] = "ignore.add('elements').add('supertypes').add('subtypes')"
+      [ignore] = "ignore.add('supertypes').add('subtypes')"
       [options] ="options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
@@ -26,19 +26,7 @@ import {RepoTemplate} from '../repos/repo.template';
           (updated)="updateProperty('root', $event)"   
           [options] = "NodeTemplate.p('all') | async"></select-input-1>
       </div>-->
-      
-      <relationGroup>
-      <!--Part = Elements which is OmegaTreeTemplate or CylindricalLyphTemplate-->
-        <div class="input-control" *ngIf="includeProperty('elements')">
-           <repo-template caption="elements" 
-           [items]  = "item.p('elements') | async | setToArray" 
-           (updated)= "updateProperty('elements', $event)"
-           [types]  = "[templateName.CylindricalLyphTemplate, templateName.OmegaTreeTemplate]">
-          </repo-template>
-        </div>
-        <ng-content select="relationGroup"></ng-content>      
-      </relationGroup>
-      
+
       <ng-content></ng-content> 
     
     </groupType-panel>

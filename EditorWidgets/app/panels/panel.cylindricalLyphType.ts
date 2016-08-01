@@ -5,8 +5,10 @@ import {Component} from '@angular/core';
 import {LyphTypePanel} from "./panel.lyphType";
 import {MultiSelectInput, SingleSelectInput} from '../components/component.select';
 import {RepoTemplate} from '../repos/repo.template';
-import {BorderTemplatePanel} from '../templates/template.borderTemplate';
+import {BorderTemplatePanel} from './template.borderTemplate';
 import {SetToArray} from "../transformations/pipe.general";
+import {TemplateValue} from '../components/component.templateValue';
+
 import {CylindricalLyphType} from "open-physiology-model";
 
 @Component({
@@ -20,6 +22,14 @@ import {CylindricalLyphType} from "open-physiology-model";
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"
       (propertyUpdated) = "propertyUpdated.emit($event)">
+      
+        <!--Length-->
+        <template-value *ngIf="includeProperty('length')" caption="Length" 
+            [item]="item.length"
+            (updated)="updateProperty('length', $event)">
+        </template-value>
+        
+        <ng-content></ng-content>   
               
         <providerGroup>
           <!--SegmentProviders-->
@@ -67,12 +77,11 @@ import {CylindricalLyphType} from "open-physiology-model";
           
         </borderGroup>
         
-        <ng-content></ng-content>
     
     </lyphType-panel>
   `,
   directives: [LyphTypePanel, MultiSelectInput, SingleSelectInput,
-    RepoTemplate, BorderTemplatePanel, BorderTemplatePanel],
+    RepoTemplate, BorderTemplatePanel, BorderTemplatePanel, TemplateValue],
   pipes: [SetToArray]
 
 })

@@ -26,12 +26,6 @@ import {NodeTemplate} from "open-physiology-model";
       (removed)  = "removed.emit($event)"
       (propertyUpdated) = "propertyUpdated.emit($event)">
 
-      <!--Position: Template-->
-      <template-value 
-        *ngIf="includeProperty('position') && item.position">
-        caption="Position:" [item]="item.position"
-      (updated)="updateProperty('position', $event)"></template-value>
-      
       <!--Form: {open, closed}-->
       <div class="input-control" *ngIf="includeProperty('form') && item.form">
         <fieldset>

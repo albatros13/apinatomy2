@@ -6,7 +6,7 @@ import {TransportPhenomenon} from "../services/service.apinatomy2";
 import {MeasurableLocationTypePanel} from "./panel.measurableLocationType";
 import {MultiSelectInput, SingleSelectInput} from '../components/component.select';
 import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
-import {NodeTemplatePanel} from '../templates/template.nodeTemplate';
+import {NodeTemplatePanel} from './template.nodeTemplate';
 import {SetToArray} from "../transformations/pipe.general";
 import {ProcessType, MaterialType} from "open-physiology-model";
 

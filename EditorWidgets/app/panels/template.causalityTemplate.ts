@@ -43,4 +43,6 @@ import {MeasurableTemplate} from "open-physiology-model";
   directives: [TemplateValue, SingleSelectInput, TemplatePanel],
   pipes: [FilterByClass]
 })
-export class CausalityTemplatePanel extends TemplatePanel{}
+export class CausalityTemplatePanel extends TemplatePanel{
+  MeasurableTemplate = MeasurableTemplate;
+}

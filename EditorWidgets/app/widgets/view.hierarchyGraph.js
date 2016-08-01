@@ -62,7 +62,9 @@ var HierarchyGraphWidget = (function () {
         }
     };
     HierarchyGraphWidget.prototype.setGraphOptions = function () {
-        var visibleProperties = this.properties.filter(function (x) { return x.selected; }).map(function (x) { return x.value; });
+        var visibleProperties = [];
+        if (this.properties)
+            visibleProperties = this.properties.filter(function (x) { return x.selected; }).map(function (x) { return x.value; });
         function formatValue(value) {
             var res = "[";
             for (var i = 0; i < value.length; i++) {
@@ -131,8 +133,8 @@ var HierarchyGraphWidget = (function () {
                 if (!root[fieldName])
                     return;
                 var children = root[fieldName];
-                for (var _a = 0, children_1 = children; _a < children_1.length; _a++) {
-                    var child = children_1[_a];
+                //TODO: test
+                for (var child in children) {
                     data.links.push({ source: root, target: child });
                     if (data.nodes.indexOf(child) == -1) {
                         data.nodes.push(child);

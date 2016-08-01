@@ -45,68 +45,9 @@ export enum TransportPhenomenon {
   advection = <any>"advection"
 }
 
-export enum DistributionType {
-  Uniform       = <any>"Uniform",
-  BoundedNormal = <any>"BoundedNormal"
-}
-
 export enum FormType {
   open       = <any>"open",
   closed     = <any>"closed"
 }
-
-/*CLASSES*/
-
-//Components
-
-export class Distribution {
-  constructor(obj:any = {} ){}
-}
-
-export class UniformDistribution extends Distribution {
-  public min: number;
-  public max: number;
-
-  constructor(obj:any = {}){
-    super(obj);
-    this.min = obj.min;
-    this.max = obj.max;
-  }
-}
-
-export class BoundedNormalDistribution extends UniformDistribution {
-  public mean: number = 0;
-  public std: number = 0;
-
-  constructor(obj:any = {} ){
-    super(obj);
-    this.max = obj.max;
-    this.std = obj.std;
-  }
-}
-
-export class ValueDistribution {
-  //public unit: string;
-  public type: DistributionType;
-  public distribution: Distribution;
-
-  constructor(obj:any = {}){
-    //this.unit = obj.unit;
-    this.type = obj.type;
-    this.distribution = obj.distribution;
-  }
-}
-
-// @Injectable()
-// export class ExternalResourceProvider {
-//   public items: Array<ExternalResource> = [
-//     new ExternalResource({id: 3000, name: "FMA_44539: Third plantar metatarsal vein", type:  "fma"}),
-//     new ExternalResource({id: 4000, name: "cocomac:98: Accessor basal nucleus (amygdala), ventromedial division", type:  "cocomac"})
-//   ];
-// }
-
-
-
-
 
 

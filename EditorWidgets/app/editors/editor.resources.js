@@ -18,20 +18,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 var core_1 = require('@angular/core');
 var repo_general_1 = require('../repos/repo.general');
-//import {HierarchyWidget} from '../widgets/widget.hierarchy';
-//import {ResourceWidget} from '../widgets/widget.resource';
+var widget_hierarchy_1 = require('../widgets/widget.hierarchy');
+var widget_resource_1 = require('../widgets/widget.resource');
 var service_resize_1 = require('../services/service.resize');
 var pipe_general_1 = require("../transformations/pipe.general");
 var model = require("open-physiology-model");
 var ResourceEditor = (function () {
     function ResourceEditor(resizeService, el) {
-        /*this.subscription = resourceProvider.data$.subscribe(
-         (updatedData: any) => {
-         this.items = updatedData.resources;
-         });
-    
-         setTimeout(() => {resourceProvider.loadExtra()}, 1000);
-         */
         var _this = this;
         this.resizeService = resizeService;
         this.el = el;
@@ -94,6 +87,36 @@ var ResourceEditor = (function () {
                     model.ProcessType.new({ name: "Inflow Left Heart" }),
                     model.ProcessType.new({ name: "Outflow Left Heart" })];
                 yield Promise.all(processes.map(function (p) { return p.commit(); }));
+                /*External resources*/
+                var fma7203 = model.ExternalResource.new({ name: "FMA:7203", uri: "" });
+                var fma15610 = model.ExternalResource.new({ name: "FMA:15610", uri: "" });
+                var fma66610 = model.ExternalResource.new({ name: "FMA:66610", uri: "" });
+                var fma17881 = model.ExternalResource.new({ name: "FMA:17881", uri: "" });
+                var externals = [fma7203, fma15610, fma66610, fma17881];
+                yield Promise.all(externals.map(function (p) { return p.commit(); }));
+                var borderType = model.BorderType.new({ name: "GeneralBorder" });
+                yield borderType.commit();
+                var minusBorder = model.BorderTemplate.new({ name: "T: MinusBorder", type: borderType, cardinalityBase: 1 });
+                var plusBorder = model.BorderTemplate.new({ name: "T: PlusBorder", type: borderType, cardinalityBase: 1 });
+                var innerBorder = model.BorderTemplate.new({ name: "T: InnerBorder", type: borderType, cardinalityBase: 1 });
+                var outerBorder = model.BorderTemplate.new({ name: "T: OuterBorder", type: borderType, cardinalityBase: 1 });
+                var borders = [minusBorder, plusBorder, innerBorder, outerBorder];
+                yield Promise.all(borders.map(function (p) { return p.commit(); }));
+                /*Cylindrical lyphs*/
+                var renalH = model.CylindricalLyphType.new({ name: "Renal hilum", externals: [fma15610],
+                    minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder });
+                var renalP = model.CylindricalLyphType.new({ name: "Renal parenchyma",
+                    minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder });
+                var renalC = model.CylindricalLyphType.new({ name: "Renal capsule", externals: [fma66610],
+                    minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder });
+                var cLyphs1 = [renalH, renalP, renalC];
+                yield Promise.all(cLyphs1.map(function (p) { return p.commit(); }));
+                var kidney = model.CylindricalLyphType.new({ name: "Kidney", externals: [fma7203],
+                    minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder });
+                yield kidney.commit();
+                var kidneyLobus = model.CylindricalLyphType.new({ name: "Kidney lobus", externals: [fma17881],
+                    minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder });
+                yield kidneyLobus.commit();
             });
         })();
     }
@@ -110,15 +133,10 @@ var ResourceEditor = (function () {
         }, 0);
     };
     ResourceEditor.prototype.onItemAdded = function (item) {
-        //this.resourceProvider.addResource(item);
-        //item.commit();
     };
     ResourceEditor.prototype.onItemRemoved = function (item) {
-        //this.resourceProvider.removeResource(item);
     };
     ResourceEditor.prototype.onItemUpdated = function (item) {
-        //maybe not needed
-        //this.resourceProvider.addResource(item);
     };
     ResourceEditor.prototype.ngOnInit = function () {
         var self = this;
@@ -165,9 +183,9 @@ var ResourceEditor = (function () {
             providers: [
                 service_resize_1.ResizeService
             ],
-            template: "\n    <repo-general id=\"repo\"\n      [items]=\"items | setToArray\" \n      [caption]=\"'All resources'\" \n      (selected)=\"onItemSelected($event)\"\n      (added)=\"onItemAdded($event)\"\n      (removed)=\"onItemRemoved($event)\"\n      (updated)=\"onItemUpdated($event)\">\n    </repo-general>\n    <!--<hierarchy-widget id = \"hierarchy\" [item]=\"selectedItem\"></hierarchy-widget>-->\n    <!--<resource-widget id = \"resource\" [item]=\"selectedItem\"></resource-widget>          -->\n    <div id=\"main\"></div>\n  ",
+            template: "\n    <repo-general id=\"repo\"\n      [items]=\"items | setToArray\" \n      [caption]=\"'All resources'\" \n      (selected)=\"onItemSelected($event)\"\n      (added)=\"onItemAdded($event)\"\n      (removed)=\"onItemRemoved($event)\"\n      (updated)=\"onItemUpdated($event)\">\n    </repo-general>\n    <hierarchy-widget id = \"hierarchy\" [item]=\"selectedItem\"></hierarchy-widget>\n    <resource-widget id = \"resource\" [item]=\"selectedItem\"></resource-widget>          \n    <div id=\"main\"></div>\n  ",
             styles: ["#main {width: 100%; height: 100%; border: 0; margin: 0; padding: 0}"],
-            directives: [repo_general_1.RepoGeneral /*, HierarchyWidget, ResourceWidget*/],
+            directives: [repo_general_1.RepoGeneral, widget_hierarchy_1.HierarchyWidget, widget_resource_1.ResourceWidget],
             pipes: [pipe_general_1.SetToArray]
         }), 
         __metadata('design:paramtypes', [service_resize_1.ResizeService, core_1.ElementRef])

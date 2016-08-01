@@ -1,7 +1,9 @@
 /**
  * Created by Natallia on 7/8/2016.
  */
-import {Component, Output, EventEmitter} from '@angular/core';
+import {Component, Input, Output, EventEmitter} from '@angular/core';
+import {ResourceName, TemplateName} from "../services/service.apinatomy2";
+import * as model from "open-physiology-model";
 
 @Component({
   selector: 'item-header',
@@ -23,8 +25,8 @@ export abstract class RepoAbstract{
   @Output() updated = new EventEmitter();
   @Output() selected = new EventEmitter();
 
-  items: Array<any> = [];
-  types: Array<any> = [];
+  @Input() items: Array<any> = [];
+  @Input() types: Array<any> = [];
   zones: Array<string> = [];
   ignore: Set<string> = new Set<string>();
 
@@ -68,9 +70,43 @@ export abstract class RepoAbstract{
     this.searchString = config.filter;
   }
 
-  protected abstract getIcon(Class: any): string;
+  protected getIcon(Class: any): string{
+    switch (Class){
+      case ResourceName.ExternalResource : return "images/external.png";
+      case ResourceName.MaterialType  : return "images/materialType.png";
+      case ResourceName.LyphType      : return "images/lyphType.png";
+      case ResourceName.CylindricalLyphType: return "images/cylindricalLyphType.png";
 
-  protected abstract onAdded(Class: any): void;
+      case ResourceName.ProcessType   : return "images/processType.png";
+      case ResourceName.MeasurableType: return "images/measurableType.png";
+      case ResourceName.CausalityType : return "images/causalityType.png";
+      case ResourceName.NodeType      : return "images/nodeType.png";
+      case ResourceName.BorderType    : return "images/borderType.png";
+      case ResourceName.Coalescence   : return "images/coalescence.png";
+
+      case ResourceName.GroupType     : return "images/groupType.png";
+      case ResourceName.OmegaTreeType : return "images/omegaTreeType.png";
+
+      case ResourceName.Publication   : return "images/publication.png";
+      case ResourceName.Correlation   : return "images/correlation.png";
+      case ResourceName.ClinicalIndex : return "images/clinicalIndex.png";
+
+      case TemplateName.LyphTemplate      : return "images/lyphType.png";
+      case TemplateName.CylindricalLyphTemplate: return "images/cylindricalLyphType.png";
+
+      case TemplateName.ProcessTemplate   : return "images/processType.png";
+      case TemplateName.MeasurableTemplate: return "images/measurableType.png";
+      case TemplateName.CausalityTemplate : return "images/causalityType.png";
+      case TemplateName.NodeTemplate      : return "images/nodeType.png";
+      case TemplateName.BorderTemplate    : return "images/borderType.png";
+      case TemplateName.CausalityTemplate : return "images/causality.png";
+
+      case TemplateName.GroupTemplate     : return "images/groupType.png";
+      case TemplateName.OmegaTreeTemplate : return "images/omegaTreeType.png";
+
+    }
+    return "images/resource.png";
+  }
 
   protected onSaved(item: any, updatedItem: any){
     this.updated.emit(this.items);
@@ -95,4 +131,15 @@ export abstract class RepoAbstract{
     this.updated.emit(this.items);
   }
 
+  protected onAdded(Class: any){
+    let proto: any = {name: "New " + Class};
+    if (Class.indexOf("Template") > 0) {
+      proto = {name: "T: New " + Class, cardinality: 1};
+    }
+    let newItem = model[Class].new(proto);
+    this.items.push(newItem);
+    this.added.emit(newItem);
+    this.updated.emit(this.items);
+    this.selectedItem = newItem;
+  }
 }

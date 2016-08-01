@@ -25,8 +25,8 @@ var service_resize_1 = require('../services/service.resize');
 var service_apinatomy2_1 = require('../services/service.apinatomy2');
 var model = require("open-physiology-model");
 var pipe_general_1 = require("../transformations/pipe.general");
-var ResourceAndTemplateEditor = (function () {
-    function ResourceAndTemplateEditor(resizeService, el) {
+var OmegaTreeEditor = (function () {
+    function OmegaTreeEditor(resizeService, el) {
         var _this = this;
         this.resizeService = resizeService;
         this.el = el;
@@ -52,8 +52,17 @@ var ResourceAndTemplateEditor = (function () {
                     type: 'row',
                     content: [
                         {
-                            type: 'component',
-                            componentName: 'RepoPanel'
+                            type: 'column',
+                            content: [
+                                {
+                                    type: 'component',
+                                    componentName: 'OmegaTreePanel'
+                                },
+                                {
+                                    type: 'component',
+                                    componentName: 'LyphPanel'
+                                }
+                            ]
                         },
                         {
                             type: 'column',
@@ -67,50 +76,52 @@ var ResourceAndTemplateEditor = (function () {
                                     componentName: 'ResourcePanel'
                                 }
                             ]
-                        },
-                        {
-                            type: 'component',
-                            componentName: 'Repo2Panel'
                         }
                     ]
                 }]
         };
-        this.subscription = model.Resource.p('all').subscribe(function (data) {
-            _this.items = data;
-        });
-        console.log("V.2");
+        this.sLyphs = model.LyphType.p('all').subscribe(function (data) { _this.items = data; });
+        this.sOmegaTrees = model.OmegaTreeType.p('all').subscribe(function (data) { _this.items = data; });
         (function () {
             return __awaiter(this, void 0, void 0, function* () {
-                /*Material type*/
-                var water = model.MaterialType.new({ name: "Water" });
-                yield water.commit();
-                var vWater = model.MeasurableType.new({
-                    name: "Concentration of water", quality: "concentration",
-                    materials: [water]
-                });
-                yield vWater.commit();
-                /*Measurable type*/
-                var sodiumIon = model.MaterialType.new({ name: "Sodium ion" });
-                yield sodiumIon.commit();
-                var vSodiumIon = model.MeasurableType.new({
-                    name: "Concentration of sodium ion", quality: "concentration",
-                    materials: [sodiumIon]
-                });
-                yield vSodiumIon.commit();
-                /*Process type*/
-                var processes = [
-                    model.ProcessType.new({ name: "Inflow Right Heart" }),
-                    model.ProcessType.new({ name: "Outflow Right Heart" }),
-                    model.ProcessType.new({ name: "Inflow Left Heart" }),
-                    model.ProcessType.new({ name: "Outflow Left Heart" })];
-                yield Promise.all(processes.map(function (p) { return p.commit(); }));
+                /*External resources*/
+                var fma7203 = model.ExternalResource.new({ name: "FMA:7203", uri: "" });
+                var fma15610 = model.ExternalResource.new({ name: "FMA:15610", uri: "" });
+                var fma66610 = model.ExternalResource.new({ name: "FMA:66610", uri: "" });
+                var fma17881 = model.ExternalResource.new({ name: "FMA:17881", uri: "" });
+                var externals = [fma7203, fma15610, fma66610, fma17881];
+                yield Promise.all(externals.map(function (p) { return p.commit(); }));
+                var borderType = model.BorderType.new({ name: "GeneralBorder" });
+                yield borderType.commit();
+                var minusBorder = model.BorderTemplate.new({ name: "T: MinusBorder", type: borderType, cardinalityBase: 1 });
+                var plusBorder = model.BorderTemplate.new({ name: "T: PlusBorder", type: borderType, cardinalityBase: 1 });
+                var innerBorder = model.BorderTemplate.new({ name: "T: InnerBorder", type: borderType, cardinalityBase: 1 });
+                var outerBorder = model.BorderTemplate.new({ name: "T: OuterBorder", type: borderType, cardinalityBase: 1 });
+                var borders = [minusBorder, plusBorder, innerBorder, outerBorder];
+                yield Promise.all(borders.map(function (p) { return p.commit(); }));
+                /*Cylindrical lyphs*/
+                var renalH = model.CylindricalLyphType.new({ name: "Renal hilum", externals: [fma15610],
+                    minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder });
+                var renalP = model.CylindricalLyphType.new({ name: "Renal parenchyma",
+                    minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder });
+                var renalC = model.CylindricalLyphType.new({ name: "Renal capsule", externals: [fma66610],
+                    minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder });
+                var cLyphs1 = [renalH, renalP, renalC];
+                yield Promise.all(cLyphs1.map(function (p) { return p.commit(); }));
+                var kidney = model.CylindricalLyphType.new({ name: "Kidney", externals: [fma7203],
+                    minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder });
+                yield kidney.commit();
+                var kidneyLobus = model.CylindricalLyphType.new({ name: "Kidney lobus", externals: [fma17881],
+                    minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder });
+                yield kidneyLobus.commit();
             });
         })();
     }
-    ResourceAndTemplateEditor.prototype.ngOnDestroy = function () {
-        this.subscription.unsubscribe();
+    OmegaTreeEditor.prototype.ngOnDestroy = function () {
+        this.sLyphs.unsubscribe();
+        this.sOmegaTrees.unsubscribe();
     };
-    ResourceAndTemplateEditor.prototype.onItemSelected = function (item) {
+    OmegaTreeEditor.prototype.onItemSelected = function (item) {
         var _this = this;
         setTimeout(function () {
             _this.selectedItem = null;
@@ -119,19 +130,24 @@ var ResourceAndTemplateEditor = (function () {
             _this.selectedItem = item;
         }, 0);
     };
-    ResourceAndTemplateEditor.prototype.onItemAdded = function (item) {
+    OmegaTreeEditor.prototype.onItemAdded = function (item) {
     };
-    ResourceAndTemplateEditor.prototype.onItemRemoved = function (item) {
+    OmegaTreeEditor.prototype.onItemRemoved = function (item) {
     };
-    ResourceAndTemplateEditor.prototype.onItemUpdated = function (item) {
+    OmegaTreeEditor.prototype.onItemUpdated = function (item) {
     };
-    ResourceAndTemplateEditor.prototype.ngOnInit = function () {
+    OmegaTreeEditor.prototype.ngOnInit = function () {
         var self = this;
         var main = $('app > #main');
         this.mainLayout = new GoldenLayout(this.layoutConfig, main);
-        this.mainLayout.registerComponent('RepoPanel', function (container, componentState) {
+        this.mainLayout.registerComponent('OmegaTreePanel', function (container, componentState) {
             var panel = container.getElement();
-            var content = $('app > #repo');
+            var content = $('app > #omegaTreeRepo');
+            content.detach().appendTo(panel);
+        });
+        this.mainLayout.registerComponent('LyphPanel', function (container, componentState) {
+            var panel = container.getElement();
+            var content = $('app > #lyphRepo');
             content.detach().appendTo(panel);
         });
         this.mainLayout.registerComponent('HierarchyPanel', function (container, componentState) {
@@ -169,20 +185,20 @@ var ResourceAndTemplateEditor = (function () {
         });
         this.mainLayout.init();
     };
-    ResourceAndTemplateEditor = __decorate([
+    OmegaTreeEditor = __decorate([
         core_1.Component({
             selector: 'app',
             providers: [
                 service_resize_1.ResizeService
             ],
-            template: "\n    <repo-general id=\"repo\"\n      [items]=\"items | setToArray\" \n      [caption]=\"'All resources'\" \n      (selected)=\"onItemSelected($event)\"\n      (added)=\"onItemAdded($event)\"\n      (removed)=\"onItemRemoved($event)\"\n      (updated)=\"onItemUpdated($event)\"\n      >\n    </repo-general>\n    <hierarchy-widget id = \"hierarchy\" [item]=\"selectedItem\"></hierarchy-widget>\n    <resource-widget id = \"resource\" [item]=\"selectedItem\"></resource-widget>   \n    <repo-template id=\"repo2\"\n      [items]=\"[]\" \n      [caption]=\"'All templates'\" \n      [options]=\"{showSortToolbar: true, showFilterToolbar: true}\"\n      (selected)=\"onItemSelected($event)\"\n      (added)=\"onItemAdded($event)\"\n      (removed)=\"onItemRemoved($event)\"\n      (updated)=\"onItemUpdated($event)\"\n      >\n    </repo-template>         \n    <div id=\"main\"></div>\n  ",
+            template: "\n    <repo-general id=\"omegaTreeRepo\"\n      [items]=\"[]\" \n      [caption]=\"'Omega trees'\"\n      [types]=\"[resourceName.OmegaTreeType]\"\n      >\n    </repo-general>         \n    \n    <repo-general id=\"lyphRepo\"\n      [items]=\"items | setToArray\" \n      [caption]=\"'Lyphs'\" \n      [types]=\"[resourceName.LyphType, resourceName.CylindricalLyphType]\">\n    </repo-general>\n    \n    <hierarchy-widget id = \"hierarchy\" [item]=\"selectedItem\"></hierarchy-widget>\n    <resource-widget id = \"resource\" [item]=\"selectedItem\"></resource-widget>   \n    \n    <div id=\"main\"></div>\n  ",
             styles: ["#main {width: 100%; height: 100%; border: 0; margin: 0; padding: 0}"],
             directives: [repo_general_1.RepoGeneral, repo_template_1.RepoTemplate, widget_hierarchy_1.HierarchyWidget, widget_resource_1.ResourceWidget],
             pipes: [pipe_general_1.SetToArray]
         }), 
         __metadata('design:paramtypes', [service_resize_1.ResizeService, core_1.ElementRef])
-    ], ResourceAndTemplateEditor);
-    return ResourceAndTemplateEditor;
+    ], OmegaTreeEditor);
+    return OmegaTreeEditor;
 }());
-exports.ResourceAndTemplateEditor = ResourceAndTemplateEditor;
-//# sourceMappingURL=editor.resourcesAndTemplates.js.map
+exports.OmegaTreeEditor = OmegaTreeEditor;
+//# sourceMappingURL=editor.omegaTrees.js.map

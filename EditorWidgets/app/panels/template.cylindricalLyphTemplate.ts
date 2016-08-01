@@ -5,7 +5,7 @@ import {Component} from '@angular/core';
 import {SingleSelectInput} from '../components/component.select';
 import {TemplateValue} from '../components/component.templateValue';
 import {LyphTemplatePanel} from "./template.lyphTemplate";
-import {BorderTemplatePanel} from "../templates/template.borderTemplate";
+import {BorderTemplatePanel} from "./template.borderTemplate";
 
 @Component({
   selector: 'cylindricalLyphTemplate-panel',
@@ -19,8 +19,9 @@ import {BorderTemplatePanel} from "../templates/template.borderTemplate";
       (removed)  = "removed.emit($event)"
       (propertyUpdated) = "propertyUpdated.emit($event)">
     
+<!--
       <borderGroup>
-        <!--MinusBorder-->
+        &lt;!&ndash;MinusBorder&ndash;&gt;
         <div class="input-control">      
           <label for="minusBorder">Minus border: </label>
           <borderTemplate-panel [item]="item.minusBorder" 
@@ -30,7 +31,7 @@ import {BorderTemplatePanel} from "../templates/template.borderTemplate";
           </borderTemplate-panel>
         </div>
       
-        <!--PlusBorder-->        
+        &lt;!&ndash;PlusBorder&ndash;&gt;        
         <div class="input-control">      
           <label for="plusBorder">Plus border: </label>
           <borderTemplate-panel [item]="item.plusBorder" 
@@ -41,6 +42,7 @@ import {BorderTemplatePanel} from "../templates/template.borderTemplate";
         </div>
           
       </borderGroup>
+-->
     <ng-content></ng-content>      
     
     </lyphTemplate-panel>

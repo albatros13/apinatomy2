@@ -3,7 +3,7 @@ import {Component} from '@angular/core';
 import {SingleSelectInput} from '../components/component.select';
 import {TemplateValue} from '../components/component.templateValue';
 import {TemplatePanel} from "./template.template";
-import {BorderTemplatePanel} from "../templates/template.borderTemplate";
+import {BorderTemplatePanel} from "./template.borderTemplate";
 import {BorderTemplate} from 'open-physiology-model';
 
 @Component({
@@ -18,10 +18,10 @@ import {BorderTemplate} from 'open-physiology-model';
       (removed)  = "removed.emit($event)"
       (propertyUpdated) = "propertyUpdated.emit($event)">
   
-        <fieldset *ngIf="includeProperty('borders')" >  
+  <!--      <fieldset *ngIf="includeProperty('borders')" >  
           <legend>Borders</legend>
           
-          <!--InnerBorder-->
+          &lt;!&ndash;InnerBorder&ndash;&gt;
           <div class="input-control">      
             <label for="innerBorder">Inner border: </label>
             <borderTemplate-panel [item]="item.innerBorder" 
@@ -31,7 +31,7 @@ import {BorderTemplate} from 'open-physiology-model';
             </borderTemplate-panel>
           </div>
         
-          <!--OuterBorder-->        
+          &lt;!&ndash;OuterBorder&ndash;&gt;        
           <div class="input-control">      
             <label for="outerBorder">Inner border: </label>
             <borderTemplate-panel [item]="item.outerBorder" 
@@ -42,7 +42,7 @@ import {BorderTemplate} from 'open-physiology-model';
           </div>
           
           <ng-content select="borderGroup"></ng-content>
-        </fieldset>
+        </fieldset>-->
         
       <ng-content></ng-content>      
   

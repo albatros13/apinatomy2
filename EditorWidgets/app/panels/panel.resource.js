@@ -33,6 +33,7 @@ var ResourcePanel = (function () {
         this.ignore = this.ignore.add("id").add("href");
         if (this.item && this.item.constructor) {
             var properties = Object.assign({}, this.item.constructor.properties, this.item.constructor.relationshipShortcuts);
+            //console.log("All properties of " + this.item.class, properties);
             for (var property in properties) {
                 if (property == "class" || property == "themes" || property == "nature")
                     continue;
@@ -50,6 +51,7 @@ var ResourcePanel = (function () {
             this.ignore.delete(option.value);
         if (!this.ignore.has(option.value) && !option.selected)
             this.ignore.add(option.value);
+        console.log(this.ignore);
     };
     ResourcePanel.prototype.includeProperty = function (prop) {
         return !this.ignore.has(prop);

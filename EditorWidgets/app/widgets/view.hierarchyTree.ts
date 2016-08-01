@@ -571,7 +571,10 @@ export class HierarchyTreeWidget implements OnChanges, OnDestroy{
         if (!root[fieldName]) return;
         if ((depth - level) == 0) return;
         if (!data.children) data.children = [];
-        for (let obj of root[fieldName]) {
+
+        //TODO: test
+        for (let obj in root[fieldName]) {
+
           var child = {id: obj.id, name: obj.name, resource: obj, depth: level};
           data.children.push(child);
           traverse(obj, level + 1, child);

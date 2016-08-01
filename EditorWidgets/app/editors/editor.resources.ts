@@ -1,7 +1,7 @@
 import {Component, ElementRef} from '@angular/core';
 import {RepoGeneral} from '../repos/repo.general';
-//import {HierarchyWidget} from '../widgets/widget.hierarchy';
-//import {ResourceWidget} from '../widgets/widget.resource';
+import {HierarchyWidget} from '../widgets/widget.hierarchy';
+import {ResourceWidget} from '../widgets/widget.resource';
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
 import {SetToArray} from "../transformations/pipe.general";
@@ -25,12 +25,12 @@ declare var $: any;
       (removed)="onItemRemoved($event)"
       (updated)="onItemUpdated($event)">
     </repo-general>
-    <!--<hierarchy-widget id = "hierarchy" [item]="selectedItem"></hierarchy-widget>-->
-    <!--<resource-widget id = "resource" [item]="selectedItem"></resource-widget>          -->
+    <hierarchy-widget id = "hierarchy" [item]="selectedItem"></hierarchy-widget>
+    <resource-widget id = "resource" [item]="selectedItem"></resource-widget>          
     <div id="main"></div>
   `,
   styles: [`#main {width: 100%; height: 100%; border: 0; margin: 0; padding: 0}`],
-  directives: [RepoGeneral/*, HierarchyWidget, ResourceWidget*/],
+  directives: [RepoGeneral, HierarchyWidget, ResourceWidget],
   pipes: [SetToArray]
 })
 export class ResourceEditor {
@@ -80,14 +80,6 @@ export class ResourceEditor {
 
   constructor(private resizeService:ResizeService,
               public el:ElementRef) {
-    /*this.subscription = resourceProvider.data$.subscribe(
-     (updatedData: any) => {
-     this.items = updatedData.resources;
-     });
-
-     setTimeout(() => {resourceProvider.loadExtra()}, 1000);
-     */
-
     this.subscription = model.Resource.p('all').subscribe(
       (data: any) => {this.items = data;});
 
@@ -117,6 +109,47 @@ export class ResourceEditor {
 
       await Promise.all(processes.map(p => p.commit()));
 
+      /*External resources*/
+      let fma7203  = model.ExternalResource.new({name: "FMA:7203", uri: ""});
+      let fma15610 = model.ExternalResource.new({name: "FMA:15610", uri: ""});
+      let fma66610 = model.ExternalResource.new({name: "FMA:66610", uri: ""});
+      let fma17881 = model.ExternalResource.new({name: "FMA:17881", uri: ""});
+
+      var externals = [fma7203, fma15610, fma66610, fma17881];
+
+      await Promise.all(externals.map(p => p.commit()));
+
+      let borderType = model.BorderType.new({name: "GeneralBorder"});
+      await borderType.commit();
+
+      let minusBorder = model.BorderTemplate.new({name: "T: MinusBorder", type: borderType, cardinalityBase: 1});
+
+      let plusBorder  = model.BorderTemplate.new({name: "T: PlusBorder",  type: borderType, cardinalityBase: 1});
+      let innerBorder = model.BorderTemplate.new({name: "T: InnerBorder", type: borderType, cardinalityBase: 1});
+      let outerBorder = model.BorderTemplate.new({name: "T: OuterBorder", type: borderType, cardinalityBase: 1});
+
+      let borders = [minusBorder, plusBorder, innerBorder, outerBorder];
+      await Promise.all(borders.map(p => p.commit()));
+
+      /*Cylindrical lyphs*/
+      let renalH = model.CylindricalLyphType.new({name: "Renal hilum", externals: [fma15610],
+        minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder});
+      let renalP = model.CylindricalLyphType.new({name: "Renal parenchyma",
+        minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder});
+      let renalC = model.CylindricalLyphType.new({name: "Renal capsule", externals: [fma66610],
+        minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder});
+
+      var cLyphs1 = [renalH, renalP, renalC];
+      await Promise.all(cLyphs1.map(p => p.commit()));
+
+      let kidney = model.CylindricalLyphType.new({name: "Kidney", externals: [fma7203],
+        minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder});
+      await kidney.commit();
+
+      let kidneyLobus = model.CylindricalLyphType.new({name: "Kidney lobus", externals: [fma17881],
+        minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder});
+      await kidneyLobus.commit();
+
     })();
 
   }
@@ -134,17 +167,12 @@ export class ResourceEditor {
   }
 
   onItemAdded(item:any) {
-    //this.resourceProvider.addResource(item);
-    //item.commit();
   }
 
   onItemRemoved(item:any) {
-    //this.resourceProvider.removeResource(item);
   }
 
   onItemUpdated(item:any) {
-    //maybe not needed
-    //this.resourceProvider.addResource(item);
   }
 
   ngOnInit() {

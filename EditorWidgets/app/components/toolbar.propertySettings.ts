@@ -43,6 +43,7 @@ export class PropertyToolbar {
       </ul>
     </div>
     `,
+  styles: [':host {float: left;}'],
   directives:[DROPDOWN_DIRECTIVES, RADIO_GROUP_DIRECTIVES]
 })
 export class CustomPropertyToolbar {

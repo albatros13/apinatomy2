@@ -4,7 +4,7 @@
 import {Component} from '@angular/core';
 import {SingleSelectInput, MultiSelectInput} from '../components/component.select';
 import {TemplateValue} from '../components/component.templateValue';
-import {ResourcePanel} from "../panels/panel.resource";
+import {ResourcePanel} from "./panel.resource";
 import {TemplateName} from "../services/service.apinatomy2";
 
 @Component({

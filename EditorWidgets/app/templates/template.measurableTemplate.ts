@@ -5,6 +5,7 @@ import {Component} from '@angular/core';
 import {SingleSelectInput} from '../components/component.select';
 import {TemplateValue} from '../components/component.templateValue';
 import {TemplatePanel} from "./template.template";
+import {MeasurableType} from 'open-physiology-model';
 
 @Component({
   selector: 'measurableTemplate-panel',
@@ -23,7 +24,7 @@ import {TemplatePanel} from "./template.template";
         <label for="location">Location: </label>
         <select-input-1 [items]="item.location" 
         (updated)="updateProperty('location', $event)"     
-        [options]="LocatedMeasurableType.p('all') | async"></select-input-1>
+        [options]="MeasurableType.p('all') | async"></select-input-1>
       </div>   
       
       <ng-content></ng-content>      
@@ -32,4 +33,8 @@ import {TemplatePanel} from "./template.template";
   `,
   directives: [TemplateValue, SingleSelectInput, TemplatePanel]
 })
-export class MeasurableTemplatePanel extends TemplatePanel{}
+export class MeasurableTemplatePanel extends TemplatePanel{
+
+  MeasurableType = MeasurableType;
+
+}

@@ -9,10 +9,9 @@ import {BorderTemplatePanel} from "../templates/template.borderTemplate";
 
 @Component({
   selector: 'cylindricalLyphTemplate-panel',
-  inputs: ['item', 'dependencies', 'ignore', 'options'],
+  inputs: ['item', 'ignore', 'options'],
   template:`
     <lyphTemplate-panel [item]="item" 
-      [dependencies]="dependencies" 
       [ignore]="ignore"
       [options]  = "options"
       (saved)    = "saved.emit($event)"
@@ -25,8 +24,7 @@ import {BorderTemplatePanel} from "../templates/template.borderTemplate";
         <div class="input-control">      
           <label for="minusBorder">Minus border: </label>
           <borderTemplate-panel [item]="item.minusBorder" 
-            [dependencies]="dependencies" 
-            (added)  ="addTemplate('minusBorder', borderTemplate)"
+            (added)  ="addTemplate('minusBorder', templateName.BorderTemplate)"
             (saved)  ="updateProperty('minusBorder', $event)"    
             (removed)="removeTemplate('minusBorder', $event)">
           </borderTemplate-panel>
@@ -36,8 +34,7 @@ import {BorderTemplatePanel} from "../templates/template.borderTemplate";
         <div class="input-control">      
           <label for="plusBorder">Plus border: </label>
           <borderTemplate-panel [item]="item.plusBorder" 
-            [dependencies]="dependencies" 
-            (added)  ="addTemplate('plusBorder', borderTemplate)"
+            (added)  ="addTemplate('plusBorder', templateName.BorderTemplate)"
             (saved)  ="updateProperty('plusBorder', $event)"    
             (removed)="removeTemplate('plusBorder', $event)">
           </borderTemplate-panel>

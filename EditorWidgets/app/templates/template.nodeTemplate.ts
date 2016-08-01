@@ -8,11 +8,10 @@ import {TemplatePanel} from "./template.template";
 
 @Component({
   selector: 'nodeTemplate-panel',
-  inputs: ['item', 'dependencies', 'ignore', 'options'],
+  inputs: ['item', 'ignore', 'options'],
   template:`
     <template-panel [item]="item" 
-      [types]="dependencies.nodes"
-      [ignore]="ignore.add('cardinality')"
+      [ignore]   = "ignore.add('cardinalityBase').add('cardinalityMultipliers')"
       [options]  = "options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"

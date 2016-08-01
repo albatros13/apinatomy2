@@ -1,10 +1,8 @@
 "use strict";
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
-import {ResourceName} from './service.apinatomy2';
 
 import * as model from "open-physiology-model";
-
 
 @Injectable()
 export class AsyncResourceProvider {
@@ -15,96 +13,9 @@ export class AsyncResourceProvider {
     return this._data$.asObservable();
   }
 
-  constructor(){
-  }
-
-  ngOnInit(){}
-
   loadAll(dataStore: any) {
     this.dataStore = dataStore;
     this._data$.next(this.dataStore);
-  }
-
-  updateSubSets(Class: any){
-      if (Class == ResourceName.Resource) return;
-
-      if (Class && (Class.indexOf("Type") > 0)){
-        this.dataStore.cylindricalLyphs = this.dataStore.resources.filter((x:any) => (
-        x.class == ResourceName.CylindricalLyphType));
-
-        this.dataStore.lyphs = this.dataStore.resources.filter((x:any) => (
-        x.class == ResourceName.LyphType ||
-        x.class == ResourceName.CylindricalLyphType));
-
-        this.dataStore.materials = this.dataStore.resources.filter((x:any) => (
-        x.class == ResourceName.MaterialType ||
-        x.class == ResourceName.LyphType ||
-        x.class == ResourceName.CylindricalLyphType));
-
-        this.dataStore.types = this.dataStore.resources.filter((x:any) => (
-        x.class == ResourceName.MeasurableType ||
-        x.class == ResourceName.ProcessType ||
-        x.class == ResourceName.CausalityType ||
-        x.class == ResourceName.NodeType ||
-        x.class == ResourceName.BorderType ||
-        x.class == ResourceName.GroupType ||
-        x.class == ResourceName.OmegaTreeType ||
-        x.class == ResourceName.MaterialType ||
-        x.class == ResourceName.LyphType ||
-        x.class == ResourceName.CylindricalLyphType));
-      }
-
-      if (Class && (Class.indexOf("Measurable") > 0)) {
-        this.dataStore.measuarbles = this.dataStore.resources.filter((x:any) => (
-        x.class == ResourceName.MeasurableType));
-      }
-
-      if (Class && (Class == ResourceName.OmegaTreeType || Class == ResourceName.GroupType)) {
-        this.dataStore.groups = this.dataStore.resources.filter((x:any) => (
-        x.class == ResourceName.GroupType ||
-        x.class == ResourceName.OmegaTreeType));
-      }
-
-      if (Class && (Class == ResourceName.OmegaTreeType)) {
-        this.dataStore.omegaTrees = this.dataStore.resources.filter((x:any) => (
-        x.class == ResourceName.OmegaTreeType));
-      }
-
-      this.dataStore.borders = this.dataStore.resources.filter((x:any) => (
-      x.class == ResourceName.BorderType));
-
-      this.dataStore.processes = this.dataStore.resources.filter((x:any) => (
-      x.class == ResourceName.ProcessType));
-
-      this.dataStore.nodes = this.dataStore.resources.filter((x:any) => (
-      x.class == ResourceName.NodeType));
-
-      this.dataStore.causalities = this.dataStore.resources.filter((x:any) => (
-      x.class == ResourceName.CausalityType));
-
-      if (Class && (Class == ResourceName.Coalescence)) {
-        this.dataStore.coalescences = this.dataStore.resources.filter((x:any) => (
-        x.class == ResourceName.Coalescence));
-      }
-
-      if (Class && (Class == ResourceName.Publication) ) {
-        this.dataStore.publications = this.dataStore.resources.filter((x:any) => (
-        x.class == ResourceName.Publication));
-      }
-
-      if (Class && (Class == ResourceName.ClinicalIndex) ) {
-        this.dataStore.clinicalIndices = this.dataStore.resources.filter((x:any) => (
-        x.class == ResourceName.ClinicalIndex));
-      }
-
-      if (Class && (Class == ResourceName.Correlation) ) {
-        this.dataStore.correlations = this.dataStore.resources.filter((x:any) => (
-        x.class == ResourceName.Correlation));
-      }
-
-      //All templates
-      this.dataStore.templates = this.dataStore.resources.filter((x:any) => (
-        x.class && (x.class.indexOf("Template") > 0)));
   }
 
   addResources(dataItems: any[]) {
@@ -117,7 +28,6 @@ export class AsyncResourceProvider {
           this.dataStore.resources.push(dataItem);
         }
       }
-      this.updateSubSets(dataItems[0].class);
     } else {
       this.dataStore.resources = dataItems;
     }
@@ -131,7 +41,6 @@ export class AsyncResourceProvider {
         this.dataStore.resources[index] = dataItem;
       } else {
         this.dataStore.resources.push(dataItem);
-        this.updateSubSets(dataItem.class);
       }
     } else {
       this.dataStore.resources = [dataItem];
@@ -144,7 +53,6 @@ export class AsyncResourceProvider {
       let index = this.dataStore.resources.findIndex((item: any) => (item == dataItem));
       if (index >= 0) {
         this.dataStore.resources.slice(index,1);
-        this.updateSubSets(dataItem.class);
       }
     }
     this._data$.next(this.dataStore);
@@ -178,13 +86,8 @@ export class AsyncResourceProvider {
       await Promise.all(processes.map(p => p.commit()));
 
       /*Causality type*/
-      var causality = model.CausalityType.new({name: "Causality relations", supertypes: [], subtypes: []});
-      await causality.commit();
-
-      console.log("Material", water);
-      console.log("Measurable", vWater);
-      console.log("Process", processes[0]);
-      console.log("Causality", causality);
+     // var causality = model.CausalityType.new({name: "Causality relations", supertypes: [], subtypes: []});
+     // await causality.commit();
 
       self.addResource(water);
       self.addResource(sodiumIon);
@@ -194,7 +97,7 @@ export class AsyncResourceProvider {
 
       self.addResources(processes);
 
-      self.addResources(causality);
+      //self.addResources(causality);
 
 
     })();

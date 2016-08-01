@@ -8,11 +8,10 @@ import {TemplatePanel} from "./template.template";
 
 @Component({
   selector: 'measurableTemplate-panel',
-  inputs: ['item', 'dependencies', 'ignore', 'options'],
+  inputs: ['item', 'ignore', 'options'],
   template:`
     <template-panel [item]="item" 
-      [types]="dependencies.measurables"
-      [ignore]="ignore.add('cardinality')"
+      [ignore]   = "ignore.add('cardinalityBase').add('cardinalityMultipliers')"
       [options]  = "options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
@@ -24,7 +23,7 @@ import {TemplatePanel} from "./template.template";
         <label for="location">Location: </label>
         <select-input-1 [items]="item.location" 
         (updated)="updateProperty('location', $event)"     
-        [options]="dependencies.locations"></select-input-1>
+        [options]="LocatedMeasurableType.p('all') | async"></select-input-1>
       </div>   
       
       <ng-content></ng-content>      

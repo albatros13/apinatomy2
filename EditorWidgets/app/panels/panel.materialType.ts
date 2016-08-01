@@ -9,7 +9,7 @@ import {MaterialType, MeasurableType} from "open-physiology-model";
 
 @Component({
   selector: 'materialType-panel',
-  inputs: ['item', 'ignore', 'dependencies', 'options'],
+  inputs: ['item', 'ignore', 'options'],
   template:`
     <measurableLocationType-panel [item]="item" 
       [ignore]="ignore"
@@ -25,7 +25,7 @@ import {MaterialType, MeasurableType} from "open-physiology-model";
           <select-input 
             [items]="item.p('materials') | async" 
             (updated)="updateProperty('materials', $event)" 
-            [options]="materialTypeClass.p('all') | async"></select-input>
+            [options]="MaterialType.p('all') | async"></select-input>
         </div>
         
         <providerGroup>             
@@ -35,7 +35,7 @@ import {MaterialType, MeasurableType} from "open-physiology-model";
             <select-input 
               [items]="item.p('materialProviders') | async" 
               (updated)="updateProperty('materialProviders', $event)" 
-              [options]="materialTypeClass.p('all') | async"></select-input>
+              [options]="MaterialType.p('all') | async"></select-input>
           </div>
           <ng-content select="providerGroup"></ng-content>
         </providerGroup>
@@ -59,11 +59,11 @@ import {MaterialType, MeasurableType} from "open-physiology-model";
   directives: [MeasurableLocationTypePanel, MultiSelectInput, RepoTemplate]
 })
 export class MaterialTypePanel extends MeasurableLocationTypePanel{
-  materialTypeClass   = MaterialType;
-  measurableTypeClass = MeasurableType;
+  MaterialType   = MaterialType;
+  MeasurableType = MeasurableType;
 
   measurablesToReplicate: Array<any> = [];
-  supertypeMeasurables: Array<any> = [];
+  supertypeMeasurables  : Array<any> = [];
 
   //TODO: Move generation of measurables to modal window
   onPropertyUpdated(event: any){
@@ -88,7 +88,7 @@ export class MaterialTypePanel extends MeasurableLocationTypePanel{
   protected onSaved(event: any) {
     for (let measurable of this.measurablesToReplicate){
       delete measurable["id"];
-      let newMeasurable = this.measurableTypeClass.new(measurable);
+      let newMeasurable = MeasurableType.new(measurable);
       newMeasurable.location = this.item;
     }
     this.saved.emit(event);

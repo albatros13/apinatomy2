@@ -7,27 +7,26 @@ import {MeasurableLocationTypePanel} from "./panel.measurableLocationType";
 import {MultiSelectInput, SingleSelectInput} from '../components/component.select';
 import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
 import {NodeTemplatePanel} from '../templates/template.nodeTemplate';
-import {FilterByClass} from "../transformations/pipe.general";
+import {SetToArray} from "../transformations/pipe.general";
+import {ProcessType, MaterialType} from "open-physiology-model";
 
 @Component({
   selector: 'processType-panel',
-  inputs: ['item', 'ignore', 'dependencies', "options"],
+  inputs: ['item', 'ignore', "options"],
   template:`
     <measurableLocationType-panel [item]="item" 
-      [dependencies]="dependencies" 
       [ignore]  ="ignore"
       [options] ="options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"
       (propertyUpdated) = "propertyUpdated.emit($event)">
-
         
-          <!--Species-->
-          <div class="input-control" *ngIf="includeProperty('species')">
-            <label for="species">Species: </label>
-            <input type="text" class="form-control" [(ngModel)]="item.species">
-          </div>
+        <!--Species-->
+        <div class="input-control" *ngIf="includeProperty('species')">
+          <label for="species">Species: </label>
+          <input type="text" class="form-control" [(ngModel)]="item.species">
+        </div>
           
         <!--TransportPhenomenon-->
           <div class="input-control" *ngIf="includeProperty('transportPhenomenon')">
@@ -45,50 +44,37 @@ import {FilterByClass} from "../transformations/pipe.general";
           <label for="meterials">Materials: </label>
           <select-input [items]="item.p('materials') | async" 
           (updated)="updateProperty('materials', $event)" 
-           [options]="dependencies.materials"></select-input>
+           [options]="MaterialType.p('all') | async"></select-input>
           </div> 
         
          <relationGroup>
-          <!--Measurables-->
-          <div class="input-control" *ngIf="includeProperty('measurables')">
-            <repo-template caption='Measurables' [items]="item.p('measurables')" 
-            (updated)="updateProperty('measurables', $event)" 
-            [dependencies]="dependencies" [types]="[templateName.MeasurableTemplate]"></repo-template>
-          </div>
-          
           <!--Segments-->
           <div class="input-control" *ngIf="includeProperty('segments')">
-            <repo-template caption='Segments' [items]="item.segments" 
+            <repo-template caption='Segments' 
+            [items]="item.p('segments') | async | setToArray" 
             (updated)="updateProperty('segments', $event)" 
-            [dependencies]="dependencies" [types]="[templateName.ProcessTemplate]">
+            [types]="[templateName.ProcessTemplate]">
             </repo-template>
           </div>
           
           <!--Channels-->
           <div class="input-control" *ngIf="includeProperty('channels')">
-            <repo-template caption='Channels' [items]="item.channels" 
+            <repo-template caption='Channels' 
+            [items]="item.p('channels') | async | setToArray" 
             (updated)="updateProperty('channels', $event)"           
-            [dependencies]="dependencies" [types]="[templateName.ProcessTemplate]"></repo-template>
+            [types]="[templateName.ProcessTemplate]"></repo-template>
           </div>
         
           <ng-content select="relationGroup"></ng-content>
         </relationGroup>
 
         <providerGroup>
-          <!--MeasurableProviders-->
-          <div class="input-control" *ngIf="includeProperty('measurableProviders')">
-            <label for="measurableProviders">Inherits measurables from: </label>
-            <select-input [items]="item.p('measurableProviders') | async" 
-            (updated)="updateProperty('measurableProviders', $event)" 
-            [options]="dependencies.processes"></select-input>
-          </div>
-          
            <!--MaterialProviders-->
           <div class="input-control" *ngIf="includeProperty('materialProviders')">
             <label for="materialProviders">Inherits materials from: </label>
             <select-input [items]="item.p('materialProviders') | async" 
             (updated)="updateProperty('materialProviders', $event)" 
-            [options]="dependencies.processes"></select-input>
+            [options]="ProcessType.p('all') | async"></select-input>
           </div>
           
            <!--SegmentProviders-->
@@ -96,7 +82,7 @@ import {FilterByClass} from "../transformations/pipe.general";
             <label for="segmentProviders">Inherits segments from: </label>
             <select-input [items]="item.p('segmentProviders') | async" 
             (updated)="updateProperty('segmentProviders', $event)" 
-            [options]="dependencies.processes"></select-input>
+            [options]="ProcessType.p('all') | async"></select-input>
           </div>
           
           <!--ChannelProviders-->
@@ -104,7 +90,7 @@ import {FilterByClass} from "../transformations/pipe.general";
             <label for="channelProviders">Inherits channels from: </label>
             <select-input [items]="item.p('channelProviders') | async" 
             (updated)="updateProperty('channelProviders', $event)"           
-            [options]="dependencies.channels"></select-input>
+            [options]="ProcessType.p('all') | async"></select-input>
           </div>     
           
            <ng-content select="providerGroup"></ng-content>
@@ -115,12 +101,15 @@ import {FilterByClass} from "../transformations/pipe.general";
     </measurableLocationType-panel>
   `,
   directives: [MeasurableLocationTypePanel, MultiSelectInput, SingleSelectInput, RADIO_GROUP_DIRECTIVES, NodeTemplatePanel],
-  pipes: [FilterByClass]
+  pipes: [SetToArray]
 })
 export class ProcessTypePanel extends MeasurableLocationTypePanel{
   public transportPhenomenon = TransportPhenomenon;
+  ProcessType = ProcessType;
+  MaterialType = MaterialType;
 
   ngOnInit(){
+    super.ngOnInit();
     if (!this.item.transportPhenomenon) this.item.transportPhenomenon = [];
   }
 }

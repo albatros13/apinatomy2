@@ -9,10 +9,9 @@ import {Resource} from "open-physiology-model";
 
 @Component({
   selector: 'externalResource-panel',
-  inputs: ['item', 'ignore', 'dependencies', 'options'],
+  inputs: ['item', 'ignore', 'options'],
   template:`
     <resource-panel [item] = "item" 
-      [dependencies] = "dependencies" 
       [ignore] = "ignore.add('externals')"
       [options] ="options"
       (saved)    = "saved.emit($event)"

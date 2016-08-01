@@ -5,7 +5,6 @@ import {Component, Input, OnInit} from '@angular/core';
 import {ResourcePanel} from "./panel.resource";
 import {MultiSelectInput} from '../components/component.select';
 import {TemplateName} from "../services/service.apinatomy2";
-import * as model from "open-physiology-model";
 
 @Component({
   selector: 'type-panel',
@@ -24,7 +23,7 @@ import * as model from "open-physiology-model";
         <label for="name">Supertypes: </label>
         <select-input [items]="item.p('supertypes') | async" 
         (updated)="updateProperty('supertypes', $event)" 
-        [options]="model[item.class].p('all') | async"></select-input>
+        [options]="item.constructor.p('all') | async"></select-input>
       </div>
       
       <!--Subtypes-->
@@ -32,7 +31,7 @@ import * as model from "open-physiology-model";
         <label for="name">Subtypes: </label>
         <select-input [items]="item.p('subtypes') | async" 
           (updated)="updateProperty('subtypes', $event)" 
-        [options]="model[item.class].p('all') | async"></select-input>
+        [options]="item.constructor.p('all') | async"></select-input>
       </div>
 
       <ng-content select="relationGroup"></ng-content>
@@ -47,5 +46,4 @@ import * as model from "open-physiology-model";
 })
 export class TypePanel extends ResourcePanel implements OnInit{
   templateName = TemplateName;
-  model = model;
 }

@@ -60,7 +60,7 @@ export class MultiSelectInput /*implements OnChanges*/ {
   template:`
     <div *ngIf="active">
       <ng-select
-        [items]       = "options | mapToOptions"
+        [items]       = "options | setToArray | mapToOptions"
         [initData]    = "items | mapToOptions"
         [multiple]    = false
         (data)        = "refreshValue($event)"
@@ -68,19 +68,18 @@ export class MultiSelectInput /*implements OnChanges*/ {
     </div>
   `,
   directives: [SELECT_DIRECTIVES, CORE_DIRECTIVES, FORM_DIRECTIVES],
-  pipes: [MapToOptions]
+  pipes: [MapToOptions, SetToArray]
 })
 export class SingleSelectInput {
-  item: any;
-  items: Array<any>;
-  options: Array<any>;
+  @Input() item: any;
+  @Input() options: Array<any>;
   @Output() updated = new EventEmitter();
 
+  items: Array<any>;
   active: boolean = true;
   externalChange = false;
 
   protected ngOnInit(){
-    if (!this.options) this.options = [];
     this.items = (this.item)? [this.item]: this.items = [];
   }
 
@@ -94,15 +93,9 @@ export class SingleSelectInput {
   }
 
   public refreshValue(value: any):void {
-    let options: any[] = [];
-    if (this.options[0] && this.options[0].children){
-      //Flatten grouped options
-      options = [].concat.apply([], this.options.map(item => item.children));
-    } else {
-      options = this.options;
-    }
+    //let options: any[] = (this.options[0] && this.options[0].children)? [].concat.apply([], this.options.map(item => item.children)): this.options;
     this.externalChange = false;
-    this.item = options.find(y => (value.id == ((y.id)? y.id: y.name)));
+    this.item = Array.from(this.options).find(y => (value.id == ((y.id)? y.id: y.name)));
     this.updated.emit(this.item);
   }
 }

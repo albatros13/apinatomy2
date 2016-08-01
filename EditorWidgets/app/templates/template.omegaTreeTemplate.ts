@@ -8,10 +8,9 @@ import {GroupTemplatePanel} from "./template.groupTemplate";
 
 @Component({
   selector: 'omegaTreeTemplate-panel',
-  inputs: ['item', 'dependencies', 'ignore', 'options'],
+  inputs: ['item', 'ignore', 'options'],
   template:`
     <groupTemplate-panel [item]="item" 
-      [dependencies]="dependencies"
       [ignore]="ignore"
       [options]  = "options"
       (saved)    = "saved.emit($event)"

@@ -8,10 +8,9 @@ import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
 
 @Component({
   selector: 'borderType-panel',
-  inputs: ['item', 'dependencies', 'ignore', 'options'],
+  inputs: ['item', 'ignore', 'options'],
   template:`
     <measurableLocationType-panel [item] = "item" 
-      [dependencies] = "dependencies" 
       [ignore] = "ignore.add('supertypes').add('subtypes')"
       [options]  = "options"
       (saved)    = "saved.emit($event)"
@@ -45,6 +44,7 @@ export class BorderTypePanel extends MeasurableLocationTypePanel{
   public formType = FormType;
 
   ngOnInit(){
+    super.ngOnInit();
     if (!this.item.form) this.item.form = [];
   }
 }

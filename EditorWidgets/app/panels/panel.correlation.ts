@@ -5,13 +5,14 @@ import {Component} from '@angular/core';
 import {ResourcePanel} from "./panel.resource";
 import {SingleSelectInput, MultiSelectInput} from '../components/component.select';
 import {RepoTemplate} from '../repos/repo.template';
+import {Publication, ClinicalIndex} from "open-physiology-model";
+import {SetToArray} from '../transformations/pipe.general';
 
 @Component({
   selector: 'correlation-panel',
-  inputs: ['item', 'ignore', 'dependencies', 'options'],
+  inputs: ['item', 'ignore', 'options'],
   template:`
     <resource-panel [item]="item" 
-      [dependencies]="dependencies" 
       [ignore]="ignore" 
       [options] ="options"
       (saved)    = "saved.emit($event)"
@@ -28,9 +29,9 @@ import {RepoTemplate} from '../repos/repo.template';
         <!--Publication-->
         <div>
           <label for="publication">Publication: </label>
-          <select-input-1 [item] = "item.publication" 
-            (updated)="updateProperty('publication', $event)"  
-            [options] = "dependencies.publications"></select-input-1>
+          <select-input-1 [item] = "item.p('publication') | async" 
+            (updated) = "updateProperty('publication', $event)"  
+            [options] = "Publication.p('all') | async"></select-input-1>
         </div>
         
         <!--ClinicalIndex-->
@@ -38,14 +39,14 @@ import {RepoTemplate} from '../repos/repo.template';
           <label for="clinicalIndices">Clinical indices: </label>
           <select-input [items]="item.p('clinicalIndices') | async" 
           (updated)="updateProperty('clinicalIndices', $event)"
-          [options]="dependencies.clinicalIndices"></select-input>
+          [options]="ClinicalIndex.p('all') | async"></select-input>
         </div>
         
         <!--Measurables-->
         <div class="input-control" *ngIf="includeProperty('measurables')">
-          <repo-template caption='Measurables' [items]="item.measurables" 
+          <repo-template caption='Measurables' 
+          [items]="item.p('measurables') | async | setToArray" 
           (updated)="updateProperty('measurables', $event)"          
-          [dependencies]="dependencies"
           [types]="[templateName.MeasurableTemplate]"></repo-template>
         </div>
         
@@ -53,6 +54,10 @@ import {RepoTemplate} from '../repos/repo.template';
     
     </resource-panel>
   `,
-  directives: [ResourcePanel, SingleSelectInput, MultiSelectInput, RepoTemplate]
+  directives: [ResourcePanel, SingleSelectInput, MultiSelectInput, RepoTemplate],
+  pipes: [SetToArray]
 })
-export class CorrelationPanel extends ResourcePanel{}
+export class CorrelationPanel extends ResourcePanel{
+  Publication = Publication;
+  ClinicalIndex = ClinicalIndex;
+}

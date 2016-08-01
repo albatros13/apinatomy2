@@ -29,7 +29,7 @@ export class PropertyToolbar {
 }
 
 @Component({
-  selector: 'mult-property-toolbar',
+  selector: 'custom-property-toolbar',
   inputs: ['options', 'caption'],
   template: `
     <div class="dropdown" dropdown>

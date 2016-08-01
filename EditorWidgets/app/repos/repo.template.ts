@@ -1,7 +1,7 @@
 /**
  * Created by Natallia on 6/28/2016.
  */
-import {Component} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {CORE_DIRECTIVES, FORM_DIRECTIVES} from '@angular/common';
 import {ACCORDION_DIRECTIVES} from 'ng2-bootstrap/components/accordion';
 import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
@@ -13,13 +13,13 @@ import {SortToolbar} from '../components/toolbar.sort';
 
 import {PanelDispatchTemplates} from "../templates/dispatch.templates";
 import {ItemHeader, RepoAbstract} from "./repo.abstract";
-import {OrderBy, FilterBy} from "../transformations/pipe.general";
+import {OrderBy, FilterBy, SetToArray} from "../transformations/pipe.general";
 
 import * as model from "open-physiology-model";
 
 @Component({
   selector: 'repo-template',
-  inputs: ['items', 'caption', 'dependencies', 'ignore', 'types', 'selectedItem', 'options'],
+  inputs: ['items', 'caption', 'ignore', 'types', 'selectedItem', 'options'],
   template:`
     <div class="panel panel-warning repo-template">
       <div class="panel-heading">{{caption}}</div>
@@ -39,7 +39,6 @@ import * as model from "open-physiology-model";
               <panel-template *ngIf="item == selectedItem" 
                 [item]="item" 
                 [ignore]="ignore"
-                [dependencies]="dependencies" 
                 (saved)="onSaved(item, $event)" 
                 (removed)="onRemoved(item)"></panel-template>            
             </div>
@@ -50,7 +49,7 @@ import * as model from "open-physiology-model";
   `,
   directives: [ItemHeader, SortToolbar, EditToolbar, FilterToolbar,
     PanelDispatchTemplates, ACCORDION_DIRECTIVES, CORE_DIRECTIVES, FORM_DIRECTIVES, DND_DIRECTIVES],
-  pipes: [OrderBy, FilterBy]
+  pipes: [OrderBy, FilterBy, SetToArray]
 })
 export class RepoTemplate extends RepoAbstract{
   templateName = TemplateName;
@@ -89,6 +88,10 @@ export class RepoTemplate extends RepoAbstract{
 
   protected onAdded(Class: any){
     let newItem: any;
+
+    newItem = model[Class].new({name: "(New) T: " + Class, cardinalityBase: 1});
+
+/*
     switch (Class){
       case this.templateName.CausalityTemplate        : newItem = model.CausalityTemplate.new({name: "(New) T: causality"}); break;
       case this.templateName.BorderTemplate           :  newItem = model.BorderTemplate.new({name: "(New) T: border"}); break;
@@ -104,6 +107,8 @@ export class RepoTemplate extends RepoAbstract{
 
       default: newItem = model.Template({name: "(New) T"});
     }
+*/
+
     this.items.push(newItem);
     this.added.emit(newItem);
     this.updated.emit(this.items);

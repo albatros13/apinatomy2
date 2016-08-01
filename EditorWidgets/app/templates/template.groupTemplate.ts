@@ -8,12 +8,10 @@ import {TemplatePanel} from "./template.template";
 
 @Component({
   selector: 'groupTemplate-panel',
-  inputs: ['item', 'dependencies', 'ignore', 'options'],
+  inputs: ['item', 'ignore', 'options'],
   template:`
     <template-panel [item]="item" 
-      [types]="dependencies.groups" 
-      [templates]= "dependencies.templates" 
-      [ignore]="ignore"
+      [ignore]   = "ignore"
       [options]  = "options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"

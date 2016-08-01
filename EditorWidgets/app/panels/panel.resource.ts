@@ -6,7 +6,7 @@ import {MultiSelectInput} from '../components/component.select';
 import {FormToolbar} from '../components/toolbar.panelEdit';
 import {MapToCategories} from "../transformations/pipe.general";
 import {PropertyToolbar} from '../components/toolbar.propertySettings';
-import {ExternalResource, Template} from "open-physiology-model";
+import * as model from "open-physiology-model";
 
 @Component({
   selector: 'resource-panel',
@@ -69,7 +69,7 @@ export class ResourcePanel {
   @Output() removed = new EventEmitter();
   @Output() propertyUpdated = new EventEmitter();
 
-  ExternalResource = ExternalResource;
+  ExternalResource = model.ExternalResource;
 
   properties: any[] = [];
 
@@ -82,10 +82,11 @@ export class ResourcePanel {
         this.item.constructor.relationshipShortcuts);
 
       for (let property in properties){
-        if (property == "class" || property == "themes") continue;
+        if (property == "class" || property == "themes" || property == "nature") continue;
         if (property.indexOf("Border") > -1) {
           if (!this.properties.find(x => (x.value == "border")))
-            this.properties.push({value: "border", selected: !this.ignore.has("border")});
+            this.properties.push({value: "borders", selected: !this.ignore.has("borders")});
+          continue;
         }
         this.properties.push({value: property, selected: !this.ignore.has(property)});
       }
@@ -111,8 +112,8 @@ export class ResourcePanel {
       this.propertyUpdated.emit({property: property, values: item});
   }
 
-  addTemplate(property: string, Class: any){
-    this.item[property] = Class.new({name: "T: " + property + " " + this.item.name});
+  addTemplate(property: string, Class: string){
+    this.item[property] = model[Class].new({name: "T: " + property + " " + this.item.name});
   }
 
   removeTemplate(property: string, item: any){

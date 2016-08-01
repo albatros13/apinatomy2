@@ -18,7 +18,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 var core_1 = require('@angular/core');
 var Subject_1 = require('rxjs/Subject');
-var service_apinatomy2_1 = require('./service.apinatomy2');
 var model = require("open-physiology-model");
 var AsyncResourceProvider = (function () {
     function AsyncResourceProvider() {
@@ -32,60 +31,9 @@ var AsyncResourceProvider = (function () {
         enumerable: true,
         configurable: true
     });
-    AsyncResourceProvider.prototype.ngOnInit = function () { };
     AsyncResourceProvider.prototype.loadAll = function (dataStore) {
         this.dataStore = dataStore;
         this._data$.next(this.dataStore);
-    };
-    AsyncResourceProvider.prototype.updateSubSets = function (Class) {
-        if (Class == service_apinatomy2_1.ResourceName.Resource)
-            return;
-        if (Class && (Class.indexOf("Type") > 0)) {
-            this.dataStore.cylindricalLyphs = this.dataStore.resources.filter(function (x) { return (x.class == service_apinatomy2_1.ResourceName.CylindricalLyphType); });
-            this.dataStore.lyphs = this.dataStore.resources.filter(function (x) { return (x.class == service_apinatomy2_1.ResourceName.LyphType ||
-                x.class == service_apinatomy2_1.ResourceName.CylindricalLyphType); });
-            this.dataStore.materials = this.dataStore.resources.filter(function (x) { return (x.class == service_apinatomy2_1.ResourceName.MaterialType ||
-                x.class == service_apinatomy2_1.ResourceName.LyphType ||
-                x.class == service_apinatomy2_1.ResourceName.CylindricalLyphType); });
-            this.dataStore.types = this.dataStore.resources.filter(function (x) { return (x.class == service_apinatomy2_1.ResourceName.MeasurableType ||
-                x.class == service_apinatomy2_1.ResourceName.ProcessType ||
-                x.class == service_apinatomy2_1.ResourceName.CausalityType ||
-                x.class == service_apinatomy2_1.ResourceName.NodeType ||
-                x.class == service_apinatomy2_1.ResourceName.BorderType ||
-                x.class == service_apinatomy2_1.ResourceName.GroupType ||
-                x.class == service_apinatomy2_1.ResourceName.OmegaTreeType ||
-                x.class == service_apinatomy2_1.ResourceName.MaterialType ||
-                x.class == service_apinatomy2_1.ResourceName.LyphType ||
-                x.class == service_apinatomy2_1.ResourceName.CylindricalLyphType); });
-        }
-        if (Class && (Class.indexOf("Measurable") > 0)) {
-            this.dataStore.measuarbles = this.dataStore.resources.filter(function (x) { return (x.class == service_apinatomy2_1.ResourceName.MeasurableType); });
-        }
-        if (Class && (Class == service_apinatomy2_1.ResourceName.OmegaTreeType || Class == service_apinatomy2_1.ResourceName.GroupType)) {
-            this.dataStore.groups = this.dataStore.resources.filter(function (x) { return (x.class == service_apinatomy2_1.ResourceName.GroupType ||
-                x.class == service_apinatomy2_1.ResourceName.OmegaTreeType); });
-        }
-        if (Class && (Class == service_apinatomy2_1.ResourceName.OmegaTreeType)) {
-            this.dataStore.omegaTrees = this.dataStore.resources.filter(function (x) { return (x.class == service_apinatomy2_1.ResourceName.OmegaTreeType); });
-        }
-        this.dataStore.borders = this.dataStore.resources.filter(function (x) { return (x.class == service_apinatomy2_1.ResourceName.BorderType); });
-        this.dataStore.processes = this.dataStore.resources.filter(function (x) { return (x.class == service_apinatomy2_1.ResourceName.ProcessType); });
-        this.dataStore.nodes = this.dataStore.resources.filter(function (x) { return (x.class == service_apinatomy2_1.ResourceName.NodeType); });
-        this.dataStore.causalities = this.dataStore.resources.filter(function (x) { return (x.class == service_apinatomy2_1.ResourceName.CausalityType); });
-        if (Class && (Class == service_apinatomy2_1.ResourceName.Coalescence)) {
-            this.dataStore.coalescences = this.dataStore.resources.filter(function (x) { return (x.class == service_apinatomy2_1.ResourceName.Coalescence); });
-        }
-        if (Class && (Class == service_apinatomy2_1.ResourceName.Publication)) {
-            this.dataStore.publications = this.dataStore.resources.filter(function (x) { return (x.class == service_apinatomy2_1.ResourceName.Publication); });
-        }
-        if (Class && (Class == service_apinatomy2_1.ResourceName.ClinicalIndex)) {
-            this.dataStore.clinicalIndices = this.dataStore.resources.filter(function (x) { return (x.class == service_apinatomy2_1.ResourceName.ClinicalIndex); });
-        }
-        if (Class && (Class == service_apinatomy2_1.ResourceName.Correlation)) {
-            this.dataStore.correlations = this.dataStore.resources.filter(function (x) { return (x.class == service_apinatomy2_1.ResourceName.Correlation); });
-        }
-        //All templates
-        this.dataStore.templates = this.dataStore.resources.filter(function (x) { return (x.class && (x.class.indexOf("Template") > 0)); });
     };
     AsyncResourceProvider.prototype.addResources = function (dataItems) {
         if (this.dataStore.resources && (dataItems.length > 0)) {
@@ -103,7 +51,6 @@ var AsyncResourceProvider = (function () {
                 var dataItem = dataItems_1[_i];
                 _loop_1(dataItem);
             }
-            this.updateSubSets(dataItems[0].class);
         }
         else {
             this.dataStore.resources = dataItems;
@@ -118,7 +65,6 @@ var AsyncResourceProvider = (function () {
             }
             else {
                 this.dataStore.resources.push(dataItem);
-                this.updateSubSets(dataItem.class);
             }
         }
         else {
@@ -131,7 +77,6 @@ var AsyncResourceProvider = (function () {
             var index = this.dataStore.resources.findIndex(function (item) { return (item == dataItem); });
             if (index >= 0) {
                 this.dataStore.resources.slice(index, 1);
-                this.updateSubSets(dataItem.class);
             }
         }
         this._data$.next(this.dataStore);
@@ -160,18 +105,14 @@ var AsyncResourceProvider = (function () {
                     model.ProcessType.new({ name: "Outflow Left Heart" })];
                 yield Promise.all(processes.map(function (p) { return p.commit(); }));
                 /*Causality type*/
-                var causality = model.CausalityType.new({ name: "Causality relations", supertypes: [], subtypes: [] });
-                yield causality.commit();
-                console.log("Material", water);
-                console.log("Measurable", vWater);
-                console.log("Process", processes[0]);
-                console.log("Causality", causality);
+                // var causality = model.CausalityType.new({name: "Causality relations", supertypes: [], subtypes: []});
+                // await causality.commit();
                 self.addResource(water);
                 self.addResource(sodiumIon);
                 self.addResource(vWater);
                 self.addResource(vSodiumIon);
                 self.addResources(processes);
-                self.addResources(causality);
+                //self.addResources(causality);
             });
         })();
     };

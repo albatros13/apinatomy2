@@ -1,16 +1,16 @@
 /**
  * Created by Natallia on 6/19/2016.
  */
-import {Component, Pipe, PipeTransform} from '@angular/core';
+import {Component} from '@angular/core';
 import {TypePanel} from "./panel.type";
 import {MultiSelectInput} from '../components/component.select';
+import {MaterialType} from 'open-physiology-model';
 
 @Component({
   selector: 'measurableType-panel',
-  inputs: ['item', 'ignore', 'dependencies', 'options'],
+  inputs: ['item', 'ignore', 'options'],
   template:`
     <type-panel [item]="item" 
-      [dependencies]="dependencies" 
       [ignore]="ignore" 
       [options] ="options"
       (saved)    = "saved.emit($event)"
@@ -29,7 +29,7 @@ import {MultiSelectInput} from '../components/component.select';
         <label for="materials">Materials: </label>
         <select-input [items]="item.p('materials') | async" 
         (updated)="updateProperty('materials', $event)"     
-        [options]="dependencies.materials"></select-input>
+        [options]="MaterialType.p('all') | async"></select-input>
       </div>   
        
       <ng-content></ng-content>   
@@ -38,5 +38,7 @@ import {MultiSelectInput} from '../components/component.select';
   `,
   directives: [TypePanel,  MultiSelectInput]
 })
-export class MeasurableTypePanel extends TypePanel{}
+export class MeasurableTypePanel extends TypePanel{
+  MaterialType = MaterialType;
+}
 

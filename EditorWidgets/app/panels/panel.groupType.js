@@ -19,6 +19,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require('@angular/core');
 var panel_type_1 = require("./panel.type");
 var repo_template_1 = require('../repos/repo.template');
+var pipe_general_1 = require("../transformations/pipe.general");
 var GroupTypePanel = (function (_super) {
     __extends(GroupTypePanel, _super);
     function GroupTypePanel() {
@@ -27,9 +28,10 @@ var GroupTypePanel = (function (_super) {
     GroupTypePanel = __decorate([
         core_1.Component({
             selector: 'groupType-panel',
-            inputs: ['item', 'ignore', 'dependencies', 'options'],
-            template: "\n    <type-panel [item]=\"item\" \n      [ignore]=\"ignore\"\n      [options] =\"options\"\n      [dependencies]=\"dependencies\" \n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      \n      \n      <relationGroup>\n        <!--Elements-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('elements')\">\n           <repo-template caption=\"Elements\" [items] = \"item.elements\" \n           (updated)=\"updateProperty('elements', $event)\"\n           [dependencies] = \"dependencies\" [types]=\"[\n             templateName.CylindricalLyphTemplate, templateName.OmegaTreeTemplate]\"></repo-template>\n        </div>\n         <ng-content select=\"relationGroup\"></ng-content> \n      </relationGroup>\n      \n        <ng-content></ng-content>    \n    \n    </type-panel>\n  ",
-            directives: [panel_type_1.TypePanel, repo_template_1.RepoTemplate]
+            inputs: ['item', 'ignore', 'options'],
+            template: "\n    <type-panel [item]=\"item\" \n      [ignore]   = \"ignore\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n      <relationGroup>\n        <!--Elements-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('elements')\">\n           <repo-template caption=\"Elements\" \n           [items] = \"item.p('elements') | async | setToArray\" \n           (updated)=\"updateProperty('elements', $event)\"\n           [types]=\"[templateName.CylindricalLyphTemplate, templateName.OmegaTreeTemplate]\"></repo-template>\n        </div>\n         <ng-content select=\"relationGroup\"></ng-content> \n      </relationGroup>\n      \n      <ng-content></ng-content>    \n    \n    </type-panel>\n  ",
+            directives: [panel_type_1.TypePanel, repo_template_1.RepoTemplate],
+            pipes: [pipe_general_1.SetToArray]
         }), 
         __metadata('design:paramtypes', [])
     ], GroupTypePanel);

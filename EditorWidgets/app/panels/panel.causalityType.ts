@@ -6,10 +6,9 @@ import {TypePanel} from "./panel.type";
 
 @Component({
   selector: 'causalityType-panel',
-  inputs: ['item', 'ignore', 'dependencies', 'options'],
+  inputs: ['item', 'ignore', 'options'],
   template:`
     <type-panel [item]="item" 
-      [dependencies]="dependencies" 
       [ignore]   = "ignore"
       [options]  = "options"
       (saved)    = "saved.emit($event)"

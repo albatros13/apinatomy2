@@ -25,8 +25,8 @@ var MaterialTypePanel = (function (_super) {
     __extends(MaterialTypePanel, _super);
     function MaterialTypePanel() {
         _super.apply(this, arguments);
-        this.materialTypeClass = open_physiology_model_1.MaterialType;
-        this.measurableTypeClass = open_physiology_model_1.MeasurableType;
+        this.MaterialType = open_physiology_model_1.MaterialType;
+        this.MeasurableType = open_physiology_model_1.MeasurableType;
         this.measurablesToReplicate = [];
         this.supertypeMeasurables = [];
     }
@@ -55,7 +55,7 @@ var MaterialTypePanel = (function (_super) {
         for (var _i = 0, _a = this.measurablesToReplicate; _i < _a.length; _i++) {
             var measurable = _a[_i];
             delete measurable["id"];
-            var newMeasurable = this.measurableTypeClass.new(measurable);
+            var newMeasurable = open_physiology_model_1.MeasurableType.new(measurable);
             newMeasurable.location = this.item;
         }
         this.saved.emit(event);
@@ -63,8 +63,8 @@ var MaterialTypePanel = (function (_super) {
     MaterialTypePanel = __decorate([
         core_1.Component({
             selector: 'materialType-panel',
-            inputs: ['item', 'ignore', 'dependencies', 'options'],
-            template: "\n    <measurableLocationType-panel [item]=\"item\" \n      [ignore]=\"ignore\"\n      [options] =\"options\"\n      (saved)    = \"onSaved($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"onPropertyUpdated($event)\">        \n        \n        <!--Materials-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('materials')\">\n          <label for=\"materials\">Materials: </label>\n          <select-input \n            [items]=\"item.p('materials') | async\" \n            (updated)=\"updateProperty('materials', $event)\" \n            [options]=\"materialTypeClass.p('all') | async\"></select-input>\n        </div>\n        \n        <providerGroup>             \n          <!--MaterialProviders-->\n          <div class=\"input-control\" *ngIf=\"includeProperty('materialProviders')\">\n            <label for=\"materialProviders\">Inherits materials from: </label>\n            <select-input \n              [items]=\"item.p('materialProviders') | async\" \n              (updated)=\"updateProperty('materialProviders', $event)\" \n              [options]=\"materialTypeClass.p('all') | async\"></select-input>\n          </div>\n          <ng-content select=\"providerGroup\"></ng-content>\n        </providerGroup>\n\n        <!--Auxilliary field: measurables to generate-->\n        <!--TODO: replace with modal-->\n        <!--<generateFromSupertype>-->\n          <!--<div class=\"generate-control\">-->\n            <!--<label for=\"measurablesToReplicate\"><img class=\"icon\" src=\"images/measurableType.png\"/> Measurables to generate </label>-->\n            <!--<select-input [items]=\"measurablesToReplicate\" -->\n              <!--(updated)=\"measurablesToReplicate = $event\"-->\n              <!--[options]=\"supertypeMeasurables\">-->\n            <!--</select-input>-->\n          <!--</div>-->\n        <!--</generateFromSupertype>-->\n        \n        <ng-content></ng-content>\n        \n    </measurableLocationType-panel>\n  ",
+            inputs: ['item', 'ignore', 'options'],
+            template: "\n    <measurableLocationType-panel [item]=\"item\" \n      [ignore]=\"ignore\"\n      [options] =\"options\"\n      (saved)    = \"onSaved($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"onPropertyUpdated($event)\">        \n        \n        <!--Materials-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('materials')\">\n          <label for=\"materials\">Materials: </label>\n          <select-input \n            [items]=\"item.p('materials') | async\" \n            (updated)=\"updateProperty('materials', $event)\" \n            [options]=\"MaterialType.p('all') | async\"></select-input>\n        </div>\n        \n        <providerGroup>             \n          <!--MaterialProviders-->\n          <div class=\"input-control\" *ngIf=\"includeProperty('materialProviders')\">\n            <label for=\"materialProviders\">Inherits materials from: </label>\n            <select-input \n              [items]=\"item.p('materialProviders') | async\" \n              (updated)=\"updateProperty('materialProviders', $event)\" \n              [options]=\"MaterialType.p('all') | async\"></select-input>\n          </div>\n          <ng-content select=\"providerGroup\"></ng-content>\n        </providerGroup>\n\n        <!--Auxilliary field: measurables to generate-->\n        <!--TODO: replace with modal-->\n        <!--<generateFromSupertype>-->\n          <!--<div class=\"generate-control\">-->\n            <!--<label for=\"measurablesToReplicate\"><img class=\"icon\" src=\"images/measurableType.png\"/> Measurables to generate </label>-->\n            <!--<select-input [items]=\"measurablesToReplicate\" -->\n              <!--(updated)=\"measurablesToReplicate = $event\"-->\n              <!--[options]=\"supertypeMeasurables\">-->\n            <!--</select-input>-->\n          <!--</div>-->\n        <!--</generateFromSupertype>-->\n        \n        <ng-content></ng-content>\n        \n    </measurableLocationType-panel>\n  ",
             directives: [panel_measurableLocationType_1.MeasurableLocationTypePanel, component_select_1.MultiSelectInput, repo_template_1.RepoTemplate]
         }), 
         __metadata('design:paramtypes', [])

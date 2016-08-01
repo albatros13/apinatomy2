@@ -17,7 +17,7 @@ import * as model from "open-physiology-model";
 
 @Component({
   selector: 'repo-general',
-  inputs: ['items', 'caption', 'dependencies', 'ignore', 'types', 'selectedItem', 'options'],
+  inputs: ['items', 'caption', 'ignore', 'types', 'selectedItem', 'options'],
   template:`
      <div class="panel panel-info repo">
         <div class="panel-heading">{{caption}}</div>
@@ -34,7 +34,6 @@ import * as model from "open-physiology-model";
 
             <div *ngIf="!options || !options.headersOnly">
               <panel-general *ngIf="item == selectedItem" [item]="item"
-                [dependencies]="dependencies" 
                 [ignore]="ignore"
                 (saved)="onSaved(item, $event)" 
                 (canceled)="onCanceled($event)"
@@ -96,7 +95,9 @@ export class RepoGeneral extends RepoAbstract{
   protected onAdded(Class: any){
     let newItem: any;
 
-    switch (Class){
+    newItem = model[Class].new({name: "New " + Class});
+
+/*    switch (Class){
       case this.resourceName.ExternalResource : newItem = model.ExternalResource.new({name: "New external resource"}); break;
 
       case this.resourceName.MaterialType  : newItem = model.MaterialType.new({name: "New material",
@@ -120,7 +121,7 @@ export class RepoGeneral extends RepoAbstract{
       case this.resourceName.ClinicalIndex : newItem = model.ClinicalIndex.new({name: "New clinical index"}); break;
 
       default: newItem = model.Resource.new({name: "New resource"});
-    }
+    }*/
 
     this.items.push(newItem);
     this.added.emit(newItem);

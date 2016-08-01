@@ -28,8 +28,8 @@ var MeasurableTemplatePanel = (function (_super) {
     MeasurableTemplatePanel = __decorate([
         core_1.Component({
             selector: 'measurableTemplate-panel',
-            inputs: ['item', 'dependencies', 'ignore', 'options'],
-            template: "\n    <template-panel [item]=\"item\" \n      [types]=\"dependencies.measurables\"\n      [ignore]=\"ignore.add('cardinality')\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <!--Location-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('location')\">\n        <label for=\"location\">Location: </label>\n        <select-input-1 [items]=\"item.location\" \n        (updated)=\"updateProperty('location', $event)\"     \n        [options]=\"dependencies.locations\"></select-input-1>\n      </div>   \n      \n      <ng-content></ng-content>      \n\n    </template-panel>\n  ",
+            inputs: ['item', 'ignore', 'options'],
+            template: "\n    <template-panel [item]=\"item\" \n      [ignore]   = \"ignore.add('cardinalityBase').add('cardinalityMultipliers')\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <!--Location-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('location')\">\n        <label for=\"location\">Location: </label>\n        <select-input-1 [items]=\"item.location\" \n        (updated)=\"updateProperty('location', $event)\"     \n        [options]=\"LocatedMeasurableType.p('all') | async\"></select-input-1>\n      </div>   \n      \n      <ng-content></ng-content>      \n\n    </template-panel>\n  ",
             directives: [component_templateValue_1.TemplateValue, component_select_1.SingleSelectInput, template_template_1.TemplatePanel]
         }), 
         __metadata('design:paramtypes', [])

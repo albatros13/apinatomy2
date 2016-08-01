@@ -75,16 +75,6 @@ var RepoAbstract = (function () {
         this.searchString = config.filter;
     };
     RepoAbstract.prototype.onSaved = function (item, updatedItem) {
-        // for (var key in updatedItem){
-        //   if (updatedItem.hasOwnProperty(key)) {
-        //     if (item.constructor &&
-        //       item.constructor.properties &&
-        //       item.constructor.properties[key]
-        //       && item.constructor.properties[key].readonly) continue;
-        //
-        //     item[key] = updatedItem[key];
-        //   }
-        // }
         this.updated.emit(this.items);
         if (item == this.selectedItem) {
             this.selected.emit(this.selectedItem);

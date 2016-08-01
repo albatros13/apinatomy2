@@ -28,8 +28,8 @@ var NodeTemplatePanel = (function (_super) {
     NodeTemplatePanel = __decorate([
         core_1.Component({
             selector: 'nodeTemplate-panel',
-            inputs: ['item', 'dependencies', 'ignore', 'options'],
-            template: "\n    <template-panel [item]=\"item\" \n      [types]=\"dependencies.nodes\"\n      [ignore]=\"ignore.add('cardinality')\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <ng-content></ng-content>      \n\n    </template-panel>\n  ",
+            inputs: ['item', 'ignore', 'options'],
+            template: "\n    <template-panel [item]=\"item\" \n      [ignore]   = \"ignore.add('cardinalityBase').add('cardinalityMultipliers')\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <ng-content></ng-content>      \n\n    </template-panel>\n  ",
             directives: [component_templateValue_1.TemplateValue, component_select_1.SingleSelectInput, template_template_1.TemplatePanel]
         }), 
         __metadata('design:paramtypes', [])

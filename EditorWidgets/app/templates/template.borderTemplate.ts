@@ -8,18 +8,18 @@ import {TemplatePanel} from "./template.template";
 import {FormType, TemplateName} from "../services/service.apinatomy2";
 import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
 import {FilterByClass} from "../transformations/pipe.general";
+import {NodeTemplate} from "open-physiology-model";
 
 @Component({
   selector: 'borderTemplate-panel',
-  inputs: ['item', 'dependencies', 'ignore', 'options'],
+  inputs: ['item', 'ignore', 'options'],
   template:`
     <button *ngIf="!item"  type="button" class="btn btn-default" aria-label="Add"
       (click)  = "added.emit($event)"><span class="glyphicon glyphicon-plus"></span>
     </button>
     
     <template-panel *ngIf="item" [item]="item" 
-      [types]="dependencies.borders"  
-      [ignore]="ignore.add('name').add('cardinality').add('type')"
+      [ignore]="ignore.add('name').add('cardinalityBase').add('cardinalityMultipliers').add('type')"
       [options]  = "options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
@@ -44,12 +44,12 @@ import {FilterByClass} from "../transformations/pipe.general";
       </div>
       
       <!--Nodes-->
-      <div class="input-control" *ngIf="includeProperty('nodes')">
+<!--      <div class="input-control" *ngIf="includeProperty('nodes')">
         <label for="nodes">Nodes: </label>
-          <select-input [items]="item.nodes" 
+          <select-input [items]="item.p('nodes') | async" 
           (updated)="updateProperty('nodes', $event)"          
-          [options]="dependencies.templates  | filterByClass: [templateName.NodeTemplate]"></select-input>  
-      </div>
+          [options]="NodeTemplate.p('all') | async"></select-input>  
+      </div>-->
       
       <ng-content></ng-content>   
          
@@ -59,7 +59,7 @@ import {FilterByClass} from "../transformations/pipe.general";
   pipes: [FilterByClass]
 })
 export class BorderTemplatePanel extends TemplatePanel{
-  item: any;
+  NodeTemplate = NodeTemplate;
   public formType = FormType;
   protected templateName = TemplateName;
   @Output() added = new EventEmitter();

@@ -20,19 +20,17 @@ var core_1 = require('@angular/core');
 var panel_resource_1 = require("./panel.resource");
 var component_select_1 = require('../components/component.select');
 var service_apinatomy2_1 = require("../services/service.apinatomy2");
-var model = require("open-physiology-model");
 var TypePanel = (function (_super) {
     __extends(TypePanel, _super);
     function TypePanel() {
         _super.apply(this, arguments);
         this.templateName = service_apinatomy2_1.TemplateName;
-        this.model = model;
     }
     TypePanel = __decorate([
         core_1.Component({
             selector: 'type-panel',
             inputs: ['item', 'ignore', 'options'],
-            template: "\n    <resource-panel [item]=\"item\" \n      [ignore]   =\"ignore\"\n      [options]  =\"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n  \n      <!--Supertypes-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('supertypes')\">\n        <label for=\"name\">Supertypes: </label>\n        <select-input [items]=\"item.p('supertypes') | async\" \n        (updated)=\"updateProperty('supertypes', $event)\" \n        [options]=\"model[item.class].p('all') | async\"></select-input>\n      </div>\n      \n      <!--Subtypes-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('subtypes')\">\n        <label for=\"name\">Subtypes: </label>\n        <select-input [items]=\"item.p('subtypes') | async\" \n          (updated)=\"updateProperty('subtypes', $event)\" \n        [options]=\"model[item.class].p('all') | async\"></select-input>\n      </div>\n\n      <ng-content select=\"relationGroup\"></ng-content>\n      \n      <ng-content select=\"providerGroup\"></ng-content>\n\n      <ng-content></ng-content>      \n\n    </resource-panel>\n  ",
+            template: "\n    <resource-panel [item]=\"item\" \n      [ignore]   =\"ignore\"\n      [options]  =\"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n  \n      <!--Supertypes-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('supertypes')\">\n        <label for=\"name\">Supertypes: </label>\n        <select-input [items]=\"item.p('supertypes') | async\" \n        (updated)=\"updateProperty('supertypes', $event)\" \n        [options]=\"item.constructor.p('all') | async\"></select-input>\n      </div>\n      \n      <!--Subtypes-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('subtypes')\">\n        <label for=\"name\">Subtypes: </label>\n        <select-input [items]=\"item.p('subtypes') | async\" \n          (updated)=\"updateProperty('subtypes', $event)\" \n        [options]=\"item.constructor.p('all') | async\"></select-input>\n      </div>\n\n      <ng-content select=\"relationGroup\"></ng-content>\n      \n      <ng-content select=\"providerGroup\"></ng-content>\n\n      <ng-content></ng-content>      \n\n    </resource-panel>\n  ",
             directives: [panel_resource_1.ResourcePanel, component_select_1.MultiSelectInput]
         }), 
         __metadata('design:paramtypes', [])

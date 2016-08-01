@@ -19,6 +19,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require('@angular/core');
 var panel_measurableLocationType_1 = require("./panel.measurableLocationType");
 var repo_template_1 = require('../repos/repo.template');
+var pipe_general_1 = require("../transformations/pipe.general");
 var NodeTypePanel = (function (_super) {
     __extends(NodeTypePanel, _super);
     function NodeTypePanel() {
@@ -27,9 +28,10 @@ var NodeTypePanel = (function (_super) {
     NodeTypePanel = __decorate([
         core_1.Component({
             selector: 'nodeType-panel',
-            inputs: ['item', 'ignore', 'dependencies', 'options'],
-            template: "\n    <measurableLocationType-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      [ignore]=\"ignore\"\n      [options] =\"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <ng-content></ng-content>   \n      \n      <relationGroup>\n      <!--Channels-->\n      <repo-template caption=\"Channels\" [items] = \"item.channels\" \n        (updated)=\"updateProperty('channels', $event)\"     \n        [dependencies] = \"dependencies\" [types]=\"[templateName.NodeTemplate]\"></repo-template>\n  \n        <ng-content select=\"relationGroup\"></ng-content>\n      </relationGroup>\n    \n    </measurableLocationType-panel>\n  ",
-            directives: [panel_measurableLocationType_1.MeasurableLocationTypePanel, repo_template_1.RepoTemplate]
+            inputs: ['item', 'ignore', 'options'],
+            template: "\n    <measurableLocationType-panel [item]=\"item\" \n      [ignore]   = \"ignore\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <ng-content></ng-content>   \n      \n      <relationGroup>\n      <!--Channels-->\n      <repo-template caption=\"Channels\" \n        [items] = \"item.p('channels') | async | setToArray\" \n        (updated)=\"updateProperty('channels', $event)\"     \n        [types]=\"[templateName.NodeTemplate]\"></repo-template>\n  \n        <ng-content select=\"relationGroup\"></ng-content>\n      </relationGroup>\n    \n    </measurableLocationType-panel>\n  ",
+            directives: [panel_measurableLocationType_1.MeasurableLocationTypePanel, repo_template_1.RepoTemplate],
+            pipes: [pipe_general_1.SetToArray]
         }), 
         __metadata('design:paramtypes', [])
     ], NodeTypePanel);

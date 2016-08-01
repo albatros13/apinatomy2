@@ -19,16 +19,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require('@angular/core');
 var panel_type_1 = require("./panel.type");
 var component_select_1 = require('../components/component.select');
+var open_physiology_model_1 = require('open-physiology-model');
 var MeasurableTypePanel = (function (_super) {
     __extends(MeasurableTypePanel, _super);
     function MeasurableTypePanel() {
         _super.apply(this, arguments);
+        this.MaterialType = open_physiology_model_1.MaterialType;
     }
     MeasurableTypePanel = __decorate([
         core_1.Component({
             selector: 'measurableType-panel',
-            inputs: ['item', 'ignore', 'dependencies', 'options'],
-            template: "\n    <type-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      [ignore]=\"ignore\" \n      [options] =\"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n       <!--Quality-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('quality')\">\n        <label for=\"quality\">Quality: </label>\n        <input type=\"text\" class=\"form-control\" required [(ngModel)]=\"item.quality\">\n      </div>\n      \n      <!--Materials-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('materials')\">\n        <label for=\"materials\">Materials: </label>\n        <select-input [items]=\"item.p('materials') | async\" \n        (updated)=\"updateProperty('materials', $event)\"     \n        [options]=\"dependencies.materials\"></select-input>\n      </div>   \n       \n      <ng-content></ng-content>   \n         \n    </type-panel>\n  ",
+            inputs: ['item', 'ignore', 'options'],
+            template: "\n    <type-panel [item]=\"item\" \n      [ignore]=\"ignore\" \n      [options] =\"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n       <!--Quality-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('quality')\">\n        <label for=\"quality\">Quality: </label>\n        <input type=\"text\" class=\"form-control\" required [(ngModel)]=\"item.quality\">\n      </div>\n      \n      <!--Materials-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('materials')\">\n        <label for=\"materials\">Materials: </label>\n        <select-input [items]=\"item.p('materials') | async\" \n        (updated)=\"updateProperty('materials', $event)\"     \n        [options]=\"MaterialType.p('all') | async\"></select-input>\n      </div>   \n       \n      <ng-content></ng-content>   \n         \n    </type-panel>\n  ",
             directives: [panel_type_1.TypePanel, component_select_1.MultiSelectInput]
         }), 
         __metadata('design:paramtypes', [])

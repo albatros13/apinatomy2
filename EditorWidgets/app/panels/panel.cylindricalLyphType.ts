@@ -6,14 +6,14 @@ import {LyphTypePanel} from "./panel.lyphType";
 import {MultiSelectInput, SingleSelectInput} from '../components/component.select';
 import {RepoTemplate} from '../repos/repo.template';
 import {BorderTemplatePanel} from '../templates/template.borderTemplate';
-import {FilterByClass, FilterBy} from "../transformations/pipe.general";
+import {SetToArray} from "../transformations/pipe.general";
+import {CylindricalLyphType} from "open-physiology-model";
 
 @Component({
   selector: 'cylindricalLyphType-panel',
-  inputs: ['item', 'ignore', 'dependencies', 'options'],
+  inputs: ['item', 'ignore', 'options'],
   template:`
     <lyphType-panel [item]="item" 
-      [dependencies]="dependencies" 
       [ignore]="ignore" 
       [options] ="options"
       (saved)    = "saved.emit($event)"
@@ -27,18 +27,18 @@ import {FilterByClass, FilterBy} from "../transformations/pipe.general";
             <label for="segmentProviders">Inherits segments from: </label>
             <select-input [items]="item.p('segmentProviders') | async" 
             (updated)="updateProperty('segmentProviders', $event)"
-            [options]="dependencies.cylindricalLyphs"></select-input>
+            [options]="CylindricalLyphType.p('all') | async"></select-input>
           </div>
         </providerGroup>     
         
         <relationGroup>
           <!--Segments-->
           <div class="input-control" *ngIf="includeProperty('segments', 'relations')">
-            <repo-template caption="Segments" [items] = "item.segments" 
-            [ignore]="ignore.add('cardinality')"
+            <repo-template caption="Segments" 
+            [items] = "item.p('segments') | async | setToArray" 
+            [ignore]="segmentsIgnore"
             (updated)="updateProperty('segments', $event)"
-            [dependencies] = "dependencies"
-              [types]="[templateName.LyphTemplate]"></repo-template>
+            [types]="[templateName.LyphTemplate]"></repo-template>
           </div>
         </relationGroup>
         
@@ -47,9 +47,8 @@ import {FilterByClass, FilterBy} from "../transformations/pipe.general";
           <div class="input-control">      
             <label for="minusBorder">Minus border: </label>
             <borderTemplate-panel [item]="item.minusBorder" 
-              [dependencies]="dependencies" 
               [options]="borderPanelOptions"
-              (added)  ="addTemplate('minusBorder', borderTemplate)"
+              (added)  ="addTemplate('minusBorder', templateName.BorderTemplate)"
               (saved)  ="updateProperty('minusBorder', $event)"    
               (removed)="removeTemplate('minusBorder', $event)">
             </borderTemplate-panel>
@@ -59,9 +58,8 @@ import {FilterByClass, FilterBy} from "../transformations/pipe.general";
           <div class="input-control">      
             <label for="plusBorder">Plus border: </label>
             <borderTemplate-panel [item]="item.plusBorder" 
-              [dependencies]="dependencies" 
               [options]="borderPanelOptions"
-              (added)  ="addTemplate('plusBorder', borderTemplate)"
+              (added)  ="addTemplate('plusBorder', templateName.BorderTemplate)"
               (saved)  ="updateProperty('plusBorder', $event)"    
               (removed)="removeTemplate('plusBorder', $event)">
             </borderTemplate-panel>
@@ -75,8 +73,15 @@ import {FilterByClass, FilterBy} from "../transformations/pipe.general";
   `,
   directives: [LyphTypePanel, MultiSelectInput, SingleSelectInput,
     RepoTemplate, BorderTemplatePanel, BorderTemplatePanel],
-  pipes: [FilterByClass, FilterBy]
+  pipes: [SetToArray]
 
 })
 export class CylindricalLyphTypePanel extends LyphTypePanel{
+  CylindricalLyphType = CylindricalLyphType;
+  segmentsIgnore: Set<string> = new Set<string>();
+
+  ngOnInit(){
+    super.ngOnInit();
+    this.segmentsIgnore = new Set<string>(['cardinalityBase', 'cardinalityMultipliers']);
+  }
 }

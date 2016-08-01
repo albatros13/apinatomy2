@@ -16,7 +16,7 @@ var component_select_1 = require('../components/component.select');
 var toolbar_panelEdit_1 = require('../components/toolbar.panelEdit');
 var pipe_general_1 = require("../transformations/pipe.general");
 var toolbar_propertySettings_1 = require('../components/toolbar.propertySettings');
-var open_physiology_model_1 = require("open-physiology-model");
+var model = require("open-physiology-model");
 var ResourcePanel = (function () {
     function ResourcePanel() {
         this.ignore = new Set();
@@ -24,7 +24,7 @@ var ResourcePanel = (function () {
         this.canceled = new core_1.EventEmitter();
         this.removed = new core_1.EventEmitter();
         this.propertyUpdated = new core_1.EventEmitter();
-        this.ExternalResource = open_physiology_model_1.ExternalResource;
+        this.ExternalResource = model.ExternalResource;
         this.properties = [];
     }
     ResourcePanel.prototype.ngOnInit = function () {
@@ -34,11 +34,12 @@ var ResourcePanel = (function () {
         if (this.item && this.item.constructor) {
             var properties = Object.assign({}, this.item.constructor.properties, this.item.constructor.relationshipShortcuts);
             for (var property in properties) {
-                if (property == "class" || property == "themes")
+                if (property == "class" || property == "themes" || property == "nature")
                     continue;
                 if (property.indexOf("Border") > -1) {
                     if (!this.properties.find(function (x) { return (x.value == "border"); }))
-                        this.properties.push({ value: "border", selected: !this.ignore.has("border") });
+                        this.properties.push({ value: "borders", selected: !this.ignore.has("borders") });
+                    continue;
                 }
                 this.properties.push({ value: property, selected: !this.ignore.has(property) });
             }
@@ -63,7 +64,7 @@ var ResourcePanel = (function () {
         this.propertyUpdated.emit({ property: property, values: item });
     };
     ResourcePanel.prototype.addTemplate = function (property, Class) {
-        this.item[property] = Class.new({ name: "T: " + property + " " + this.item.name });
+        this.item[property] = model[Class].new({ name: "T: " + property + " " + this.item.name });
     };
     ResourcePanel.prototype.removeTemplate = function (property, item) {
         item.delete();

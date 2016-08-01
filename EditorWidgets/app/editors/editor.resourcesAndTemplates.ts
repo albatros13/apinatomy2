@@ -6,7 +6,8 @@ import {ResourceWidget} from '../widgets/widget.resource';
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
 import {ResourceName, TemplateName} from '../services/service.apinatomy2';
-import {AsyncResourceProvider} from '../services/service.asyncResourceProvider';
+import * as model from "open-physiology-model";
+import {SetToArray} from "../transformations/pipe.general";
 
 declare var GoldenLayout:any;
 declare var $: any;
@@ -14,14 +15,12 @@ declare var $: any;
 @Component({
   selector: 'app',
   providers: [
-    ResizeService,
-    AsyncResourceProvider
+    ResizeService
   ],
   template: `
     <repo-general id="repo"
-      [items]="items" 
+      [items]="items | setToArray" 
       [caption]="'All resources'" 
-      [dependencies]="dependencies" 
       (selected)="onItemSelected($event)"
       (added)="onItemAdded($event)"
       (removed)="onItemRemoved($event)"
@@ -31,9 +30,8 @@ declare var $: any;
     <hierarchy-widget id = "hierarchy" [item]="selectedItem"></hierarchy-widget>
     <resource-widget id = "resource" [item]="selectedItem"></resource-widget>   
     <repo-template id="repo2"
-      [items]="dependencies.templates" 
+      [items]="[]" 
       [caption]="'All templates'" 
-      [dependencies]="dependencies" 
       [options]="{showSortToolbar: true, showFilterToolbar: true}"
       (selected)="onItemSelected($event)"
       (added)="onItemAdded($event)"
@@ -44,7 +42,8 @@ declare var $: any;
     <div id="main"></div>
   `,
   styles: [`#main {width: 100%; height: 100%; border: 0; margin: 0; padding: 0}`],
-  directives: [RepoGeneral, RepoTemplate, HierarchyWidget, ResourceWidget]
+  directives: [RepoGeneral, RepoTemplate, HierarchyWidget, ResourceWidget],
+  pipes: [SetToArray]
 })
 export class ResourceAndTemplateEditor {
   protected resourceName = ResourceName;
@@ -52,7 +51,6 @@ export class ResourceAndTemplateEditor {
 
   items        :Array<any> = [];
   selectedItem :any        = {};
-  dependencies :any        = {};
 
   layoutConfig = {
     settings: {
@@ -100,17 +98,47 @@ export class ResourceAndTemplateEditor {
   subscription: Subscription;
 
   constructor(private resizeService:ResizeService,
-              public el:ElementRef,
-              public resourceProvider:AsyncResourceProvider) {
+              public el:ElementRef) {
 
-    this.subscription = resourceProvider.data$.subscribe(
-      (updatedData: any) => {
-        this.dependencies = updatedData;
-        this.items = updatedData.types;
+    this.subscription = model.Resource.p('all').subscribe(
+      (data:any) => {
+        this.items = data;
       });
 
-    setTimeout(() => {resourceProvider.loadExtra()}, 1000);
+    console.log("V.2");
+
+    (async function () {
+      /*Material type*/
+      var water = model.MaterialType.new({name: "Water"});
+      await water.commit();
+      var vWater = model.MeasurableType.new({
+        name: "Concentration of water", quality: "concentration",
+        materials: [water]
+      });
+      await vWater.commit();
+
+      /*Measurable type*/
+      var sodiumIon = model.MaterialType.new({name: "Sodium ion"});
+      await sodiumIon.commit();
+      var vSodiumIon = model.MeasurableType.new({
+        name: "Concentration of sodium ion", quality: "concentration",
+        materials: [sodiumIon]
+      });
+      await vSodiumIon.commit();
+
+      /*Process type*/
+      var processes = [
+        model.ProcessType.new({name: "Inflow Right Heart"}),
+        model.ProcessType.new({name: "Outflow Right Heart"}),
+        model.ProcessType.new({name: "Inflow Left Heart"}),
+        model.ProcessType.new({name: "Outflow Left Heart"})];
+
+      await Promise.all(processes.map(p => p.commit()));
+
+    })();
   }
+
+
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
@@ -125,16 +153,12 @@ export class ResourceAndTemplateEditor {
   }
 
   onItemAdded(item:any) {
-    this.resourceProvider.addResource(item);
   }
 
   onItemRemoved(item:any) {
-    this.resourceProvider.removeResource(item);
   }
 
   onItemUpdated(item:any) {
-    //maybe not needed
-    this.resourceProvider.addResource(item);
   }
 
   ngOnInit() {

@@ -1,21 +1,20 @@
 /**
  * Created by Natallia on 6/17/2016.
  */
-import {Component, Output} from '@angular/core';
+import {Component} from '@angular/core';
 import {MaterialTypePanel} from "./panel.materialType";
 import {MultiSelectInput, SingleSelectInput} from '../components/component.select';
 import {RepoTemplate} from '../repos/repo.template';
-import {FilterByClass, FilterBy} from "../transformations/pipe.general";
+import {SetToArray} from "../transformations/pipe.general";
 import {BorderTemplatePanel} from "../templates/template.borderTemplate";
 
-import {ProcessTemplate, BorderTemplate} from "open-physiology-model";
+import {LyphType, ProcessTemplate, BorderTemplate} from "open-physiology-model";
 
 @Component({
   selector: 'lyphType-panel',
-  inputs: ['item', 'ignore', 'dependencies', 'options'],
+  inputs: ['item', 'ignore', 'options'],
   template:`
     <materialType-panel [item]="item" 
-        [dependencies]="dependencies" 
         [ignore]="ignore"
         [options] ="options"
         (saved)    = "saved.emit($event)"
@@ -37,7 +36,7 @@ import {ProcessTemplate, BorderTemplate} from "open-physiology-model";
             <label for="layerProviders">Inherits layers from: </label>
             <select-input [items]="item.p('layerProviders') | async" 
             (updated)="updateProperty('layerProviders', $event)" 
-            [options]="dependencies.lyphs"></select-input>
+            [options]="LyphType.p('all') | async"></select-input>
           </div>
             
           <!--PatchProviders-->
@@ -45,7 +44,7 @@ import {ProcessTemplate, BorderTemplate} from "open-physiology-model";
             <label for="patchProviders">Inherits patches from: </label>
             <select-input [items]="item.p('patchProviders') | async" 
             (updated)="updateProperty('patchProviders', $event)" 
-            [options]="dependencies.lyphs"></select-input>
+            [options]="LyphType.p('all') | async"></select-input>
           </div>
           
           <!--PartProviders-->
@@ -53,7 +52,7 @@ import {ProcessTemplate, BorderTemplate} from "open-physiology-model";
             <label for="partProviders">Inherits parts from: </label>
             <select-input [items]="item.p('partProviders') | async"
             (updated)="updateProperty('partProviders', $event)" 
-            [options]="dependencies.lyphs"></select-input>
+            [options]="LyphType.p('all') | async"></select-input>
           </div>
           <ng-content select="providerGroup"></ng-content>
         </providerGroup>           
@@ -62,51 +61,45 @@ import {ProcessTemplate, BorderTemplate} from "open-physiology-model";
           <!--Layers-->
           <div class="input-control" *ngIf="includeProperty('layers')">
             <repo-template caption="Layers" 
-            [items] = "item.layers" 
-            [ignore]="ignore.add('cardinality')"
-            (updated)="updateProperty('layers', $event)" 
-            [dependencies] = "dependencies" 
-            [types] = "[templateName.LyphTemplate, templateName.CylindricalLyphTemplate]"></repo-template>
+            [items]  = "item.p('layers') | async | setToArray" 
+            [ignore]="layersIgnore"
+            (updated)= "updateProperty('layers', $event)" 
+            [types]  = "[templateName.LyphTemplate, templateName.CylindricalLyphTemplate]"></repo-template>
           </div>          
   
           <!--Patches-->
           <div class="input-control" *ngIf="includeProperty('patches')">
             <repo-template caption="Patches" 
-            [items] = "item.patches" 
-            [ignore]="ignore.add('cardinality')"
+            [items] = "item.p('patches') | async | setToArray" 
+            [ignore]="patchesIgnore"
             (updated)="updateProperty('patches', $event)" 
-            [dependencies] = "dependencies"
             [types] = "[templateName.LyphTemplate, templateName.CylindricalLyphTemplate]"></repo-template>
           </div>
                   
           <!--Parts-->
           <div class="input-control" *ngIf="includeProperty('parts')">
             <repo-template caption="Parts" 
-            [items] = "item.parts" 
-            [ignore]="ignore.add('cardinality')"
+            [items] = "item.p('parts') | async | setToArray" 
+            [ignore]="partsIgnore"
             (updated)="updateProperty('parts', $event)" 
-            [dependencies] = "dependencies"
             [types] = "[templateName.LyphTemplate, templateName.CylindricalLyphTemplate]"></repo-template>
           </div>
           
           <!--Processes-->
           <div class="input-control" *ngIf="includeProperty('processes')">
             <repo-template caption="Processes" 
-            [items] = "item.processes" 
-            
-            [dependencies] = "dependencies"
-            (updated)="updateProperty('processes', $event)"           
-            [types] = "[templateName.ProcessTemplate]" 
-              (added)  ="onProcessAdded($event)" 
-              (removed)="onProcessRemoved($event)"></repo-template>
+             [items] = "item.p('processes') | async | setToArray" 
+             (updated)="updateProperty('processes', $event)"           
+             [types] = "[templateName.ProcessTemplate]" 
+               (added)  ="onProcessAdded($event)" 
+               (removed)="onProcessRemoved($event)"></repo-template>
           </div>
           
           <!--Nodes-->
           <div class="input-control" *ngIf="includeProperty('nodes')">
             <repo-template caption="Nodes" 
-            [items] = "item.nodes" 
+            [items] = "item.p('nodes') | async | setToArray" 
             (updated)="updateProperty('nodes', $event)"
-            [dependencies] = "dependencies"
             [types] = "[templateName.NodeTemplate]"></repo-template>
           </div>            
           <ng-content select="relationGroup"></ng-content>
@@ -119,9 +112,8 @@ import {ProcessTemplate, BorderTemplate} from "open-physiology-model";
           <div class="input-control">      
             <label for="innerBorder">Inner border: </label>
             <borderTemplate-panel [item]="item.innerBorder" 
-              [dependencies]="dependencies" 
               [options]="borderPanelOptions"
-              (added)  ="addTemplate('innerBorder', borderTemplate)"
+              (added)  ="addTemplate('innerBorder', templateName.BorderTemplate)"
               (saved)  ="updateProperty('innerBorder', $event)"    
               (removed)="removeTemplate('innerBorder', $event)">
             </borderTemplate-panel>
@@ -131,9 +123,8 @@ import {ProcessTemplate, BorderTemplate} from "open-physiology-model";
           <div class="input-control">      
             <label for="outerBorder">Outer border: </label>
             <borderTemplate-panel [item]="item.outerBorder" 
-              [dependencies]="dependencies" 
               [options]="borderPanelOptions"
-              (added)  = "addTemplate('outerBorder', borderTemplate)"
+              (added)  = "addTemplate('outerBorder', templateName.BorderTemplate)"
               (saved)  = "updateProperty('outerBorder', $event)"  
               (removed)= "removeTemplate('outerBorder', $event)">
             </borderTemplate-panel>
@@ -148,11 +139,22 @@ import {ProcessTemplate, BorderTemplate} from "open-physiology-model";
   `,
   directives: [MaterialTypePanel, MultiSelectInput, SingleSelectInput,
     RepoTemplate, BorderTemplatePanel],
-  pipes: [FilterByClass, FilterBy]
+  pipes: [SetToArray]
 })
 export class LyphTypePanel extends MaterialTypePanel{
-  borderTemplate = BorderTemplate;
+  LyphType = LyphType;
   borderPanelOptions = {'hideSave': true, 'hideRestore': true};
+
+  layersIgnore: Set<string> = new Set<string>();
+  patchesIgnore: Set<string> = new Set<string>();
+  partsIgnore: Set<string> = new Set<string>();
+
+  ngOnInit(){
+    super.ngOnInit();
+    this.layersIgnore = new Set<string>(['cardinalityBase', 'cardinalityMultipliers']);
+    this.patchesIgnore = new Set<string>(['cardinalityBase', 'cardinalityMultipliers']);
+    this.partsIgnore = new Set<string>(['cardinalityBase', 'cardinalityMultipliers']);
+  }
 
   onProcessAdded(process: ProcessTemplate){
     if (process) process.conveyingLyph = this.item;

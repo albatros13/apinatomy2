@@ -4,37 +4,36 @@
 import {Component} from '@angular/core';
 import {TypePanel} from "./panel.type";
 import {RepoTemplate} from '../repos/repo.template';
+import {SetToArray} from "../transformations/pipe.general";
 
 @Component({
   selector: 'groupType-panel',
-  inputs: ['item', 'ignore', 'dependencies', 'options'],
+  inputs: ['item', 'ignore', 'options'],
   template:`
     <type-panel [item]="item" 
-      [ignore]="ignore"
-      [options] ="options"
-      [dependencies]="dependencies" 
+      [ignore]   = "ignore"
+      [options]  = "options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"
       (propertyUpdated) = "propertyUpdated.emit($event)">
-
-      
       
       <relationGroup>
         <!--Elements-->
         <div class="input-control" *ngIf="includeProperty('elements')">
-           <repo-template caption="Elements" [items] = "item.elements" 
+           <repo-template caption="Elements" 
+           [items] = "item.p('elements') | async | setToArray" 
            (updated)="updateProperty('elements', $event)"
-           [dependencies] = "dependencies" [types]="[
-             templateName.CylindricalLyphTemplate, templateName.OmegaTreeTemplate]"></repo-template>
+           [types]="[templateName.CylindricalLyphTemplate, templateName.OmegaTreeTemplate]"></repo-template>
         </div>
          <ng-content select="relationGroup"></ng-content> 
       </relationGroup>
       
-        <ng-content></ng-content>    
+      <ng-content></ng-content>    
     
     </type-panel>
   `,
-  directives: [TypePanel, RepoTemplate]
+  directives: [TypePanel, RepoTemplate],
+  pipes: [SetToArray]
 })
 export class GroupTypePanel extends TypePanel{}

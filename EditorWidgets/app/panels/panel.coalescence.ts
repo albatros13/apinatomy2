@@ -6,13 +6,14 @@ import {ResourcePanel} from "./panel.resource";
 import {MultiSelectInput} from '../components/component.select';
 import {RepoTemplate} from '../repos/repo.template';
 import {TemplateName} from "../services/service.apinatomy2";
+import {LyphType} from "open-physiology-model";
+import {SetToArray} from '../transformations/pipe.general';
 
 @Component({
   selector: 'coalescence-panel',
-  inputs: ['item', 'ignore', 'dependencies', 'options'],
+  inputs: ['item', 'ignore', 'options'],
   template:`
     <resource-panel [item] = "item" 
-      [dependencies] = "dependencies" 
       [ignore] = "ignore"
       [options] ="options"
       (saved)    = "saved.emit($event)"
@@ -25,14 +26,13 @@ import {TemplateName} from "../services/service.apinatomy2";
           <label for="interfaceLayers">Interface layers: </label>
           <select-input [items]="item.p('interfaceLayers') | async" 
           (updated)="updateProperty('interfaceLayers', $event)"          
-          [options]="dependencies.lyphs"></select-input>
+          [options]="LyphType.p('all') | async"></select-input>
         </div>
         
       <!--Lyphs-->
         <div class="input-control" *ngIf="includeProperty('lyphs')">
-          <repo-template caption='Lyphs' [items]="item.lyphs" 
+          <repo-template caption='Lyphs' [items]="item.p('lyphs') | async | setToArray" 
           (updated)="updateProperty('lyphs', $event)"          
-          [dependencies]="dependencies"
           [types]="[templateName.LyphTemplate, templateName.CylindricalLyphTemplate]"></repo-template>
         </div>
 
@@ -40,8 +40,10 @@ import {TemplateName} from "../services/service.apinatomy2";
 
     </resource-panel>
   `,
-  directives: [ResourcePanel, MultiSelectInput, RepoTemplate]
+  directives: [ResourcePanel, MultiSelectInput, RepoTemplate],
+  pipes: [SetToArray]
 })
 export class CoalescencePanel extends ResourcePanel{
   protected templateName = TemplateName;
+  LyphType = LyphType;
 }

@@ -74,8 +74,6 @@ var SingleSelectInput = (function () {
         this.externalChange = false;
     }
     SingleSelectInput.prototype.ngOnInit = function () {
-        if (!this.options)
-            this.options = [];
         this.items = (this.item) ? [this.item] : this.items = [];
     };
     SingleSelectInput.prototype.ngOnChanges = function (changes) {
@@ -88,18 +86,19 @@ var SingleSelectInput = (function () {
         this.externalChange = true;
     };
     SingleSelectInput.prototype.refreshValue = function (value) {
-        var options = [];
-        if (this.options[0] && this.options[0].children) {
-            //Flatten grouped options
-            options = [].concat.apply([], this.options.map(function (item) { return item.children; }));
-        }
-        else {
-            options = this.options;
-        }
+        //let options: any[] = (this.options[0] && this.options[0].children)? [].concat.apply([], this.options.map(item => item.children)): this.options;
         this.externalChange = false;
-        this.item = options.find(function (y) { return (value.id == ((y.id) ? y.id : y.name)); });
+        this.item = Array.from(this.options).find(function (y) { return (value.id == ((y.id) ? y.id : y.name)); });
         this.updated.emit(this.item);
     };
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Object)
+    ], SingleSelectInput.prototype, "item", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Array)
+    ], SingleSelectInput.prototype, "options", void 0);
     __decorate([
         core_1.Output(), 
         __metadata('design:type', Object)
@@ -108,9 +107,9 @@ var SingleSelectInput = (function () {
         core_1.Component({
             selector: 'select-input-1',
             inputs: ['item', 'options'],
-            template: "\n    <div *ngIf=\"active\">\n      <ng-select\n        [items]       = \"options | mapToOptions\"\n        [initData]    = \"items | mapToOptions\"\n        [multiple]    = false\n        (data)        = \"refreshValue($event)\"\n      ></ng-select>\n    </div>\n  ",
+            template: "\n    <div *ngIf=\"active\">\n      <ng-select\n        [items]       = \"options | setToArray | mapToOptions\"\n        [initData]    = \"items | mapToOptions\"\n        [multiple]    = false\n        (data)        = \"refreshValue($event)\"\n      ></ng-select>\n    </div>\n  ",
             directives: [ng2_select_1.SELECT_DIRECTIVES, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES],
-            pipes: [pipe_general_1.MapToOptions]
+            pipes: [pipe_general_1.MapToOptions, pipe_general_1.SetToArray]
         }), 
         __metadata('design:paramtypes', [])
     ], SingleSelectInput);

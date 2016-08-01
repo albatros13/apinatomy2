@@ -20,17 +20,22 @@ var core_1 = require('@angular/core');
 var panel_resource_1 = require("./panel.resource");
 var component_select_1 = require('../components/component.select');
 var repo_template_1 = require('../repos/repo.template');
+var open_physiology_model_1 = require("open-physiology-model");
+var pipe_general_1 = require('../transformations/pipe.general');
 var CorrelationPanel = (function (_super) {
     __extends(CorrelationPanel, _super);
     function CorrelationPanel() {
         _super.apply(this, arguments);
+        this.Publication = open_physiology_model_1.Publication;
+        this.ClinicalIndex = open_physiology_model_1.ClinicalIndex;
     }
     CorrelationPanel = __decorate([
         core_1.Component({
             selector: 'correlation-panel',
-            inputs: ['item', 'ignore', 'dependencies', 'options'],
-            template: "\n    <resource-panel [item]=\"item\" \n      [dependencies]=\"dependencies\" \n      [ignore]=\"ignore\" \n      [options] =\"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n        <!--Comment-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('comment')\">\n          <label for=\"comment\">Comment: </label>\n          <input type=\"text\" [(ngModel)]=\"item.comment\">\n        </div>\n        \n        <!--Publication-->\n        <div>\n          <label for=\"publication\">Publication: </label>\n          <select-input-1 [item] = \"item.publication\" \n            (updated)=\"updateProperty('publication', $event)\"  \n            [options] = \"dependencies.publications\"></select-input-1>\n        </div>\n        \n        <!--ClinicalIndex-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('clinicalIndices')\">\n          <label for=\"clinicalIndices\">Clinical indices: </label>\n          <select-input [items]=\"item.p('clinicalIndices') | async\" \n          (updated)=\"updateProperty('clinicalIndices', $event)\"\n          [options]=\"dependencies.clinicalIndices\"></select-input>\n        </div>\n        \n        <!--Measurables-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('measurables')\">\n          <repo-template caption='Measurables' [items]=\"item.measurables\" \n          (updated)=\"updateProperty('measurables', $event)\"          \n          [dependencies]=\"dependencies\"\n          [types]=\"[templateName.MeasurableTemplate]\"></repo-template>\n        </div>\n        \n        <ng-content></ng-content>      \n    \n    </resource-panel>\n  ",
-            directives: [panel_resource_1.ResourcePanel, component_select_1.SingleSelectInput, component_select_1.MultiSelectInput, repo_template_1.RepoTemplate]
+            inputs: ['item', 'ignore', 'options'],
+            template: "\n    <resource-panel [item]=\"item\" \n      [ignore]=\"ignore\" \n      [options] =\"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n        <!--Comment-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('comment')\">\n          <label for=\"comment\">Comment: </label>\n          <input type=\"text\" [(ngModel)]=\"item.comment\">\n        </div>\n        \n        <!--Publication-->\n        <div>\n          <label for=\"publication\">Publication: </label>\n          <select-input-1 [item] = \"item.p('publication') | async\" \n            (updated) = \"updateProperty('publication', $event)\"  \n            [options] = \"Publication.p('all') | async\"></select-input-1>\n        </div>\n        \n        <!--ClinicalIndex-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('clinicalIndices')\">\n          <label for=\"clinicalIndices\">Clinical indices: </label>\n          <select-input [items]=\"item.p('clinicalIndices') | async\" \n          (updated)=\"updateProperty('clinicalIndices', $event)\"\n          [options]=\"ClinicalIndex.p('all') | async\"></select-input>\n        </div>\n        \n        <!--Measurables-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('measurables')\">\n          <repo-template caption='Measurables' \n          [items]=\"item.p('measurables') | async | setToArray\" \n          (updated)=\"updateProperty('measurables', $event)\"          \n          [types]=\"[templateName.MeasurableTemplate]\"></repo-template>\n        </div>\n        \n        <ng-content></ng-content>      \n    \n    </resource-panel>\n  ",
+            directives: [panel_resource_1.ResourcePanel, component_select_1.SingleSelectInput, component_select_1.MultiSelectInput, repo_template_1.RepoTemplate],
+            pipes: [pipe_general_1.SetToArray]
         }), 
         __metadata('design:paramtypes', [])
     ], CorrelationPanel);

@@ -8,7 +8,7 @@ import {CORE_DIRECTIVES} from '@angular/common';
 import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/components/dropdown';
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
-import {MultiPropertyToolbar} from '../components/toolbar.propertySettings';
+import {CustomPropertyToolbar} from '../components/toolbar.propertySettings';
 
 @Component({
   selector: 'hierarchy-widget',
@@ -20,19 +20,19 @@ import {MultiPropertyToolbar} from '../components/toolbar.propertySettings';
       </div>
       <div class="panel-body">
           <!--Relations-->
-          <multi-property-toolbar  
+          <custom-property-toolbar  
             [options] = "relations"
             (change) = "updateRelations()"
             caption = 'Relations'>
-          </multi-property-toolbar>
+          </custom-property-toolbar>
           
           <!--Properties-->
-          <multi-property-toolbar  
+          <custom-property-toolbar  
             [options] = "properties"
             (change) = "updateProperties()"
             caption = 'Properties'
             >
-          </multi-property-toolbar>
+          </custom-property-toolbar>
 
           <!--Depth-->
           <div class="input-group input-group-sm" style="width: 150px; float: left;">
@@ -60,7 +60,7 @@ import {MultiPropertyToolbar} from '../components/toolbar.propertySettings';
     </div>      
   `,
   directives: [HierarchyGraphWidget, HierarchyTreeWidget,
-    DROPDOWN_DIRECTIVES, CORE_DIRECTIVES, MultiPropertyToolbar]
+    DROPDOWN_DIRECTIVES, CORE_DIRECTIVES, CustomPropertyToolbar]
 })
 export class HierarchyWidget implements OnChanges, OnDestroy{
   //Input

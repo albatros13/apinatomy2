@@ -7,16 +7,14 @@ import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
 import {TransportPhenomenon} from "../services/service.apinatomy2";
 import {FilterByClass} from "../transformations/pipe.general";
 
-import {NodeTemplate} from "open-physiology.model";
+import {NodeTemplate, LyphType} from "open-physiology-model";
 
 @Component({
   selector: 'processTemplate-panel',
-  inputs: ['item', 'dependencies', 'ignore', 'options'],
+  inputs: ['item', 'ignore', 'options'],
   template:`
     <template-panel [item]="item" 
-      [types]="dependencies.processes" 
-      [templates]="dependencies.templates" 
-      [ignore]="ignore.add('cardinality')"
+      [ignore]   = "ignore.add('cardinalityBase').add('cardinalityMultipliers')"
       [options]  = "options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
@@ -39,7 +37,7 @@ import {NodeTemplate} from "open-physiology.model";
         <label for="conveyingLyph">Conveying lyph: </label>
         <select-input-1 [item] = "item.conveyingLyph"
          (updated)="updateProperty('conveyingLyph', $event)"    
-         [options] = "dependencies.lyphs"></select-input-1>
+         [options] = "LyphType.p('all') | async"></select-input-1>
       </div>
       
       <!--Source-->
@@ -47,15 +45,15 @@ import {NodeTemplate} from "open-physiology.model";
         <label for="source">Source: </label>
         <select-input-1 [item] = "item.source" 
           (updated)="onSourceChanged($event)"   
-          [options] = "dependencies.templates | filterByClass: [templateName.NodeTemplate]"></select-input-1>
+          [options] = "NodeTemplate.p('all') | async"></select-input-1>
       </div>
       
       <!--Target-->
       <div class="input-control" *ngIf="includeProperty('target')">      
         <label for="target">Target: </label>
         <select-input-1 [item] = "item.target" 
-          (updated)="onTargetChanged($event)"   
-          [options] = "dependencies.templates | filterByClass: [templateName.NodeTemplate]"></select-input-1>
+          (updated) = "onTargetChanged($event)"   
+          [options] = "NodeTemplate.p('all') | async"></select-input-1>
       </div>        
       
       <ng-content></ng-content>      
@@ -67,6 +65,8 @@ import {NodeTemplate} from "open-physiology.model";
 })
 export class ProcessTemplatePanel extends TemplatePanel{
   transportPhenomenon = TransportPhenomenon;
+  LyphType = LyphType;
+  NodeTemplate = NodeTemplate;
 
   onSourceChanged(node: NodeTemplate){
     if (this.item.source) {
@@ -91,8 +91,4 @@ export class ProcessTemplatePanel extends TemplatePanel{
       node.incomingProcesses.push(this.item);
     }
   }
-
-
-
-
 }

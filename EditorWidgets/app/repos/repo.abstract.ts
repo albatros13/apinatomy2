@@ -17,7 +17,6 @@ import {Component, Output, EventEmitter} from '@angular/core';
 })
 export class ItemHeader {}
 
-
 export abstract class RepoAbstract{
   @Output() added = new EventEmitter();
   @Output() removed = new EventEmitter();
@@ -74,16 +73,6 @@ export abstract class RepoAbstract{
   protected abstract onAdded(Class: any): void;
 
   protected onSaved(item: any, updatedItem: any){
-    // for (var key in updatedItem){
-    //   if (updatedItem.hasOwnProperty(key)) {
-    //     if (item.constructor &&
-    //       item.constructor.properties &&
-    //       item.constructor.properties[key]
-    //       && item.constructor.properties[key].readonly) continue;
-    //
-    //     item[key] = updatedItem[key];
-    //   }
-    // }
     this.updated.emit(this.items);
     if (item == this.selectedItem){
        this.selected.emit(this.selectedItem);

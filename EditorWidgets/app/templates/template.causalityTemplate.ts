@@ -6,14 +6,14 @@ import {TemplateValue} from '../components/component.templateValue';
 import {TemplatePanel} from "./template.template";
 import {SingleSelectInput} from '../components/component.select';
 import {FilterByClass} from "../transformations/pipe.general";
+import {MeasurableTemplate} from "open-physiology-model";
 
 @Component({
   selector: 'causalityTemplate-panel',
-  inputs: ['item', 'dependencies', 'ignore', 'options'],
+  inputs: ['item', 'ignore', 'options'],
   template:`
     <template-panel [item]="item" 
-      [types]="dependencies.causalities"  
-      [ignore]="ignore.add('cardinality')"
+      [ignore]   = "ignore.add('cardinalityBase').add('cardinalityMultipliers')"
       [options]  = "options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
@@ -25,15 +25,15 @@ import {FilterByClass} from "../transformations/pipe.general";
         <label for="cause">Cause: </label>
         <select-input-1 [item] = "item.cause" 
           (updated)="updateProperty('cause', $event)"    
-          [options] = "dependencies.templates | filterByClass: [templateName.MeasurableTemplate]"></select-input-1>
+          [options] = "MeasurableTemplate.p('all') | async"></select-input-1>
       </div>
       
       <!--Effect-->
       <div class="input-control" *ngIf="includeProperty('effect')">      
         <label for="effect">Effect: </label>
         <select-input-1 [item] = "item.effect" 
-          (updated)="updateProperty('effect', $event)"    
-          [options] = "dependencies.templates | filterByClass: [templateName.MeasurableTemplate]"></select-input-1>
+          (updated) = "updateProperty('effect', $event)"    
+          [options] = "MeasurableTemplate.p('all') | async"></select-input-1>
       </div>
     
       <ng-content></ng-content>      

@@ -5,7 +5,7 @@ import {Component} from '@angular/core';
 import {TypePanel} from "./panel.type";
 import {MultiSelectInput} from '../components/component.select';
 import {RepoTemplate} from '../repos/repo.template';
-import {MaterialType, MeasurableTemplate} from "open-physiology-model";
+import {MaterialType, MeasurableTemplate, MeasurableType} from "open-physiology-model";
 import {SetToArray} from "../transformations/pipe.general";
 
 @Component({
@@ -13,26 +13,26 @@ import {SetToArray} from "../transformations/pipe.general";
   inputs: ['item', 'ignore', 'options'],
   template:`
     <type-panel [item]="item" 
-      [ignore]      ="ignore"
-      [options]     ="options"
+      [ignore]   = "ignore"
+      [options]  = "options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"
       (propertyUpdated) = "propertyUpdated.emit($event)">
       
-       <!--<providerGroup>
-          &lt;!&ndash;MeasurableProviders&ndash;&gt;
+       <providerGroup>
+          <!--MeasurableProviders-->
           <div class="input-control" *ngIf="includeProperty('measurableProviders')">
-            <label for="measurableProviders">Inherits measurables from: </label>
+            <label for="measurableProviders">Measurable providers: </label>
             <select-input [items]="item.p('measurableProviders') | async" 
             (updated)="updateProperty('measurableProviders', $event)" 
-            [options]="MaterialType.p('all') | async"></select-input>
+            [options]="item.constructor.p('all') | async"></select-input>
           </div>
           <ng-content select="providerGroup"></ng-content>
        </providerGroup>
         
        <relationGroup>
-          &lt;!&ndash;Measurables&ndash;&gt;
+          <!--Measurables-->
           <div class="input-control" *ngIf="includeProperty('measurables')">
             <repo-template caption='Measurables' 
             [items]="item.p('measurables') | async | setToArray" 
@@ -40,8 +40,8 @@ import {SetToArray} from "../transformations/pipe.general";
             [types]="[templateName.MeasurableTemplate]"></repo-template>
           </div>
            <ng-content select="relationGroup"></ng-content>
-       </relationGroup>-->
-       
+       </relationGroup>      
+      
        <ng-content></ng-content>      
 
     </type-panel>

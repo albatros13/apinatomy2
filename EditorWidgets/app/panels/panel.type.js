@@ -19,12 +19,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require('@angular/core');
 var panel_resource_1 = require("./panel.resource");
 var component_select_1 = require('../components/component.select');
-var service_apinatomy2_1 = require("../services/service.apinatomy2");
+var utils_model_1 = require("../services/utils.model");
 var TypePanel = (function (_super) {
     __extends(TypePanel, _super);
     function TypePanel() {
         _super.apply(this, arguments);
-        this.templateName = service_apinatomy2_1.TemplateName;
+        this.templateName = utils_model_1.TemplateName;
     }
     TypePanel = __decorate([
         core_1.Component({

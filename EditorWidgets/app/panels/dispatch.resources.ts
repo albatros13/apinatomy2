@@ -15,7 +15,7 @@ import {CoalescencePanel}    from './panel.coalescence';
 
 import {GroupTypePanel}      from './panel.groupType';
 import {OmegaTreeTypePanel}  from './panel.omegaTreeType';
-import {ResourceName} from "../services/service.apinatomy2";
+import {ResourceName} from "../services/utils.model";
 
 
 @Component({

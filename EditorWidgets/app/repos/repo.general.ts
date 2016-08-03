@@ -8,12 +8,15 @@ import {EditToolbar} from '../components/toolbar.repoEdit';
 import {FilterToolbar} from '../components/toolbar.filter';
 import {SortToolbar} from '../components/toolbar.sort';
 
-import {ResourceName, TemplateName} from "../services/service.apinatomy2";
+import {ResourceName, TemplateName} from "../services/utils.model";
 
 import {OrderBy, FilterBy} from "../transformations/pipe.general";
 import {PanelDispatchResources} from "../panels/dispatch.resources";
 import {PanelDispatchTemplates} from "../panels/dispatch.templates";
 import {ItemHeader, RepoAbstract} from "./repo.abstract";
+
+import {getIcon} from "../services/utils.model";
+
 
 @Component({
   selector: 'repo-general',
@@ -22,7 +25,7 @@ import {ItemHeader, RepoAbstract} from "./repo.abstract";
      <div class="panel panel-info repo">
         <div class="panel-heading">{{caption}}</div>
         <div class="panel-body">
-          <sort-toolbar [options]="['Name', 'ID']" (sorted)="onSorted($event)"></sort-toolbar>
+          <sort-toolbar [options]="['Name', 'ID', 'Class']" (sorted)="onSorted($event)"></sort-toolbar>
           <edit-toolbar [options]="types" (added)="onAdded($event)"></edit-toolbar>
           <filter-toolbar [filter]="searchString" [options]="['Name', 'ID', 'Class']" (applied)="onFiltered($event)"></filter-toolbar>
           
@@ -61,10 +64,10 @@ import {ItemHeader, RepoAbstract} from "./repo.abstract";
   pipes: [OrderBy, FilterBy]
 })
 export class RepoGeneral extends RepoAbstract{
+  getIcon = getIcon;
 
   ngOnInit(){
     super.ngOnInit();
-    console.log("Types: ", this.types);
     if (this.types.length == 0){
       //Resources
       for (let x in ResourceName) {

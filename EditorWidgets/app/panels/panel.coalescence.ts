@@ -5,7 +5,7 @@ import {Component} from '@angular/core';
 import {ResourcePanel} from "./panel.resource";
 import {MultiSelectInput} from '../components/component.select';
 import {RepoTemplate} from '../repos/repo.template';
-import {TemplateName} from "../services/service.apinatomy2";
+import {TemplateName} from "../services/utils.model";
 import {LyphType} from "open-physiology-model";
 import {SetToArray} from '../transformations/pipe.general';
 

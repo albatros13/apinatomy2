@@ -5,14 +5,14 @@ import {Component} from '@angular/core';
 import {SingleSelectInput, MultiSelectInput} from '../components/component.select';
 import {TemplateValue} from '../components/component.templateValue';
 import {ResourcePanel} from "./panel.resource";
-import {TemplateName} from "../services/service.apinatomy2";
+import {TemplateName} from "../services/utils.model";
 
 @Component({
   selector: 'template-panel',
   inputs: ['item', 'ignore', 'options'],
   template:`
     <resource-panel [item]="item" 
-      [ignore]   = "ignore.add('externals')"  
+      [ignore]   = "myIgnore"  
       [options]  = "options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
@@ -50,9 +50,15 @@ import {TemplateName} from "../services/service.apinatomy2";
 })
 export class TemplatePanel extends ResourcePanel{
   protected templateName = TemplateName;
+  myIgnore: Set<string> = new Set<string>();
 
   getTypes(){
     return this.item.constructor.relationships['-->HasType'].other.class.p('all');
+  }
+
+  ngOnInit(){
+    super.ngOnInit();
+    this.myIgnore = new Set<string>(this.ignore).add('externals');
   }
 
 }

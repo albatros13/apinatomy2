@@ -2,7 +2,7 @@
  * Created by Natallia on 6/19/2016.
  */
 import {Component, Output, EventEmitter} from '@angular/core';
-import {TransportPhenomenon} from "../services/service.apinatomy2";
+import {TransportPhenomenon} from "../services/utils.model";
 import {MeasurableLocationTypePanel} from "./panel.measurableLocationType";
 import {MultiSelectInput, SingleSelectInput} from '../components/component.select';
 import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
@@ -71,7 +71,7 @@ import {ProcessType, MaterialType} from "open-physiology-model";
         <providerGroup>
            <!--MaterialProviders-->
           <div class="input-control" *ngIf="includeProperty('materialProviders')">
-            <label for="materialProviders">Inherits materials from: </label>
+            <label for="materialProviders">Material providers: </label>
             <select-input [items]="item.p('materialProviders') | async" 
             (updated)="updateProperty('materialProviders', $event)" 
             [options]="ProcessType.p('all') | async"></select-input>
@@ -79,7 +79,7 @@ import {ProcessType, MaterialType} from "open-physiology-model";
           
            <!--SegmentProviders-->
           <div class="input-control" *ngIf="includeProperty('segmentProviders')">
-            <label for="segmentProviders">Inherits segments from: </label>
+            <label for="segmentProviders">Segment providers: </label>
             <select-input [items]="item.p('segmentProviders') | async" 
             (updated)="updateProperty('segmentProviders', $event)" 
             [options]="ProcessType.p('all') | async"></select-input>
@@ -87,7 +87,7 @@ import {ProcessType, MaterialType} from "open-physiology-model";
           
           <!--ChannelProviders-->
           <div class="input-control" *ngIf="includeProperty('channelProviders')">
-            <label for="channelProviders">Inherits channels from: </label>
+            <label for="channelProviders">Channel providers: </label>
             <select-input [items]="item.p('channelProviders') | async" 
             (updated)="updateProperty('channelProviders', $event)"           
             [options]="ProcessType.p('all') | async"></select-input>

@@ -34,7 +34,7 @@ import {CylindricalLyphType} from "open-physiology-model";
         <providerGroup>
           <!--SegmentProviders-->
           <div class="input-control" *ngIf="includeProperty('segmentProviders', 'providers')">
-            <label for="segmentProviders">Inherits segments from: </label>
+            <label for="segmentProviders">Segment providers: </label>
             <select-input [items]="item.p('segmentProviders') | async" 
             (updated)="updateProperty('segmentProviders', $event)"
             [options]="CylindricalLyphType.p('all') | async"></select-input>

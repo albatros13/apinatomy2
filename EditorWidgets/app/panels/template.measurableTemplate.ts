@@ -12,7 +12,7 @@ import {MeasurableLocationType} from "open-physiology-model";
   inputs: ['item', 'ignore', 'options'],
   template:`
     <template-panel [item]="item" 
-      [ignore]   = "ignore.add('cardinalityBase').add('cardinalityMultipliers')"
+      [ignore]   = "myIgnore"
       [options]  = "options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
@@ -35,4 +35,11 @@ import {MeasurableLocationType} from "open-physiology-model";
 })
 export class MeasurableTemplatePanel extends TemplatePanel{
   MeasurableLocationType = MeasurableLocationType;
+
+  myIgnore: Set<string> = new Set<string>();
+
+  ngOnInit(){
+    super.ngOnInit();
+    this.myIgnore = new Set<string>(this.ignore).add('cardinalityBase').add('cardinalityMultipliers')
+  }
 }

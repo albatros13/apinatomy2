@@ -12,7 +12,7 @@ import {RepoTemplate} from '../repos/repo.template';
   inputs: ['item', 'ignore', 'options'],
   template:`
     <groupType-panel [item]="item" 
-      [ignore] = "ignore.add('supertypes').add('subtypes')"
+      [ignore] = "myIgnore"
       [options] ="options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
@@ -34,4 +34,11 @@ import {RepoTemplate} from '../repos/repo.template';
   directives: [GroupTypePanel, MultiSelectInput, SingleSelectInput, RepoTemplate],
   pipes: [SetToArray]
 })
-export class OmegaTreeTypePanel extends GroupTypePanel{}
+export class OmegaTreeTypePanel extends GroupTypePanel{
+  myIgnore: Set<string> = new Set<string>();
+
+  ngOnInit(){
+    super.ngOnInit();
+    this.myIgnore = new Set<string>(this.ignore).add('supertypes').add('subtypes');
+  }
+}

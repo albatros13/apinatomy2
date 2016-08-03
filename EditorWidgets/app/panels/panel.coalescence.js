@@ -20,14 +20,14 @@ var core_1 = require('@angular/core');
 var panel_resource_1 = require("./panel.resource");
 var component_select_1 = require('../components/component.select');
 var repo_template_1 = require('../repos/repo.template');
-var service_apinatomy2_1 = require("../services/service.apinatomy2");
+var utils_model_1 = require("../services/utils.model");
 var open_physiology_model_1 = require("open-physiology-model");
 var pipe_general_1 = require('../transformations/pipe.general');
 var CoalescencePanel = (function (_super) {
     __extends(CoalescencePanel, _super);
     function CoalescencePanel() {
         _super.apply(this, arguments);
-        this.templateName = service_apinatomy2_1.TemplateName;
+        this.templateName = utils_model_1.TemplateName;
         this.LyphType = open_physiology_model_1.LyphType;
     }
     CoalescencePanel = __decorate([

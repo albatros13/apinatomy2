@@ -15,8 +15,10 @@ import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
       </button>
       <ul class="dropdown-menu dropdown-menu-right" dropdown-not-closable-zone>
         <li *ngFor="let option of options">
-          <a class="small" href="#"><input type="checkbox" 
-          [(ngModel)]="option.selected" (ngModelChange)="selectionChanged.emit(option)"/>&nbsp;{{option.value}}</a>
+          <a class="small" href="#"><input type="checkbox"
+          [(ngModel)]="option.selected" (ngModelChange)="selectionChanged.emit(option)"/>&nbsp;
+          <span [style.color]="option.color">{{option.value}}</span>
+          </a>
         </li>
       </ul>
     </div>
@@ -36,9 +38,10 @@ export class PropertyToolbar {
       <button type="button" class="btn btn-default" dropdown-open>
         {{caption}} <span class="caret"></span>
       </button>
-      <ul class="dropdown-menu dropdown-menu-right" dropdown-not-closable-zone>
+      <ul class="dropdown-menu" dropdown-not-closable-zone>
         <li *ngFor="let option of options; let i = index">
-          <a class="small" href="#"><input type="checkbox" [(ngModel)]="option.selected"/>&nbsp;{{option.value}}</a>
+          <a class="small" href="#"><input type="checkbox" 
+          [(ngModel)]="option.selected" (ngModelChange)="selectionChanged.emit(option)"/>&nbsp;{{option.value}}</a>
         </li>
       </ul>
     </div>
@@ -47,5 +50,5 @@ export class PropertyToolbar {
   directives:[DROPDOWN_DIRECTIVES, RADIO_GROUP_DIRECTIVES]
 })
 export class CustomPropertyToolbar {
-  constructor(){}
+  @Output() selectionChanged = new EventEmitter();
 }

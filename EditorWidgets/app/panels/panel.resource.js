@@ -31,12 +31,17 @@ var ResourcePanel = (function () {
         if (!this.ignore)
             this.ignore = new Set();
         this.ignore = this.ignore.add("id").add("href");
+        this.setPropertySettings();
+    };
+    ResourcePanel.prototype.setPropertySettings = function () {
+        var privateProperties = new Set(["class", "themes", "nature", "root"]);
         if (this.item && this.item.constructor) {
             var properties = Object.assign({}, this.item.constructor.properties, this.item.constructor.relationshipShortcuts);
-            //console.log("All properties of " + this.item.class, properties);
             for (var property in properties) {
-                if (property == "class" || property == "themes" || property == "nature")
+                //Unsupported fields
+                if (privateProperties.has(property))
                     continue;
+                //Groups
                 if (property.indexOf("Border") > -1) {
                     if (!this.properties.find(function (x) { return (x.value == "border"); }))
                         this.properties.push({ value: "borders", selected: !this.ignore.has("borders") });
@@ -51,7 +56,6 @@ var ResourcePanel = (function () {
             this.ignore.delete(option.value);
         if (!this.ignore.has(option.value) && !option.selected)
             this.ignore.add(option.value);
-        console.log(this.ignore);
     };
     ResourcePanel.prototype.includeProperty = function (prop) {
         return !this.ignore.has(prop);
@@ -100,7 +104,7 @@ var ResourcePanel = (function () {
         core_1.Component({
             selector: 'resource-panel',
             inputs: ['item', 'ignore', 'options'],
-            template: "\n    <div class=\"panel\">\n        <div class=\"panel-body\">\n          <form-toolbar  \n            [options]  = \"options\"\n            (saved)    = \"saved.emit(item)\"\n            (canceled) = \"canceled.emit(item)\"\n            (removed)  = \"removed.emit(item)\">\n          </form-toolbar>\n          <property-toolbar  \n            [options] = \"properties\"\n            (selectionChanged) = \"selectionChanged($event)\">\n          </property-toolbar>\n          \n          <div class=\"panel-content\">\n              <div class=\"input-control\" *ngIf=\"includeProperty('id')\">\n                <label for=\"id\">ID: </label>\n                <input type=\"text\" class=\"form-control\" disabled readonly [ngModel]=\"item.id\">\n              </div>\n\n              <div class=\"input-control\" *ngIf=\"includeProperty('href')\">\n                <label for=\"href\">Reference: </label>\n                <input type=\"text\" class=\"form-control\" disabled readonly [ngModel]=\"item.href\">\n              </div>\n\n              <!--Name-->\n              <div class=\"input-control\" *ngIf=\"includeProperty('name')\">\n                <label for=\"name\">Name: </label>\n                <input type=\"text\" class=\"form-control\" [(ngModel)]=\"item.name\">\n              </div>\n              \n              <!--Externals-->\n              <div class=\"input-control\" *ngIf=\"includeProperty('externals')\">\n                <label for=\"externals\">Annotations: </label>\n                <select-input \n                [items]=\"item.p('externals') | async\" \n                (updated)=\"updateProperty('externals', $event)\" \n                [options]=\"ExternalResource.p('all') | async\"></select-input>\n              </div>\n              \n              <ng-content></ng-content>\n              \n          </div>\n        </div>\n    </div>\n  ",
+            template: "\n    <div class=\"panel\">\n        <div class=\"panel-body\">\n          <form-toolbar  \n            [options]  = \"options\"\n            (saved)    = \"saved.emit(item)\"\n            (canceled) = \"canceled.emit(item)\"\n            (removed)  = \"removed.emit(item)\">\n          </form-toolbar>\n          <property-toolbar  \n            [options] = \"properties\"\n            (selectionChanged) = \"selectionChanged($event)\">\n          </property-toolbar>\n          \n          <div class=\"panel-content\">\n              <div class=\"input-control\" *ngIf=\"includeProperty('id')\">\n                <label for=\"id\">ID: </label>\n                <input type=\"text\" class=\"form-control\" disabled readonly [ngModel]=\"item.id\">\n              </div>\n\n              <div class=\"input-control\" *ngIf=\"includeProperty('href')\">\n                <label for=\"href\">Reference: </label>\n                <input type=\"text\" class=\"form-control\" disabled readonly [ngModel]=\"item.href\">\n              </div>\n\n              <!--Name-->\n              <div class=\"input-control\" *ngIf=\"includeProperty('name')\">\n                <label for=\"name\">Name: </label>\n                <input type=\"text\" class=\"form-control\" [(ngModel)]=\"item.name\">\n              </div>\n              \n              <!--Externals-->\n              <div class=\"input-control\" *ngIf=\"includeProperty('externals')\">\n                <label for=\"externals\">External annotations: </label>\n                <select-input \n                [items]=\"item.p('externals') | async\" \n                (updated)=\"updateProperty('externals', $event)\" \n                [options]=\"ExternalResource.p('all') | async\"></select-input>\n              </div>\n              \n              <ng-content></ng-content>\n              \n          </div>\n        </div>\n    </div>\n  ",
             directives: [toolbar_panelEdit_1.FormToolbar, toolbar_propertySettings_1.PropertyToolbar, component_select_1.MultiSelectInput],
             pipes: [pipe_general_1.MapToCategories]
         }), 

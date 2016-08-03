@@ -11,7 +11,7 @@ import {TemplatePanel} from "./template.template";
   inputs: ['item', 'ignore', 'options'],
   template:`
     <template-panel [item]="item" 
-      [ignore]   = "ignore.add('cardinalityBase').add('cardinalityMultipliers')"
+      [ignore]   = "myIgnore"
       [options]  = "options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
@@ -24,4 +24,11 @@ import {TemplatePanel} from "./template.template";
   `,
   directives: [TemplateValue, SingleSelectInput, TemplatePanel]
 })
-export class NodeTemplatePanel extends TemplatePanel{}
+export class NodeTemplatePanel extends TemplatePanel{
+  myIgnore: Set<string> = new Set<string>();
+
+  ngOnInit(){
+    super.ngOnInit();
+    this.myIgnore = new Set<string>(this.ignore).add('cardinalityBase').add('cardinalityMultipliers')
+  }
+}

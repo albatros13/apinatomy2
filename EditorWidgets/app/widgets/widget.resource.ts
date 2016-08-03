@@ -3,7 +3,7 @@
  */
 import {Component, Input, OnChanges, OnDestroy} from '@angular/core';
 import {OmegaTreeWidget} from './view.omegaTree';
-import {ResourceName} from '../services/service.apinatomy2';
+import {ResourceName} from '../services/utils.model';
 import {ResizeService} from '../services/service.resize';
 import { Subscription}   from 'rxjs/Subscription';
 

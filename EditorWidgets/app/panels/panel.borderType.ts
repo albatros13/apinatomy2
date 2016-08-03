@@ -3,7 +3,7 @@
  */
 import {Component} from '@angular/core';
 import {MeasurableLocationTypePanel} from "./panel.measurableLocationType";
-import {FormType} from "../services/service.apinatomy2";
+import {FormType} from "../services/utils.model";
 import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
 
 @Component({
@@ -11,7 +11,7 @@ import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
   inputs: ['item', 'ignore', 'options'],
   template:`
     <measurableLocationType-panel [item] = "item" 
-      [ignore] = "ignore.add('supertypes').add('subtypes')"
+      [ignore] = "myIgnore"
       [options]  = "options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
@@ -37,9 +37,11 @@ import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
 })
 export class BorderTypePanel extends MeasurableLocationTypePanel{
   public formType = FormType;
+  myIgnore: Set<string> = new Set<string>();
 
   ngOnInit(){
     super.ngOnInit();
     if (!this.item.form) this.item.form = [];
+    this.myIgnore = new Set<string>(this.ignore).add('supertypes').add('subtypes');
   }
 }

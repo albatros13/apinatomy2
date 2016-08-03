@@ -44,7 +44,7 @@ import * as model from "open-physiology-model";
               
               <!--Externals-->
               <div class="input-control" *ngIf="includeProperty('externals')">
-                <label for="externals">Annotations: </label>
+                <label for="externals">External annotations: </label>
                 <select-input 
                 [items]="item.p('externals') | async" 
                 (updated)="updateProperty('externals', $event)" 
@@ -77,19 +77,28 @@ export class ResourcePanel {
     if (!this.ignore) this.ignore = new Set<string>();
     this.ignore = this.ignore.add("id").add("href");
 
-    if (this.item && this.item.constructor){
+    this.setPropertySettings();
+  }
+
+  setPropertySettings(){
+    let privateProperties: Set<string> = new Set(["class", "themes", "nature", "root"]);
+
+    if (this.item && this.item.constructor) {
       let properties = Object.assign({}, this.item.constructor.properties,
         this.item.constructor.relationshipShortcuts);
 
-      //console.log("All properties of " + this.item.class, properties);
+      for (let property in properties) {
 
-      for (let property in properties){
-        if (property == "class" || property == "themes" || property == "nature") continue;
+        //Unsupported fields
+        if (privateProperties.has(property)) continue;
+
+        //Groups
         if (property.indexOf("Border") > -1) {
           if (!this.properties.find(x => (x.value == "border")))
             this.properties.push({value: "borders", selected: !this.ignore.has("borders")});
           continue;
         }
+
         this.properties.push({value: property, selected: !this.ignore.has(property)});
       }
     }
@@ -98,10 +107,9 @@ export class ResourcePanel {
   selectionChanged(option: any){
     if ( this.ignore.has(option.value) &&  option.selected) this.ignore.delete(option.value);
     if (!this.ignore.has(option.value) && !option.selected) this.ignore.add(option.value);
-    console.log(this.ignore);
   }
 
-  protected includeProperty(prop: string){
+  includeProperty(prop: string){
     return !this.ignore.has(prop);
   }
 

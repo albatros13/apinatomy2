@@ -18,7 +18,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 var core_1 = require('@angular/core');
 var repo_general_1 = require('../repos/repo.general');
-var widget_hierarchy_1 = require('../widgets/widget.hierarchy');
+var widget_relations_1 = require('../widgets/widget.relations');
 var widget_resource_1 = require('../widgets/widget.resource');
 var service_resize_1 = require('../services/service.resize');
 var pipe_general_1 = require("../transformations/pipe.general");
@@ -185,7 +185,7 @@ var ResourceEditor = (function () {
             ],
             template: "\n    <repo-general id=\"repo\"\n      [items]=\"items | setToArray\" \n      [caption]=\"'All resources'\" \n      (selected)=\"onItemSelected($event)\"\n      (added)=\"onItemAdded($event)\"\n      (removed)=\"onItemRemoved($event)\"\n      (updated)=\"onItemUpdated($event)\">\n    </repo-general>\n    <hierarchy-widget id = \"hierarchy\" [item]=\"selectedItem\"></hierarchy-widget>\n    <resource-widget id = \"resource\" [item]=\"selectedItem\"></resource-widget>          \n    <div id=\"main\"></div>\n  ",
             styles: ["#main {width: 100%; height: 100%; border: 0; margin: 0; padding: 0}"],
-            directives: [repo_general_1.RepoGeneral, widget_hierarchy_1.HierarchyWidget, widget_resource_1.ResourceWidget],
+            directives: [repo_general_1.RepoGeneral, widget_relations_1.HierarchyWidget, widget_resource_1.ResourceWidget],
             pipes: [pipe_general_1.SetToArray]
         }), 
         __metadata('design:paramtypes', [service_resize_1.ResizeService, core_1.ElementRef])

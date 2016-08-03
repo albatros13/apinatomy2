@@ -127,24 +127,8 @@ div .dotted {
 
 .link {
   fill: none;
-  stroke: #ccc;
   stroke-width: 1.5px;
 }
-
-.tempLink {
-  fill: none;
-  stroke: red;
-  stroke-width: 3px;
-}
-
-.ghostCircle.show {
-  display:block;
-}
-
-.ghostCircle, .activeDrag .ghostCircle {
-  display: none;
-}
-
 
 /*Panel resize*/
 

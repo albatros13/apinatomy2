@@ -1,11 +1,11 @@
 import {Component, Inject, ElementRef, Renderer, Output, EventEmitter} from '@angular/core';
 import {RepoGeneral} from '../repos/repo.general';
 import {RepoTemplate} from '../repos/repo.template';
-import {HierarchyWidget} from '../widgets/widget.hierarchy';
+import {HierarchyWidget} from '../widgets/widget.relations';
 import {ResourceWidget} from '../widgets/widget.resource';
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
-import {ResourceName, TemplateName} from '../services/service.apinatomy2';
+import {ResourceName, TemplateName} from '../services/utils.model';
 import * as model from "open-physiology-model";
 import {SetToArray} from "../transformations/pipe.general";
 

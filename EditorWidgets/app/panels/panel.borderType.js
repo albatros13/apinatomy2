@@ -18,24 +18,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  */
 var core_1 = require('@angular/core');
 var panel_measurableLocationType_1 = require("./panel.measurableLocationType");
-var service_apinatomy2_1 = require("../services/service.apinatomy2");
+var utils_model_1 = require("../services/utils.model");
 var ng2_radio_group_1 = require("ng2-radio-group");
 var BorderTypePanel = (function (_super) {
     __extends(BorderTypePanel, _super);
     function BorderTypePanel() {
         _super.apply(this, arguments);
-        this.formType = service_apinatomy2_1.FormType;
+        this.formType = utils_model_1.FormType;
+        this.myIgnore = new Set();
     }
     BorderTypePanel.prototype.ngOnInit = function () {
         _super.prototype.ngOnInit.call(this);
         if (!this.item.form)
             this.item.form = [];
+        this.myIgnore = new Set(this.ignore).add('supertypes').add('subtypes');
     };
     BorderTypePanel = __decorate([
         core_1.Component({
             selector: 'borderType-panel',
             inputs: ['item', 'ignore', 'options'],
-            template: "\n    <measurableLocationType-panel [item] = \"item\" \n      [ignore] = \"ignore.add('supertypes').add('subtypes')\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n            \n      <!--Form-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('form')\">\n      <fieldset>\n        <legend>Form:</legend>\n         <checkbox-group [(ngModel)]=\"item.form\" [required]=\"true\">\n           <input type=\"checkbox\" value=\"open\">open&nbsp;\n           <input type=\"checkbox\" value=\"closed\">closed<br/>\n         </checkbox-group>\n      </fieldset>\n      </div>\n      \n     <ng-content></ng-content>  \n            \n    </measurableLocationType-panel>\n  ",
+            template: "\n    <measurableLocationType-panel [item] = \"item\" \n      [ignore] = \"myIgnore\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n            \n      <!--Form-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('form')\">\n      <fieldset>\n        <legend>Form:</legend>\n         <checkbox-group [(ngModel)]=\"item.form\" [required]=\"true\">\n           <input type=\"checkbox\" value=\"open\">open&nbsp;\n           <input type=\"checkbox\" value=\"closed\">closed<br/>\n         </checkbox-group>\n      </fieldset>\n      </div>\n      \n     <ng-content></ng-content>  \n            \n    </measurableLocationType-panel>\n  ",
             directives: [panel_measurableLocationType_1.MeasurableLocationTypePanel, ng2_radio_group_1.RADIO_GROUP_DIRECTIVES]
         }), 
         __metadata('design:paramtypes', [])

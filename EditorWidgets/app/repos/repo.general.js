@@ -20,29 +20,30 @@ var ng2_dnd_1 = require('ng2-dnd/ng2-dnd');
 var toolbar_repoEdit_1 = require('../components/toolbar.repoEdit');
 var toolbar_filter_1 = require('../components/toolbar.filter');
 var toolbar_sort_1 = require('../components/toolbar.sort');
-var service_apinatomy2_1 = require("../services/service.apinatomy2");
+var utils_model_1 = require("../services/utils.model");
 var pipe_general_1 = require("../transformations/pipe.general");
 var dispatch_resources_1 = require("../panels/dispatch.resources");
 var dispatch_templates_1 = require("../panels/dispatch.templates");
 var repo_abstract_1 = require("./repo.abstract");
+var utils_model_2 = require("../services/utils.model");
 var RepoGeneral = (function (_super) {
     __extends(RepoGeneral, _super);
     function RepoGeneral() {
         _super.apply(this, arguments);
+        this.getIcon = utils_model_2.getIcon;
     }
     RepoGeneral.prototype.ngOnInit = function () {
         _super.prototype.ngOnInit.call(this);
-        console.log("Types: ", this.types);
         if (this.types.length == 0) {
             //Resources
-            for (var x in service_apinatomy2_1.ResourceName) {
-                if ((x == service_apinatomy2_1.ResourceName.Resource) || (x == service_apinatomy2_1.ResourceName.Type) || (x == service_apinatomy2_1.ResourceName.MeasurableLocationType))
+            for (var x in utils_model_1.ResourceName) {
+                if ((x == utils_model_1.ResourceName.Resource) || (x == utils_model_1.ResourceName.Type) || (x == utils_model_1.ResourceName.MeasurableLocationType))
                     continue;
                 this.types.push(x);
             }
             //Templates
-            for (var x in service_apinatomy2_1.TemplateName) {
-                if (x == service_apinatomy2_1.TemplateName.Template)
+            for (var x in utils_model_1.TemplateName) {
+                if (x == utils_model_1.TemplateName.Template)
                     continue;
                 this.types.push(x);
             }
@@ -53,7 +54,7 @@ var RepoGeneral = (function (_super) {
         core_1.Component({
             selector: 'repo-general',
             inputs: ['items', 'caption', 'ignore', 'types', 'selectedItem', 'options'],
-            template: "\n     <div class=\"panel panel-info repo\">\n        <div class=\"panel-heading\">{{caption}}</div>\n        <div class=\"panel-body\">\n          <sort-toolbar [options]=\"['Name', 'ID']\" (sorted)=\"onSorted($event)\"></sort-toolbar>\n          <edit-toolbar [options]=\"types\" (added)=\"onAdded($event)\"></edit-toolbar>\n          <filter-toolbar [filter]=\"searchString\" [options]=\"['Name', 'ID', 'Class']\" (applied)=\"onFiltered($event)\"></filter-toolbar>\n          \n          <accordion class=\"list-group\" [closeOthers]=\"true\"> \n            <!--dnd-sortable-container [dropZones]=\"zones\" [sortableData]=\"items\">-->\n          <accordion-group *ngFor=\"let item of items | orderBy : sortByMode | filterBy: [searchString, filterByMode]; let i = index\">\n            <!--class=\"list-group-item\" dnd-sortable [sortableIndex]=\"i\"> -->\n            <div accordion-heading (click)=\"onHeaderClick(item)\"><item-header [item]=\"item\" [selectedItem]=\"selectedItem\" [isSelectedOpen]=\"isSelectedOpen\" [icon]=\"getIcon(item.class)\"></item-header></div>\n\n            <div *ngIf=\"!options || !options.headersOnly\">\n              <panel-general *ngIf=\"item == selectedItem\" [item]=\"item\"\n                [ignore]=\"ignore\"\n                (saved)=\"onSaved(item, $event)\" \n                (canceled)=\"onCanceled($event)\"\n                (removed)=\"onRemoved(item)\">\n               </panel-general>   \n               <panel-template *ngIf=\"item == selectedItem\" [item]=\"item\"\n                [ignore]=\"ignore\"\n                (saved)=\"onSaved(item, $event)\" \n                (canceled)=\"onCanceled($event)\"\n                (removed)=\"onRemoved(item)\">\n               </panel-template> \n            </div>\n                \n          </accordion-group>        \n          </accordion>       \n        </div>\n      </div>\n  ",
+            template: "\n     <div class=\"panel panel-info repo\">\n        <div class=\"panel-heading\">{{caption}}</div>\n        <div class=\"panel-body\">\n          <sort-toolbar [options]=\"['Name', 'ID', 'Class']\" (sorted)=\"onSorted($event)\"></sort-toolbar>\n          <edit-toolbar [options]=\"types\" (added)=\"onAdded($event)\"></edit-toolbar>\n          <filter-toolbar [filter]=\"searchString\" [options]=\"['Name', 'ID', 'Class']\" (applied)=\"onFiltered($event)\"></filter-toolbar>\n          \n          <accordion class=\"list-group\" [closeOthers]=\"true\"> \n            <!--dnd-sortable-container [dropZones]=\"zones\" [sortableData]=\"items\">-->\n          <accordion-group *ngFor=\"let item of items | orderBy : sortByMode | filterBy: [searchString, filterByMode]; let i = index\">\n            <!--class=\"list-group-item\" dnd-sortable [sortableIndex]=\"i\"> -->\n            <div accordion-heading (click)=\"onHeaderClick(item)\"><item-header [item]=\"item\" [selectedItem]=\"selectedItem\" [isSelectedOpen]=\"isSelectedOpen\" [icon]=\"getIcon(item.class)\"></item-header></div>\n\n            <div *ngIf=\"!options || !options.headersOnly\">\n              <panel-general *ngIf=\"item == selectedItem\" [item]=\"item\"\n                [ignore]=\"ignore\"\n                (saved)=\"onSaved(item, $event)\" \n                (canceled)=\"onCanceled($event)\"\n                (removed)=\"onRemoved(item)\">\n               </panel-general>   \n               <panel-template *ngIf=\"item == selectedItem\" [item]=\"item\"\n                [ignore]=\"ignore\"\n                (saved)=\"onSaved(item, $event)\" \n                (canceled)=\"onCanceled($event)\"\n                (removed)=\"onRemoved(item)\">\n               </panel-template> \n            </div>\n                \n          </accordion-group>        \n          </accordion>       \n        </div>\n      </div>\n  ",
             styles: ['.repo{ width: 100%}'],
             directives: [
                 toolbar_sort_1.SortToolbar, toolbar_repoEdit_1.EditToolbar, toolbar_filter_1.FilterToolbar,

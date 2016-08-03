@@ -25,12 +25,17 @@ var OmegaTreeTypePanel = (function (_super) {
     __extends(OmegaTreeTypePanel, _super);
     function OmegaTreeTypePanel() {
         _super.apply(this, arguments);
+        this.myIgnore = new Set();
     }
+    OmegaTreeTypePanel.prototype.ngOnInit = function () {
+        _super.prototype.ngOnInit.call(this);
+        this.myIgnore = new Set(this.ignore).add('supertypes').add('subtypes');
+    };
     OmegaTreeTypePanel = __decorate([
         core_1.Component({
             selector: 'omegaTreeType-panel',
             inputs: ['item', 'ignore', 'options'],
-            template: "\n    <groupType-panel [item]=\"item\" \n      [ignore] = \"ignore.add('supertypes').add('subtypes')\"\n      [options] =\"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n      <!--Root-->\n      <!--<div class=\"input-control\" *ngIf=\"includeProperty('root')\">      \n        <label for=\"cause\">Root: </label>\n        <select-input-1 [item] = \"item.root\" \n          (updated)=\"updateProperty('root', $event)\"   \n          [options] = \"NodeTemplate.p('all') | async\"></select-input-1>\n      </div>-->\n\n      <ng-content></ng-content> \n    \n    </groupType-panel>\n  ",
+            template: "\n    <groupType-panel [item]=\"item\" \n      [ignore] = \"myIgnore\"\n      [options] =\"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n      <!--Root-->\n      <!--<div class=\"input-control\" *ngIf=\"includeProperty('root')\">      \n        <label for=\"cause\">Root: </label>\n        <select-input-1 [item] = \"item.root\" \n          (updated)=\"updateProperty('root', $event)\"   \n          [options] = \"NodeTemplate.p('all') | async\"></select-input-1>\n      </div>-->\n\n      <ng-content></ng-content> \n    \n    </groupType-panel>\n  ",
             directives: [panel_groupType_1.GroupTypePanel, component_select_1.MultiSelectInput, component_select_1.SingleSelectInput, repo_template_1.RepoTemplate],
             pipes: [pipe_general_1.SetToArray]
         }), 

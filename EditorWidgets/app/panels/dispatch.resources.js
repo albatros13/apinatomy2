@@ -23,10 +23,10 @@ var panel_correlation_1 = require('./panel.correlation');
 var panel_coalescence_1 = require('./panel.coalescence');
 var panel_groupType_1 = require('./panel.groupType');
 var panel_omegaTreeType_1 = require('./panel.omegaTreeType');
-var service_apinatomy2_1 = require("../services/service.apinatomy2");
+var utils_model_1 = require("../services/utils.model");
 var PanelDispatchResources = (function () {
     function PanelDispatchResources() {
-        this.resourceName = service_apinatomy2_1.ResourceName;
+        this.resourceName = utils_model_1.ResourceName;
         this.saved = new core_1.EventEmitter();
         this.removed = new core_1.EventEmitter();
         this.canceled = new core_1.EventEmitter();

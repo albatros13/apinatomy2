@@ -24,12 +24,17 @@ var NodeTemplatePanel = (function (_super) {
     __extends(NodeTemplatePanel, _super);
     function NodeTemplatePanel() {
         _super.apply(this, arguments);
+        this.myIgnore = new Set();
     }
+    NodeTemplatePanel.prototype.ngOnInit = function () {
+        _super.prototype.ngOnInit.call(this);
+        this.myIgnore = new Set(this.ignore).add('cardinalityBase').add('cardinalityMultipliers');
+    };
     NodeTemplatePanel = __decorate([
         core_1.Component({
             selector: 'nodeTemplate-panel',
             inputs: ['item', 'ignore', 'options'],
-            template: "\n    <template-panel [item]=\"item\" \n      [ignore]   = \"ignore.add('cardinalityBase').add('cardinalityMultipliers')\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <ng-content></ng-content>      \n\n    </template-panel>\n  ",
+            template: "\n    <template-panel [item]=\"item\" \n      [ignore]   = \"myIgnore\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <ng-content></ng-content>      \n\n    </template-panel>\n  ",
             directives: [component_templateValue_1.TemplateValue, component_select_1.SingleSelectInput, template_template_1.TemplatePanel]
         }), 
         __metadata('design:paramtypes', [])

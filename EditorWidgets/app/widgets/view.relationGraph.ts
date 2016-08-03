@@ -1,15 +1,16 @@
-import {Component, OnChanges, OnDestroy, Output, ElementRef, Renderer,
+import {Component, Input, Output, OnChanges, OnDestroy, ElementRef, Renderer,
   EventEmitter} from '@angular/core';
 import {nvD3} from 'ng2-nvd3/lib/ng2-nvd3';
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
 
+import {getIcon, getColor} from "../services/utils.model";
+
 declare let d3: any;
-const color = d3.scale.category20();
 
 @Component({
   selector: 'hierarchy-graph',
-  inputs: ['item', 'relations', 'properties', 'depth'],
+  inputs: ['item', 'relations', 'depth'],
   template : `
     <div class="panel-body">
       <nvd3 *ngIf="active" [options]="graphOptions" [data]="data"></nvd3>
@@ -17,22 +18,20 @@ const color = d3.scale.category20();
   `,
   directives: [nvD3],
 })
-export class HierarchyGraphWidget implements OnChanges, OnDestroy{
-  item: any;
-  relations : Array<any> = [];
-  properties: Array<any> = [];
+export class RelationshipGraph implements OnChanges, OnDestroy{
+  @Input() item       : any;
+  @Input() relations  : Set<string> = new Set<string>();
+  @Input() depth      : number = -1;
 
-  depth    : number = -1;
   active   : boolean = true;
 
   svg: any;
   data: any;
-  vp: any = {size: {width: 600, height: 400},
-    margin: {x: 20, y: 20},
-    node: {size: {width: 40, height: 20}}};
+  vp: any = {size  : {width: 600, height: 400},
+             margin: {x: 20, y: 20},
+             node  : {size: {width: 40, height: 20}}};
 
   graphOptions: any;
-  @Output() setNode = new EventEmitter();
   subscription: Subscription;
 
   constructor(public renderer: Renderer,
@@ -52,14 +51,14 @@ export class HierarchyGraphWidget implements OnChanges, OnDestroy{
   }
 
   ngOnInit(){
-    if (!this.relations) this.relations = [];
-
-    this.setGraphOptions();
+    if (this.item)
+      this.setGraphOptions();
   }
 
   ngOnChanges(changes: { [propName: string]: any }) {
     if (this.item) {
       this.data = this.getGraphData(this.item, this.relations, this.depth);
+      console.log("Data ", this.data);
     } else {
       this.data = {};
     }
@@ -79,9 +78,7 @@ export class HierarchyGraphWidget implements OnChanges, OnDestroy{
   }
 
   setGraphOptions(){
-    let visibleProperties = [];
-    if (this.properties)
-      visibleProperties = this.properties.filter(x => x.selected).map(x => x.value);
+    let properties = Object.assign({}, this.item.constructor.properties);
 
     function formatValue(value: any){
       let res = "[";
@@ -99,43 +96,31 @@ export class HierarchyGraphWidget implements OnChanges, OnDestroy{
         width: this.vp.size.width,
         height: this.vp.size.height,
         margin:{top: 20, right: 20, bottom: 20, left: 20},
-        color: function(d: any){
-          return color(d.class)
-        },
-        tooltip: {
-          contentGenerator: function(d: any) {
-            var html = "<b>"+ ((d.id)? d.id: "?") + ": " + d.name+"</b> <ul>";
-            if (visibleProperties){
-              d.series.forEach(function(elem: any){
-                if (visibleProperties.indexOf(elem.key) > -1){
-                  html += "<li><style='color:" + elem.color+"'>" + elem.key + ": " +
-                    "<b>"+formatValue(elem.value)+"</b></li>";
-                }
-              })
-            }
-            html += "</ul>";
-            return html;
-          }
-        },
         nodeExtras: function(node: any) {
           node && node
             .append("text")
-            .attr("dx", 8)
+            .attr("dx", 10)
             .attr("dy", ".35em")
             .text(function(d: any) { return d.name })
             .attr("class", "nodeLabel");
+
+          node && node
+            .append("image")
+            .attr("xlink:href", function (d: any) {return getIcon(d.class);})
+            .attr("x", -8).attr("y", -8)
+            .attr("width", 16).attr("height", 16);
+        },
+        linkExtras: function(link: any) {
+          link.attr("class", "link").attr("stroke", function(d){return getColor(d.relation)});
         }
       }
     };
   }
 
-  getGraphData(item: any, relations: Array<any>, depth: number) {
+  getGraphData(item: any, relations: Set<string>, depth: number) {
     let data:any = {nodes: [], links  : []};
     if (!item) return data;
     data.nodes.push(item);
-    if (!relations || (relations.length == 0)) return data;
-    if (!depth) depth = -1;
-    let fields = this.relations.filter(x => x.selected).map(x => x.value);
     if (!depth) depth = -1;
     traverse(item, depth, data);
     return data;
@@ -143,14 +128,12 @@ export class HierarchyGraphWidget implements OnChanges, OnDestroy{
     function traverse(root: any, depth: number, data: any) {
       if (!root) return;
       if (depth == 0) return root;
-      for (let fieldName of fields) {
-        if (!root[fieldName]) return;
-        var children = root[fieldName];
+      for (let fieldName of Array.from(relations)) {
+        if (!root[fieldName]) continue;
+        let children = Array.from(root[fieldName]);
 
-        //TODO: test
-        for (let child in children) {
-
-          data.links.push({source: root, target: child});
+        for (let child of children) {
+          data.links.push({source: root, target: child, relation: fieldName});
           if (data.nodes.indexOf(child) == -1) {
             data.nodes.push(child);
             traverse(child, depth - 1, data);

@@ -1,6 +1,6 @@
 import {Component, ElementRef} from '@angular/core';
 import {RepoGeneral} from '../repos/repo.general';
-import {HierarchyWidget} from '../widgets/widget.hierarchy';
+import {HierarchyWidget} from '../widgets/widget.relations';
 import {ResourceWidget} from '../widgets/widget.resource';
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';

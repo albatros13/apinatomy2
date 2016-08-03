@@ -5,7 +5,7 @@ import {Component, Output, EventEmitter} from '@angular/core';
 import {SingleSelectInput, MultiSelectInput} from '../components/component.select';
 import {TemplateValue} from '../components/component.templateValue';
 import {TemplatePanel} from "./template.template";
-import {FormType, TemplateName} from "../services/service.apinatomy2";
+import {FormType, TemplateName} from "../services/utils.model";
 import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
 import {FilterByClass} from "../transformations/pipe.general";
 import {NodeTemplate} from "open-physiology-model";
@@ -19,7 +19,7 @@ import {NodeTemplate} from "open-physiology-model";
     </button>
     
     <template-panel *ngIf="item" [item]="item" 
-      [ignore]="ignore.add('name').add('cardinalityBase').add('cardinalityMultipliers').add('type')"
+      [ignore]="myIgnore"
       [options]  = "options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
@@ -55,10 +55,11 @@ import {NodeTemplate} from "open-physiology-model";
 export class BorderTemplatePanel extends TemplatePanel{
   NodeTemplate = NodeTemplate;
   public formType = FormType;
-  protected templateName = TemplateName;
-  @Output() added = new EventEmitter();
-  @Output() saved = new EventEmitter();
-  @Output() canceled = new EventEmitter();
-  @Output() removed = new EventEmitter();
-  @Output() propertyUpdated = new EventEmitter();
+
+  myIgnore: Set<string> = new Set<string>();
+
+  ngOnInit(){
+    super.ngOnInit();
+    this.myIgnore = new Set<string>(this.ignore).add('name').add('cardinalityBase').add('cardinalityMultipliers').add('type');
+  }
 }

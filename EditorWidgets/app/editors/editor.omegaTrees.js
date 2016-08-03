@@ -19,10 +19,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var core_1 = require('@angular/core');
 var repo_general_1 = require('../repos/repo.general');
 var repo_template_1 = require('../repos/repo.template');
-var widget_hierarchy_1 = require('../widgets/widget.hierarchy');
+var widget_relations_1 = require('../widgets/widget.relations');
 var widget_resource_1 = require('../widgets/widget.resource');
 var service_resize_1 = require('../services/service.resize');
-var service_apinatomy2_1 = require('../services/service.apinatomy2');
+var utils_model_1 = require('../services/utils.model');
 var model = require("open-physiology-model");
 var pipe_general_1 = require("../transformations/pipe.general");
 var OmegaTreeEditor = (function () {
@@ -30,8 +30,8 @@ var OmegaTreeEditor = (function () {
         var _this = this;
         this.resizeService = resizeService;
         this.el = el;
-        this.resourceName = service_apinatomy2_1.ResourceName;
-        this.templateName = service_apinatomy2_1.TemplateName;
+        this.resourceName = utils_model_1.ResourceName;
+        this.templateName = utils_model_1.TemplateName;
         this.items = [];
         this.selectedItem = {};
         this.layoutConfig = {
@@ -193,7 +193,7 @@ var OmegaTreeEditor = (function () {
             ],
             template: "\n    <repo-general id=\"omegaTreeRepo\"\n      [items]=\"[]\" \n      [caption]=\"'Omega trees'\"\n      [types]=\"[resourceName.OmegaTreeType]\"\n      >\n    </repo-general>         \n    \n    <repo-general id=\"lyphRepo\"\n      [items]=\"items | setToArray\" \n      [caption]=\"'Lyphs'\" \n      [types]=\"[resourceName.LyphType, resourceName.CylindricalLyphType]\">\n    </repo-general>\n    \n    <hierarchy-widget id = \"hierarchy\" [item]=\"selectedItem\"></hierarchy-widget>\n    <resource-widget id = \"resource\" [item]=\"selectedItem\"></resource-widget>   \n    \n    <div id=\"main\"></div>\n  ",
             styles: ["#main {width: 100%; height: 100%; border: 0; margin: 0; padding: 0}"],
-            directives: [repo_general_1.RepoGeneral, repo_template_1.RepoTemplate, widget_hierarchy_1.HierarchyWidget, widget_resource_1.ResourceWidget],
+            directives: [repo_general_1.RepoGeneral, repo_template_1.RepoTemplate, widget_relations_1.HierarchyWidget, widget_resource_1.ResourceWidget],
             pipes: [pipe_general_1.SetToArray]
         }), 
         __metadata('design:paramtypes', [service_resize_1.ResizeService, core_1.ElementRef])

@@ -38,10 +38,31 @@ import {LyphType, ProcessTemplate, BorderTemplate} from "open-physiology-model";
         
         <ng-content></ng-content>   
         
+        <!--Auxilliary field: measurables to generate-->
+        <!--TODO: replace with modal-->
+        <!--<generateFromSupertype>-->
+          <!--<div class="generate-control">-->
+            <!--<label for="measurablesToReplicate"><img class="icon" src="images/measurableType.png"/> Measurables to generate </label>-->
+            <!--<select-input [items]="measurablesToReplicate" -->
+              <!--(updated)="measurablesToReplicate = $event"-->
+              <!--[options]="supertypeMeasurables">-->
+            <!--</select-input>-->
+          <!--</div>-->
+        <!--</generateFromSupertype>-->
+        
         <providerGroup>
+          <!--MixIn from MeasurableLocationType-->
+          <!--MeasurableProviders-->
+          <div class="input-control" *ngIf="includeProperty('measurableProviders')">
+            <label for="measurableProviders">Measurable providers: </label>
+            <select-input [items]="item.p('measurableProviders') | async" 
+            (updated)="updateProperty('measurableProviders', $event)" 
+            [options]="LyphType.p('all') | async"></select-input>
+          </div>
+          
           <!--LayerProviders-->
           <div class="input-control" *ngIf="includeProperty('layerProviders')">
-            <label for="layerProviders">Inherits layers from: </label>
+            <label for="layerProviders">Layer providers: </label>
             <select-input [items]="item.p('layerProviders') | async" 
             (updated)="updateProperty('layerProviders', $event)" 
             [options]="LyphType.p('all') | async"></select-input>
@@ -49,7 +70,7 @@ import {LyphType, ProcessTemplate, BorderTemplate} from "open-physiology-model";
             
           <!--PatchProviders-->
           <div class="input-control" *ngIf="includeProperty('patchProviders')">
-            <label for="patchProviders">Inherits patches from: </label>
+            <label for="patchProviders">Patch providers: </label>
             <select-input [items]="item.p('patchProviders') | async" 
             (updated)="updateProperty('patchProviders', $event)" 
             [options]="LyphType.p('all') | async"></select-input>
@@ -57,7 +78,7 @@ import {LyphType, ProcessTemplate, BorderTemplate} from "open-physiology-model";
           
           <!--PartProviders-->
           <div class="input-control" *ngIf="includeProperty('partProviders')">
-            <label for="partProviders">Inherits parts from: </label>
+            <label for="partProviders">Part providers: </label>
             <select-input [items]="item.p('partProviders') | async"
             (updated)="updateProperty('partProviders', $event)" 
             [options]="LyphType.p('all') | async"></select-input>
@@ -65,7 +86,15 @@ import {LyphType, ProcessTemplate, BorderTemplate} from "open-physiology-model";
           <ng-content select="providerGroup"></ng-content>
         </providerGroup>           
        
-        <relationGroup>      
+        <relationGroup>   
+           <!--Measurables-->
+          <div class="input-control" *ngIf="includeProperty('measurables')">
+            <repo-template caption='Measurables' 
+            [items]="item.p('measurables') | async | setToArray" 
+            (updated)="updateProperty('measurables', $event)" 
+            [types]="[templateName.MeasurableTemplate]"></repo-template>
+          </div> 
+           
           <!--Layers-->
           <div class="input-control" *ngIf="includeProperty('layers')">
             <repo-template caption="Layers" 
@@ -169,5 +198,39 @@ export class LyphTypePanel extends MaterialTypePanel{
   onProcessRemoved(process: ProcessTemplate){
     if (process && (process.conveyingLyph == this.item)) process.conveyingLyph = null;
   }
+
+  //MeasurableType = MeasurableType;
+  //measurablesToReplicate: Array<any> = [];
+  //supertypeMeasurables  : Array<any> = [];
+
+  //TODO: Move generation of measurables to modal window
+  /*onPropertyUpdated(event: any){
+   let property = event.properties;
+   if (property == "supertypes"){
+   let supertypes = event.values;
+   this.supertypeMeasurables = [];
+   for (let supertype of supertypes){
+   if (supertype.measurables){
+   let supertypeMeasurables = Array.from(new Set(supertype.measurables.map((item: any) => item.type)));
+   for (let supertypeMeasurable of supertypeMeasurables){
+   if (this.supertypeMeasurables.indexOf(supertypeMeasurable) < 0)
+   this.supertypeMeasurables.push(supertypeMeasurable);
+   }
+   }
+   }
+   this.measurablesToReplicate = Array.from(this.supertypeMeasurables);
+   }
+   this.propertyUpdated.emit(event);
+   }
+
+   protected onSaved(event: any) {
+   for (let measurable of this.measurablesToReplicate){
+   delete measurable["id"];
+   let newMeasurable = MeasurableType.new(measurable);
+   newMeasurable.location = this.item;
+   }
+   this.saved.emit(event);
+   }*/
+
 
 }

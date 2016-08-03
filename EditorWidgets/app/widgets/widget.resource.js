@@ -13,13 +13,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  */
 var core_1 = require('@angular/core');
 var view_omegaTree_1 = require('./view.omegaTree');
-var service_apinatomy2_1 = require('../services/service.apinatomy2');
+var utils_model_1 = require('../services/utils.model');
 var service_resize_1 = require('../services/service.resize');
 var ResourceWidget = (function () {
     function ResourceWidget(resizeService) {
         var _this = this;
         this.resizeService = resizeService;
-        this.resourceName = service_apinatomy2_1.ResourceName;
+        this.resourceName = utils_model_1.ResourceName;
         this.caption = "Resource";
         this.subscription = resizeService.resize$.subscribe(function (event) {
             if (event.target == "resource-widget") {

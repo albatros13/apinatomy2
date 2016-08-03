@@ -1,39 +1,31 @@
 /**
  * Created by Natallia on 7/15/2016.
  */
-import {Component, OnChanges, OnDestroy} from '@angular/core';
-import {HierarchyGraphWidget} from "./view.hierarchyGraph";
-import {HierarchyTreeWidget}  from "./view.hierarchyTree";
+import {Component, Input, Output, OnChanges, OnDestroy} from '@angular/core';
+import {RelationshipGraph} from "./view.relationGraph";
+import {RelationshipTree}  from "./view.relationTree";
 import {CORE_DIRECTIVES} from '@angular/common';
 import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/components/dropdown';
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
-import {CustomPropertyToolbar} from '../components/toolbar.propertySettings';
+import {PropertyToolbar} from '../components/toolbar.propertySettings';
+import {getColor} from "../services/utils.model";
 
 @Component({
   selector: 'hierarchy-widget',
-  inputs: ['item', 'relations', 'properties'],
+  inputs: ['item', 'relations', 'depth'],
   template : `
     <div class="panel panel-default">
       <div class="panel-heading">
-        Relations of <strong>{{(item)? item.id: ''}}{{(item)? ': ' + item.name : ''}}</strong>
+        Relations of <strong>{{item?.id}}{{(item)? ': ' + item.name : ''}}</strong>
       </div>
       <div class="panel-body">
           <!--Relations-->
-          <custom-property-toolbar  
-            [options] = "relations"
-            (change) = "relationsChanged()"
-            caption = 'Relations'>
-          </custom-property-toolbar>
+          <property-toolbar  
+            [options] = "relationOptions"
+            (selectionChanged) = "selectedRelationsChanged($event)">
+          </property-toolbar>
           
-          <!--Properties-->
-          <custom-property-toolbar  
-            [options] = "properties"
-            (change) = "propertiesChanged()"
-            caption = 'Properties'
-            >
-          </custom-property-toolbar>
-
           <!--Depth-->
           <div class="input-group input-group-sm" style="width: 150px; float: left;">
             <span class="input-group-addon" id="basic-addon1">Depth</span>
@@ -54,24 +46,25 @@ import {CustomPropertyToolbar} from '../components/toolbar.propertySettings';
           </div>
 
         <hierarchy-tree *ngIf="layout == 'tree'" 
-          [item]="item" [relations]="relations" [properties]="properties" [depth]="depth"></hierarchy-tree>
+          [item]="item" [relations]="relations" [depth]="depth"></hierarchy-tree>
         <hierarchy-graph *ngIf="layout == 'graph'" 
-          [item]="item" [relations]="relations" [properties]="properties" [depth]="depth"></hierarchy-graph>
+          [item]="item" [relations]="relations" [depth]="depth"></hierarchy-graph>
       </div>     
     </div>
   `,
-  directives: [HierarchyGraphWidget, HierarchyTreeWidget,
-    DROPDOWN_DIRECTIVES, CORE_DIRECTIVES, CustomPropertyToolbar]
+  directives: [RelationshipGraph, RelationshipTree,
+    DROPDOWN_DIRECTIVES, CORE_DIRECTIVES, PropertyToolbar]
 })
 export class HierarchyWidget implements OnChanges, OnDestroy{
-  //Input
-  item: any;
-  relations: Array<any> = [];
+  @Input() item: any;
+  @Input() relations  : Set<string> = new Set<string>();
+  @Input() depth: number = 2;
+
+  relationOptions: Array<any> = [];
+  propertyOptions: Array<any> = [];
+  Class: any;
 
   layout = "tree";
-  properties: any;
-
-  depth = 2;
   subscription: Subscription;
 
   constructor(public resizeService: ResizeService) {
@@ -93,43 +86,43 @@ export class HierarchyWidget implements OnChanges, OnDestroy{
   }
 
   ngOnInit(){
-    this.updateRelations();
+    if (this.item){
+      this.Class = this.item.class;
+      this.updateRelations();
+    }
   }
 
   ngOnChanges(changes: { [propName: string]: any }) {
-    this.updateRelations();
+    if (this.item && (this.item.class != this.Class)){
+      this.Class = this.item.class;
+      this.updateRelations();
+    }
   }
 
   updateRelations(){
-    this.relations = [];
+    let privateRelations: Set<string> = new Set([]);
+
+    this.relationOptions = [];
     if (this.item){
       let relations = Object.assign({}, this.item.constructor.relationshipShortcuts);
       for (let relation in relations) {
-        this.relations.push({value: relation, selected: false});
+        if (privateRelations.has(relation)) continue;
+        this.relationOptions.push({value: relation, selected: false, color: getColor(relation)});
       }
-      if (this.relations.length > 0) this.relations[0].selected = true;
+      if (this.relationOptions.length > 0) this.relationOptions[0].selected = true;
     }
+    this.relations = new Set(this.relationOptions.filter(x => x.selected).map(x => x.value));
   }
 
-  updateProperties(){
-    this.properties = [];
-    if (this.relations){
-      for (let relation in this.relations){
-        let target = this.item[relation];
-        if (target.constructor){
-          let properties = Object.assign({}, target.constructor.relationshipShortcuts);
-          for (let property in properties){
-            if (this.properties.find((x: any) => (x.value == property))){
-              this.properties.push({value: property, selected: false});
-            }
-          }
-        }
-      }
-      if (this.properties.length > 0) this.properties[0].selected = true;
-    }
+  selectedRelationsChanged(option: any){
+    if (!this.relations.has(option.value) && option.selected) this.relations.add(option.value);
+    if (this.relations.has(option.value) && !option.selected) this.relations.delete(option.value);
+
+    let copy = this.relations;     //TODO: use an observable
+    setTimeout(() => { this.relations = new Set<string>()}, 0);
+    setTimeout(() => { this.relations = copy }, 0);
   }
 
-  relationsChanged(){}
-
-  propertiesChanged(){}
+  //TODO
+  //on ChangeLayout add/remove subtype/supertype from the opton list
 }

@@ -4,7 +4,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {ResourcePanel} from "./panel.resource";
 import {MultiSelectInput} from '../components/component.select';
-import {TemplateName} from "../services/service.apinatomy2";
+import {TemplateName} from "../services/utils.model";
 
 @Component({
   selector: 'type-panel',

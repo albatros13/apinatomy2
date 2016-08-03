@@ -27,12 +27,17 @@ var CausalityTemplatePanel = (function (_super) {
     function CausalityTemplatePanel() {
         _super.apply(this, arguments);
         this.MeasurableTemplate = open_physiology_model_1.MeasurableTemplate;
+        this.myIgnore = new Set();
     }
+    CausalityTemplatePanel.prototype.ngOnInit = function () {
+        _super.prototype.ngOnInit.call(this);
+        this.myIgnore = new Set(this.ignore).add('cardinalityBase').add('cardinalityMultipliers');
+    };
     CausalityTemplatePanel = __decorate([
         core_1.Component({
             selector: 'causalityTemplate-panel',
             inputs: ['item', 'ignore', 'options'],
-            template: "\n    <template-panel [item]=\"item\" \n      [ignore]   = \"ignore.add('cardinalityBase').add('cardinalityMultipliers')\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n      <!--Cause-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('cause')\">      \n        <label for=\"cause\">Cause: </label>\n        <select-input-1 [item] = \"item.cause\" \n          (updated)=\"updateProperty('cause', $event)\"    \n          [options] = \"MeasurableTemplate.p('all') | async\"></select-input-1>\n      </div>\n      \n      <!--Effect-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('effect')\">      \n        <label for=\"effect\">Effect: </label>\n        <select-input-1 [item] = \"item.effect\" \n          (updated) = \"updateProperty('effect', $event)\"    \n          [options] = \"MeasurableTemplate.p('all') | async\"></select-input-1>\n      </div>\n    \n      <ng-content></ng-content>      \n    \n    </template-panel>\n  ",
+            template: "\n    <template-panel [item]=\"item\" \n      [ignore]   = \"myIgnore\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n      <!--Cause-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('cause')\">      \n        <label for=\"cause\">Cause: </label>\n        <select-input-1 [item] = \"item.cause\" \n          (updated)=\"updateProperty('cause', $event)\"    \n          [options] = \"MeasurableTemplate.p('all') | async\"></select-input-1>\n      </div>\n      \n      <!--Effect-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('effect')\">      \n        <label for=\"effect\">Effect: </label>\n        <select-input-1 [item] = \"item.effect\" \n          (updated) = \"updateProperty('effect', $event)\"    \n          [options] = \"MeasurableTemplate.p('all') | async\"></select-input-1>\n      </div>\n    \n      <ng-content></ng-content>      \n    \n    </template-panel>\n  ",
             directives: [component_templateValue_1.TemplateValue, component_select_1.SingleSelectInput, template_template_1.TemplatePanel],
             pipes: [pipe_general_1.FilterByClass]
         }), 

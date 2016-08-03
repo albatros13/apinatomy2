@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require('@angular/core');
-var service_apinatomy2_1 = require("../services/service.apinatomy2");
+var utils_model_1 = require("../services/utils.model");
 var template_template_1 = require('./template.template');
 var template_measurableTemplate_1 = require('./template.measurableTemplate');
 var template_nodeTemplate_1 = require('./template.nodeTemplate');
@@ -22,7 +22,7 @@ var template_lyphTemplate_1 = require('./template.lyphTemplate');
 var template_cylindricalLyphTemplate_1 = require('./template.cylindricalLyphTemplate');
 var PanelDispatchTemplates = (function () {
     function PanelDispatchTemplates() {
-        this.templateName = service_apinatomy2_1.TemplateName;
+        this.templateName = utils_model_1.TemplateName;
         this.saved = new core_1.EventEmitter();
         this.removed = new core_1.EventEmitter();
         this.canceled = new core_1.EventEmitter();

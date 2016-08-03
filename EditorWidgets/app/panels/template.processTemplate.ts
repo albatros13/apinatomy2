@@ -4,7 +4,7 @@ import {SingleSelectInput} from '../components/component.select';
 import {TemplateValue} from '../components/component.templateValue';
 import {TemplatePanel} from "./template.template";
 import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
-import {TransportPhenomenon} from "../services/service.apinatomy2";
+import {TransportPhenomenon} from "../services/utils.model";
 import {FilterByClass} from "../transformations/pipe.general";
 
 import {NodeTemplate, LyphType} from "open-physiology-model";
@@ -14,7 +14,7 @@ import {NodeTemplate, LyphType} from "open-physiology-model";
   inputs: ['item', 'ignore', 'options'],
   template:`
     <template-panel [item]="item" 
-      [ignore]   = "ignore.add('cardinalityBase').add('cardinalityMultipliers')"
+      [ignore]   = "myIgnore"
       [options]  = "options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
@@ -67,6 +67,13 @@ export class ProcessTemplatePanel extends TemplatePanel{
   transportPhenomenon = TransportPhenomenon;
   LyphType = LyphType;
   NodeTemplate = NodeTemplate;
+
+  myIgnore: Set<string> = new Set<string>();
+
+  ngOnInit(){
+    super.ngOnInit();
+    this.myIgnore = new Set<string>(this.ignore).add('cardinalityBase').add('cardinalityMultipliers')
+  }
 
   onSourceChanged(node: NodeTemplate){
     if (this.item.source) {

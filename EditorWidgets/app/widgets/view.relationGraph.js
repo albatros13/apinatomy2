@@ -11,20 +11,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require('@angular/core');
 var ng2_nvd3_1 = require('ng2-nvd3/lib/ng2-nvd3');
 var service_resize_1 = require('../services/service.resize');
-var color = d3.scale.category20();
-var HierarchyGraphWidget = (function () {
-    function HierarchyGraphWidget(renderer, el, resizeService) {
+var utils_model_1 = require("../services/utils.model");
+var RelationshipGraph = (function () {
+    function RelationshipGraph(renderer, el, resizeService) {
         this.renderer = renderer;
         this.el = el;
         this.resizeService = resizeService;
-        this.relations = [];
-        this.properties = [];
+        this.relations = new Set();
         this.depth = -1;
         this.active = true;
         this.vp = { size: { width: 600, height: 400 },
             margin: { x: 20, y: 20 },
             node: { size: { width: 40, height: 20 } } };
-        this.setNode = new core_1.EventEmitter();
         var self = this;
         this.subscription = resizeService.resize$.subscribe(function (event) {
             if (event.target == "hierarchy-graph") {
@@ -32,23 +30,23 @@ var HierarchyGraphWidget = (function () {
             }
         });
     }
-    HierarchyGraphWidget.prototype.ngOnDestroy = function () {
+    RelationshipGraph.prototype.ngOnDestroy = function () {
         this.subscription.unsubscribe();
     };
-    HierarchyGraphWidget.prototype.ngOnInit = function () {
-        if (!this.relations)
-            this.relations = [];
-        this.setGraphOptions();
+    RelationshipGraph.prototype.ngOnInit = function () {
+        if (this.item)
+            this.setGraphOptions();
     };
-    HierarchyGraphWidget.prototype.ngOnChanges = function (changes) {
+    RelationshipGraph.prototype.ngOnChanges = function (changes) {
         if (this.item) {
             this.data = this.getGraphData(this.item, this.relations, this.depth);
+            console.log("Data ", this.data);
         }
         else {
             this.data = {};
         }
     };
-    HierarchyGraphWidget.prototype.setPanelSize = function (size) {
+    RelationshipGraph.prototype.setPanelSize = function (size) {
         var _this = this;
         var delta = 10;
         if ((Math.abs(this.vp.size.width - size.width) > delta) || (Math.abs(this.vp.size.height - size.height) > delta)) {
@@ -61,10 +59,8 @@ var HierarchyGraphWidget = (function () {
             }
         }
     };
-    HierarchyGraphWidget.prototype.setGraphOptions = function () {
-        var visibleProperties = [];
-        if (this.properties)
-            visibleProperties = this.properties.filter(function (x) { return x.selected; }).map(function (x) { return x.value; });
+    RelationshipGraph.prototype.setGraphOptions = function () {
+        var properties = Object.assign({}, this.item.constructor.properties);
         function formatValue(value) {
             var res = "[";
             for (var i = 0; i < value.length; i++) {
@@ -80,45 +76,30 @@ var HierarchyGraphWidget = (function () {
                 width: this.vp.size.width,
                 height: this.vp.size.height,
                 margin: { top: 20, right: 20, bottom: 20, left: 20 },
-                color: function (d) {
-                    return color(d.class);
-                },
-                tooltip: {
-                    contentGenerator: function (d) {
-                        var html = "<b>" + ((d.id) ? d.id : "?") + ": " + d.name + "</b> <ul>";
-                        if (visibleProperties) {
-                            d.series.forEach(function (elem) {
-                                if (visibleProperties.indexOf(elem.key) > -1) {
-                                    html += "<li><style='color:" + elem.color + "'>" + elem.key + ": " +
-                                        "<b>" + formatValue(elem.value) + "</b></li>";
-                                }
-                            });
-                        }
-                        html += "</ul>";
-                        return html;
-                    }
-                },
                 nodeExtras: function (node) {
                     node && node
                         .append("text")
-                        .attr("dx", 8)
+                        .attr("dx", 10)
                         .attr("dy", ".35em")
                         .text(function (d) { return d.name; })
                         .attr("class", "nodeLabel");
+                    node && node
+                        .append("image")
+                        .attr("xlink:href", function (d) { return utils_model_1.getIcon(d.class); })
+                        .attr("x", -8).attr("y", -8)
+                        .attr("width", 16).attr("height", 16);
+                },
+                linkExtras: function (link) {
+                    link.attr("class", "link").attr("stroke", function (d) { return utils_model_1.getColor(d.relation); });
                 }
             }
         };
     };
-    HierarchyGraphWidget.prototype.getGraphData = function (item, relations, depth) {
+    RelationshipGraph.prototype.getGraphData = function (item, relations, depth) {
         var data = { nodes: [], links: [] };
         if (!item)
             return data;
         data.nodes.push(item);
-        if (!relations || (relations.length == 0))
-            return data;
-        if (!depth)
-            depth = -1;
-        var fields = this.relations.filter(function (x) { return x.selected; }).map(function (x) { return x.value; });
         if (!depth)
             depth = -1;
         traverse(item, depth, data);
@@ -128,14 +109,14 @@ var HierarchyGraphWidget = (function () {
                 return;
             if (depth == 0)
                 return root;
-            for (var _i = 0, fields_1 = fields; _i < fields_1.length; _i++) {
-                var fieldName = fields_1[_i];
+            for (var _i = 0, _a = Array.from(relations); _i < _a.length; _i++) {
+                var fieldName = _a[_i];
                 if (!root[fieldName])
-                    return;
-                var children = root[fieldName];
-                //TODO: test
-                for (var child in children) {
-                    data.links.push({ source: root, target: child });
+                    continue;
+                var children = Array.from(root[fieldName]);
+                for (var _b = 0, children_1 = children; _b < children_1.length; _b++) {
+                    var child = children_1[_b];
+                    data.links.push({ source: root, target: child, relation: fieldName });
                     if (data.nodes.indexOf(child) == -1) {
                         data.nodes.push(child);
                         traverse(child, depth - 1, data);
@@ -145,19 +126,27 @@ var HierarchyGraphWidget = (function () {
         }
     };
     __decorate([
-        core_1.Output(), 
+        core_1.Input(), 
         __metadata('design:type', Object)
-    ], HierarchyGraphWidget.prototype, "setNode", void 0);
-    HierarchyGraphWidget = __decorate([
+    ], RelationshipGraph.prototype, "item", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Set)
+    ], RelationshipGraph.prototype, "relations", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Number)
+    ], RelationshipGraph.prototype, "depth", void 0);
+    RelationshipGraph = __decorate([
         core_1.Component({
             selector: 'hierarchy-graph',
-            inputs: ['item', 'relations', 'properties', 'depth'],
+            inputs: ['item', 'relations', 'depth'],
             template: "\n    <div class=\"panel-body\">\n      <nvd3 *ngIf=\"active\" [options]=\"graphOptions\" [data]=\"data\"></nvd3>\n    </div>\n  ",
             directives: [ng2_nvd3_1.nvD3],
         }), 
         __metadata('design:paramtypes', [core_1.Renderer, core_1.ElementRef, service_resize_1.ResizeService])
-    ], HierarchyGraphWidget);
-    return HierarchyGraphWidget;
+    ], RelationshipGraph);
+    return RelationshipGraph;
 }());
-exports.HierarchyGraphWidget = HierarchyGraphWidget;
-//# sourceMappingURL=view.hierarchyGraph.js.map
+exports.RelationshipGraph = RelationshipGraph;
+//# sourceMappingURL=view.relationGraph.js.map

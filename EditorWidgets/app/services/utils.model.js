@@ -44,4 +44,48 @@ var TransportPhenomenon = exports.TransportPhenomenon;
     FormType[FormType["closed"] = "closed"] = "closed";
 })(exports.FormType || (exports.FormType = {}));
 var FormType = exports.FormType;
-//# sourceMappingURL=service.apinatomy2.js.map
+function getLabel(field) {
+    //let index = field.indexOf("Provider");
+    //if (index > -1) return "Inherits " + field.substring(0, index) + " from";
+    if (field == "externals")
+        return "Annotations";
+    if (field == "locals")
+        return "Local resources";
+    if (field == "id")
+        return "ID";
+    return field[0].toUpperCase() + field.substring(1);
+}
+exports.getLabel = getLabel;
+function getIcon(Class) {
+    switch (Class) {
+        case ResourceName.ExternalResource: return "images/external.png";
+        case ResourceName.MaterialType: return "images/materialType.png";
+        case ResourceName.LyphType: return "images/lyphType.png";
+        case ResourceName.CylindricalLyphType: return "images/cylindricalLyphType.png";
+        case ResourceName.ProcessType: return "images/processType.png";
+        case ResourceName.MeasurableType: return "images/measurableType.png";
+        case ResourceName.CausalityType: return "images/causalityType.png";
+        case ResourceName.NodeType: return "images/nodeType.png";
+        case ResourceName.BorderType: return "images/borderType.png";
+        case ResourceName.Coalescence: return "images/coalescence.png";
+        case ResourceName.GroupType: return "images/groupType.png";
+        case ResourceName.OmegaTreeType: return "images/omegaTreeType.png";
+        case ResourceName.Publication: return "images/publication.png";
+        case ResourceName.Correlation: return "images/correlation.png";
+        case ResourceName.ClinicalIndex: return "images/clinicalIndex.png";
+        case TemplateName.LyphTemplate: return "images/lyphType.png";
+        case TemplateName.CylindricalLyphTemplate: return "images/cylindricalLyphType.png";
+        case TemplateName.ProcessTemplate: return "images/processType.png";
+        case TemplateName.MeasurableTemplate: return "images/measurableType.png";
+        case TemplateName.CausalityTemplate: return "images/causalityType.png";
+        case TemplateName.NodeTemplate: return "images/nodeType.png";
+        case TemplateName.BorderTemplate: return "images/borderType.png";
+        case TemplateName.CausalityTemplate: return "images/causality.png";
+        case TemplateName.GroupTemplate: return "images/groupType.png";
+        case TemplateName.OmegaTreeTemplate: return "images/omegaTreeType.png";
+    }
+    return "images/resource.png";
+}
+exports.getIcon = getIcon;
+exports.getColor = d3.scale.category20();
+//# sourceMappingURL=utils.model.js.map

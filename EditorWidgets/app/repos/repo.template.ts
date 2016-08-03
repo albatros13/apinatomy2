@@ -5,7 +5,7 @@ import {Component, Input} from '@angular/core';
 import {CORE_DIRECTIVES, FORM_DIRECTIVES} from '@angular/common';
 import {ACCORDION_DIRECTIVES} from 'ng2-bootstrap/components/accordion';
 import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
-import {TemplateName} from '../services/service.apinatomy2';
+import {TemplateName} from '../services/utils.model';
 
 import {EditToolbar} from '../components/toolbar.repoEdit';
 import {FilterToolbar} from '../components/toolbar.filter';
@@ -15,6 +15,9 @@ import {PanelDispatchTemplates} from "../panels/dispatch.templates";
 import {ItemHeader, RepoAbstract} from "./repo.abstract";
 import {OrderBy, FilterBy, SetToArray} from "../transformations/pipe.general";
 
+import {getIcon} from "../services/utils.model";
+
+
 @Component({
   selector: 'repo-template',
   inputs: ['items', 'caption', 'ignore', 'types', 'selectedItem', 'options'],
@@ -22,7 +25,7 @@ import {OrderBy, FilterBy, SetToArray} from "../transformations/pipe.general";
     <div class="panel panel-warning repo-template">
       <div class="panel-heading">{{caption}}</div>
       <div class="panel-body" >
-        <sort-toolbar *ngIf  = "options?.sortToolbar" [options]="['Name', 'ID']" (sorted)="onSorted($event)"></sort-toolbar>
+        <sort-toolbar *ngIf  = "options?.sortToolbar" [options]="['Name', 'ID', 'Class']" (sorted)="onSorted($event)"></sort-toolbar>
         <edit-toolbar *ngIf  = "!options?.headersOnly" [options]="types" (added)="onAdded($event)"></edit-toolbar>
         <filter-toolbar *ngIf= "options?.filterToolbar" [filter]="searchString" [options]="['Name', 'ID', 'Class']" (applied)="onFiltered($event)"></filter-toolbar>
           
@@ -50,6 +53,7 @@ import {OrderBy, FilterBy, SetToArray} from "../transformations/pipe.general";
   pipes: [OrderBy, FilterBy, SetToArray]
 })
 export class RepoTemplate extends RepoAbstract{
+  getIcon = getIcon;
 
   ngOnInit(){
     super.ngOnInit();
@@ -59,7 +63,6 @@ export class RepoTemplate extends RepoAbstract{
         this.types.push(x);
       }
     }
-    //TODO - reset to be draggable according to relations
     this.zones = this.types.map(x => x + "_zone");
   }
 }

@@ -23,7 +23,8 @@ import {FormToolbar} from "./toolbar.panelEdit";
         </div>
         
         <input *ngIf="valueType == 'Value'" 
-          type="number" class="form-control" min="0" max="100" [value]="value" (input)="updateValue($event)"/>
+          type="number" class="form-control" min="0" max="100" 
+          [(ngModel)]="value" (ngModelChange)="updated.emit(value)"/>
         
         <fieldset *ngIf="valueType == 'Distribution'">
           <div class="input-control">
@@ -74,12 +75,6 @@ export class TemplateValue{
     } else {
       this.item = this.distribution;
     }
-    this.updated.emit(this.item);
-  }
-
-  updateValue(event: any){
-    this.value = event.target.value;
-    this.item = this.value;
     this.updated.emit(this.item);
   }
 }

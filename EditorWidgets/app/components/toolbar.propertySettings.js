@@ -25,8 +25,8 @@ var PropertyToolbar = (function () {
     PropertyToolbar = __decorate([
         core_1.Component({
             selector: 'property-toolbar',
-            inputs: ['options'],
-            template: "\n    <div class=\"dropdown\" dropdown>\n      <button type=\"button\" class=\"btn btn-default\"  dropdown-open>\n        <span class=\"glyphicon glyphicon-list\"></span>\n      </button>\n      <ul class=\"dropdown-menu dropdown-menu-right\" dropdown-not-closable-zone>\n        <li *ngFor=\"let option of options\">\n          <a class=\"small\" href=\"#\"><input type=\"checkbox\"\n          [(ngModel)]=\"option.selected\" (ngModelChange)=\"selectionChanged.emit(option)\"/>&nbsp;\n          <span [style.color]=\"option.color\">{{option.value}}</span>\n          </a>\n        </li>\n      </ul>\n    </div>\n    ",
+            inputs: ['options', 'transform'],
+            template: "\n    <div class=\"dropdown\" dropdown>\n      <button type=\"button\" class=\"btn btn-default\"  dropdown-open>\n        <span class=\"glyphicon glyphicon-list\"></span>\n      </button>\n      <ul class=\"dropdown-menu dropdown-menu-right\" dropdown-not-closable-zone>\n        <li *ngFor=\"let option of options\">\n          <a class=\"small\" href=\"#\"><input type=\"checkbox\"\n          [(ngModel)]=\"option.selected\" (ngModelChange)=\"selectionChanged.emit(option)\"/>&nbsp;\n          <span [style.color]=\"option.color\">{{transform? transform(option.value): option.value}}</span>\n          </a>\n        </li>\n      </ul>\n    </div>\n    ",
             styles: [':host {float: right;}'],
             directives: [ng2_dropdown_1.DROPDOWN_DIRECTIVES, ng2_radio_group_1.RADIO_GROUP_DIRECTIVES]
         }), 

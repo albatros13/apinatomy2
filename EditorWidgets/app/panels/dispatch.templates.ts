@@ -10,10 +10,13 @@ import {GroupTemplatePanel} from './template.groupTemplate';
 import {OmegaTreeTemplatePanel} from './template.omegaTreeTemplate';
 import {LyphTemplatePanel} from './template.lyphTemplate';
 import {CylindricalLyphTemplatePanel} from './template.cylindricalLyphTemplate';
+import {ToastyService, Toasty} from 'ng2-toasty/ng2-toasty';
+
 
 @Component({
   selector: 'panel-template',
   inputs: ['item', 'ignore'],
+  providers: [ToastyService],
   template:`
       <!--Generic template-->
       <template-panel *ngIf="item.class==templateName.Template" [ignore]="ignore"  
@@ -63,11 +66,13 @@ import {CylindricalLyphTemplatePanel} from './template.cylindricalLyphTemplate';
       <omegaTreeTemplate-panel *ngIf="item.class==templateName.OmegaTreeTemplate" [ignore]="ignore"
        [item]="item"   
        (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></omegaTreeTemplate-panel>
+       
+       <ng2-toasty></ng2-toasty>
   `,
   directives: [TemplatePanel, MeasurableTemplatePanel, NodeTemplatePanel, CausalityTemplatePanel, BorderTemplatePanel,
     ProcessTemplatePanel,
     LyphTemplatePanel, CylindricalLyphTemplatePanel,
-    GroupTemplatePanel, OmegaTreeTemplatePanel]
+    GroupTemplatePanel, OmegaTreeTemplatePanel, Toasty]
 })
 export class PanelDispatchTemplates{
   item: any;
@@ -76,8 +81,17 @@ export class PanelDispatchTemplates{
   @Output() removed = new EventEmitter();
   @Output() canceled = new EventEmitter();
 
+  constructor(private toastyService:ToastyService){ }
+
   protected onSaved() {
-    this.item.commit();
+    this.item.commit()
+      .catch(reason => {
+        console.error(reason);
+        let errorMsg = "Failed to commit resource: relationship constraints violated! \n" +
+          "See browser console (Ctrl+Shift+J) for technical details.";
+        console.error(reason);
+        this.toastyService.error(errorMsg);
+      });
     this.saved.emit(this.item);
   }
 

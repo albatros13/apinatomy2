@@ -18,10 +18,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 var core_1 = require('@angular/core');
 var repo_general_1 = require('../repos/repo.general');
+var repo_template_1 = require('../repos/repo.template');
 var widget_relations_1 = require('../widgets/widget.relations');
 var widget_resource_1 = require('../widgets/widget.resource');
 var service_resize_1 = require('../services/service.resize');
 var pipe_general_1 = require("../transformations/pipe.general");
+require('rxjs/add/operator/map');
 var model = require("open-physiology-model");
 var ResourceEditor = (function () {
     function ResourceEditor(resizeService, el) {
@@ -47,7 +49,7 @@ var ResourceEditor = (function () {
                     content: [
                         {
                             type: 'component',
-                            componentName: 'RepoPanel'
+                            componentName: 'RepoPanel',
                         },
                         {
                             type: 'column',
@@ -60,12 +62,16 @@ var ResourceEditor = (function () {
                                     type: 'component',
                                     componentName: 'ResourcePanel'
                                 }
-                            ]
-                        }]
+                            ],
+                            width: 50
+                        },
+                    ]
                 }]
         };
-        this.subscription = model.Resource.p('all').subscribe(function (data) { _this.items = data; });
-        console.log("V.4");
+        this.rs = model.Resource.p('all').subscribe(function (data) { _this.items = data; });
+        /* this.ts = model.Template.p('all').subscribe(
+           (data: any) => {this.templates = data;});
+     */
         (function () {
             return __awaiter(this, void 0, void 0, function* () {
                 /*Material type*/
@@ -94,8 +100,7 @@ var ResourceEditor = (function () {
                 var fma17881 = model.ExternalResource.new({ name: "FMA:17881", uri: "" });
                 var externals = [fma7203, fma15610, fma66610, fma17881];
                 yield Promise.all(externals.map(function (p) { return p.commit(); }));
-                var borderType = model.BorderType.new({ name: "GeneralBorder" });
-                yield borderType.commit();
+                var borderType = yield model.BorderType.getSingleton();
                 var minusBorder = model.BorderTemplate.new({ name: "T: MinusBorder", type: borderType, cardinalityBase: 1 });
                 var plusBorder = model.BorderTemplate.new({ name: "T: PlusBorder", type: borderType, cardinalityBase: 1 });
                 var innerBorder = model.BorderTemplate.new({ name: "T: InnerBorder", type: borderType, cardinalityBase: 1 });
@@ -117,11 +122,12 @@ var ResourceEditor = (function () {
                 var kidneyLobus = model.CylindricalLyphType.new({ name: "Kidney lobus", externals: [fma17881],
                     minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder });
                 yield kidneyLobus.commit();
+                //create tree from user story
             });
         })();
     }
     ResourceEditor.prototype.ngOnDestroy = function () {
-        this.subscription.unsubscribe();
+        this.rs.unsubscribe();
     };
     ResourceEditor.prototype.onItemSelected = function (item) {
         var _this = this;
@@ -132,12 +138,6 @@ var ResourceEditor = (function () {
             _this.selectedItem = item;
         }, 0);
     };
-    ResourceEditor.prototype.onItemAdded = function (item) {
-    };
-    ResourceEditor.prototype.onItemRemoved = function (item) {
-    };
-    ResourceEditor.prototype.onItemUpdated = function (item) {
-    };
     ResourceEditor.prototype.ngOnInit = function () {
         var self = this;
         var main = $('app > #main');
@@ -147,6 +147,11 @@ var ResourceEditor = (function () {
             var content = $('app > #repo');
             content.detach().appendTo(panel);
         });
+        /* this.mainLayout.registerComponent('RepoTemplatePanel', function (container:any, componentState:any) {
+           let panel = container.getElement();
+           let content = $('app > #repoTemplate');
+           content.detach().appendTo(panel);
+         });*/
         this.mainLayout.registerComponent('HierarchyPanel', function (container, componentState) {
             var panel = container.getElement();
             var component = $('app > #hierarchy');
@@ -183,10 +188,10 @@ var ResourceEditor = (function () {
             providers: [
                 service_resize_1.ResizeService
             ],
-            template: "\n    <repo-general id=\"repo\"\n      [items]=\"items | setToArray\" \n      [caption]=\"'All resources'\" \n      (selected)=\"onItemSelected($event)\"\n      (added)=\"onItemAdded($event)\"\n      (removed)=\"onItemRemoved($event)\"\n      (updated)=\"onItemUpdated($event)\">\n    </repo-general>\n    <hierarchy-widget id = \"hierarchy\" [item]=\"selectedItem\"></hierarchy-widget>\n    <resource-widget id = \"resource\" [item]=\"selectedItem\"></resource-widget>          \n    <div id=\"main\"></div>\n  ",
+            template: "\n    <repo-general id=\"repo\"\n      [items]=\"items | setToArray\" \n      [caption]=\"'Resources'\" \n      (selected)=\"onItemSelected($event)\">\n    </repo-general>\n    <hierarchy-widget id = \"hierarchy\" [item]=\"selectedItem\"></hierarchy-widget>\n    <resource-widget id = \"resource\" [item]=\"selectedItem\"></resource-widget>   \n    <!--<repo-template id=\"repoTemplate\"\n      [items]=\"templates | setToArray\" \n      [caption]=\"'Templates'\" \n      [options]=\"{sortToolbar: true, filterToolbar: true}\"\n      (selected)=\"onItemSelected($event)\">\n    </repo-template>-->\n    <div id=\"main\"></div>\n  ",
             styles: ["#main {width: 100%; height: 100%; border: 0; margin: 0; padding: 0}"],
-            directives: [repo_general_1.RepoGeneral, widget_relations_1.HierarchyWidget, widget_resource_1.ResourceWidget],
-            pipes: [pipe_general_1.SetToArray]
+            directives: [repo_general_1.RepoGeneral, repo_template_1.RepoTemplate, widget_relations_1.RelationshipWidget, widget_resource_1.ResourceWidget],
+            pipes: [pipe_general_1.SetToArray /*, HideTemplates*/]
         }), 
         __metadata('design:paramtypes', [service_resize_1.ResizeService, core_1.ElementRef])
     ], ResourceEditor);

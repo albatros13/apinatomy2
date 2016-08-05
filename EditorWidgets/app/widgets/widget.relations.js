@@ -19,14 +19,15 @@ var dropdown_1 = require('ng2-bootstrap/components/dropdown');
 var service_resize_1 = require('../services/service.resize');
 var toolbar_propertySettings_1 = require('../components/toolbar.propertySettings');
 var utils_model_1 = require("../services/utils.model");
-var HierarchyWidget = (function () {
-    function HierarchyWidget(resizeService) {
+var RelationshipWidget = (function () {
+    function RelationshipWidget(resizeService) {
         var _this = this;
         this.resizeService = resizeService;
         this.relations = new Set();
         this.depth = 2;
         this.relationOptions = [];
         this.propertyOptions = [];
+        this.getPropertyLabel = utils_model_1.getPropertyLabel;
         this.layout = "tree";
         this.subscription = resizeService.resize$.subscribe(function (event) {
             if (event.target == "hierarchy-widget") {
@@ -34,27 +35,27 @@ var HierarchyWidget = (function () {
             }
         });
     }
-    HierarchyWidget.prototype.ngOnDestroy = function () {
+    RelationshipWidget.prototype.ngOnDestroy = function () {
         this.subscription.unsubscribe();
     };
-    HierarchyWidget.prototype.onSetPanelSize = function (event) {
+    RelationshipWidget.prototype.onSetPanelSize = function (event) {
         this.resizeService.announceResize({ target: "hierarchy-tree", size: event.size });
         this.resizeService.announceResize({ target: "hierarchy-graph", size: event.size });
     };
-    HierarchyWidget.prototype.ngOnInit = function () {
+    RelationshipWidget.prototype.ngOnInit = function () {
         if (this.item) {
             this.Class = this.item.class;
             this.updateRelations();
         }
     };
-    HierarchyWidget.prototype.ngOnChanges = function (changes) {
+    RelationshipWidget.prototype.ngOnChanges = function (changes) {
         if (this.item && (this.item.class != this.Class)) {
             this.Class = this.item.class;
             this.updateRelations();
         }
     };
-    HierarchyWidget.prototype.updateRelations = function () {
-        var privateRelations = new Set([]);
+    RelationshipWidget.prototype.updateRelations = function () {
+        var privateRelations = new Set(["themes", "plusBorder", "minusBorder", "innerBorder", "outerBorder"]);
         this.relationOptions = [];
         if (this.item) {
             var relations = Object.assign({}, this.item.constructor.relationshipShortcuts);
@@ -68,7 +69,7 @@ var HierarchyWidget = (function () {
         }
         this.relations = new Set(this.relationOptions.filter(function (x) { return x.selected; }).map(function (x) { return x.value; }));
     };
-    HierarchyWidget.prototype.selectedRelationsChanged = function (option) {
+    RelationshipWidget.prototype.selectedRelationsChanged = function (option) {
         var _this = this;
         if (!this.relations.has(option.value) && option.selected)
             this.relations.add(option.value);
@@ -81,26 +82,26 @@ var HierarchyWidget = (function () {
     __decorate([
         core_1.Input(), 
         __metadata('design:type', Object)
-    ], HierarchyWidget.prototype, "item", void 0);
+    ], RelationshipWidget.prototype, "item", void 0);
     __decorate([
         core_1.Input(), 
         __metadata('design:type', Set)
-    ], HierarchyWidget.prototype, "relations", void 0);
+    ], RelationshipWidget.prototype, "relations", void 0);
     __decorate([
         core_1.Input(), 
         __metadata('design:type', Number)
-    ], HierarchyWidget.prototype, "depth", void 0);
-    HierarchyWidget = __decorate([
+    ], RelationshipWidget.prototype, "depth", void 0);
+    RelationshipWidget = __decorate([
         core_1.Component({
             selector: 'hierarchy-widget',
             inputs: ['item', 'relations', 'depth'],
-            template: "\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">\n        Relations of <strong>{{item?.id}}{{(item)? ': ' + item.name : ''}}</strong>\n      </div>\n      <div class=\"panel-body\">\n          <!--Relations-->\n          <property-toolbar  \n            [options] = \"relationOptions\"\n            (selectionChanged) = \"selectedRelationsChanged($event)\">\n          </property-toolbar>\n          \n          <!--Depth-->\n          <div class=\"input-group input-group-sm\" style=\"width: 150px; float: left;\">\n            <span class=\"input-group-addon\" id=\"basic-addon1\">Depth</span>\n            <input type=\"number\" class=\"form-control\" aria-describedby=\"basic-addon1\"\n              min=\"0\" max=\"50\" [(ngModel)]=\"depth\" >\n          </div>\n          \n          <!--Layout-->\n          <div class=\"btn-group\">\n            <button type=\"button\" class=\"btn btn-default\" \n              [ngClass]=\"{'active': layout == 'tree'}\" (click)=\"layout = 'tree'\">\n              <img class=\"icon\" src=\"images/tree.png\"/>\n            </button>\n            <button type=\"button\" class=\"btn btn-default\" \n              [ngClass]=\"{'active': layout == 'graph'}\" (click)=\"layout = 'graph'\">\n              <img class=\"icon\" src=\"images/graph.png\"/>\n            </button>\n          </div>\n\n        <hierarchy-tree *ngIf=\"layout == 'tree'\" \n          [item]=\"item\" [relations]=\"relations\" [depth]=\"depth\"></hierarchy-tree>\n        <hierarchy-graph *ngIf=\"layout == 'graph'\" \n          [item]=\"item\" [relations]=\"relations\" [depth]=\"depth\"></hierarchy-graph>\n      </div>     \n    </div>\n  ",
+            template: "\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">\n        Relations of <strong>{{item?.id}}{{(item)? ': ' + item.name : ''}}</strong>\n      </div>\n      <div class=\"panel-body\">\n          <!--Relations-->\n          <property-toolbar  \n            [options] = \"relationOptions\"\n            [transform] = \"getPropertyLabel\"\n            (selectionChanged) = \"selectedRelationsChanged($event)\">\n          </property-toolbar>\n          \n          <!--Depth-->\n          <div class=\"input-group input-group-sm\" style=\"width: 150px; float: left;\">\n            <span class=\"input-group-addon\" id=\"basic-addon1\">Depth</span>\n            <input type=\"number\" class=\"form-control\" aria-describedby=\"basic-addon1\"\n              min=\"0\" max=\"50\" [(ngModel)]=\"depth\" >\n          </div>\n          \n          <!--Layout-->\n          <div class=\"btn-group\">\n            <button type=\"button\" class=\"btn btn-default\" \n              [ngClass]=\"{'active': layout == 'tree'}\" (click)=\"layout = 'tree'\">\n              <img class=\"icon\" src=\"images/tree.png\"/>\n            </button>\n            <button type=\"button\" class=\"btn btn-default\" \n              [ngClass]=\"{'active': layout == 'graph'}\" (click)=\"layout = 'graph'\">\n              <img class=\"icon\" src=\"images/graph.png\"/>\n            </button>\n          </div>\n\n        <hierarchy-tree *ngIf=\"layout == 'tree'\" \n          [item]=\"item\" [relations]=\"relations\" [depth]=\"depth\"></hierarchy-tree>\n        <hierarchy-graph *ngIf=\"layout == 'graph'\" \n          [item]=\"item\" [relations]=\"relations\" [depth]=\"depth\"></hierarchy-graph>\n      </div>     \n    </div>\n  ",
             directives: [view_relationGraph_1.RelationshipGraph, view_relationTree_1.RelationshipTree,
                 dropdown_1.DROPDOWN_DIRECTIVES, common_1.CORE_DIRECTIVES, toolbar_propertySettings_1.PropertyToolbar]
         }), 
         __metadata('design:paramtypes', [service_resize_1.ResizeService])
-    ], HierarchyWidget);
-    return HierarchyWidget;
+    ], RelationshipWidget);
+    return RelationshipWidget;
 }());
-exports.HierarchyWidget = HierarchyWidget;
+exports.RelationshipWidget = RelationshipWidget;
 //# sourceMappingURL=widget.relations.js.map

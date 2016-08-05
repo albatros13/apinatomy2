@@ -2,7 +2,6 @@
  * Created by Natallia on 6/19/2016.
  */
 import {Component, Output, EventEmitter} from '@angular/core';
-import {TransportPhenomenon} from "../services/utils.model";
 import {MeasurableLocationTypePanel} from "./panel.measurableLocationType";
 import {MultiSelectInput, SingleSelectInput} from '../components/component.select';
 import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
@@ -33,8 +32,8 @@ import {ProcessType, MaterialType} from "open-physiology-model";
             <fieldset>
               <legend>Transport phenomenon:</legend>
               <checkbox-group [(ngModel)]="item.transportPhenomenon" [required]="true">
-                 <input type="checkbox" [value]="transportPhenomenon.diffusion">{{transportPhenomenon.diffusion}}&nbsp;
-                 <input type="checkbox" [value]="transportPhenomenon.advection">{{transportPhenomenon.advection}}<br/>
+                 <input type="checkbox" value="diffusion">diffusion&nbsp;
+                 <input type="checkbox" value="advection">advection<br/>
                </checkbox-group>
             </fieldset>
           </div>
@@ -104,7 +103,6 @@ import {ProcessType, MaterialType} from "open-physiology-model";
   pipes: [SetToArray]
 })
 export class ProcessTypePanel extends MeasurableLocationTypePanel{
-  public transportPhenomenon = TransportPhenomenon;
   ProcessType = ProcessType;
   MaterialType = MaterialType;
 

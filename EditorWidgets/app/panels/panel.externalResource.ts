@@ -12,7 +12,7 @@ import {Resource} from "open-physiology-model";
   inputs: ['item', 'ignore', 'options'],
   template:`
     <resource-panel [item] = "item" 
-      [ignore] = "myIgnore"
+      [ignore] = "ignore"
       [options] ="options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
@@ -48,11 +48,8 @@ import {Resource} from "open-physiology-model";
 })
 export class ExternalResourcePanel extends ResourcePanel{
   protected Resource = Resource;
-
-  myIgnore: Set<string> = new Set<string>();
-
   ngOnInit(){
     super.ngOnInit();
-    this.myIgnore = new Set<string>(this.ignore).add('externals');
+    this.ignore = this.ignore.add('externals');
   }
 }

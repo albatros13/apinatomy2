@@ -26,7 +26,7 @@ import {getIcon} from "../services/utils.model";
         <div class="panel-heading">{{caption}}</div>
         <div class="panel-body">
           <sort-toolbar [options]="['Name', 'ID', 'Class']" (sorted)="onSorted($event)"></sort-toolbar>
-          <edit-toolbar [options]="types" (added)="onAdded($event)"></edit-toolbar>
+          <edit-toolbar [options]="types" [transform]="getClassLabel" (added)="onAdded($event)"></edit-toolbar>
           <filter-toolbar [filter]="searchString" [options]="['Name', 'ID', 'Class']" (applied)="onFiltered($event)"></filter-toolbar>
           
           <accordion class="list-group" [closeOthers]="true"> 

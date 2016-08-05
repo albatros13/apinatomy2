@@ -9,7 +9,7 @@ import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/components/dropdown';
   selector: 'filter-toolbar',
   inputs: ['filter', 'options'],
   template: `
-      <div class="input-group input-group-sm" style="width: 250px;">
+      <div class="input-group input-group-sm" style="width: 220px;">
         <input type="text" class="form-control" 
         [value]="filter" (input)="updateValue($event)" (keyup.enter)="applied.emit({filter: filter, mode: mode});"/>
         <div class="input-group-btn" dropdown>

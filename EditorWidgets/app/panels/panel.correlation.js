@@ -22,12 +22,14 @@ var component_select_1 = require('../components/component.select');
 var repo_template_1 = require('../repos/repo.template');
 var open_physiology_model_1 = require("open-physiology-model");
 var pipe_general_1 = require('../transformations/pipe.general');
+var utils_model_1 = require("../services/utils.model");
 var CorrelationPanel = (function (_super) {
     __extends(CorrelationPanel, _super);
     function CorrelationPanel() {
         _super.apply(this, arguments);
         this.Publication = open_physiology_model_1.Publication;
         this.ClinicalIndex = open_physiology_model_1.ClinicalIndex;
+        this.templateName = utils_model_1.TemplateName;
     }
     CorrelationPanel = __decorate([
         core_1.Component({

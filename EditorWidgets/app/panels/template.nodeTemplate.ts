@@ -2,33 +2,50 @@
  * Created by Natallia on 6/21/2016.
  */
 import {Component} from '@angular/core';
-import {SingleSelectInput} from '../components/component.select';
+import {MultiSelectInput} from '../components/component.select';
 import {TemplateValue} from '../components/component.templateValue';
 import {TemplatePanel} from "./template.template";
+import {ProcessTemplate} from "open-physiology-model";
 
 @Component({
   selector: 'nodeTemplate-panel',
   inputs: ['item', 'ignore', 'options'],
   template:`
     <template-panel [item]="item" 
-      [ignore]   = "myIgnore"
+      [ignore]   = "ignore"
       [options]  = "options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"
       (propertyUpdated) = "propertyUpdated.emit($event)">
+      
+      <!--Incoming processes-->
+      <div class="input-control" *ngIf="includeProperty('incomingProcesses')">      
+        <label for="incomingProcesses">Incoming processes: </label>
+        <select-input [items] = "item.incomingProcesses" 
+          (updated) = "updateProperty('incomingProcesses', $event)"  
+          [options] = "ProcessTemplate.p('all') | async"></select-input>
+      </div>
+      
+      <!--Outgoing processes-->
+      <div class="input-control" *ngIf="includeProperty('outgoingProcesses')">      
+        <label for="outgoingProcesses">Outgoing processes: </label>
+        <select-input [items] = "item.outgoingProcesses" 
+          (updated) = "updateProperty('outgoingProcesses', $event)"   
+          [options] = "ProcessTemplate.p('all') | async"></select-input>
+      </div>   
 
       <ng-content></ng-content>      
 
     </template-panel>
   `,
-  directives: [TemplateValue, SingleSelectInput, TemplatePanel]
+  directives: [TemplateValue, MultiSelectInput, TemplatePanel]
 })
 export class NodeTemplatePanel extends TemplatePanel{
-  myIgnore: Set<string> = new Set<string>();
+  ProcessTemplate = ProcessTemplate;
 
   ngOnInit(){
     super.ngOnInit();
-    this.myIgnore = new Set<string>(this.ignore).add('cardinalityBase').add('cardinalityMultipliers')
+    this.ignore = this.ignore.add('cardinalityBase').add('cardinalityMultipliers');
   }
 }

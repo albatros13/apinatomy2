@@ -17,6 +17,7 @@ var toolbar_panelEdit_1 = require('../components/toolbar.panelEdit');
 var pipe_general_1 = require("../transformations/pipe.general");
 var toolbar_propertySettings_1 = require('../components/toolbar.propertySettings');
 var model = require("open-physiology-model");
+var utils_model_1 = require("../services/utils.model");
 var ResourcePanel = (function () {
     function ResourcePanel() {
         this.ignore = new Set();
@@ -25,6 +26,7 @@ var ResourcePanel = (function () {
         this.removed = new core_1.EventEmitter();
         this.propertyUpdated = new core_1.EventEmitter();
         this.ExternalResource = model.ExternalResource;
+        this.getPropertyLabel = utils_model_1.getPropertyLabel;
         this.properties = [];
     }
     ResourcePanel.prototype.ngOnInit = function () {
@@ -34,7 +36,7 @@ var ResourcePanel = (function () {
         this.setPropertySettings();
     };
     ResourcePanel.prototype.setPropertySettings = function () {
-        var privateProperties = new Set(["class", "themes", "nature", "root"]);
+        var privateProperties = new Set(["class", "themes"]);
         if (this.item && this.item.constructor) {
             var properties = Object.assign({}, this.item.constructor.properties, this.item.constructor.relationshipShortcuts);
             for (var property in properties) {
@@ -43,7 +45,7 @@ var ResourcePanel = (function () {
                     continue;
                 //Groups
                 if (property.indexOf("Border") > -1) {
-                    if (!this.properties.find(function (x) { return (x.value == "border"); }))
+                    if (!this.properties.find(function (x) { return (x.value == "borders"); }))
                         this.properties.push({ value: "borders", selected: !this.ignore.has("borders") });
                     continue;
                 }
@@ -104,7 +106,7 @@ var ResourcePanel = (function () {
         core_1.Component({
             selector: 'resource-panel',
             inputs: ['item', 'ignore', 'options'],
-            template: "\n    <div class=\"panel\">\n        <div class=\"panel-body\">\n          <form-toolbar  \n            [options]  = \"options\"\n            (saved)    = \"saved.emit(item)\"\n            (canceled) = \"canceled.emit(item)\"\n            (removed)  = \"removed.emit(item)\">\n          </form-toolbar>\n          <property-toolbar  \n            [options] = \"properties\"\n            (selectionChanged) = \"selectionChanged($event)\">\n          </property-toolbar>\n          \n          <div class=\"panel-content\">\n              <div class=\"input-control\" *ngIf=\"includeProperty('id')\">\n                <label for=\"id\">ID: </label>\n                <input type=\"text\" class=\"form-control\" disabled readonly [ngModel]=\"item.id\">\n              </div>\n\n              <div class=\"input-control\" *ngIf=\"includeProperty('href')\">\n                <label for=\"href\">Reference: </label>\n                <input type=\"text\" class=\"form-control\" disabled readonly [ngModel]=\"item.href\">\n              </div>\n\n              <!--Name-->\n              <div class=\"input-control\" *ngIf=\"includeProperty('name')\">\n                <label for=\"name\">Name: </label>\n                <input type=\"text\" class=\"form-control\" [(ngModel)]=\"item.name\">\n              </div>\n              \n              <!--Externals-->\n              <div class=\"input-control\" *ngIf=\"includeProperty('externals')\">\n                <label for=\"externals\">External annotations: </label>\n                <select-input \n                [items]=\"item.p('externals') | async\" \n                (updated)=\"updateProperty('externals', $event)\" \n                [options]=\"ExternalResource.p('all') | async\"></select-input>\n              </div>\n              \n              <ng-content></ng-content>\n              \n          </div>\n        </div>\n    </div>\n  ",
+            template: "\n    <div class=\"panel\">\n        <div class=\"panel-body\">\n          <form-toolbar  \n            [options]  = \"options\"\n            (saved)    = \"saved.emit(item)\"\n            (canceled) = \"canceled.emit(item)\"\n            (removed)  = \"removed.emit(item)\">\n          </form-toolbar>\n          <property-toolbar  \n            [options] = \"properties\"\n            [transform] = \"getPropertyLabel\"\n            (selectionChanged) = \"selectionChanged($event)\">\n          </property-toolbar>\n          \n          <div class=\"panel-content\">\n              <div class=\"input-control\" *ngIf=\"includeProperty('id')\">\n                <label for=\"id\">ID: </label>\n                <input type=\"text\" class=\"form-control\" disabled readonly [ngModel]=\"item.id\">\n              </div>\n\n              <div class=\"input-control\" *ngIf=\"includeProperty('href')\">\n                <label for=\"href\">Reference: </label>\n                <input type=\"text\" class=\"form-control\" disabled readonly [ngModel]=\"item.href\">\n              </div>\n\n              <!--Name-->\n              <div class=\"input-control\" *ngIf=\"includeProperty('name')\">\n                <label for=\"name\">Name: </label>\n                <input type=\"text\" class=\"form-control\" [(ngModel)]=\"item.name\">\n              </div>\n              \n              <!--Externals-->\n              <div class=\"input-control\" *ngIf=\"includeProperty('externals')\">\n                <label for=\"externals\">External annotations: </label>\n                <select-input \n                [items]=\"item.p('externals') | async\" \n                (updated)=\"updateProperty('externals', $event)\" \n                [options]=\"ExternalResource.p('all') | async\"></select-input>\n              </div>\n              \n              <ng-content></ng-content>\n              \n          </div>\n        </div>\n    </div>\n  ",
             directives: [toolbar_panelEdit_1.FormToolbar, toolbar_propertySettings_1.PropertyToolbar, component_select_1.MultiSelectInput],
             pipes: [pipe_general_1.MapToCategories]
         }), 

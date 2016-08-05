@@ -18,6 +18,10 @@ System.config({
       "defaultExtension": "js"
     },
     "ng2-select": {
+      "main": "notify.js",
+      "defaultExtension": "js"
+    },
+    "ng2-toasty": {
       "defaultExtension": "js"
     },
     "ng2-bootstrap": {
@@ -102,6 +106,8 @@ System.config({
     "ng2-select": "node_modules/ng2-select",
     "ng2-slider": "node_modules/ng2-slider-component",
     "ng2-dropdown": "node_modules/ng2-dropdown",
+    "ng2-toastr": "node_modules/ng2-toastr",
+    "ng2-toasty": "node_modules/ng2-toasty",
     "nvd3": "npm:nvd3@1.8.4",
     "open-physiology-model": "node_modules/open-physiology-model/dist",
     "plugin-babel": "npm:systemjs-plugin-babel@0.0.12",

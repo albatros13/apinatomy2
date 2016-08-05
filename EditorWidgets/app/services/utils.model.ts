@@ -1,4 +1,3 @@
-/*ENUMERATIONS*/
 export enum ResourceName {
   Resource            = <any>"Resource",
   ExternalResource    = <any>"ExternalResource",
@@ -40,23 +39,11 @@ export enum TemplateName {
   OmegaTreeTemplate       = <any>"OmegaTreeTemplate"
 }
 
-export enum TransportPhenomenon {
-  diffusion = <any>"diffusion",
-  advection = <any>"advection"
-}
-
-export enum FormType {
-  open       = <any>"open",
-  closed     = <any>"closed"
-}
-
-export function getLabel(field: string): string{
-  //let index = field.indexOf("Provider");
-  //if (index > -1) return "Inherits " + field.substring(0, index) + " from";
-  if (field == "externals") return "Annotations";
-  if (field == "locals") return "Local resources";
-  if (field == "id") return "ID";
-  return field[0].toUpperCase() + field.substring(1);
+export function getPropertyLabel(option: string): string{
+  let label = option;
+  label = label.replace(/([a-z])([A-Z])/g, '$1 $2');
+  label = label[0].toUpperCase() + label.substring(1).toLowerCase();
+  return label;
 }
 
 export function getIcon(Class: any): string{
@@ -99,4 +86,55 @@ export function getIcon(Class: any): string{
 
 declare var d3:any;
 export const getColor = d3.scale.category20();
+
+export function getTreeData(item: any, relations: Set<string>, depth: number) {//Format: {id: 1, name: "Parent", children: [{id: 2, name: "Child"},...]};
+  let data:any = {};
+  if (!item) return data;
+  data = {id: item.id, name: item.name, resource: item, children: []};
+  if (!depth) depth = -1;
+  let i = 0;
+  traverse(item, 0, data);
+  return data;
+
+  function traverse(root:any, level:number, data:any) {
+    if (!root) return;
+    for (let fieldName of Array.from(relations)){
+      if (!root[fieldName]) continue;
+      if ((depth - level) == 0) return;
+      if (!data.children) data.children = [];
+
+      for (let obj of Array.from(root[fieldName])) {
+        var child = {id: "node_" + ++i, name: obj.name, resource: obj, depth: level, relation: fieldName};
+        data.children.push(child);
+        traverse(obj, level + 1, child);
+      }
+    }
+  }
+}
+
+export function getGraphData(item: any, relations: Set<string>, depth: number) {
+  let data:any = {nodes: [], links  : []};
+  if (!item) return data;
+  data.nodes.push(item);
+  if (!depth) depth = -1;
+  traverse(item, depth, data);
+  return data;
+
+  function traverse(root: any, depth: number, data: any) {
+    if (!root) return;
+    if (depth == 0) return;
+    for (let fieldName of Array.from(relations)) {
+      if (!root[fieldName]) continue;
+      let children = Array.from(root[fieldName]);
+
+      for (let child of children) {
+        data.links.push({source: root, target: child, relation: fieldName});
+        if (data.nodes.indexOf(child) == -1) {
+          data.nodes.push(child);
+          traverse(child, depth - 1, data);
+        }
+      }
+    }
+  }
+}
 

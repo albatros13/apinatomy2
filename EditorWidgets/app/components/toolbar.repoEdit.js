@@ -25,8 +25,8 @@ var EditToolbar = (function () {
     EditToolbar = __decorate([
         core_1.Component({
             selector: 'edit-toolbar',
-            inputs: ['options'],
-            template: "\n      <div *ngIf=\"options && (options.length > 1)\" class=\"btn-group\" dropdown>\n        <button type=\"button\" class=\"btn btn-default dropdown-toggle\" aria-label=\"Add\" dropdownToggle>\n          <span class=\"glyphicon glyphicon-plus\"></span>\n        </button>\n        <ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"Add\">\n          <li *ngFor=\"let option of options; let i = index\" role=\"menuitem\" (click)=\"added.emit(option)\">\n            <a class=\"dropdown-item\" href=\"#\">{{option}}</a>\n          </li>\n        </ul>\n      </div>\n      <button *ngIf=\"options && (options.length == 1)\" \n        type=\"button\" class=\"btn btn-default\" (click)=\"added.emit(options[0])\">\n        <span class=\"glyphicon glyphicon-plus\"></span>\n      </button>\n    ",
+            inputs: ['options', 'transform'],
+            template: "\n      <div *ngIf=\"options && (options.length > 1)\" class=\"btn-group\" dropdown>\n        <button type=\"button\" class=\"btn btn-default dropdown-toggle\" aria-label=\"Add\" dropdownToggle>\n          <span class=\"glyphicon glyphicon-plus\"></span>\n        </button>\n        <ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"Add\">\n          <li *ngFor=\"let option of options; let i = index\" role=\"menuitem\" (click)=\"added.emit(option)\">\n            <a class=\"dropdown-item\" href=\"#\">{{transform? transform(option): option}}</a>\n          </li>\n        </ul>\n      </div>\n      <button *ngIf=\"options && (options.length == 1)\" \n        type=\"button\" class=\"btn btn-default\" (click)=\"added.emit(options[0])\">\n        <span class=\"glyphicon glyphicon-plus\"></span>\n      </button>\n    ",
             directives: [dropdown_1.DROPDOWN_DIRECTIVES, common_1.CORE_DIRECTIVES]
         }), 
         __metadata('design:paramtypes', [])

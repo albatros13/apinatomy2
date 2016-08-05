@@ -1,9 +1,8 @@
-import {Component, Input, Output, OnChanges, OnDestroy, ViewChild, ElementRef, Renderer,
-  ViewContainerRef, EventEmitter, ComponentResolver} from '@angular/core';
+import {Component, Input, Output, ElementRef, EventEmitter} from '@angular/core';
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
 
-import {getIcon, getColor} from "../services/utils.model";
+import {getIcon, getColor, getTreeData} from "../services/utils.model";
 
 declare var d3:any;
 
@@ -16,7 +15,7 @@ declare var d3:any;
     </div>
   `
 })
-export class RelationshipTree implements OnChanges, OnDestroy{
+export class RelationshipTree{
   @Input() item       : any;
   @Input() relations  : Set<string> = new Set<string>();
   @Input() depth      : number = -1;
@@ -24,18 +23,13 @@ export class RelationshipTree implements OnChanges, OnDestroy{
   //layout  : string;
 
   svg : any;
-  vp  : any = {size: {width: 600, height: 400},
-    margin: {x: 20, y: 20},
-    node: {size: {width: 40, height: 20}}};
+  vp  : any = {size: {width: 600, height: 400}, margin: {x: 20, y: 20}, node: {size: {width: 40, height: 20}}};
   data: any;
 
   @Output() selected = new EventEmitter();
   subscription: Subscription;
 
-  constructor(public el: ElementRef,
-              public vc: ViewContainerRef,
-              private resolver: ComponentResolver,
-              private resizeService: ResizeService){
+  constructor(public el: ElementRef, private resizeService: ResizeService){
     this.subscription = resizeService.resize$.subscribe(
       (event: any) => {
         if (event.target == "hierarchy-tree"){
@@ -61,7 +55,7 @@ export class RelationshipTree implements OnChanges, OnDestroy{
   ngOnChanges(changes: { [propName: string]: any }) {
     this.svg = d3.select(this.el.nativeElement).select('svg');
     if (this.item) {
-      this.data = this.getTreeData(this.item, this.relations, this.depth);
+      this.data = getTreeData(this.item, this.relations, this.depth);
       this.draw(this.svg, this.vp, this.data);
     } else {
       this.data = {};
@@ -98,7 +92,7 @@ export class RelationshipTree implements OnChanges, OnDestroy{
     });
 
     var zoom = d3.behavior.zoom()
-      .scaleExtent([1, 10])
+      .scaleExtent([0.5, 2])
       .on("zoom", zoomed);
 
     var drag = d3.behavior.drag()
@@ -210,7 +204,7 @@ export class RelationshipTree implements OnChanges, OnDestroy{
         .on('click', click);
 
       nodeEnter.append("image")
-        .attr("xlink:href", function (d: any) {return getIcon(d.resource.class);})
+        .attr("xlink:href", function (d: any) {return (d.resource)? getIcon(d.resource.class): "images/resource.png";})
         .attr("x", 0).attr("y", 0)
         .attr("width", 0).attr("height", 0);
 
@@ -260,29 +254,5 @@ export class RelationshipTree implements OnChanges, OnDestroy{
 
   }
 
-  getTreeData(item: any, relations: Set<string>, depth: number) {//Format: {id: 1, name: "Parent", children: [{id: 2, name: "Child"},...]};
-    let data:any = {};
-    if (!item) return data;
-    data = {id: item.id, name: item.name, resource: item, children: []};
-    if (!depth) depth = -1;
-    let i = 0;
-    traverse(item, 0, data);
-    return data;
-
-    function traverse(root:any, level:number, data:any) {
-      if (!root) return;
-      for (let fieldName of Array.from(relations)){
-        if (!root[fieldName]) continue;
-        if ((depth - level) == 0) return;
-        if (!data.children) data.children = [];
-
-        for (let obj of Array.from(root[fieldName])) {
-          var child = {id: "node_" + ++i, name: obj.name, resource: obj, depth: level, relation: fieldName};
-          data.children.push(child);
-          traverse(obj, level + 1, child);
-        }
-      }
-    }
-  }
 }
 

@@ -50,9 +50,6 @@ export abstract class RepoAbstract{
     if (!this.items) this.items = [];
     if (this.items[0] || !this.selectedItem)
       this.selectedItem = this.items[0];
-    if (!this.types || (this.types.length == 0)){
-      this.types = Array.from(new Set(this.items.map(item => item.class)));
-    }
   }
 
   protected onHeaderClick(item: any){
@@ -88,6 +85,7 @@ export abstract class RepoAbstract{
       else
         this.selectedItem = null;
     }
+    item.delete();
     this.removed.emit(item);
     this.updated.emit(this.items);
   }
@@ -102,5 +100,10 @@ export abstract class RepoAbstract{
     this.added.emit(newItem);
     this.updated.emit(this.items);
     this.selectedItem = newItem;
+  }
+
+  getClassLabel(option: string){
+    let name = model[option].singular;
+    return name[0].toUpperCase() + name.substring(1);
   }
 }

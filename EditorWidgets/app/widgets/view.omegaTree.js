@@ -13,7 +13,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  */
 var core_1 = require('@angular/core');
 var service_resize_1 = require('../services/service.resize');
-var color = d3.scale.category20();
+var utils_model_1 = require("../services/utils.model");
 //Resource visualization widget stub
 var TemplateBox = (function () {
     function TemplateBox(model) {
@@ -34,7 +34,7 @@ var OmegaTreeWidget = (function () {
         this.renderer = renderer;
         this.el = el;
         this.resizeService = resizeService;
-        this.vp = { size: { width: 400, height: 600 },
+        this.vp = { size: { width: 600, height: 400 },
             margin: { x: 20, y: 20 },
             node: { size: { width: 40, height: 40 } } };
         this.subscription = resizeService.resize$.subscribe(function (event) {
@@ -63,25 +63,50 @@ var OmegaTreeWidget = (function () {
         }
         else {
             this.data = {};
-            this.svg.selectAll("g").remove();
+            this.svg.selectAll(".tree").remove();
         }
+        console.log("Omega tree data", this.data);
     };
     OmegaTreeWidget.prototype.draw = function (svg, vp, data) {
         var w = vp.size.width - 2 * vp.margin.x;
         var h = vp.size.height - 2 * vp.margin.y;
         svg.selectAll(".tree").remove();
-        var diagonal = d3.svg.diagonal().projection(function (d) { return [d.x, d.y]; });
         var tree = d3.layout.tree().size([w, h]);
+        var diagonal = d3.svg.diagonal().projection(function (d) { return [d.x, d.y]; });
+        var zoom = d3.behavior.zoom()
+            .scaleExtent([0.5, 2])
+            .on("zoom", zoomed);
+        var drag = d3.behavior.drag()
+            .origin(function (d) { return d; })
+            .on("dragstart", dragstarted)
+            .on("drag", dragged)
+            .on("dragend", dragended);
+        function zoomed() {
+            svgGroup.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+        }
+        function dragstarted(d) {
+            d3.event.sourceEvent.stopPropagation();
+            d3.select(this).classed("dragging", true);
+        }
+        function dragged(d) {
+            d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+        }
+        function dragended(d) {
+            d3.select(this).classed("dragging", false);
+        }
         var treeSvg = svg.append("g").attr("class", "tree").attr("width", vp.size.width).attr("height", vp.size.height)
-            .attr("transform", "translate(" + vp.margin.x + "," + vp.margin.y + ")");
+            .attr("transform", "translate(" + vp.margin.x + "," + vp.margin.y + ")")
+            .call(zoom);
+        var svgGroup = treeSvg.append("g");
         var nodes = tree.nodes(data);
         var links = tree.links(nodes);
-        var link = treeSvg.selectAll(".link")
+        var link = svgGroup.selectAll(".link")
             .data(links)
             .enter().append("path")
             .attr("class", "link")
+            .attr("stroke", function (d) { return utils_model_1.getColor(d.relation); })
             .attr("d", diagonal);
-        var node = treeSvg.selectAll(".node")
+        var node = svgGroup.selectAll(".node")
             .data(nodes)
             .enter()
             .append("circle")
@@ -89,13 +114,11 @@ var OmegaTreeWidget = (function () {
             .attr("r", function (d) {
             return d.children ? 4.5 : 0;
         })
-            .style("fill", function (d) {
-            return color(d.class);
-        })
+            .style("fill", function (d) { return utils_model_1.getColor(d.class); })
             .attr("transform", transform);
         var dx = vp.node.size.width / 2;
         var dy = vp.node.size.height / 2;
-        var icon = treeSvg.selectAll(".icon")
+        var icon = svgGroup.selectAll(".icon")
             .data(links)
             .enter()
             .append("g")
@@ -104,10 +127,10 @@ var OmegaTreeWidget = (function () {
             .each(function (d) {
             if (d.source) {
                 var item = new TemplateBox(d.source.resource);
-                item.render(treeSvg, { center: { x: (d.source.x + d.target.x) / 2 - dx, y: (d.source.y + d.target.y) / 2 - dy }, size: vp.node.size });
+                item.render(svgGroup, { center: { x: (d.source.x + d.target.x) / 2 - dx, y: (d.source.y + d.target.y) / 2 - dy }, size: vp.node.size });
             }
         });
-        var text = treeSvg.selectAll("nodeLabel")
+        var text = svgGroup.selectAll("nodeLabel")
             .data(links)
             .enter()
             .append("g")
@@ -123,18 +146,19 @@ var OmegaTreeWidget = (function () {
         }
     };
     OmegaTreeWidget.prototype.getOmegaTreeData = function (item, property) {
-        var data = {};
+        var treeData = {};
         if (!item)
-            return data;
-        if (!property)
-            return data;
-        if (!item[property] || !item[property][0])
-            return data;
-        var obj = item[property][0];
+            return treeData;
+        var relations = new Set().add(property);
+        treeData = utils_model_1.getTreeData(item, relations, -1);
+        if (treeData.children.length == 0)
+            return {};
+        //TODO: sort children (a, b) => b[cardinalityMultiplies].has(a) -> (a < b)
+        var obj = treeData.children[0];
         var parent = { id: obj.id, name: obj.name, resource: obj };
-        data = parent;
-        for (var i = 1; i < item[property].length; i++) {
-            var obj_1 = item[property][i];
+        var data = parent;
+        for (var i = 1; i < treeData.children.length; i++) {
+            var obj_1 = treeData.children[i];
             var child = { id: obj_1.id, name: obj_1.name, resource: obj_1 };
             parent.children = [child];
             parent = child;
@@ -143,6 +167,10 @@ var OmegaTreeWidget = (function () {
         parent.children = [{ skip: true }];
         return data;
     };
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Object)
+    ], OmegaTreeWidget.prototype, "item", void 0);
     OmegaTreeWidget = __decorate([
         core_1.Component({
             selector: 'omega-tree',

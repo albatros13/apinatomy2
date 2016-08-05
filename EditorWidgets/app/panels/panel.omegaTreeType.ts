@@ -6,26 +6,27 @@ import {GroupTypePanel} from "./panel.groupType";
 import {MultiSelectInput, SingleSelectInput} from '../components/component.select';
 import {SetToArray} from "../transformations/pipe.general";
 import {RepoTemplate} from '../repos/repo.template';
+import {NodeTemplate} from "open-physiology-model";
 
 @Component({
   selector: 'omegaTreeType-panel',
   inputs: ['item', 'ignore', 'options'],
   template:`
     <groupType-panel [item]="item" 
-      [ignore] = "myIgnore"
-      [options] ="options"
+      [ignore] = "ignore"
+      [options] = "options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"
-      (propertyUpdated) = "propertyUpdated.emit($event)">
+      (propertyUpdated) = "onPropertyUpdate($event)">
       
       <!--Root-->
-      <!--<div class="input-control" *ngIf="includeProperty('root')">      
-        <label for="cause">Root: </label>
-        <select-input-1 [item] = "item.root" 
-          (updated)="updateProperty('root', $event)"   
-          [options] = "NodeTemplate.p('all') | async"></select-input-1>
-      </div>-->
+      <div class="input-control" *ngIf="includeProperty('root')">      
+        <label for="root">Root: </label>
+        <select-input [item] = "item.p('root') | async" 
+          (updated) = "updateProperty('root', $event)"   
+          [options] = "NodeTemplate.p('all') | async"></select-input>
+      </div>
 
       <ng-content></ng-content> 
     
@@ -35,10 +36,17 @@ import {RepoTemplate} from '../repos/repo.template';
   pipes: [SetToArray]
 })
 export class OmegaTreeTypePanel extends GroupTypePanel{
-  myIgnore: Set<string> = new Set<string>();
+  NodeTemplate = NodeTemplate;
 
   ngOnInit(){
     super.ngOnInit();
-    this.myIgnore = new Set<string>(this.ignore).add('supertypes').add('subtypes');
+    this.ignore = this.ignore.add('supertypes').add('subtypes');
+  }
+
+  onPropertyUpdate(event){
+    if (event.property == "elements"){
+      //console.log("Omega tree elements updated!", event);
+    }
+    this.propertyUpdated.emit(event);
   }
 }

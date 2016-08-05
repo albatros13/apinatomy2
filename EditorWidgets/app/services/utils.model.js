@@ -1,5 +1,4 @@
 "use strict";
-/*ENUMERATIONS*/
 (function (ResourceName) {
     ResourceName[ResourceName["Resource"] = "Resource"] = "Resource";
     ResourceName[ResourceName["ExternalResource"] = "ExternalResource"] = "ExternalResource";
@@ -34,28 +33,13 @@ var ResourceName = exports.ResourceName;
     TemplateName[TemplateName["OmegaTreeTemplate"] = "OmegaTreeTemplate"] = "OmegaTreeTemplate";
 })(exports.TemplateName || (exports.TemplateName = {}));
 var TemplateName = exports.TemplateName;
-(function (TransportPhenomenon) {
-    TransportPhenomenon[TransportPhenomenon["diffusion"] = "diffusion"] = "diffusion";
-    TransportPhenomenon[TransportPhenomenon["advection"] = "advection"] = "advection";
-})(exports.TransportPhenomenon || (exports.TransportPhenomenon = {}));
-var TransportPhenomenon = exports.TransportPhenomenon;
-(function (FormType) {
-    FormType[FormType["open"] = "open"] = "open";
-    FormType[FormType["closed"] = "closed"] = "closed";
-})(exports.FormType || (exports.FormType = {}));
-var FormType = exports.FormType;
-function getLabel(field) {
-    //let index = field.indexOf("Provider");
-    //if (index > -1) return "Inherits " + field.substring(0, index) + " from";
-    if (field == "externals")
-        return "Annotations";
-    if (field == "locals")
-        return "Local resources";
-    if (field == "id")
-        return "ID";
-    return field[0].toUpperCase() + field.substring(1);
+function getPropertyLabel(option) {
+    var label = option;
+    label = label.replace(/([a-z])([A-Z])/g, '$1 $2');
+    label = label[0].toUpperCase() + label.substring(1).toLowerCase();
+    return label;
 }
-exports.getLabel = getLabel;
+exports.getPropertyLabel = getPropertyLabel;
 function getIcon(Class) {
     switch (Class) {
         case ResourceName.ExternalResource: return "images/external.png";
@@ -88,4 +72,66 @@ function getIcon(Class) {
 }
 exports.getIcon = getIcon;
 exports.getColor = d3.scale.category20();
+function getTreeData(item, relations, depth) {
+    var data = {};
+    if (!item)
+        return data;
+    data = { id: item.id, name: item.name, resource: item, children: [] };
+    if (!depth)
+        depth = -1;
+    var i = 0;
+    traverse(item, 0, data);
+    return data;
+    function traverse(root, level, data) {
+        if (!root)
+            return;
+        for (var _i = 0, _a = Array.from(relations); _i < _a.length; _i++) {
+            var fieldName = _a[_i];
+            if (!root[fieldName])
+                continue;
+            if ((depth - level) == 0)
+                return;
+            if (!data.children)
+                data.children = [];
+            for (var _b = 0, _c = Array.from(root[fieldName]); _b < _c.length; _b++) {
+                var obj = _c[_b];
+                var child = { id: "node_" + ++i, name: obj.name, resource: obj, depth: level, relation: fieldName };
+                data.children.push(child);
+                traverse(obj, level + 1, child);
+            }
+        }
+    }
+}
+exports.getTreeData = getTreeData;
+function getGraphData(item, relations, depth) {
+    var data = { nodes: [], links: [] };
+    if (!item)
+        return data;
+    data.nodes.push(item);
+    if (!depth)
+        depth = -1;
+    traverse(item, depth, data);
+    return data;
+    function traverse(root, depth, data) {
+        if (!root)
+            return;
+        if (depth == 0)
+            return;
+        for (var _i = 0, _a = Array.from(relations); _i < _a.length; _i++) {
+            var fieldName = _a[_i];
+            if (!root[fieldName])
+                continue;
+            var children = Array.from(root[fieldName]);
+            for (var _b = 0, children_1 = children; _b < children_1.length; _b++) {
+                var child = children_1[_b];
+                data.links.push({ source: root, target: child, relation: fieldName });
+                if (data.nodes.indexOf(child) == -1) {
+                    data.nodes.push(child);
+                    traverse(child, depth - 1, data);
+                }
+            }
+        }
+    }
+}
+exports.getGraphData = getGraphData;
 //# sourceMappingURL=utils.model.js.map

@@ -7,7 +7,7 @@ import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
 
 @Component({
   selector: 'property-toolbar',
-  inputs: ['options'],
+  inputs: ['options', 'transform'],
   template: `
     <div class="dropdown" dropdown>
       <button type="button" class="btn btn-default"  dropdown-open>
@@ -17,7 +17,7 @@ import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
         <li *ngFor="let option of options">
           <a class="small" href="#"><input type="checkbox"
           [(ngModel)]="option.selected" (ngModelChange)="selectionChanged.emit(option)"/>&nbsp;
-          <span [style.color]="option.color">{{option.value}}</span>
+          <span [style.color]="option.color">{{transform? transform(option.value): option.value}}</span>
           </a>
         </li>
       </ul>

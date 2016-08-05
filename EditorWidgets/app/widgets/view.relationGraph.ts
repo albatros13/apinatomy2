@@ -4,7 +4,7 @@ import {nvD3} from 'ng2-nvd3/lib/ng2-nvd3';
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
 
-import {getIcon, getColor} from "../services/utils.model";
+import {getIcon, getColor, getGraphData} from "../services/utils.model";
 
 declare let d3: any;
 
@@ -57,8 +57,7 @@ export class RelationshipGraph implements OnChanges, OnDestroy{
 
   ngOnChanges(changes: { [propName: string]: any }) {
     if (this.item) {
-      this.data = this.getGraphData(this.item, this.relations, this.depth);
-      console.log("Data ", this.data);
+      this.data = getGraphData(this.item, this.relations, this.depth);
     } else {
       this.data = {};
     }
@@ -96,6 +95,7 @@ export class RelationshipGraph implements OnChanges, OnDestroy{
         width: this.vp.size.width,
         height: this.vp.size.height,
         margin:{top: 20, right: 20, bottom: 20, left: 20},
+        radius: 0,
         nodeExtras: function(node: any) {
           node && node
             .append("text")
@@ -115,32 +115,6 @@ export class RelationshipGraph implements OnChanges, OnDestroy{
         }
       }
     };
-  }
-
-  getGraphData(item: any, relations: Set<string>, depth: number) {
-    let data:any = {nodes: [], links  : []};
-    if (!item) return data;
-    data.nodes.push(item);
-    if (!depth) depth = -1;
-    traverse(item, depth, data);
-    return data;
-
-    function traverse(root: any, depth: number, data: any) {
-      if (!root) return;
-      if (depth == 0) return root;
-      for (let fieldName of Array.from(relations)) {
-        if (!root[fieldName]) continue;
-        let children = Array.from(root[fieldName]);
-
-        for (let child of children) {
-          data.links.push({source: root, target: child, relation: fieldName});
-          if (data.nodes.indexOf(child) == -1) {
-            data.nodes.push(child);
-            traverse(child, depth - 1, data);
-          }
-        }
-      }
-    }
   }
 }
 

@@ -204,8 +204,8 @@ div .dotted {
 
 .repo {
   border-right:3px #eee solid;
-  min-width: 400px;
-  min-height: 600px;
+  min-width: 320px;
+  min-height: 320px;
 }
 
 .viewer{
@@ -239,3 +239,5 @@ div .dotted {
 .form-control{
   height: 30px;
 }
+
+

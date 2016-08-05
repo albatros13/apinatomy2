@@ -1,7 +1,7 @@
 /**
  * Created by Natallia on 7/15/2016.
  */
-import {Component, Input, Output, OnChanges, OnDestroy} from '@angular/core';
+import {Component, Input, Output} from '@angular/core';
 import {RelationshipGraph} from "./view.relationGraph";
 import {RelationshipTree}  from "./view.relationTree";
 import {CORE_DIRECTIVES} from '@angular/common';
@@ -9,7 +9,7 @@ import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/components/dropdown';
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
 import {PropertyToolbar} from '../components/toolbar.propertySettings';
-import {getColor} from "../services/utils.model";
+import {getColor, getPropertyLabel} from "../services/utils.model";
 
 @Component({
   selector: 'hierarchy-widget',
@@ -23,6 +23,7 @@ import {getColor} from "../services/utils.model";
           <!--Relations-->
           <property-toolbar  
             [options] = "relationOptions"
+            [transform] = "getPropertyLabel"
             (selectionChanged) = "selectedRelationsChanged($event)">
           </property-toolbar>
           
@@ -55,7 +56,7 @@ import {getColor} from "../services/utils.model";
   directives: [RelationshipGraph, RelationshipTree,
     DROPDOWN_DIRECTIVES, CORE_DIRECTIVES, PropertyToolbar]
 })
-export class HierarchyWidget implements OnChanges, OnDestroy{
+export class RelationshipWidget{
   @Input() item: any;
   @Input() relations  : Set<string> = new Set<string>();
   @Input() depth: number = 2;
@@ -63,6 +64,7 @@ export class HierarchyWidget implements OnChanges, OnDestroy{
   relationOptions: Array<any> = [];
   propertyOptions: Array<any> = [];
   Class: any;
+  getPropertyLabel = getPropertyLabel;
 
   layout = "tree";
   subscription: Subscription;
@@ -100,7 +102,7 @@ export class HierarchyWidget implements OnChanges, OnDestroy{
   }
 
   updateRelations(){
-    let privateRelations: Set<string> = new Set([]);
+    let privateRelations: Set<string> = new Set(["themes", "plusBorder", "minusBorder", "innerBorder", "outerBorder"]);
 
     this.relationOptions = [];
     if (this.item){
@@ -122,7 +124,4 @@ export class HierarchyWidget implements OnChanges, OnDestroy{
     setTimeout(() => { this.relations = new Set<string>()}, 0);
     setTimeout(() => { this.relations = copy }, 0);
   }
-
-  //TODO
-  //on ChangeLayout add/remove subtype/supertype from the opton list
 }

@@ -7,6 +7,7 @@ import {SingleSelectInput, MultiSelectInput} from '../components/component.selec
 import {RepoTemplate} from '../repos/repo.template';
 import {Publication, ClinicalIndex} from "open-physiology-model";
 import {SetToArray} from '../transformations/pipe.general';
+import {TemplateName} from "../services/utils.model";
 
 @Component({
   selector: 'correlation-panel',
@@ -60,4 +61,5 @@ import {SetToArray} from '../transformations/pipe.general';
 export class CorrelationPanel extends ResourcePanel{
   Publication = Publication;
   ClinicalIndex = ClinicalIndex;
+  templateName = TemplateName;
 }

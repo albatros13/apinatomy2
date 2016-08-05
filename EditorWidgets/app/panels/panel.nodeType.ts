@@ -3,8 +3,10 @@
  */
 import {Component} from '@angular/core';
 import {MeasurableLocationTypePanel} from "./panel.measurableLocationType";
+import {MultiSelectInput} from '../components/component.select';
 import {RepoTemplate} from '../repos/repo.template';
 import {SetToArray} from "../transformations/pipe.general";
+import {NodeType} from "open-physiology-model";
 
 @Component({
   selector: 'nodeType-panel',
@@ -19,20 +21,35 @@ import {SetToArray} from "../transformations/pipe.general";
       (propertyUpdated) = "propertyUpdated.emit($event)">
 
       <ng-content></ng-content>   
-      
+ 
+      <providerGroup>
+        <!--ChannelProviders-->
+        <div class="input-control" *ngIf="includeProperty('channelProviders')">
+          <label for="channelProviders">Channel providers: </label>
+          <select-input [items]="item.p('channelProviders') | async" 
+          (updated)="updateProperty('channelProviders', $event)" 
+          [options]="NodeType.p('all') | async"></select-input>
+        </div>
+        <ng-content select="providerGroup"></ng-content>
+      </providerGroup>
+
       <relationGroup>
       <!--Channels-->
-      <repo-template caption="Channels" 
-        [items] = "item.p('channels') | async | setToArray" 
-        (updated)="updateProperty('channels', $event)"     
-        [types]="[templateName.NodeTemplate]"></repo-template>
-  
+      <div class="input-control" *ngIf="includeProperty('channels')"> 
+        <repo-template caption="Channels" 
+          [items] = "item.p('channels') | async | setToArray" 
+          (updated)="updateProperty('channels', $event)"     
+          [types]="[templateName.NodeTemplate]"></repo-template>
+        </div>
         <ng-content select="relationGroup"></ng-content>
       </relationGroup>
+      
     
     </measurableLocationType-panel>
   `,
-  directives: [MeasurableLocationTypePanel, RepoTemplate],
+  directives: [MultiSelectInput, MeasurableLocationTypePanel, RepoTemplate],
   pipes: [SetToArray]
 })
-export class NodeTypePanel extends MeasurableLocationTypePanel{}
+export class NodeTypePanel extends MeasurableLocationTypePanel{
+  NodeType = NodeType;
+}

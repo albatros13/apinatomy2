@@ -39,8 +39,7 @@ var RelationshipGraph = (function () {
     };
     RelationshipGraph.prototype.ngOnChanges = function (changes) {
         if (this.item) {
-            this.data = this.getGraphData(this.item, this.relations, this.depth);
-            console.log("Data ", this.data);
+            this.data = utils_model_1.getGraphData(this.item, this.relations, this.depth);
         }
         else {
             this.data = {};
@@ -76,6 +75,7 @@ var RelationshipGraph = (function () {
                 width: this.vp.size.width,
                 height: this.vp.size.height,
                 margin: { top: 20, right: 20, bottom: 20, left: 20 },
+                radius: 0,
                 nodeExtras: function (node) {
                     node && node
                         .append("text")
@@ -94,36 +94,6 @@ var RelationshipGraph = (function () {
                 }
             }
         };
-    };
-    RelationshipGraph.prototype.getGraphData = function (item, relations, depth) {
-        var data = { nodes: [], links: [] };
-        if (!item)
-            return data;
-        data.nodes.push(item);
-        if (!depth)
-            depth = -1;
-        traverse(item, depth, data);
-        return data;
-        function traverse(root, depth, data) {
-            if (!root)
-                return;
-            if (depth == 0)
-                return root;
-            for (var _i = 0, _a = Array.from(relations); _i < _a.length; _i++) {
-                var fieldName = _a[_i];
-                if (!root[fieldName])
-                    continue;
-                var children = Array.from(root[fieldName]);
-                for (var _b = 0, children_1 = children; _b < children_1.length; _b++) {
-                    var child = children_1[_b];
-                    data.links.push({ source: root, target: child, relation: fieldName });
-                    if (data.nodes.indexOf(child) == -1) {
-                        data.nodes.push(child);
-                        traverse(child, depth - 1, data);
-                    }
-                }
-            }
-        }
     };
     __decorate([
         core_1.Input(), 

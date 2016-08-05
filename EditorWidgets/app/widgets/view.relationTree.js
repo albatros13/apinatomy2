@@ -12,17 +12,13 @@ var core_1 = require('@angular/core');
 var service_resize_1 = require('../services/service.resize');
 var utils_model_1 = require("../services/utils.model");
 var RelationshipTree = (function () {
-    function RelationshipTree(el, vc, resolver, resizeService) {
+    function RelationshipTree(el, resizeService) {
         var _this = this;
         this.el = el;
-        this.vc = vc;
-        this.resolver = resolver;
         this.resizeService = resizeService;
         this.relations = new Set();
         this.depth = -1;
-        this.vp = { size: { width: 600, height: 400 },
-            margin: { x: 20, y: 20 },
-            node: { size: { width: 40, height: 20 } } };
+        this.vp = { size: { width: 600, height: 400 }, margin: { x: 20, y: 20 }, node: { size: { width: 40, height: 20 } } };
         this.selected = new core_1.EventEmitter();
         this.subscription = resizeService.resize$.subscribe(function (event) {
             if (event.target == "hierarchy-tree") {
@@ -45,7 +41,7 @@ var RelationshipTree = (function () {
     RelationshipTree.prototype.ngOnChanges = function (changes) {
         this.svg = d3.select(this.el.nativeElement).select('svg');
         if (this.item) {
-            this.data = this.getTreeData(this.item, this.relations, this.depth);
+            this.data = utils_model_1.getTreeData(this.item, this.relations, this.depth);
             this.draw(this.svg, this.vp, this.data);
         }
         else {
@@ -78,7 +74,7 @@ var RelationshipTree = (function () {
             return [d.y, d.x];
         });
         var zoom = d3.behavior.zoom()
-            .scaleExtent([1, 10])
+            .scaleExtent([0.5, 2])
             .on("zoom", zoomed);
         var drag = d3.behavior.drag()
             .origin(function (d) { return d; })
@@ -171,7 +167,7 @@ var RelationshipTree = (function () {
                 .attr("transform", function (d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
                 .on('click', click);
             nodeEnter.append("image")
-                .attr("xlink:href", function (d) { return utils_model_1.getIcon(d.resource.class); })
+                .attr("xlink:href", function (d) { return (d.resource) ? utils_model_1.getIcon(d.resource.class) : "images/resource.png"; })
                 .attr("x", 0).attr("y", 0)
                 .attr("width", 0).attr("height", 0);
             nodeEnter.append("text")
@@ -211,36 +207,6 @@ var RelationshipTree = (function () {
             });
         }
     };
-    RelationshipTree.prototype.getTreeData = function (item, relations, depth) {
-        var data = {};
-        if (!item)
-            return data;
-        data = { id: item.id, name: item.name, resource: item, children: [] };
-        if (!depth)
-            depth = -1;
-        var i = 0;
-        traverse(item, 0, data);
-        return data;
-        function traverse(root, level, data) {
-            if (!root)
-                return;
-            for (var _i = 0, _a = Array.from(relations); _i < _a.length; _i++) {
-                var fieldName = _a[_i];
-                if (!root[fieldName])
-                    continue;
-                if ((depth - level) == 0)
-                    return;
-                if (!data.children)
-                    data.children = [];
-                for (var _b = 0, _c = Array.from(root[fieldName]); _b < _c.length; _b++) {
-                    var obj = _c[_b];
-                    var child = { id: "node_" + ++i, name: obj.name, resource: obj, depth: level, relation: fieldName };
-                    data.children.push(child);
-                    traverse(obj, level + 1, child);
-                }
-            }
-        }
-    };
     __decorate([
         core_1.Input(), 
         __metadata('design:type', Object)
@@ -263,7 +229,7 @@ var RelationshipTree = (function () {
             inputs: ['item', 'relations', 'depth'],
             template: "\n    <div class=\"panel-content\">\n      <svg #treeSvg class=\"svg-widget\"></svg>\n    </div>\n  "
         }), 
-        __metadata('design:paramtypes', [core_1.ElementRef, core_1.ViewContainerRef, core_1.ComponentResolver, service_resize_1.ResizeService])
+        __metadata('design:paramtypes', [core_1.ElementRef, service_resize_1.ResizeService])
     ], RelationshipTree);
     return RelationshipTree;
 }());

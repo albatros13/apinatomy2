@@ -1,11 +1,13 @@
 import {Component, ElementRef} from '@angular/core';
 import {RepoGeneral} from '../repos/repo.general';
-import {HierarchyWidget} from '../widgets/widget.relations';
+import {RepoTemplate} from '../repos/repo.template';
+import {RelationshipWidget} from '../widgets/widget.relations';
 import {ResourceWidget} from '../widgets/widget.resource';
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
-import {SetToArray} from "../transformations/pipe.general";
+import {SetToArray, HideTemplates} from "../transformations/pipe.general";
 
+import 'rxjs/add/operator/map';
 import * as model from "open-physiology-model";
 
 declare var GoldenLayout:any;
@@ -19,22 +21,26 @@ declare var $: any;
   template: `
     <repo-general id="repo"
       [items]="items | setToArray" 
-      [caption]="'All resources'" 
-      (selected)="onItemSelected($event)"
-      (added)="onItemAdded($event)"
-      (removed)="onItemRemoved($event)"
-      (updated)="onItemUpdated($event)">
+      [caption]="'Resources'" 
+      (selected)="onItemSelected($event)">
     </repo-general>
     <hierarchy-widget id = "hierarchy" [item]="selectedItem"></hierarchy-widget>
-    <resource-widget id = "resource" [item]="selectedItem"></resource-widget>          
+    <resource-widget id = "resource" [item]="selectedItem"></resource-widget>   
+    <!--<repo-template id="repoTemplate"
+      [items]="templates | setToArray" 
+      [caption]="'Templates'" 
+      [options]="{sortToolbar: true, filterToolbar: true}"
+      (selected)="onItemSelected($event)">
+    </repo-template>-->
     <div id="main"></div>
   `,
   styles: [`#main {width: 100%; height: 100%; border: 0; margin: 0; padding: 0}`],
-  directives: [RepoGeneral, HierarchyWidget, ResourceWidget],
-  pipes: [SetToArray]
+  directives: [RepoGeneral, RepoTemplate, RelationshipWidget, ResourceWidget],
+  pipes: [SetToArray/*, HideTemplates*/]
 })
 export class ResourceEditor {
   items:Array<any>;
+  templates:Array<any>;
   selectedItem:any;
 
   layoutConfig = {
@@ -56,7 +62,8 @@ export class ResourceEditor {
       content: [
         {
           type: 'component',
-          componentName: 'RepoPanel'
+          componentName: 'RepoPanel',
+          //width: 25
         },
         {
           type: 'column',
@@ -69,22 +76,31 @@ export class ResourceEditor {
               type: 'component',
               componentName: 'ResourcePanel'
             }
-          ]
-        }]
+          ],
+          width: 50
+        },
+        /*{
+          type: 'component',
+          componentName: 'RepoTemplatePanel',
+          width: 25
+        },*/
+      ]
     }]
   };
 
   mainLayout:any;
 
-  subscription: Subscription;
+  rs: Subscription;
+  ts: Subscription;
 
   constructor(private resizeService:ResizeService,
               public el:ElementRef) {
-    this.subscription = model.Resource.p('all').subscribe(
-      (data: any) => {this.items = data;});
+    this.rs = model.Resource.p('all').subscribe(
+      (data: any) => {this.items = data});
 
-    console.log("V.4");
-
+   /* this.ts = model.Template.p('all').subscribe(
+      (data: any) => {this.templates = data;});
+*/
     (async function() {
       /*Material type*/
       var water = model.MaterialType.new({name: "Water"});
@@ -119,8 +135,7 @@ export class ResourceEditor {
 
       await Promise.all(externals.map(p => p.commit()));
 
-      let borderType = model.BorderType.new({name: "GeneralBorder"});
-      await borderType.commit();
+      let borderType = await model.BorderType.getSingleton();
 
       let minusBorder = model.BorderTemplate.new({name: "T: MinusBorder", type: borderType, cardinalityBase: 1});
 
@@ -150,11 +165,13 @@ export class ResourceEditor {
         minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder});
       await kidneyLobus.commit();
 
+      //create tree from user story
+
     })();
 
   }
   ngOnDestroy() {
-    this.subscription.unsubscribe();
+    this.rs.unsubscribe();
   }
 
   onItemSelected(item:any) {
@@ -164,15 +181,6 @@ export class ResourceEditor {
     setTimeout(() => {
       this.selectedItem = item;
     }, 0);
-  }
-
-  onItemAdded(item:any) {
-  }
-
-  onItemRemoved(item:any) {
-  }
-
-  onItemUpdated(item:any) {
   }
 
   ngOnInit() {
@@ -185,6 +193,12 @@ export class ResourceEditor {
       let content = $('app > #repo');
       content.detach().appendTo(panel);
     });
+
+   /* this.mainLayout.registerComponent('RepoTemplatePanel', function (container:any, componentState:any) {
+      let panel = container.getElement();
+      let content = $('app > #repoTemplate');
+      content.detach().appendTo(panel);
+    });*/
 
     this.mainLayout.registerComponent('HierarchyPanel', function (container:any, componentState:any) {
       let panel = container.getElement();

@@ -7,6 +7,7 @@ import {FormToolbar} from '../components/toolbar.panelEdit';
 import {MapToCategories} from "../transformations/pipe.general";
 import {PropertyToolbar} from '../components/toolbar.propertySettings';
 import * as model from "open-physiology-model";
+import {getPropertyLabel} from "../services/utils.model";
 
 @Component({
   selector: 'resource-panel',
@@ -22,6 +23,7 @@ import * as model from "open-physiology-model";
           </form-toolbar>
           <property-toolbar  
             [options] = "properties"
+            [transform] = "getPropertyLabel"
             (selectionChanged) = "selectionChanged($event)">
           </property-toolbar>
           
@@ -70,6 +72,7 @@ export class ResourcePanel {
   @Output() propertyUpdated = new EventEmitter();
 
   ExternalResource = model.ExternalResource;
+  getPropertyLabel = getPropertyLabel;
 
   properties: any[] = [];
 
@@ -81,7 +84,7 @@ export class ResourcePanel {
   }
 
   setPropertySettings(){
-    let privateProperties: Set<string> = new Set(["class", "themes", "nature", "root"]);
+    let privateProperties: Set<string> = new Set(["class", "themes"]);
 
     if (this.item && this.item.constructor) {
       let properties = Object.assign({}, this.item.constructor.properties,
@@ -94,7 +97,7 @@ export class ResourcePanel {
 
         //Groups
         if (property.indexOf("Border") > -1) {
-          if (!this.properties.find(x => (x.value == "border")))
+          if (!this.properties.find(x => (x.value == "borders")))
             this.properties.push({value: "borders", selected: !this.ignore.has("borders")});
           continue;
         }

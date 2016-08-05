@@ -12,7 +12,7 @@ import {TemplateName} from "../services/utils.model";
   inputs: ['item', 'ignore', 'options'],
   template:`
     <resource-panel [item]="item" 
-      [ignore]   = "myIgnore"  
+      [ignore]   = "ignore"  
       [options]  = "options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
@@ -50,15 +50,14 @@ import {TemplateName} from "../services/utils.model";
 })
 export class TemplatePanel extends ResourcePanel{
   protected templateName = TemplateName;
-  myIgnore: Set<string> = new Set<string>();
 
   getTypes(){
-    return this.item.constructor.relationships['-->HasType'].other.class.p('all');
+    return this.item.constructor.relationships['-->HasType'].codomain.resourceClass.p('all');
   }
 
   ngOnInit(){
     super.ngOnInit();
-    this.myIgnore = new Set<string>(this.ignore).add('externals');
+    this.ignore = this.ignore.add('externals');
   }
 
 }

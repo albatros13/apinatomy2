@@ -5,9 +5,11 @@ import {Component, Input, Output, EventEmitter} from '@angular/core';
 import {CORE_DIRECTIVES} from '@angular/common';
 import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/components/dropdown';
 
+import * as model from "open-physiology-model";
+
 @Component({
   selector: 'edit-toolbar',
-  inputs: ['options'],
+  inputs: ['options', 'transform'],
   template: `
       <div *ngIf="options && (options.length > 1)" class="btn-group" dropdown>
         <button type="button" class="btn btn-default dropdown-toggle" aria-label="Add" dropdownToggle>
@@ -15,7 +17,7 @@ import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/components/dropdown';
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="Add">
           <li *ngFor="let option of options; let i = index" role="menuitem" (click)="added.emit(option)">
-            <a class="dropdown-item" href="#">{{option}}</a>
+            <a class="dropdown-item" href="#">{{transform? transform(option): option}}</a>
           </li>
         </ul>
       </div>
@@ -28,7 +30,6 @@ import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/components/dropdown';
 })
 export class EditToolbar {
   @Output() added = new EventEmitter();
-  constructor(){}
 }
 
 @Component({

@@ -20,7 +20,6 @@ var ResourceWidget = (function () {
         var _this = this;
         this.resizeService = resizeService;
         this.resourceName = utils_model_1.ResourceName;
-        this.caption = "Resource";
         this.subscription = resizeService.resize$.subscribe(function (event) {
             if (event.target == "resource-widget") {
                 _this.onSetPanelSize(event);
@@ -30,11 +29,6 @@ var ResourceWidget = (function () {
     ResourceWidget.prototype.onSetPanelSize = function (event) {
         this.resizeService.announceResize({ target: "omega-tree", size: event.size });
     };
-    ResourceWidget.prototype.ngOnInit = function () {
-        if (this.item)
-            this.caption = "Resource: " + this.item.id + " - " + this.item.name;
-    };
-    ResourceWidget.prototype.ngOnChanges = function (changes) { };
     ResourceWidget.prototype.ngOnDestroy = function () { this.subscription.unsubscribe(); };
     __decorate([
         core_1.Input(), 
@@ -44,7 +38,7 @@ var ResourceWidget = (function () {
         core_1.Component({
             selector: 'resource-widget',
             inputs: ['item'],
-            template: "\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">{{caption}}</div>\n      <omega-tree *ngIf=\"item && (item.class == resourceName.OmegaTreeType)\" [item]=\"item\"></omega-tree>   \n    </div>\n  ",
+            template: "\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">Resource <strong>{{item?.id}}{{(item)? ': ' + item.name : ''}}</strong></div>\n      <omega-tree *ngIf=\"item && (item.class == resourceName.OmegaTreeType)\" [item]=\"item\"></omega-tree>   \n    </div>\n  ",
             directives: [view_omegaTree_1.OmegaTreeWidget]
         }), 
         __metadata('design:paramtypes', [service_resize_1.ResizeService])

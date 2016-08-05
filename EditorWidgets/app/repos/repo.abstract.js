@@ -60,9 +60,6 @@ var RepoAbstract = (function () {
             this.items = [];
         if (this.items[0] || !this.selectedItem)
             this.selectedItem = this.items[0];
-        if (!this.types || (this.types.length == 0)) {
-            this.types = Array.from(new Set(this.items.map(function (item) { return item.class; })));
-        }
     };
     RepoAbstract.prototype.onHeaderClick = function (item) {
         this.selectedItem = item;
@@ -94,6 +91,7 @@ var RepoAbstract = (function () {
             else
                 this.selectedItem = null;
         }
+        item.delete();
         this.removed.emit(item);
         this.updated.emit(this.items);
     };
@@ -107,6 +105,10 @@ var RepoAbstract = (function () {
         this.added.emit(newItem);
         this.updated.emit(this.items);
         this.selectedItem = newItem;
+    };
+    RepoAbstract.prototype.getClassLabel = function (option) {
+        var name = model[option].singular;
+        return name[0].toUpperCase() + name.substring(1);
     };
     __decorate([
         core_1.Output(), 

@@ -5,7 +5,6 @@ import {Component, Output, EventEmitter} from '@angular/core';
 import {SingleSelectInput, MultiSelectInput} from '../components/component.select';
 import {TemplateValue} from '../components/component.templateValue';
 import {TemplatePanel} from "./template.template";
-import {FormType, TemplateName} from "../services/utils.model";
 import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
 import {FilterByClass} from "../transformations/pipe.general";
 import {NodeTemplate} from "open-physiology-model";
@@ -26,13 +25,13 @@ import {NodeTemplate} from "open-physiology-model";
       (removed)  = "removed.emit($event)"
       (propertyUpdated) = "propertyUpdated.emit($event)">
 
-      <!--Form: {open, closed}-->
-      <div class="input-control" *ngIf="includeProperty('form') && item.form">
+      <!--Nature: {open, closed}-->
+      <div class="input-control" *ngIf="includeProperty('nature')">
         <fieldset>
-          <legend>Form:</legend>
-          <radio-group [(ngModel)]="item.form" [required]="true">
-             <input type="radio" [value]="formType.open">{{formType.open}}&nbsp;
-             <input type="radio" [value]="formType.closed">{{formType.closed}}<br/>
+          <legend>Nature:</legend>
+          <radio-group [(ngModel)]="item.nature" [required]="true">
+             <input type="radio" value="open">open&nbsp;
+             <input type="radio" value="closed">closed<br/>
           </radio-group>
         </fieldset>
       </div>
@@ -54,7 +53,11 @@ import {NodeTemplate} from "open-physiology-model";
 })
 export class BorderTemplatePanel extends TemplatePanel{
   NodeTemplate = NodeTemplate;
-  public formType = FormType;
+  @Output() added = new EventEmitter();
+  @Output() saved = new EventEmitter();
+  @Output() canceled = new EventEmitter();
+  @Output() removed = new EventEmitter();
+  @Output() propertyUpdated = new EventEmitter();
 
   myIgnore: Set<string> = new Set<string>();
 

@@ -4,6 +4,16 @@
 import {Pipe, PipeTransform, Injectable} from '@angular/core';
 
 @Pipe({
+  name: 'hideTemplates'
+})
+export class HideTemplates implements PipeTransform {
+  transform(items: any[]): any {
+    if (!items) return items;
+    return items.filter(x => x.class.indexOf("Template") < 0);
+  }
+}
+
+@Pipe({
   name: 'filterBy'
 })
 export class FilterBy implements PipeTransform {

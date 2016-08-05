@@ -16,11 +16,12 @@ import {CoalescencePanel}    from './panel.coalescence';
 import {GroupTypePanel}      from './panel.groupType';
 import {OmegaTreeTypePanel}  from './panel.omegaTreeType';
 import {ResourceName} from "../services/utils.model";
-
+import {ToastyService, Toasty} from 'ng2-toasty/ng2-toasty';
 
 @Component({
   selector: 'panel-general',
   inputs: ['item', 'ignore'],
+  providers: [ToastyService],
   template:`
     <!--Resources-->
     <resource-panel *ngIf="item.class == resourceName.Resource"
@@ -89,7 +90,8 @@ import {ResourceName} from "../services/utils.model";
      <!--Coalescence-->
      <coalescence-panel *ngIf="item.class==resourceName.Coalescence" [ignore]="ignore"
      [item]="item" (saved)="onSaved($event)" (canceled)="onCanceled($event)" (removed)="removed.emit($event)"></coalescence-panel>
-
+     
+     <ng2-toasty></ng2-toasty>
   `,
   directives:
     [ResourcePanel, ExternalResourcePanel,
@@ -98,7 +100,7 @@ import {ResourceName} from "../services/utils.model";
       ProcessTypePanel,
       CausalityTypePanel, NodeTypePanel, BorderTypePanel,
       CorrelationPanel, CoalescencePanel,
-      GroupTypePanel, OmegaTreeTypePanel]
+      GroupTypePanel, OmegaTreeTypePanel, Toasty]
 })
 export class PanelDispatchResources{
   item: any;
@@ -108,9 +110,17 @@ export class PanelDispatchResources{
   @Output() removed = new EventEmitter();
   @Output() canceled = new EventEmitter();
 
+  constructor(private toastyService:ToastyService){ }
+
   protected onSaved() {
-    this.item.commit();
-    this.saved.emit(this.item);
+     this.item.commit()
+        .catch(reason => {
+          let errorMsg = "Failed to commit resource: Relationship constraints violated! \n" +
+            "See browser console (Ctrl+Shift+J) for technical details.";
+          console.error(reason);
+          this.toastyService.error(errorMsg);
+        });
+     this.saved.emit(this.item)
   }
 
   protected onCanceled() {

@@ -32,7 +32,8 @@ var OmegaTreeEditor = (function () {
         this.el = el;
         this.resourceName = utils_model_1.ResourceName;
         this.templateName = utils_model_1.TemplateName;
-        this.items = [];
+        this.trees = [];
+        this.lyphs = [];
         this.selectedItem = {};
         this.layoutConfig = {
             settings: {
@@ -80,8 +81,8 @@ var OmegaTreeEditor = (function () {
                     ]
                 }]
         };
-        this.sLyphs = model.LyphType.p('all').subscribe(function (data) { _this.items = data; });
-        this.sOmegaTrees = model.OmegaTreeType.p('all').subscribe(function (data) { _this.items = data; });
+        this.sLyphs = model.LyphType.p('all').subscribe(function (data) { _this.lyphs = data; });
+        this.sOmegaTrees = model.OmegaTreeType.p('all').subscribe(function (data) { _this.trees = data; });
         (function () {
             return __awaiter(this, void 0, void 0, function* () {
                 /*External resources*/
@@ -91,8 +92,7 @@ var OmegaTreeEditor = (function () {
                 var fma17881 = model.ExternalResource.new({ name: "FMA:17881", uri: "" });
                 var externals = [fma7203, fma15610, fma66610, fma17881];
                 yield Promise.all(externals.map(function (p) { return p.commit(); }));
-                var borderType = model.BorderType.new({ name: "GeneralBorder" });
-                yield borderType.commit();
+                var borderType = yield model.BorderType.getSingleton();
                 var minusBorder = model.BorderTemplate.new({ name: "T: MinusBorder", type: borderType, cardinalityBase: 1 });
                 var plusBorder = model.BorderTemplate.new({ name: "T: PlusBorder", type: borderType, cardinalityBase: 1 });
                 var innerBorder = model.BorderTemplate.new({ name: "T: InnerBorder", type: borderType, cardinalityBase: 1 });
@@ -129,12 +129,6 @@ var OmegaTreeEditor = (function () {
         setTimeout(function () {
             _this.selectedItem = item;
         }, 0);
-    };
-    OmegaTreeEditor.prototype.onItemAdded = function (item) {
-    };
-    OmegaTreeEditor.prototype.onItemRemoved = function (item) {
-    };
-    OmegaTreeEditor.prototype.onItemUpdated = function (item) {
     };
     OmegaTreeEditor.prototype.ngOnInit = function () {
         var self = this;
@@ -191,9 +185,9 @@ var OmegaTreeEditor = (function () {
             providers: [
                 service_resize_1.ResizeService
             ],
-            template: "\n    <repo-general id=\"omegaTreeRepo\"\n      [items]=\"[]\" \n      [caption]=\"'Omega trees'\"\n      [types]=\"[resourceName.OmegaTreeType]\"\n      >\n    </repo-general>         \n    \n    <repo-general id=\"lyphRepo\"\n      [items]=\"items | setToArray\" \n      [caption]=\"'Lyphs'\" \n      [types]=\"[resourceName.LyphType, resourceName.CylindricalLyphType]\">\n    </repo-general>\n    \n    <hierarchy-widget id = \"hierarchy\" [item]=\"selectedItem\"></hierarchy-widget>\n    <resource-widget id = \"resource\" [item]=\"selectedItem\"></resource-widget>   \n    \n    <div id=\"main\"></div>\n  ",
+            template: "\n    <repo-general id=\"omegaTreeRepo\"\n      [items]=\"trees | setToArray\" \n      [caption]=\"'Omega trees'\"\n      [types]=\"[resourceName.OmegaTreeType]\"\n      (selected)=\"onItemSelected($event)\"\n      >\n    </repo-general>         \n    \n    <repo-general id=\"lyphRepo\"\n      [items]=\"lyphs | setToArray\" \n      [caption]=\"'Lyphs'\" \n      [types]=\"[resourceName.LyphType, resourceName.CylindricalLyphType]\"\n      (selected)=\"onItemSelected($event)\">\n    </repo-general>\n    \n    <hierarchy-widget id = \"hierarchy\" [item]=\"selectedItem\"></hierarchy-widget>\n    <resource-widget id = \"resource\" [item]=\"selectedItem\"></resource-widget>   \n    \n    <div id=\"main\"></div>\n  ",
             styles: ["#main {width: 100%; height: 100%; border: 0; margin: 0; padding: 0}"],
-            directives: [repo_general_1.RepoGeneral, repo_template_1.RepoTemplate, widget_relations_1.HierarchyWidget, widget_resource_1.ResourceWidget],
+            directives: [repo_general_1.RepoGeneral, repo_template_1.RepoTemplate, widget_relations_1.RelationshipWidget, widget_resource_1.ResourceWidget],
             pipes: [pipe_general_1.SetToArray]
         }), 
         __metadata('design:paramtypes', [service_resize_1.ResizeService, core_1.ElementRef])

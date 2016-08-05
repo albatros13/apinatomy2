@@ -1,7 +1,7 @@
 import {Component, Inject, ElementRef, Renderer, Output, EventEmitter} from '@angular/core';
 import {RepoGeneral} from '../repos/repo.general';
 import {RepoTemplate} from '../repos/repo.template';
-import {HierarchyWidget} from '../widgets/widget.relations';
+import {RelationshipWidget} from '../widgets/widget.relations';
 import {ResourceWidget} from '../widgets/widget.resource';
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
@@ -19,16 +19,18 @@ declare var $: any;
   ],
   template: `
     <repo-general id="omegaTreeRepo"
-      [items]="[]" 
+      [items]="trees | setToArray" 
       [caption]="'Omega trees'"
       [types]="[resourceName.OmegaTreeType]"
+      (selected)="onItemSelected($event)"
       >
     </repo-general>         
     
     <repo-general id="lyphRepo"
-      [items]="items | setToArray" 
+      [items]="lyphs | setToArray" 
       [caption]="'Lyphs'" 
-      [types]="[resourceName.LyphType, resourceName.CylindricalLyphType]">
+      [types]="[resourceName.LyphType, resourceName.CylindricalLyphType]"
+      (selected)="onItemSelected($event)">
     </repo-general>
     
     <hierarchy-widget id = "hierarchy" [item]="selectedItem"></hierarchy-widget>
@@ -37,14 +39,15 @@ declare var $: any;
     <div id="main"></div>
   `,
   styles: [`#main {width: 100%; height: 100%; border: 0; margin: 0; padding: 0}`],
-  directives: [RepoGeneral, RepoTemplate, HierarchyWidget, ResourceWidget],
+  directives: [RepoGeneral, RepoTemplate, RelationshipWidget, ResourceWidget],
   pipes: [SetToArray]
 })
 export class OmegaTreeEditor {
   protected resourceName = ResourceName;
   protected templateName = TemplateName;
 
-  items        :Array<any> = [];
+  trees        :Array<any> = [];
+  lyphs        :Array<any> = [];
   selectedItem :any        = {};
 
   layoutConfig = {
@@ -102,10 +105,10 @@ export class OmegaTreeEditor {
               public el:ElementRef) {
 
     this.sLyphs = model.LyphType.p('all').subscribe(
-      (data:any) => {this.items = data;});
+      (data:any) => {this.lyphs = data;});
 
     this.sOmegaTrees = model.OmegaTreeType.p('all').subscribe(
-      (data:any) => {this.items = data;});
+      (data:any) => {this.trees = data;});
 
     (async function() {
 
@@ -119,8 +122,7 @@ export class OmegaTreeEditor {
 
       await Promise.all(externals.map(p => p.commit()));
 
-      let borderType = model.BorderType.new({name: "GeneralBorder"});
-      await borderType.commit();
+      let borderType = await model.BorderType.getSingleton();
 
       let minusBorder = model.BorderTemplate.new({name: "T: MinusBorder", type: borderType, cardinalityBase: 1});
 
@@ -166,15 +168,6 @@ export class OmegaTreeEditor {
     setTimeout(() => {
       this.selectedItem = item;
     }, 0);
-  }
-
-  onItemAdded(item:any) {
-  }
-
-  onItemRemoved(item:any) {
-  }
-
-  onItemUpdated(item:any) {
   }
 
   ngOnInit() {

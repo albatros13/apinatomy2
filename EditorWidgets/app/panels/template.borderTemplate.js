@@ -33,11 +33,10 @@ var BorderTemplatePanel = (function (_super) {
         this.canceled = new core_1.EventEmitter();
         this.removed = new core_1.EventEmitter();
         this.propertyUpdated = new core_1.EventEmitter();
-        this.myIgnore = new Set();
     }
     BorderTemplatePanel.prototype.ngOnInit = function () {
         _super.prototype.ngOnInit.call(this);
-        this.myIgnore = new Set(this.ignore).add('name').add('cardinalityBase').add('cardinalityMultipliers').add('type');
+        this.ignore = this.ignore.add('name').add('cardinalityBase').add('cardinalityMultipliers').add('type');
     };
     __decorate([
         core_1.Output(), 
@@ -63,7 +62,7 @@ var BorderTemplatePanel = (function (_super) {
         core_1.Component({
             selector: 'borderTemplate-panel',
             inputs: ['item', 'ignore', 'options'],
-            template: "\n    <button *ngIf=\"!item\"  type=\"button\" class=\"btn btn-default\" aria-label=\"Add\"\n      (click)  = \"added.emit($event)\"><span class=\"glyphicon glyphicon-plus\"></span>\n    </button>\n    \n    <template-panel *ngIf=\"item\" [item]=\"item\" \n      [ignore]=\"myIgnore\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <!--Nature: {open, closed}-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('nature')\">\n        <fieldset>\n          <legend>Nature:</legend>\n          <radio-group [(ngModel)]=\"item.nature\" [required]=\"true\">\n             <input type=\"radio\" value=\"open\">open&nbsp;\n             <input type=\"radio\" value=\"closed\">closed<br/>\n          </radio-group>\n        </fieldset>\n      </div>\n      \n      <!--Nodes-->\n<!--      <div class=\"input-control\" *ngIf=\"includeProperty('nodes')\">\n        <label for=\"nodes\">Nodes: </label>\n          <select-input [items]=\"item.p('nodes') | async\" \n          (updated)=\"updateProperty('nodes', $event)\"          \n          [options]=\"NodeTemplate.p('all') | async\"></select-input>  \n      </div>-->\n      \n      <ng-content></ng-content>   \n         \n    </template-panel>\n  ",
+            template: "\n   <!-- <button *ngIf=\"!item\"  type=\"button\" class=\"btn btn-default\" aria-label=\"Add\"\n      (click)  = \"added.emit($event)\"><span class=\"glyphicon glyphicon-plus\"></span>\n    </button>-->\n    \n    <template-panel *ngIf=\"item\" [item]=\"item\" \n      [ignore]=\"ignore\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <!--Nature: {open, closed}-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('nature')\">\n        <fieldset>\n          <legend>Nature:</legend>\n          <radio-group [(ngModel)]=\"item.nature\" [required]=\"true\">\n             <input type=\"radio\" value=\"open\">open&nbsp;\n             <input type=\"radio\" value=\"closed\">closed<br/>\n          </radio-group>\n        </fieldset>\n      </div>\n      \n      <!--Nodes-->\n<!--      <div class=\"input-control\" *ngIf=\"includeProperty('nodes')\">\n        <label for=\"nodes\">Nodes: </label>\n          <select-input [items]=\"item.p('nodes') | async\" \n          (updated)=\"updateProperty('nodes', $event)\"          \n          [options]=\"NodeTemplate.p('all') | async\"></select-input>  \n      </div>-->\n      \n      <ng-content></ng-content>   \n         \n    </template-panel>\n  ",
             directives: [component_templateValue_1.TemplateValue, component_select_1.SingleSelectInput, component_select_1.MultiSelectInput, template_template_1.TemplatePanel, ng2_radio_group_1.RADIO_GROUP_DIRECTIVES],
             pipes: [pipe_general_1.FilterByClass]
         }), 

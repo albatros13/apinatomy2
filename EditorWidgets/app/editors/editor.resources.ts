@@ -135,34 +135,18 @@ export class ResourceEditor {
 
       await Promise.all(externals.map(p => p.commit()));
 
-      let borderType = await model.BorderType.getSingleton();
-
-      let minusBorder = model.BorderTemplate.new({name: "T: MinusBorder", type: borderType, cardinalityBase: 1});
-
-      let plusBorder  = model.BorderTemplate.new({name: "T: PlusBorder",  type: borderType, cardinalityBase: 1});
-      let innerBorder = model.BorderTemplate.new({name: "T: InnerBorder", type: borderType, cardinalityBase: 1});
-      let outerBorder = model.BorderTemplate.new({name: "T: OuterBorder", type: borderType, cardinalityBase: 1});
-
-      let borders = [minusBorder, plusBorder, innerBorder, outerBorder];
-      await Promise.all(borders.map(p => p.commit()));
-
       /*Cylindrical lyphs*/
-      let renalH = model.CylindricalLyphType.new({name: "Renal hilum", externals: [fma15610],
-        minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder});
-      let renalP = model.CylindricalLyphType.new({name: "Renal parenchyma",
-        minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder});
-      let renalC = model.CylindricalLyphType.new({name: "Renal capsule", externals: [fma66610],
-        minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder});
+      let renalH = model.CylindricalLyphType.new({name: "Renal hilum", externals: [fma15610]});
+      let renalP = model.CylindricalLyphType.new({name: "Renal parenchyma"});
+      let renalC = model.CylindricalLyphType.new({name: "Renal capsule", externals: [fma66610]});
 
       var cLyphs1 = [renalH, renalP, renalC];
       await Promise.all(cLyphs1.map(p => p.commit()));
 
-      let kidney = model.CylindricalLyphType.new({name: "Kidney", externals: [fma7203],
-        minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder});
+      let kidney = model.CylindricalLyphType.new({name: "Kidney", externals: [fma7203]});
       await kidney.commit();
 
-      let kidneyLobus = model.CylindricalLyphType.new({name: "Kidney lobus", externals: [fma17881],
-        minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder});
+      let kidneyLobus = model.CylindricalLyphType.new({name: "Kidney lobus", externals: [fma17881]});
       await kidneyLobus.commit();
 
       //create tree from user story

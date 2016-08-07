@@ -6,6 +6,7 @@ import {SingleSelectInput, MultiSelectInput} from '../components/component.selec
 import {TemplateValue} from '../components/component.templateValue';
 import {ResourcePanel} from "./panel.resource";
 import {TemplateName} from "../services/utils.model";
+//import {CylindricalLyphTemplate, OmegaTreeTemplate, OmegaTreePartTemplate} from "open-physiology-model";
 
 @Component({
   selector: 'template-panel',
@@ -22,8 +23,8 @@ import {TemplateName} from "../services/utils.model";
       <!--Type-->
       <div  *ngIf="includeProperty('type')" class="input-control">
         <label for="type">Type: </label>
-        <select-input-1 [item] = "item.type"
-         (updated)="updateProperty('type', $event)"    
+        <select-input-1 [item] = "item.p('type') | async"
+         (updated)="onTypeUpdate($event)"    
          [options] = "getTypes() | async"></select-input-1>
       </div>
     
@@ -39,7 +40,7 @@ import {TemplateName} from "../services/utils.model";
         <label for="cardinalityMultipliers">Cardinality multipliers: </label>
           <select-input [items]="item.p('cardinalityMultipliers') | async" 
           (updated)="updateProperty('cardinalityMultipliers', $event)"          
-          [options]="item.constructor.p('all') | async"></select-input>  
+          [options]="getLinks() | async"></select-input>  
       </div>
 
       <ng-content></ng-content>            
@@ -51,8 +52,20 @@ import {TemplateName} from "../services/utils.model";
 export class TemplatePanel extends ResourcePanel{
   protected templateName = TemplateName;
 
+  onTypeUpdate(type: any){
+    if (type && !this.item.name) this.item.name = "T:" + type.name;
+    super.updateProperty('type', type);
+  }
+
   getTypes(){
     return this.item.constructor.relationships['-->HasType'].codomain.resourceClass.p('all');
+  }
+
+  getLinks(){
+    // if ((this.item.class == TemplateName.OmegaTreeTemplate) || (this.item.class == TemplateName.CylindricalLyphTemplate)){
+    //   return OmegaTreePartTemplate.p('all');
+    // }
+    return this.item.constructor.p('all');
   }
 
   ngOnInit(){

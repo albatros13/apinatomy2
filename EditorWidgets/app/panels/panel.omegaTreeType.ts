@@ -27,6 +27,18 @@ import {NodeTemplate} from "open-physiology-model";
           (updated) = "updateProperty('root', $event)"   
           [options] = "NodeTemplate.p('all') | async"></select-input>
       </div>
+      
+      <!-- <relationGroup>
+        &lt;!&ndash;Parts&ndash;&gt;
+        <div class="input-control" *ngIf="includeProperty('parts')">
+           <repo-template caption="Parts" 
+           [items] = "item.p('parts') | async | setToArray" 
+           (updated)="updateProperty('parts', $event)"
+           [options]="{linked: true}"
+           [types]="[templateName.CylindricalLyphTemplate, templateName.OmegaTreeTemplate]"></repo-template>
+        </div>
+         <ng-content select="relationGroup"></ng-content> 
+      </relationGroup>-->
 
       <ng-content></ng-content> 
     
@@ -40,13 +52,10 @@ export class OmegaTreeTypePanel extends GroupTypePanel{
 
   ngOnInit(){
     super.ngOnInit();
-    this.ignore = this.ignore.add('supertypes').add('subtypes');
+    this.ignore = this.ignore.add('supertypes').add('subtypes');//.add('elements');
   }
 
   onPropertyUpdate(event){
-    if (event.property == "elements"){
-      //console.log("Omega tree elements updated!", event);
-    }
     this.propertyUpdated.emit(event);
   }
 }

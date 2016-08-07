@@ -21,14 +21,26 @@ var component_select_1 = require('../components/component.select');
 var component_templateValue_1 = require('../components/component.templateValue');
 var panel_resource_1 = require("./panel.resource");
 var utils_model_1 = require("../services/utils.model");
+//import {CylindricalLyphTemplate, OmegaTreeTemplate, OmegaTreePartTemplate} from "open-physiology-model";
 var TemplatePanel = (function (_super) {
     __extends(TemplatePanel, _super);
     function TemplatePanel() {
         _super.apply(this, arguments);
         this.templateName = utils_model_1.TemplateName;
     }
+    TemplatePanel.prototype.onTypeUpdate = function (type) {
+        if (type && !this.item.name)
+            this.item.name = "T:" + type.name;
+        _super.prototype.updateProperty.call(this, 'type', type);
+    };
     TemplatePanel.prototype.getTypes = function () {
         return this.item.constructor.relationships['-->HasType'].codomain.resourceClass.p('all');
+    };
+    TemplatePanel.prototype.getLinks = function () {
+        // if ((this.item.class == TemplateName.OmegaTreeTemplate) || (this.item.class == TemplateName.CylindricalLyphTemplate)){
+        //   return OmegaTreePartTemplate.p('all');
+        // }
+        return this.item.constructor.p('all');
     };
     TemplatePanel.prototype.ngOnInit = function () {
         _super.prototype.ngOnInit.call(this);
@@ -38,7 +50,7 @@ var TemplatePanel = (function (_super) {
         core_1.Component({
             selector: 'template-panel',
             inputs: ['item', 'ignore', 'options'],
-            template: "\n    <resource-panel [item]=\"item\" \n      [ignore]   = \"ignore\"  \n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n      <!--Type-->\n      <div  *ngIf=\"includeProperty('type')\" class=\"input-control\">\n        <label for=\"type\">Type: </label>\n        <select-input-1 [item] = \"item.type\"\n         (updated)=\"updateProperty('type', $event)\"    \n         [options] = \"getTypes() | async\"></select-input-1>\n      </div>\n    \n      <!--Template-->\n      <!--Cardinality base-->\n      <template-value *ngIf=\"includeProperty('cardinalityBase')\" caption=\"Cardinality base\" \n        [item]=\"item.cardinalityBase\"\n        (updated)=\"updateProperty('cardinalityBase', $event)\"\n      ></template-value>\n      \n      <!--Cardinality multipliers-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('cardinalityMultipliers')\">\n        <label for=\"cardinalityMultipliers\">Cardinality multipliers: </label>\n          <select-input [items]=\"item.p('cardinalityMultipliers') | async\" \n          (updated)=\"updateProperty('cardinalityMultipliers', $event)\"          \n          [options]=\"item.constructor.p('all') | async\"></select-input>  \n      </div>\n\n      <ng-content></ng-content>            \n\n    </resource-panel>\n  ",
+            template: "\n    <resource-panel [item]=\"item\" \n      [ignore]   = \"ignore\"  \n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n      <!--Type-->\n      <div  *ngIf=\"includeProperty('type')\" class=\"input-control\">\n        <label for=\"type\">Type: </label>\n        <select-input-1 [item] = \"item.p('type') | async\"\n         (updated)=\"onTypeUpdate($event)\"    \n         [options] = \"getTypes() | async\"></select-input-1>\n      </div>\n    \n      <!--Template-->\n      <!--Cardinality base-->\n      <template-value *ngIf=\"includeProperty('cardinalityBase')\" caption=\"Cardinality base\" \n        [item]=\"item.cardinalityBase\"\n        (updated)=\"updateProperty('cardinalityBase', $event)\"\n      ></template-value>\n      \n      <!--Cardinality multipliers-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('cardinalityMultipliers')\">\n        <label for=\"cardinalityMultipliers\">Cardinality multipliers: </label>\n          <select-input [items]=\"item.p('cardinalityMultipliers') | async\" \n          (updated)=\"updateProperty('cardinalityMultipliers', $event)\"          \n          [options]=\"getLinks() | async\"></select-input>  \n      </div>\n\n      <ng-content></ng-content>            \n\n    </resource-panel>\n  ",
             directives: [component_templateValue_1.TemplateValue, component_select_1.SingleSelectInput, component_select_1.MultiSelectInput, panel_resource_1.ResourcePanel]
         }), 
         __metadata('design:paramtypes', [])

@@ -100,27 +100,15 @@ var ResourceEditor = (function () {
                 var fma17881 = model.ExternalResource.new({ name: "FMA:17881", uri: "" });
                 var externals = [fma7203, fma15610, fma66610, fma17881];
                 yield Promise.all(externals.map(function (p) { return p.commit(); }));
-                var borderType = yield model.BorderType.getSingleton();
-                var minusBorder = model.BorderTemplate.new({ name: "T: MinusBorder", type: borderType, cardinalityBase: 1 });
-                var plusBorder = model.BorderTemplate.new({ name: "T: PlusBorder", type: borderType, cardinalityBase: 1 });
-                var innerBorder = model.BorderTemplate.new({ name: "T: InnerBorder", type: borderType, cardinalityBase: 1 });
-                var outerBorder = model.BorderTemplate.new({ name: "T: OuterBorder", type: borderType, cardinalityBase: 1 });
-                var borders = [minusBorder, plusBorder, innerBorder, outerBorder];
-                yield Promise.all(borders.map(function (p) { return p.commit(); }));
                 /*Cylindrical lyphs*/
-                var renalH = model.CylindricalLyphType.new({ name: "Renal hilum", externals: [fma15610],
-                    minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder });
-                var renalP = model.CylindricalLyphType.new({ name: "Renal parenchyma",
-                    minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder });
-                var renalC = model.CylindricalLyphType.new({ name: "Renal capsule", externals: [fma66610],
-                    minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder });
+                var renalH = model.CylindricalLyphType.new({ name: "Renal hilum", externals: [fma15610] });
+                var renalP = model.CylindricalLyphType.new({ name: "Renal parenchyma" });
+                var renalC = model.CylindricalLyphType.new({ name: "Renal capsule", externals: [fma66610] });
                 var cLyphs1 = [renalH, renalP, renalC];
                 yield Promise.all(cLyphs1.map(function (p) { return p.commit(); }));
-                var kidney = model.CylindricalLyphType.new({ name: "Kidney", externals: [fma7203],
-                    minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder });
+                var kidney = model.CylindricalLyphType.new({ name: "Kidney", externals: [fma7203] });
                 yield kidney.commit();
-                var kidneyLobus = model.CylindricalLyphType.new({ name: "Kidney lobus", externals: [fma17881],
-                    minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder });
+                var kidneyLobus = model.CylindricalLyphType.new({ name: "Kidney lobus", externals: [fma17881] });
                 yield kidneyLobus.commit();
                 //create tree from user story
             });

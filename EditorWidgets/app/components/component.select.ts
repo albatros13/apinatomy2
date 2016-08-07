@@ -12,12 +12,14 @@ import {SELECT_DIRECTIVES} from 'ng2-select/ng2-select';
 
 @Component({
   selector: 'select-input',
+  inputs: ['items', 'options', 'disabled'],
   template:`
     <div *ngIf="active">
       <ng-select
         [items]       = "options | setToArray | mapToOptions"
         [initData]    = "items   | setToArray | mapToOptions"
         [multiple]    = "true"
+        [disabled]    = "disabled"
         (data)        = "refreshValue($event)"
       ></ng-select>
     </div>
@@ -35,6 +37,10 @@ export class MultiSelectInput /*implements OnChanges*/ {
 
   externalChange = false;
   ngOnChanges(changes: {[propName: string]: any}) {
+    //let array = Array.from(this.items);
+    //if (array[0] && (array[0].class === "CylindricalLyphTemplate"))
+    //  console.log("Select update:", array.map(x => x.name));
+
     if (this.externalChange){
       setTimeout(() => { this.active = false }, 0);
       setTimeout(() => { this.active = true  }, 0);
@@ -56,13 +62,14 @@ export class MultiSelectInput /*implements OnChanges*/ {
 
 @Component({
   selector: 'select-input-1',
-  inputs: ['item', 'options'],
+  inputs: ['item', 'options', 'disabled'],
   template:`
     <div *ngIf="active">
       <ng-select
         [items]       = "options | setToArray | mapToOptions"
         [initData]    = "items | mapToOptions"
         [multiple]    = false
+        [disabled]    = "disabled"
         (data)        = "refreshValue($event)"
       ></ng-select>
     </div>
@@ -95,7 +102,8 @@ export class SingleSelectInput {
   public refreshValue(value: any):void {
     //let options: any[] = (this.options[0] && this.options[0].children)? [].concat.apply([], this.options.map(item => item.children)): this.options;
     this.externalChange = false;
-    this.item = Array.from(this.options).find(y => (value.id == ((y.id)? y.id: y.name)));
+    let item = Array.from(this.options).find(y => (value.id == ((y.id)? y.id: y.name)));
+    if (item) this.item = item;
     this.updated.emit(this.item);
   }
 }

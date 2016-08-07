@@ -33,22 +33,22 @@ import {NodeTemplate, LyphType, LyphTemplate} from "open-physiology-model";
       <!--ConveyingLyph-->
       <div class="input-control" *ngIf="includeProperty('conveyingLyph')">
         <label for="conveyingLyph">Conveying lyph: </label>
-        <select-input-1 [item] = "item.conveyingLyph"
+        <select-input-1 [item] = "item.p('conveyingLyph') | async"
          (updated) = "updateProperty('conveyingLyph', $event)"    
          [options] = "LyphType.p('all') | async"></select-input-1>
       </div>
       
       <!--SourceContainer-->
       <div class="input-control" *ngIf="includeProperty('sourceLyph')">      
-        <label for="sourceContainer">Source lyph: </label>
-        <select-input-1 [item] = "item.sourceContainer" 
+        <label for="sourceLyph">Source lyph: </label>
+        <select-input-1 [item] = "item.sourceLyph" 
           (updated) = "onSourceLyphChanged($event)"  
           [options] = "LyphTemplate.p('all') | async"></select-input-1>
       </div>
       
       <!--TargetContainer-->
       <div class="input-control" *ngIf="includeProperty('targetLyph')">      
-        <label for="targetContainer">Target lyph: </label>
+        <label for="targetLyph">Target lyph: </label>
         <select-input-1 [item] = "item.targetLyph" 
           (updated) = "onTargetLyphChanged($event)"   
           [options] = "LyphTemplate.p('all') | async"></select-input-1>

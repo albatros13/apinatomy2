@@ -1,7 +1,12 @@
+declare var d3:any;
+export const getColor = d3.scale.category20();
+
 export enum ResourceName {
   Resource            = <any>"Resource",
   ExternalResource    = <any>"ExternalResource",
   Type                = <any>"Type",
+
+  //OmegaTreePartType   = <any>"OmegaTreePartType",
   MeasurableLocationType  = <any>"MeasurableLocationType",
   MaterialType        = <any>"MaterialType",
   LyphType            = <any>"LyphType",
@@ -27,6 +32,9 @@ export enum TemplateName {
   Template                = <any>"Template",
 
   LyphTemplate            = <any>"LyphTemplate",
+
+  OmegaTreePartTemplate   = <any>"OmegaTreePartTemplate",
+
   CylindricalLyphTemplate = <any>"CylindricalLyphTemplate",
 
   ProcessTemplate         = <any>"ProcessTemplate",
@@ -84,9 +92,6 @@ export function getIcon(Class: any): string{
   return "images/resource.png";
 }
 
-declare var d3:any;
-export const getColor = d3.scale.category20();
-
 export function getTreeData(item: any, relations: Set<string>, depth: number) {//Format: {id: 1, name: "Parent", children: [{id: 2, name: "Child"},...]};
   let data:any = {};
   if (!item) return data;
@@ -104,7 +109,7 @@ export function getTreeData(item: any, relations: Set<string>, depth: number) {/
       if (!data.children) data.children = [];
 
       for (let obj of Array.from(root[fieldName])) {
-        var child = {id: "node_" + ++i, name: obj.name, resource: obj, depth: level, relation: fieldName};
+        var child = {id: "#" + ++i, name: obj.name, resource: obj, depth: level, relation: fieldName};
         data.children.push(child);
         traverse(obj, level + 1, child);
       }
@@ -138,3 +143,22 @@ export function getGraphData(item: any, relations: Set<string>, depth: number) {
   }
 }
 
+export function setsEqual(S, T){
+  for (let x of S) if (!T.has(x)) return false;
+  for (let x of T) if (!T.has(x)) return false;
+  return true;
+}
+
+export function compareLinkedElements(a, b){
+  let res = 0;
+  if (!a.cardinalityMultipliers) {
+    if (!b.cardinalityMultipliers) res = 0;
+    else res = -1;
+  }
+  if (!b.cardinalityMultipliers) res = 1;
+  if (b.cardinalityMultipliers && b.cardinalityMultipliers.has(a)) res = -1;
+  if (a.cardinalityMultipliers && a.cardinalityMultipliers.has(b)) res = 1;
+  //let s = (res == -1)? " < ": ((res == 1)? " > ": " == ");
+  //console.log(a.name + s + b.name);
+  return res;
+}

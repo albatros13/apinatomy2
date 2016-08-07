@@ -24,6 +24,7 @@ import {SetToArray} from "../transformations/pipe.general";
            <repo-template caption="Elements" 
            [items] = "item.p('elements') | async | setToArray" 
            (updated)="updateProperty('elements', $event)"
+           [options]="{linked: true}"
            [types]="[templateName.CylindricalLyphTemplate, templateName.OmegaTreeTemplate]"></repo-template>
         </div>
          <ng-content select="relationGroup"></ng-content> 

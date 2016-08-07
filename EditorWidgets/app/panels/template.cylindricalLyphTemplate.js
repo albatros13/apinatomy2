@@ -21,16 +21,22 @@ var component_select_1 = require('../components/component.select');
 var component_templateValue_1 = require('../components/component.templateValue');
 var template_lyphTemplate_1 = require("./template.lyphTemplate");
 var template_borderTemplate_1 = require("./template.borderTemplate");
+//import {OmegaTreePartTemplate} from "open-physiology-model";
 var CylindricalLyphTemplatePanel = (function (_super) {
     __extends(CylindricalLyphTemplatePanel, _super);
     function CylindricalLyphTemplatePanel() {
         _super.apply(this, arguments);
     }
+    //OmegaTreePartTemplate = OmegaTreePartTemplate;
+    CylindricalLyphTemplatePanel.prototype.ngOnInit = function () {
+        _super.prototype.ngOnInit.call(this);
+        this.ignore = this.ignore.add('cardinalityMultipliers');
+    };
     CylindricalLyphTemplatePanel = __decorate([
         core_1.Component({
             selector: 'cylindricalLyphTemplate-panel',
             inputs: ['item', 'ignore', 'options'],
-            template: "\n    <lyphTemplate-panel [item]=\"item\" \n      [ignore]=\"ignore\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n    \n<!--\n      <borderGroup>\n        &lt;!&ndash;MinusBorder&ndash;&gt;\n        <div class=\"input-control\">      \n          <label for=\"minusBorder\">Minus border: </label>\n          <borderTemplate-panel [item]=\"item.minusBorder\" \n            (added)  =\"addTemplate('minusBorder', templateName.BorderTemplate)\"\n            (saved)  =\"updateProperty('minusBorder', $event)\"    \n            (removed)=\"removeTemplate('minusBorder', $event)\">\n          </borderTemplate-panel>\n        </div>\n      \n        &lt;!&ndash;PlusBorder&ndash;&gt;        \n        <div class=\"input-control\">      \n          <label for=\"plusBorder\">Plus border: </label>\n          <borderTemplate-panel [item]=\"item.plusBorder\" \n            (added)  =\"addTemplate('plusBorder', templateName.BorderTemplate)\"\n            (saved)  =\"updateProperty('plusBorder', $event)\"    \n            (removed)=\"removeTemplate('plusBorder', $event)\">\n          </borderTemplate-panel>\n        </div>\n          \n      </borderGroup>\n-->\n    <ng-content></ng-content>      \n    \n    </lyphTemplate-panel>\n  ",
+            template: "\n    <lyphTemplate-panel [item]=\"item\" \n      [ignore]=\"ignore\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n      <!--TreeParent-->\n   <!--   <div  *ngIf=\"includeProperty('type')\" class=\"input-control\">\n        <label for=\"type\">Tree parent: </label>\n        <select-input-1 [item] = \"item.p('treeParent') | async\"\n         (updated)=\"updateProperty('treeParent', $event)\"    \n         [options] = \"OmegaTreePartTemplate.p('all') | async\"></select-input-1>\n      </div>-->\n    \n<!--\n      <borderGroup>\n        &lt;!&ndash;MinusBorder&ndash;&gt;\n        <div class=\"input-control\">      \n          <label for=\"minusBorder\">Minus border: </label>\n          <borderTemplate-panel [item]=\"item.minusBorder\" \n            (added)  =\"addTemplate('minusBorder', templateName.BorderTemplate)\"\n            (saved)  =\"updateProperty('minusBorder', $event)\"    \n            (removed)=\"removeTemplate('minusBorder', $event)\">\n          </borderTemplate-panel>\n        </div>\n      \n        &lt;!&ndash;PlusBorder&ndash;&gt;        \n        <div class=\"input-control\">      \n          <label for=\"plusBorder\">Plus border: </label>\n          <borderTemplate-panel [item]=\"item.plusBorder\" \n            (added)  =\"addTemplate('plusBorder', templateName.BorderTemplate)\"\n            (saved)  =\"updateProperty('plusBorder', $event)\"    \n            (removed)=\"removeTemplate('plusBorder', $event)\">\n          </borderTemplate-panel>\n        </div>\n          \n      </borderGroup>\n-->\n    <ng-content></ng-content>      \n    \n    </lyphTemplate-panel>\n  ",
             directives: [component_templateValue_1.TemplateValue, component_select_1.SingleSelectInput, template_lyphTemplate_1.LyphTemplatePanel, template_borderTemplate_1.BorderTemplatePanel]
         }), 
         __metadata('design:paramtypes', [])

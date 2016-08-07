@@ -22,7 +22,7 @@ import {MeasurableLocationType} from "open-physiology-model";
       <!--Location-->
       <div class="input-control" *ngIf="includeProperty('location')">
         <label for="location">Location: </label>
-        <select-input-1 [items]="item.location" 
+        <select-input-1 [items]="item.p('location') | async" 
         (updated)="updateProperty('location', $event)"     
         [options]="MeasurableLocationType.p('all') | async"></select-input-1>
       </div>   

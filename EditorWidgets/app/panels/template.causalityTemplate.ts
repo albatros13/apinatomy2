@@ -23,7 +23,7 @@ import {MeasurableTemplate} from "open-physiology-model";
       <!--Cause-->
       <div class="input-control" *ngIf="includeProperty('cause')">      
         <label for="cause">Cause: </label>
-        <select-input-1 [item] = "item.cause" 
+        <select-input-1 [item] = "item.p('cause') | async" 
           (updated)="updateProperty('cause', $event)"    
           [options] = "MeasurableTemplate.p('all') | async"></select-input-1>
       </div>

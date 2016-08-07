@@ -160,7 +160,7 @@ import {LyphType, ProcessTemplate, BorderTemplate} from "open-physiology-model";
           <div class="input-control">      
             <label for="outerBorder">Outer border: </label>
             <borderTemplate-panel [item]="item.outerBorder" 
-              [options]="borderPanelOptions"
+              [options]= "borderPanelOptions"
               (added)  = "addTemplate('outerBorder', templateName.BorderTemplate)"
               (saved)  = "updateProperty('outerBorder', $event)"  
               (removed)= "removeTemplate('outerBorder', $event)">
@@ -178,7 +178,7 @@ import {LyphType, ProcessTemplate, BorderTemplate} from "open-physiology-model";
 })
 export class LyphTypePanel extends MaterialTypePanel{
   LyphType = LyphType;
-  borderPanelOptions = {'hideSave': true, 'hideRestore': true};
+  borderPanelOptions = {'hideRemove': true, 'hideSave': true, 'hideRestore': true};
 
   layersIgnore: Set<string> = new Set<string>();
   patchesIgnore: Set<string> = new Set<string>();

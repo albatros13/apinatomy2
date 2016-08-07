@@ -4,7 +4,7 @@
 import {Component, Input, Output, ViewChild, ElementRef, Renderer, EventEmitter} from '@angular/core';
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
-import {getColor, getTreeData} from "../services/utils.model";
+import {getIcon, getColor, getTreeData, compareLinkedElements, TemplateName} from "../services/utils.model";
 
 declare var d3:any;
 
@@ -78,7 +78,6 @@ export class OmegaTreeWidget{
       this.data = {};
       this.svg.selectAll(".tree").remove();
     }
-    console.log("Omega tree data", this.data);
   }
 
   draw(svg: any, vp: any, data: any): void{
@@ -138,9 +137,7 @@ export class OmegaTreeWidget{
       .enter()
       .append("circle")
       .attr("class", "node")
-      .attr("r", function (d: any) {
-        return d.children ? 4.5: 0;
-      })
+      .attr("r", 4.5)
       .style("fill", d => getColor(d.class))
       .attr("transform", transform);
 
@@ -152,15 +149,20 @@ export class OmegaTreeWidget{
       .enter()
       .append("g")
       .attr("class", "icon")
-      .attr("transform", transform)
       .each((d: any) => {
-          if (d.source){
-            let item = new TemplateBox(d.source.resource);
-            item.render(svgGroup,
-              {center: {x: (d.source.x + d.target.x) / 2 - dx, y: (d.source.y + d.target.y) / 2- dy}, size: vp.node.size});
+        if (d.target){
+          let position = {x: (d.source.x + d.target.x) / 2 - dx, y: (d.source.y + d.target.y) / 2 - dy};
+          if (d.target.resource.class == TemplateName.OmegaTreeTemplate){
+            svgGroup.append("image")
+              .attr("xlink:href", getIcon(TemplateName.OmegaTreeTemplate))
+              .attr("x", position.x + dx - 12).attr("y", position.y + dy - 12)
+              .attr("width", 24).attr("height", 24);
+          } else {
+            let item = new TemplateBox(d.target.resource);
+            item.render(svgGroup, {center: position, size: vp.node.size});
           }
-        }
-      );
+         }
+      });
 
     let text = svgGroup.selectAll("nodeLabel")
       .data(links)
@@ -172,7 +174,7 @@ export class OmegaTreeWidget{
       .style("text-anchor", "end")
       .attr("x", d => (d.source.x + d.target.x) / 2 - dx)
       .attr("y", d => (d.source.y + d.target.y) / 2)
-      .text((d: any) => ((d.source.id)? d.source.id: "?") + ": " + d.source.name);
+      .text((d: any) => ("level " + (d.target.depth) + ": " + d.target.name));
 
     function transform(d: any): string {
       return "translate(" + d.x + "," + d.y + ")";
@@ -186,22 +188,37 @@ export class OmegaTreeWidget{
     treeData = getTreeData(item, relations, -1);
     if (treeData.children.length == 0) return {};
 
-    //TODO: sort children (a, b) => b[cardinalityMultiplies].has(a) -> (a < b)
+    function linkElements(elements: Array<any>) {
+      let root: any = {id:  "#0", name: item.name, children: []};
+      let queue: Array<any> = [root];
 
-    let obj = treeData.children[0];
-    let parent: any = {id: obj.id, name: obj.name, resource: obj};
-    let data = parent;
+      if (!elements) return queue;
+      elements.sort((a, b) => compareLinkedElements(a.resource, b.resource));
 
-    for (let i = 1; i < treeData.children.length; i++) {
-      let obj = treeData.children[i];
-      let child = {id: obj.id, name: obj.name, resource: obj};
-      parent.children = [child];
-      parent = child;
+      for (let i = 0; i < elements.length; i++) {
+        let child = {id: elements[i].id, name: elements[i].name, resource: elements[i].resource};
+        let links = elements[i].resource.cardinalityMultipliers;
+        if (!links || (links.size == 0)){
+          root.children.push(child);
+        } else {
+          links.forEach(link => {
+            let parent = queue.find(x => (x.resource == link));
+            if (parent){
+              if (!parent.children) parent.children = [];
+              parent.children.push(child);
+            }
+          });
+        }
+        if (!queue.find(x => (x.resource === elements[i].resource))){
+          queue.push(child);
+        }
+      }
+      return queue;
     }
 
-    //fake node
-    parent.children = [{skip: true}];
+    let tree = linkElements(treeData.children);
+    //TODO: unwrap recursively trees in the queue
 
-    return data;
+    return tree[0];
   }
 }

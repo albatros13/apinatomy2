@@ -1,8 +1,10 @@
 "use strict";
+exports.getColor = d3.scale.category20();
 (function (ResourceName) {
     ResourceName[ResourceName["Resource"] = "Resource"] = "Resource";
     ResourceName[ResourceName["ExternalResource"] = "ExternalResource"] = "ExternalResource";
     ResourceName[ResourceName["Type"] = "Type"] = "Type";
+    //OmegaTreePartType   = <any>"OmegaTreePartType",
     ResourceName[ResourceName["MeasurableLocationType"] = "MeasurableLocationType"] = "MeasurableLocationType";
     ResourceName[ResourceName["MaterialType"] = "MaterialType"] = "MaterialType";
     ResourceName[ResourceName["LyphType"] = "LyphType"] = "LyphType";
@@ -23,6 +25,7 @@ var ResourceName = exports.ResourceName;
 (function (TemplateName) {
     TemplateName[TemplateName["Template"] = "Template"] = "Template";
     TemplateName[TemplateName["LyphTemplate"] = "LyphTemplate"] = "LyphTemplate";
+    TemplateName[TemplateName["OmegaTreePartTemplate"] = "OmegaTreePartTemplate"] = "OmegaTreePartTemplate";
     TemplateName[TemplateName["CylindricalLyphTemplate"] = "CylindricalLyphTemplate"] = "CylindricalLyphTemplate";
     TemplateName[TemplateName["ProcessTemplate"] = "ProcessTemplate"] = "ProcessTemplate";
     TemplateName[TemplateName["MeasurableTemplate"] = "MeasurableTemplate"] = "MeasurableTemplate";
@@ -71,7 +74,6 @@ function getIcon(Class) {
     return "images/resource.png";
 }
 exports.getIcon = getIcon;
-exports.getColor = d3.scale.category20();
 function getTreeData(item, relations, depth) {
     var data = {};
     if (!item)
@@ -95,7 +97,7 @@ function getTreeData(item, relations, depth) {
                 data.children = [];
             for (var _b = 0, _c = Array.from(root[fieldName]); _b < _c.length; _b++) {
                 var obj = _c[_b];
-                var child = { id: "node_" + ++i, name: obj.name, resource: obj, depth: level, relation: fieldName };
+                var child = { id: "#" + ++i, name: obj.name, resource: obj, depth: level, relation: fieldName };
                 data.children.push(child);
                 traverse(obj, level + 1, child);
             }
@@ -134,4 +136,37 @@ function getGraphData(item, relations, depth) {
     }
 }
 exports.getGraphData = getGraphData;
+function setsEqual(S, T) {
+    for (var _i = 0, S_1 = S; _i < S_1.length; _i++) {
+        var x = S_1[_i];
+        if (!T.has(x))
+            return false;
+    }
+    for (var _a = 0, T_1 = T; _a < T_1.length; _a++) {
+        var x = T_1[_a];
+        if (!T.has(x))
+            return false;
+    }
+    return true;
+}
+exports.setsEqual = setsEqual;
+function compareLinkedElements(a, b) {
+    var res = 0;
+    if (!a.cardinalityMultipliers) {
+        if (!b.cardinalityMultipliers)
+            res = 0;
+        else
+            res = -1;
+    }
+    if (!b.cardinalityMultipliers)
+        res = 1;
+    if (b.cardinalityMultipliers && b.cardinalityMultipliers.has(a))
+        res = -1;
+    if (a.cardinalityMultipliers && a.cardinalityMultipliers.has(b))
+        res = 1;
+    //let s = (res == -1)? " < ": ((res == 1)? " > ": " == ");
+    //console.log(a.name + s + b.name);
+    return res;
+}
+exports.compareLinkedElements = compareLinkedElements;
 //# sourceMappingURL=utils.model.js.map

@@ -204,8 +204,8 @@ div .dotted {
 
 .repo {
   border-right:3px #eee solid;
-  min-width: 320px;
-  min-height: 320px;
+  min-width: 340px;
+  min-height: 300px;
 }
 
 .viewer{

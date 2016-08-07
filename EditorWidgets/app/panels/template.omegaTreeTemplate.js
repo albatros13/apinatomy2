@@ -20,16 +20,22 @@ var core_1 = require('@angular/core');
 var component_select_1 = require('../components/component.select');
 var component_templateValue_1 = require('../components/component.templateValue');
 var template_groupTemplate_1 = require("./template.groupTemplate");
+//import {OmegaTreePartTemplate} from "open-physiology-model";
 var OmegaTreeTemplatePanel = (function (_super) {
     __extends(OmegaTreeTemplatePanel, _super);
     function OmegaTreeTemplatePanel() {
         _super.apply(this, arguments);
     }
+    //OmegaTreePartTemplate = OmegaTreePartTemplate;
+    OmegaTreeTemplatePanel.prototype.ngOnInit = function () {
+        _super.prototype.ngOnInit.call(this);
+        this.ignore = this.ignore.add('cardinalityMultipliers');
+    };
     OmegaTreeTemplatePanel = __decorate([
         core_1.Component({
             selector: 'omegaTreeTemplate-panel',
             inputs: ['item', 'ignore', 'options'],
-            template: "\n    <groupTemplate-panel [item]=\"item\" \n      [ignore]=\"ignore\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n          \n      <ng-content></ng-content>      \n    \n    </groupTemplate-panel>\n  ",
+            template: "\n    <groupTemplate-panel [item]=\"item\" \n      [ignore]=\"ignore\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n      <!--TreeParent-->\n      <!--<div  *ngIf=\"includeProperty('type')\" class=\"input-control\">\n        <label for=\"type\">Tree parent: </label>\n        <select-input-1 [item] = \"item.p('treeParent') | async\"\n         (updated)=\"updateProperty('treeParent', $event)\"    \n         [options] = \"OmegaTreePartTemplate.p('all') | async\"></select-input-1>\n      </div>-->\n          \n      <ng-content></ng-content>      \n    \n    </groupTemplate-panel>\n  ",
             directives: [component_templateValue_1.TemplateValue, component_select_1.SingleSelectInput, template_groupTemplate_1.GroupTemplatePanel]
         }), 
         __metadata('design:paramtypes', [])

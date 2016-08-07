@@ -65,7 +65,6 @@ var OmegaTreeWidget = (function () {
             this.data = {};
             this.svg.selectAll(".tree").remove();
         }
-        console.log("Omega tree data", this.data);
     };
     OmegaTreeWidget.prototype.draw = function (svg, vp, data) {
         var w = vp.size.width - 2 * vp.margin.x;
@@ -111,9 +110,7 @@ var OmegaTreeWidget = (function () {
             .enter()
             .append("circle")
             .attr("class", "node")
-            .attr("r", function (d) {
-            return d.children ? 4.5 : 0;
-        })
+            .attr("r", 4.5)
             .style("fill", function (d) { return utils_model_1.getColor(d.class); })
             .attr("transform", transform);
         var dx = vp.node.size.width / 2;
@@ -123,11 +120,19 @@ var OmegaTreeWidget = (function () {
             .enter()
             .append("g")
             .attr("class", "icon")
-            .attr("transform", transform)
             .each(function (d) {
-            if (d.source) {
-                var item = new TemplateBox(d.source.resource);
-                item.render(svgGroup, { center: { x: (d.source.x + d.target.x) / 2 - dx, y: (d.source.y + d.target.y) / 2 - dy }, size: vp.node.size });
+            if (d.target) {
+                var position = { x: (d.source.x + d.target.x) / 2 - dx, y: (d.source.y + d.target.y) / 2 - dy };
+                if (d.target.resource.class == utils_model_1.TemplateName.OmegaTreeTemplate) {
+                    svgGroup.append("image")
+                        .attr("xlink:href", utils_model_1.getIcon(utils_model_1.TemplateName.OmegaTreeTemplate))
+                        .attr("x", position.x + dx - 12).attr("y", position.y + dy - 12)
+                        .attr("width", 24).attr("height", 24);
+                }
+                else {
+                    var item = new TemplateBox(d.target.resource);
+                    item.render(svgGroup, { center: position, size: vp.node.size });
+                }
             }
         });
         var text = svgGroup.selectAll("nodeLabel")
@@ -140,7 +145,7 @@ var OmegaTreeWidget = (function () {
             .style("text-anchor", "end")
             .attr("x", function (d) { return (d.source.x + d.target.x) / 2 - dx; })
             .attr("y", function (d) { return (d.source.y + d.target.y) / 2; })
-            .text(function (d) { return ((d.source.id) ? d.source.id : "?") + ": " + d.source.name; });
+            .text(function (d) { return ("level " + (d.target.depth) + ": " + d.target.name); });
         function transform(d) {
             return "translate(" + d.x + "," + d.y + ")";
         }
@@ -153,19 +158,40 @@ var OmegaTreeWidget = (function () {
         treeData = utils_model_1.getTreeData(item, relations, -1);
         if (treeData.children.length == 0)
             return {};
-        //TODO: sort children (a, b) => b[cardinalityMultiplies].has(a) -> (a < b)
-        var obj = treeData.children[0];
-        var parent = { id: obj.id, name: obj.name, resource: obj };
-        var data = parent;
-        for (var i = 1; i < treeData.children.length; i++) {
-            var obj_1 = treeData.children[i];
-            var child = { id: obj_1.id, name: obj_1.name, resource: obj_1 };
-            parent.children = [child];
-            parent = child;
+        function linkElements(elements) {
+            var root = { id: "#0", name: item.name, children: [] };
+            var queue = [root];
+            if (!elements)
+                return queue;
+            elements.sort(function (a, b) { return utils_model_1.compareLinkedElements(a.resource, b.resource); });
+            var _loop_1 = function(i) {
+                var child = { id: elements[i].id, name: elements[i].name, resource: elements[i].resource };
+                var links = elements[i].resource.cardinalityMultipliers;
+                if (!links || (links.size == 0)) {
+                    root.children.push(child);
+                }
+                else {
+                    links.forEach(function (link) {
+                        var parent = queue.find(function (x) { return (x.resource == link); });
+                        if (parent) {
+                            if (!parent.children)
+                                parent.children = [];
+                            parent.children.push(child);
+                        }
+                    });
+                }
+                if (!queue.find(function (x) { return (x.resource === elements[i].resource); })) {
+                    queue.push(child);
+                }
+            };
+            for (var i = 0; i < elements.length; i++) {
+                _loop_1(i);
+            }
+            return queue;
         }
-        //fake node
-        parent.children = [{ skip: true }];
-        return data;
+        var tree = linkElements(treeData.children);
+        //TODO: unwrap recursively trees in the queue
+        return tree[0];
     };
     __decorate([
         core_1.Input(), 

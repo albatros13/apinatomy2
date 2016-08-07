@@ -13,12 +13,12 @@ import {NodeTemplate} from "open-physiology-model";
   selector: 'borderTemplate-panel',
   inputs: ['item', 'ignore', 'options'],
   template:`
-    <button *ngIf="!item"  type="button" class="btn btn-default" aria-label="Add"
+   <!-- <button *ngIf="!item"  type="button" class="btn btn-default" aria-label="Add"
       (click)  = "added.emit($event)"><span class="glyphicon glyphicon-plus"></span>
-    </button>
+    </button>-->
     
     <template-panel *ngIf="item" [item]="item" 
-      [ignore]="myIgnore"
+      [ignore]="ignore"
       [options]  = "options"
       (saved)    = "saved.emit($event)"
       (canceled) = "canceled.emit($event)"
@@ -59,10 +59,8 @@ export class BorderTemplatePanel extends TemplatePanel{
   @Output() removed = new EventEmitter();
   @Output() propertyUpdated = new EventEmitter();
 
-  myIgnore: Set<string> = new Set<string>();
-
   ngOnInit(){
     super.ngOnInit();
-    this.myIgnore = new Set<string>(this.ignore).add('name').add('cardinalityBase').add('cardinalityMultipliers').add('type');
+    this.ignore = this.ignore.add('name').add('cardinalityBase').add('cardinalityMultipliers').add('type');
   }
 }

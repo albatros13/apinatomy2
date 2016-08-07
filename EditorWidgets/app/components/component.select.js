@@ -27,6 +27,9 @@ var MultiSelectInput /*implements OnChanges*/ = (function () {
         this.externalChange = false;
     }
     MultiSelectInput /*implements OnChanges*/.prototype.ngOnChanges = function (changes) {
+        //let array = Array.from(this.items);
+        //if (array[0] && (array[0].class === "CylindricalLyphTemplate"))
+        //  console.log("Select update:", array.map(x => x.name));
         var _this = this;
         if (this.externalChange) {
             setTimeout(function () { _this.active = false; }, 0);
@@ -55,7 +58,8 @@ var MultiSelectInput /*implements OnChanges*/ = (function () {
     MultiSelectInput /*implements OnChanges*/ = __decorate([
         core_1.Component({
             selector: 'select-input',
-            template: "\n    <div *ngIf=\"active\">\n      <ng-select\n        [items]       = \"options | setToArray | mapToOptions\"\n        [initData]    = \"items   | setToArray | mapToOptions\"\n        [multiple]    = \"true\"\n        (data)        = \"refreshValue($event)\"\n      ></ng-select>\n    </div>\n    ",
+            inputs: ['items', 'options', 'disabled'],
+            template: "\n    <div *ngIf=\"active\">\n      <ng-select\n        [items]       = \"options | setToArray | mapToOptions\"\n        [initData]    = \"items   | setToArray | mapToOptions\"\n        [multiple]    = \"true\"\n        [disabled]    = \"disabled\"\n        (data)        = \"refreshValue($event)\"\n      ></ng-select>\n    </div>\n    ",
             directives: [ng2_select_1.SELECT_DIRECTIVES, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES],
             pipes: [pipe_general_1.MapToOptions, pipe_general_1.SetToArray]
         }), 
@@ -88,7 +92,9 @@ var SingleSelectInput = (function () {
     SingleSelectInput.prototype.refreshValue = function (value) {
         //let options: any[] = (this.options[0] && this.options[0].children)? [].concat.apply([], this.options.map(item => item.children)): this.options;
         this.externalChange = false;
-        this.item = Array.from(this.options).find(function (y) { return (value.id == ((y.id) ? y.id : y.name)); });
+        var item = Array.from(this.options).find(function (y) { return (value.id == ((y.id) ? y.id : y.name)); });
+        if (item)
+            this.item = item;
         this.updated.emit(this.item);
     };
     __decorate([
@@ -106,8 +112,8 @@ var SingleSelectInput = (function () {
     SingleSelectInput = __decorate([
         core_1.Component({
             selector: 'select-input-1',
-            inputs: ['item', 'options'],
-            template: "\n    <div *ngIf=\"active\">\n      <ng-select\n        [items]       = \"options | setToArray | mapToOptions\"\n        [initData]    = \"items | mapToOptions\"\n        [multiple]    = false\n        (data)        = \"refreshValue($event)\"\n      ></ng-select>\n    </div>\n  ",
+            inputs: ['item', 'options', 'disabled'],
+            template: "\n    <div *ngIf=\"active\">\n      <ng-select\n        [items]       = \"options | setToArray | mapToOptions\"\n        [initData]    = \"items | mapToOptions\"\n        [multiple]    = false\n        [disabled]    = \"disabled\"\n        (data)        = \"refreshValue($event)\"\n      ></ng-select>\n    </div>\n  ",
             directives: [ng2_select_1.SELECT_DIRECTIVES, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES],
             pipes: [pipe_general_1.MapToOptions, pipe_general_1.SetToArray]
         }), 

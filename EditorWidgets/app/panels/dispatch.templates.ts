@@ -12,7 +12,6 @@ import {LyphTemplatePanel} from './template.lyphTemplate';
 import {CylindricalLyphTemplatePanel} from './template.cylindricalLyphTemplate';
 import {ToastyService, Toasty} from 'ng2-toasty/ng2-toasty';
 
-
 @Component({
   selector: 'panel-template',
   inputs: ['item', 'ignore'],
@@ -69,7 +68,8 @@ import {ToastyService, Toasty} from 'ng2-toasty/ng2-toasty';
        
        <ng2-toasty></ng2-toasty>
   `,
-  directives: [TemplatePanel, MeasurableTemplatePanel, NodeTemplatePanel, CausalityTemplatePanel, BorderTemplatePanel,
+  directives: [TemplatePanel,
+    MeasurableTemplatePanel, NodeTemplatePanel, CausalityTemplatePanel, BorderTemplatePanel,
     ProcessTemplatePanel,
     LyphTemplatePanel, CylindricalLyphTemplatePanel,
     GroupTemplatePanel, OmegaTreeTemplatePanel, Toasty]

@@ -6,6 +6,7 @@ import {SingleSelectInput} from '../components/component.select';
 import {TemplateValue} from '../components/component.templateValue';
 import {LyphTemplatePanel} from "./template.lyphTemplate";
 import {BorderTemplatePanel} from "./template.borderTemplate";
+//import {OmegaTreePartTemplate} from "open-physiology-model";
 
 @Component({
   selector: 'cylindricalLyphTemplate-panel',
@@ -18,6 +19,14 @@ import {BorderTemplatePanel} from "./template.borderTemplate";
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"
       (propertyUpdated) = "propertyUpdated.emit($event)">
+      
+      <!--TreeParent-->
+   <!--   <div  *ngIf="includeProperty('type')" class="input-control">
+        <label for="type">Tree parent: </label>
+        <select-input-1 [item] = "item.p('treeParent') | async"
+         (updated)="updateProperty('treeParent', $event)"    
+         [options] = "OmegaTreePartTemplate.p('all') | async"></select-input-1>
+      </div>-->
     
 <!--
       <borderGroup>
@@ -49,4 +58,11 @@ import {BorderTemplatePanel} from "./template.borderTemplate";
   `,
   directives: [TemplateValue, SingleSelectInput, LyphTemplatePanel, BorderTemplatePanel]
 })
-export class CylindricalLyphTemplatePanel extends LyphTemplatePanel{}
+export class CylindricalLyphTemplatePanel extends LyphTemplatePanel{
+  //OmegaTreePartTemplate = OmegaTreePartTemplate;
+
+  ngOnInit(){
+    super.ngOnInit();
+   this.ignore = this.ignore.add('cardinalityMultipliers');
+  }
+}

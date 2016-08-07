@@ -119,38 +119,31 @@ export class OmegaTreeEditor {
       let fma17881 = model.ExternalResource.new({name: "FMA:17881", uri: ""});
 
       var externals = [fma7203, fma15610, fma66610, fma17881];
-
       await Promise.all(externals.map(p => p.commit()));
 
-      let borderType = await model.BorderType.getSingleton();
-
-      let minusBorder = model.BorderTemplate.new({name: "T: MinusBorder", type: borderType, cardinalityBase: 1});
-
-      let plusBorder  = model.BorderTemplate.new({name: "T: PlusBorder",  type: borderType, cardinalityBase: 1});
-      let innerBorder = model.BorderTemplate.new({name: "T: InnerBorder", type: borderType, cardinalityBase: 1});
-      let outerBorder = model.BorderTemplate.new({name: "T: OuterBorder", type: borderType, cardinalityBase: 1});
-
-      let borders = [minusBorder, plusBorder, innerBorder, outerBorder];
-      await Promise.all(borders.map(p => p.commit()));
-
       /*Cylindrical lyphs*/
-      let renalH = model.CylindricalLyphType.new({name: "Renal hilum", externals: [fma15610],
-        minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder});
-      let renalP = model.CylindricalLyphType.new({name: "Renal parenchyma",
-        minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder});
-      let renalC = model.CylindricalLyphType.new({name: "Renal capsule", externals: [fma66610],
-        minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder});
+      let renalH = model.CylindricalLyphType.new({name: "Renal hilum", externals: [fma15610]});
+      let renalP = model.CylindricalLyphType.new({name: "Renal parenchyma"});
+      let renalC = model.CylindricalLyphType.new({name: "Renal capsule", externals: [fma66610]});
 
-      var cLyphs1 = [renalH, renalP, renalC];
-      await Promise.all(cLyphs1.map(p => p.commit()));
+      var cLyphsGroup = [renalH, renalP, renalC];
+      await Promise.all(cLyphsGroup.map(p => p.commit()));
 
-      let kidney = model.CylindricalLyphType.new({name: "Kidney", externals: [fma7203],
-        minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder});
+      let kidney = model.CylindricalLyphType.new({name: "Kidney", externals: [fma7203]});
       await kidney.commit();
 
-      let kidneyLobus = model.CylindricalLyphType.new({name: "Kidney lobus", externals: [fma17881],
-        minusBorder: minusBorder, plusBorder: plusBorder, innerBorder: innerBorder, outerBorder: outerBorder});
+      let kidneyLobus = model.CylindricalLyphType.new({name: "Kidney lobus", externals: [fma17881]});
       await kidneyLobus.commit();
+      /*
+      let t1 = model.CylindricalLyphTemplate.new({name: "T: Renal hilum", type: renalH});
+      let t2 = model.CylindricalLyphTemplate.new({name: "T: Renal parenchyma", type: renalP, cardinalityMultipliers: [t1]});
+      let t3 = model.CylindricalLyphTemplate.new({name: "T: Renal capsule", type: renalC, cardinalityMultipliers: [t2]});
+      let cLyphTemplates = [t1, t2, t3];
+      await Promise.all(cLyphTemplates.map(p => p.commit()));
+
+      let tree = model.OmegaTreeType({name: "Kidney omega tree", elements: cLyphTemplates});
+      await tree.commit();
+    */
 
     })();
   }
@@ -162,12 +155,8 @@ export class OmegaTreeEditor {
   }
 
   onItemSelected(item:any) {
-    setTimeout(() => {
-      this.selectedItem = null;
-    }, 0);
-    setTimeout(() => {
-      this.selectedItem = item;
-    }, 0);
+    setTimeout(() => {this.selectedItem = null;}, 0);
+    setTimeout(() => {this.selectedItem = item;}, 0);
   }
 
   ngOnInit() {

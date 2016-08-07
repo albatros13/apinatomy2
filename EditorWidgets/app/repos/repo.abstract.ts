@@ -26,6 +26,8 @@ export abstract class RepoAbstract{
 
   @Input() items: Array<any> = [];
   @Input() types: Array<any> = [];
+  @Input() options: any = {};
+
   zones: Array<string> = [];
   ignore: Set<string> = new Set<string>();
 
@@ -93,7 +95,7 @@ export abstract class RepoAbstract{
   protected onAdded(Class: any){
     let proto: any = {name: "New " + Class};
     if (Class.indexOf("Template") > 0) {
-      proto = {name: "T: New " + Class, cardinality: 1};
+      proto = {name: ""};
     }
     let newItem = model[Class].new(proto);
     this.items.push(newItem);

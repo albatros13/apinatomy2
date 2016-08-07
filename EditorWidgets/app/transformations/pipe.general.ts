@@ -113,5 +113,6 @@ export class OrderBy implements PipeTransform {
       }
     });
     return items;
+    
   }
 }

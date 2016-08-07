@@ -35,6 +35,7 @@ var RepoAbstract = (function () {
         this.selected = new core_1.EventEmitter();
         this.items = [];
         this.types = [];
+        this.options = {};
         this.zones = [];
         this.ignore = new Set();
         this.sortByMode = "unsorted";
@@ -98,7 +99,7 @@ var RepoAbstract = (function () {
     RepoAbstract.prototype.onAdded = function (Class) {
         var proto = { name: "New " + Class };
         if (Class.indexOf("Template") > 0) {
-            proto = { name: "T: New " + Class, cardinality: 1 };
+            proto = { name: "" };
         }
         var newItem = model[Class].new(proto);
         this.items.push(newItem);
@@ -134,6 +135,10 @@ var RepoAbstract = (function () {
         core_1.Input(), 
         __metadata('design:type', Array)
     ], RepoAbstract.prototype, "types", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Object)
+    ], RepoAbstract.prototype, "options", void 0);
     return RepoAbstract;
 }());
 exports.RepoAbstract = RepoAbstract;

@@ -5,7 +5,8 @@ import {Component} from '@angular/core';
 import {SingleSelectInput} from '../components/component.select';
 import {TemplateValue} from '../components/component.templateValue';
 import {TemplatePanel} from "./template.template";
-import {MeasurableLocationType} from "open-physiology-model";
+import {model} from "../services/utils.model";
+const {MeasurableLocationType} = model;
 
 @Component({
   selector: 'measurableTemplate-panel',
@@ -21,7 +22,7 @@ import {MeasurableLocationType} from "open-physiology-model";
 
       <!--Location-->
       <div class="input-control" *ngIf="includeProperty('location')">
-        <label for="location">Location: </label>
+        <label for="location">{{getPropertyLabel('location')}}: </label>
         <select-input-1 [items]="item.p('location') | async" 
         (updated)="updateProperty('location', $event)"     
         [options]="MeasurableLocationType.p('all') | async"></select-input-1>

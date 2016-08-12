@@ -9,7 +9,7 @@ import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/components/dropdown';
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
 import {PropertyToolbar} from '../components/toolbar.propertySettings';
-import {getColor, getPropertyLabel} from "../services/utils.model";
+import {getColor, getPropertyLabel, model} from "../services/utils.model";
 
 @Component({
   selector: 'hierarchy-widget',

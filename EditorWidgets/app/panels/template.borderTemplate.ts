@@ -7,7 +7,8 @@ import {TemplateValue} from '../components/component.templateValue';
 import {TemplatePanel} from "./template.template";
 import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
 import {FilterByClass} from "../transformations/pipe.general";
-import {NodeTemplate} from "open-physiology-model";
+import {model} from "../services/utils.model";
+const {NodeTemplate} = model;
 
 @Component({
   selector: 'borderTemplate-panel',
@@ -28,7 +29,7 @@ import {NodeTemplate} from "open-physiology-model";
       <!--Nature: {open, closed}-->
       <div class="input-control" *ngIf="includeProperty('nature')">
         <fieldset>
-          <legend>Nature:</legend>
+          <legend>{{getPropertyLabel('nature')}}:</legend>
           <radio-group [(ngModel)]="item.nature" [required]="true">
              <input type="radio" value="open">open&nbsp;
              <input type="radio" value="closed">closed<br/>

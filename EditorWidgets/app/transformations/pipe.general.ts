@@ -4,12 +4,12 @@
 import {Pipe, PipeTransform, Injectable} from '@angular/core';
 
 @Pipe({
-  name: 'hideTemplates'
+  name: 'hideClass'
 })
-export class HideTemplates implements PipeTransform {
-  transform(items: any[]): any {
+export class HideClass implements PipeTransform {
+  transform(items: any[], classNames: string[]): any {
     if (!items) return items;
-    return items.filter(x => x.class.indexOf("Template") < 0);
+    return items.filter(x => (classNames.indexOf(x.class) < 0));
   }
 }
 
@@ -113,6 +113,6 @@ export class OrderBy implements PipeTransform {
       }
     });
     return items;
-    
+
   }
 }

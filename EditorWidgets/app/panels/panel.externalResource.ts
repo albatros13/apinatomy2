@@ -5,7 +5,8 @@ import {Component} from '@angular/core';
 import {ResourcePanel} from "./panel.resource";
 import {MultiSelectInput} from '../components/component.select';
 import {RepoTemplate} from '../repos/repo.template';
-import {Resource} from "open-physiology-model";
+import {model} from "../services/utils.model";
+const {Resource} = model;
 
 @Component({
   selector: 'externalResource-panel',
@@ -21,19 +22,19 @@ import {Resource} from "open-physiology-model";
 
       <!--URI-->
       <div class="input-control" *ngIf="includeProperty('uri')">
-        <label for="uri">URI: </label>
+        <label for="uri">{{getPropertyLabel('uri')}}: </label>
         <input type="text" class="form-control" [(ngModel)]="item.uri">
       </div>
   
       <!--Type-->
       <div class="input-control" *ngIf="includeProperty('type')">
-        <label for="type">Type: </label>
+        <label for="type">{{getPropertyLabel('type')}}: </label>
         <input type="text" class="form-control" [(ngModel)]="item.type">
       </div>
       
       <!--Locals - TODO: map to categories-->
       <div class="input-control" *ngIf="includeProperty('locals')">
-        <label for="locals">Local resources: </label>
+        <label for="locals">{{getPropertyLabel('locals')}}: </label>
         <select-input 
         [items]="item.p('locals') | async" 
         (updated)="updateProperty('locals', $event)" 

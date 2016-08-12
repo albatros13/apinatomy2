@@ -20,12 +20,13 @@ var core_1 = require('@angular/core');
 var component_select_1 = require('../components/component.select');
 var component_templateValue_1 = require('../components/component.templateValue');
 var template_template_1 = require("./template.template");
-var open_physiology_model_1 = require("open-physiology-model");
+var utils_model_1 = require("../services/utils.model");
+var MeasurableLocationType = utils_model_1.model.MeasurableLocationType;
 var MeasurableTemplatePanel = (function (_super) {
     __extends(MeasurableTemplatePanel, _super);
     function MeasurableTemplatePanel() {
         _super.apply(this, arguments);
-        this.MeasurableLocationType = open_physiology_model_1.MeasurableLocationType;
+        this.MeasurableLocationType = MeasurableLocationType;
     }
     MeasurableTemplatePanel.prototype.ngOnInit = function () {
         _super.prototype.ngOnInit.call(this);
@@ -35,7 +36,7 @@ var MeasurableTemplatePanel = (function (_super) {
         core_1.Component({
             selector: 'measurableTemplate-panel',
             inputs: ['item', 'ignore', 'options'],
-            template: "\n    <template-panel [item]=\"item\" \n      [ignore]   = \"ignore\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <!--Location-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('location')\">\n        <label for=\"location\">Location: </label>\n        <select-input-1 [items]=\"item.p('location') | async\" \n        (updated)=\"updateProperty('location', $event)\"     \n        [options]=\"MeasurableLocationType.p('all') | async\"></select-input-1>\n      </div>   \n      \n      <!--Causes-->\n      <!--Effects-->\n      \n      <ng-content></ng-content>      \n\n    </template-panel>\n  ",
+            template: "\n    <template-panel [item]=\"item\" \n      [ignore]   = \"ignore\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <!--Location-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('location')\">\n        <label for=\"location\">{{getPropertyLabel('location')}}: </label>\n        <select-input-1 [items]=\"item.p('location') | async\" \n        (updated)=\"updateProperty('location', $event)\"     \n        [options]=\"MeasurableLocationType.p('all') | async\"></select-input-1>\n      </div>   \n      \n      <!--Causes-->\n      <!--Effects-->\n      \n      <ng-content></ng-content>      \n\n    </template-panel>\n  ",
             directives: [component_templateValue_1.TemplateValue, component_select_1.SingleSelectInput, template_template_1.TemplatePanel]
         }), 
         __metadata('design:paramtypes', [])

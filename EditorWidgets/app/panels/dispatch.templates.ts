@@ -1,5 +1,5 @@
 import {Component, Output, EventEmitter} from '@angular/core';
-import {TemplateName} from "../services/utils.model";
+import {TemplateName, model} from "../services/utils.model";
 import {TemplatePanel} from './template.template';
 import {MeasurableTemplatePanel} from './template.measurableTemplate';
 import {NodeTemplatePanel} from './template.nodeTemplate';

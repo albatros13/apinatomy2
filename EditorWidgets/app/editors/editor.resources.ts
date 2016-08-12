@@ -5,10 +5,10 @@ import {RelationshipWidget} from '../widgets/widget.relations';
 import {ResourceWidget} from '../widgets/widget.resource';
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
-import {SetToArray, HideTemplates} from "../transformations/pipe.general";
+import {SetToArray, HideClass} from "../transformations/pipe.general";
+import {model} from "../services/utils.model";
 
 import 'rxjs/add/operator/map';
-import * as model from "open-physiology-model";
 
 declare var GoldenLayout:any;
 declare var $: any;
@@ -20,7 +20,7 @@ declare var $: any;
   ],
   template: `
     <repo-general id="repo"
-      [items]="items | setToArray" 
+      [items]="items | setToArray | hideClass: ['BorderTemplate']" 
       [caption]="'Resources'" 
       (selected)="onItemSelected($event)">
     </repo-general>
@@ -36,7 +36,7 @@ declare var $: any;
   `,
   styles: [`#main {width: 100%; height: 100%; border: 0; margin: 0; padding: 0}`],
   directives: [RepoGeneral, RepoTemplate, RelationshipWidget, ResourceWidget],
-  pipes: [SetToArray/*, HideTemplates*/]
+  pipes: [SetToArray, HideClass]
 })
 export class ResourceEditor {
   items:Array<any>;
@@ -96,36 +96,19 @@ export class ResourceEditor {
   constructor(private resizeService:ResizeService,
               public el:ElementRef) {
     this.rs = model.Resource.p('all').subscribe(
-      (data: any) => {this.items = data});
+      (data: any) => {
+        this.items = data
+      });
 
-   /* this.ts = model.Template.p('all').subscribe(
+/*    this.rs = model.Resource.p('all').subscribe(
+      (data: any) => {this.items = data});*/
+
+   /* this.ts = model.classes.Template.p('all').subscribe(
       (data: any) => {this.templates = data;});
 */
-    (async function() {
-      /*Material type*/
-      var water = model.MaterialType.new({name: "Water"});
-      await water.commit();
-      var vWater = model.MeasurableType.new({name: "Concentration of water", quality: "concentration",
-        materials: [water]});
-      await vWater.commit();
+   /* (async function() {
 
-      /*Measurable type*/
-      var sodiumIon = model.MaterialType.new({name: "Sodium ion"});
-      await sodiumIon.commit();
-      var vSodiumIon = model.MeasurableType.new({name: "Concentration of sodium ion", quality: "concentration",
-        materials: [sodiumIon]});
-      await vSodiumIon.commit();
-
-      /*Process type*/
-      var processes = [
-        model.ProcessType.new({name: "Inflow Right Heart"}),
-        model.ProcessType.new({name: "Outflow Right Heart"}),
-        model.ProcessType.new({name: "Inflow Left Heart"}),
-        model.ProcessType.new({name: "Outflow Left Heart"})];
-
-      await Promise.all(processes.map(p => p.commit()));
-
-      /*External resources*/
+      /!*External resources*!/
       let fma7203  = model.ExternalResource.new({name: "FMA:7203", uri: ""});
       let fma15610 = model.ExternalResource.new({name: "FMA:15610", uri: ""});
       let fma66610 = model.ExternalResource.new({name: "FMA:66610", uri: ""});
@@ -135,23 +118,10 @@ export class ResourceEditor {
 
       await Promise.all(externals.map(p => p.commit()));
 
-      /*Cylindrical lyphs*/
-      let renalH = model.CylindricalLyphType.new({name: "Renal hilum", externals: [fma15610]});
-      let renalP = model.CylindricalLyphType.new({name: "Renal parenchyma"});
-      let renalC = model.CylindricalLyphType.new({name: "Renal capsule", externals: [fma66610]});
-
-      var cLyphs1 = [renalH, renalP, renalC];
-      await Promise.all(cLyphs1.map(p => p.commit()));
-
-      let kidney = model.CylindricalLyphType.new({name: "Kidney", externals: [fma7203]});
-      await kidney.commit();
-
-      let kidneyLobus = model.CylindricalLyphType.new({name: "Kidney lobus", externals: [fma17881]});
-      await kidneyLobus.commit();
 
       //create tree from user story
 
-    })();
+    })();*/
 
   }
   ngOnDestroy() {

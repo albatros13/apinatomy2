@@ -4,7 +4,7 @@ import {nvD3} from 'ng2-nvd3/lib/ng2-nvd3';
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
 
-import {getIcon, getColor, getGraphData} from "../services/utils.model";
+import {getIcon, getColor, getGraphData, model} from "../services/utils.model";
 
 declare let d3: any;
 

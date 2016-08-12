@@ -20,10 +20,24 @@ var TemplateBox = (function () {
         this.model = model;
     }
     TemplateBox.prototype.render = function (svg, options) {
-        return svg.append("rect")
+        var lyph = svg.append("rect")
             .attr("x", options.center.x).attr("y", options.center.y)
             .attr("width", options.size.width).attr("height", options.size.height)
             .style("stroke", "black").style("fill", "white");
+        if (this.model.layers && (this.model.layers.size > 0)) {
+            var layers = Array.from(this.model.layers);
+            var x0 = options.center.x;
+            var y0 = options.center.y;
+            var dx = options.size.width / layers.length;
+            var dy = options.size.height;
+            for (var i = 0; i < layers.length; i++) {
+                lyph.append("rect")
+                    .attr("x", x0 + i * dx).attr("y", y0)
+                    .attr("width", dx).attr("height", dy)
+                    .style("stroke", "black").style("fill", utils_model_1.getColor(layers[i].id));
+            }
+        }
+        return lyph;
     };
     return TemplateBox;
 }());
@@ -58,7 +72,7 @@ var OmegaTreeWidget = (function () {
     OmegaTreeWidget.prototype.ngOnChanges = function (changes) {
         this.svg = d3.select(this.el.nativeElement).select('svg');
         if (this.item) {
-            this.data = this.getOmegaTreeData(this.item, "elements");
+            this.data = this.getOmegaTreeData(this.item);
             this.draw(this.svg, this.vp, this.data);
         }
         else {
@@ -150,21 +164,90 @@ var OmegaTreeWidget = (function () {
             return "translate(" + d.x + "," + d.y + ")";
         }
     };
-    OmegaTreeWidget.prototype.getOmegaTreeData = function (item, property) {
-        var treeData = {};
+    OmegaTreeWidget.prototype.getOmegaTreeData = function (item) {
         if (!item)
-            return treeData;
-        var relations = new Set().add(property);
-        treeData = utils_model_1.getTreeData(item, relations, -1);
-        if (treeData.children.length == 0)
             return {};
-        function linkElements(elements) {
-            var root = { id: "#0", name: item.name, children: [] };
+        function linkParts(root, item) {
+            var relations = new Set().add("parts");
+            var treeData = utils_model_1.getTreeData(item, relations, -1); //creates structure for d3 tree out of item.parts
+            var parts = treeData.children;
+            var queue = [root];
+            if (!parts)
+                return queue;
+            parts.sort(function (a, b) { return utils_model_1.compareLinkedParts(a.resource, b.resource); });
+            var _loop_1 = function(i) {
+                var child = { id: parts[i].id, name: parts[i].name, resource: parts[i].resource };
+                var link = parts[i].resource.treeParent;
+                if (!link) {
+                    root.children.push(child);
+                    child.parent = root;
+                }
+                else {
+                    var parent_1 = queue.find(function (x) { return (x.resource == link); });
+                    if (parent_1) {
+                        if (!parent_1.children)
+                            parent_1.children = [];
+                        parent_1.children.push(child);
+                        child.parent = parent_1;
+                    }
+                }
+                if (!queue.find(function (x) { return (x.resource === parts[i].resource); })) {
+                    queue.push(child);
+                }
+            };
+            for (var i = 0; i < parts.length; i++) {
+                _loop_1(i);
+            }
+            return queue;
+        }
+        var root = { id: "#0", name: item.name, children: [] };
+        var tree = linkParts(root, item);
+        var subtrees = tree.filter(function (x) { return (x.resource && (x.resource.class === utils_model_1.TemplateName.OmegaTreeTemplate)); });
+        while (subtrees.length > 0) {
+            for (var _i = 0, subtrees_1 = subtrees; _i < subtrees_1.length; _i++) {
+                var subtree = subtrees_1[_i];
+                var subtreeRoot = subtree.parent;
+                if (subtreeRoot) {
+                    var i = subtreeRoot.children.indexOf(subtree);
+                    if (i > -1)
+                        subtreeRoot.children.splice(i, 1);
+                }
+                if (subtree.resource.type) {
+                    var expandedTree = linkParts(subtreeRoot, subtree.resource.type);
+                    //replace subtree in the main tree with expanded view
+                    if (expandedTree) {
+                        if (subtree.children) {
+                            //relink items following the expanded tree to its leaves
+                            for (var _a = 0, _b = subtree.children; _a < _b.length; _a++) {
+                                var next = _b[_a];
+                                var leaves = expandedTree.filter(function (x) { return !x.children; });
+                                if (leaves.length > 0) {
+                                    next.parent = leaves[0];
+                                    for (var j = 1; j < leaves.length; j++) {
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            subtrees = tree.filter(function (x) { return (x.resource && (x.resource.class === utils_model_1.TemplateName.OmegaTreeTemplate)); });
+        }
+        return tree[0];
+    };
+    //Old - tree via cardinality multipliers
+    OmegaTreeWidget.prototype.getOmegaTreeFromMultipliers = function (item) {
+        if (!item)
+            return {};
+        function linkElements(root, item) {
+            var relations = new Set().add("elements");
+            var treeData = utils_model_1.getTreeData(item, relations, -1); //creates structure for d3 tree out of item.elements
+            var elements = treeData.children;
             var queue = [root];
             if (!elements)
                 return queue;
             elements.sort(function (a, b) { return utils_model_1.compareLinkedElements(a.resource, b.resource); });
-            var _loop_1 = function(i) {
+            var _loop_2 = function(i) {
                 var child = { id: elements[i].id, name: elements[i].name, resource: elements[i].resource };
                 var links = elements[i].resource.cardinalityMultipliers;
                 if (!links || (links.size == 0)) {
@@ -180,16 +263,14 @@ var OmegaTreeWidget = (function () {
                         }
                     });
                 }
-                if (!queue.find(function (x) { return (x.resource === elements[i].resource); })) {
-                    queue.push(child);
-                }
             };
             for (var i = 0; i < elements.length; i++) {
-                _loop_1(i);
+                _loop_2(i);
             }
             return queue;
         }
-        var tree = linkElements(treeData.children);
+        var root = { id: "#0", name: item.name, children: [] };
+        var tree = linkElements(root, item);
         //TODO: unwrap recursively trees in the queue
         return tree[0];
     };

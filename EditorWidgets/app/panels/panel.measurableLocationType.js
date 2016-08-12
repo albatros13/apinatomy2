@@ -20,20 +20,21 @@ var core_1 = require('@angular/core');
 var panel_type_1 = require("./panel.type");
 var component_select_1 = require('../components/component.select');
 var repo_template_1 = require('../repos/repo.template');
-var open_physiology_model_1 = require("open-physiology-model");
+var utils_model_1 = require("../services/utils.model");
+var MaterialType = utils_model_1.model.MaterialType, MeasurableTemplate = utils_model_1.model.MeasurableTemplate;
 var pipe_general_1 = require("../transformations/pipe.general");
 var MeasurableLocationTypePanel = (function (_super) {
     __extends(MeasurableLocationTypePanel, _super);
     function MeasurableLocationTypePanel() {
         _super.apply(this, arguments);
-        this.MaterialType = open_physiology_model_1.MaterialType;
-        this.MeasurableTemplate = open_physiology_model_1.MeasurableTemplate;
+        this.MaterialType = MaterialType;
+        this.MeasurableTemplate = MeasurableTemplate;
     }
     MeasurableLocationTypePanel = __decorate([
         core_1.Component({
             selector: 'measurableLocationType-panel',
             inputs: ['item', 'ignore', 'options'],
-            template: "\n    <type-panel [item]=\"item\" \n      [ignore]   = \"ignore\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n       <providerGroup>\n          <!--MeasurableProviders-->\n          <div class=\"input-control\" *ngIf=\"includeProperty('measurableProviders')\">\n            <label for=\"measurableProviders\">Measurable providers: </label>\n            <select-input [items]=\"item.p('measurableProviders') | async\" \n            (updated)=\"updateProperty('measurableProviders', $event)\" \n            [options]=\"item.constructor.p('all') | async\"></select-input>\n          </div>\n          <ng-content select=\"providerGroup\"></ng-content>\n       </providerGroup>\n        \n       <relationGroup>\n          <!--Measurables-->\n          <div class=\"input-control\" *ngIf=\"includeProperty('measurables')\">\n            <repo-template caption='Measurables' \n            [items]=\"item.p('measurables') | async | setToArray\" \n            (updated)=\"updateProperty('measurables', $event)\" \n            [types]=\"[templateName.MeasurableTemplate]\"></repo-template>\n          </div>\n           <ng-content select=\"relationGroup\"></ng-content>\n       </relationGroup>      \n      \n       <ng-content></ng-content>      \n\n    </type-panel>\n  ",
+            template: "\n    <type-panel [item]=\"item\" \n      [ignore]   = \"ignore\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n       <providerGroup>\n          <!--MeasurableProviders-->\n          <div class=\"input-control\" *ngIf=\"includeProperty('measurableProviders')\">\n            <label for=\"measurableProviders\">{{getPropertyLabel('measurableProviders')}}: </label>\n            <select-input [items]=\"item.p('measurableProviders') | async\" \n            (updated)=\"updateProperty('measurableProviders', $event)\" \n            [options]=\"item.constructor.p('all') | async\"></select-input>\n          </div>\n          <ng-content select=\"providerGroup\"></ng-content>\n       </providerGroup>\n        \n       <relationGroup>\n          <!--Measurables-->\n          <div class=\"input-control\" *ngIf=\"includeProperty('measurables')\">\n            <repo-template [caption]=\"getPropertyLabel('measurables')\" \n            [items]=\"item.p('measurables') | async | setToArray\" \n            (updated)=\"updateProperty('measurables', $event)\" \n            [types]=\"[templateName.MeasurableTemplate]\"></repo-template>\n          </div>\n           <ng-content select=\"relationGroup\"></ng-content>\n       </relationGroup>      \n      \n       <ng-content></ng-content>      \n\n    </type-panel>\n  ",
             directives: [panel_type_1.TypePanel, component_select_1.MultiSelectInput, repo_template_1.RepoTemplate],
             pipes: [pipe_general_1.SetToArray]
         }), 

@@ -87,6 +87,10 @@ input[type=number] {
   height: 100%;
 }
 
+.btn-default{
+  height: 30px;
+}
+
 .btn-submit{
   float: right;
 }
@@ -240,4 +244,11 @@ div .dotted {
   height: 30px;
 }
 
+.imtip {
+  position: relative;
+  bottom: 2px;
+  left: 12px;
+  width: 12px;
+  height: 12px;
+}
 

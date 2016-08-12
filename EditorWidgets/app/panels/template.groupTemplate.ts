@@ -4,6 +4,7 @@
 import {Component} from '@angular/core';
 import {SingleSelectInput} from '../components/component.select';
 import {TemplateValue} from '../components/component.templateValue';
+import {model} from "../services/utils.model";
 import {TemplatePanel} from "./template.template";
 
 @Component({

@@ -37,10 +37,6 @@ export class MultiSelectInput /*implements OnChanges*/ {
 
   externalChange = false;
   ngOnChanges(changes: {[propName: string]: any}) {
-    //let array = Array.from(this.items);
-    //if (array[0] && (array[0].class === "CylindricalLyphTemplate"))
-    //  console.log("Select update:", array.map(x => x.name));
-
     if (this.externalChange){
       setTimeout(() => { this.active = false }, 0);
       setTimeout(() => { this.active = true  }, 0);

@@ -20,12 +20,13 @@ var core_1 = require('@angular/core');
 var component_select_1 = require('../components/component.select');
 var component_templateValue_1 = require('../components/component.templateValue');
 var template_template_1 = require("./template.template");
-var open_physiology_model_1 = require("open-physiology-model");
+var utils_model_1 = require("../services/utils.model");
+var ProcessTemplate = utils_model_1.model.ProcessTemplate;
 var NodeTemplatePanel = (function (_super) {
     __extends(NodeTemplatePanel, _super);
     function NodeTemplatePanel() {
         _super.apply(this, arguments);
-        this.ProcessTemplate = open_physiology_model_1.ProcessTemplate;
+        this.ProcessTemplate = ProcessTemplate;
     }
     NodeTemplatePanel.prototype.ngOnInit = function () {
         _super.prototype.ngOnInit.call(this);
@@ -35,7 +36,7 @@ var NodeTemplatePanel = (function (_super) {
         core_1.Component({
             selector: 'nodeTemplate-panel',
             inputs: ['item', 'ignore', 'options'],
-            template: "\n    <template-panel [item]=\"item\" \n      [ignore]   = \"ignore\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n      <!--Incoming processes-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('incomingProcesses')\">      \n        <label for=\"incomingProcesses\">Incoming processes: </label>\n        <select-input [items] = \"item.incomingProcesses\" \n          (updated) = \"updateProperty('incomingProcesses', $event)\"  \n          [options] = \"ProcessTemplate.p('all') | async\"></select-input>\n      </div>\n      \n      <!--Outgoing processes-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('outgoingProcesses')\">      \n        <label for=\"outgoingProcesses\">Outgoing processes: </label>\n        <select-input [items] = \"item.outgoingProcesses\" \n          (updated) = \"updateProperty('outgoingProcesses', $event)\"   \n          [options] = \"ProcessTemplate.p('all') | async\"></select-input>\n      </div>   \n\n      <ng-content></ng-content>      \n\n    </template-panel>\n  ",
+            template: "\n    <template-panel [item]=\"item\" \n      [ignore]   = \"ignore\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n      \n      <!--Incoming processes-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('incomingProcesses')\">      \n        <label for=\"incomingProcesses\">{{getPropertyLabel('incomingProcesses')}}: </label>\n        <select-input [items] = \"item.incomingProcesses\" \n          (updated) = \"updateProperty('incomingProcesses', $event)\"  \n          [options] = \"ProcessTemplate.p('all') | async\"></select-input>\n      </div>\n      \n      <!--Outgoing processes-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('outgoingProcesses')\">      \n        <label for=\"outgoingProcesses\">{{getPropertyLabel('outgoingProcesses')}}: </label>\n        <select-input [items] = \"item.outgoingProcesses\" \n          (updated) = \"updateProperty('outgoingProcesses', $event)\"   \n          [options] = \"ProcessTemplate.p('all') | async\"></select-input>\n      </div>   \n\n      <ng-content></ng-content>      \n\n    </template-panel>\n  ",
             directives: [component_templateValue_1.TemplateValue, component_select_1.MultiSelectInput, template_template_1.TemplatePanel]
         }), 
         __metadata('design:paramtypes', [])

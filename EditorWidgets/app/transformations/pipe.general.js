@@ -12,23 +12,23 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  * Created by Natallia on 6/9/2016.
  */
 var core_1 = require('@angular/core');
-var HideTemplates = (function () {
-    function HideTemplates() {
+var HideClass = (function () {
+    function HideClass() {
     }
-    HideTemplates.prototype.transform = function (items) {
+    HideClass.prototype.transform = function (items, classNames) {
         if (!items)
             return items;
-        return items.filter(function (x) { return x.class.indexOf("Template") < 0; });
+        return items.filter(function (x) { return (classNames.indexOf(x.class) < 0); });
     };
-    HideTemplates = __decorate([
+    HideClass = __decorate([
         core_1.Pipe({
-            name: 'hideTemplates'
+            name: 'hideClass'
         }), 
         __metadata('design:paramtypes', [])
-    ], HideTemplates);
-    return HideTemplates;
+    ], HideClass);
+    return HideClass;
 }());
-exports.HideTemplates = HideTemplates;
+exports.HideClass = HideClass;
 var FilterBy = (function () {
     function FilterBy() {
     }

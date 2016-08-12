@@ -20,7 +20,7 @@ import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
       <!--Nature-->
       <div class="input-control" *ngIf="includeProperty('nature')">
         <fieldset>
-          <legend>Nature:</legend>
+          <legend>{{getPropertyLabel('nature')}}:</legend>
            <checkbox-group [(ngModel)]="item.nature" [required]="true">
              <input type="checkbox" value="open">open&nbsp;
              <input type="checkbox" value="closed">closed<br/>

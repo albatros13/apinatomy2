@@ -1,4 +1,7 @@
 "use strict";
+var open_physiology_model_1 = require("open-physiology-model");
+exports.modelRef = open_physiology_model_1.default();
+exports.model = exports.modelRef.classes;
 exports.getColor = d3.scale.category20();
 (function (ResourceName) {
     ResourceName[ResourceName["Resource"] = "Resource"] = "Resource";
@@ -25,7 +28,7 @@ var ResourceName = exports.ResourceName;
 (function (TemplateName) {
     TemplateName[TemplateName["Template"] = "Template"] = "Template";
     TemplateName[TemplateName["LyphTemplate"] = "LyphTemplate"] = "LyphTemplate";
-    TemplateName[TemplateName["OmegaTreePartTemplate"] = "OmegaTreePartTemplate"] = "OmegaTreePartTemplate";
+    //OmegaTreePartTemplate   = <any>"OmegaTreePartTemplate",
     TemplateName[TemplateName["CylindricalLyphTemplate"] = "CylindricalLyphTemplate"] = "CylindricalLyphTemplate";
     TemplateName[TemplateName["ProcessTemplate"] = "ProcessTemplate"] = "ProcessTemplate";
     TemplateName[TemplateName["MeasurableTemplate"] = "MeasurableTemplate"] = "MeasurableTemplate";
@@ -37,6 +40,15 @@ var ResourceName = exports.ResourceName;
 })(exports.TemplateName || (exports.TemplateName = {}));
 var TemplateName = exports.TemplateName;
 function getPropertyLabel(option) {
+    var toUpperCase = new Set(["id", "uri"]);
+    if (toUpperCase.has(option))
+        return option.toUpperCase();
+    if (option == "href")
+        return "Reference";
+    if (option == "externals")
+        return "Annotations";
+    if (option == "locals")
+        return "Local resources";
     var label = option;
     label = label.replace(/([a-z])([A-Z])/g, '$1 $2');
     label = label[0].toUpperCase() + label.substring(1).toLowerCase();
@@ -67,7 +79,6 @@ function getIcon(Class) {
         case TemplateName.CausalityTemplate: return "images/causalityType.png";
         case TemplateName.NodeTemplate: return "images/nodeType.png";
         case TemplateName.BorderTemplate: return "images/borderType.png";
-        case TemplateName.CausalityTemplate: return "images/causality.png";
         case TemplateName.GroupTemplate: return "images/groupType.png";
         case TemplateName.OmegaTreeTemplate: return "images/omegaTreeType.png";
     }
@@ -95,8 +106,10 @@ function getTreeData(item, relations, depth) {
                 return;
             if (!data.children)
                 data.children = [];
+            console.log("RW relation:", root[fieldName]);
             for (var _b = 0, _c = Array.from(root[fieldName]); _b < _c.length; _b++) {
                 var obj = _c[_b];
+                console.log("RW relation 1:", obj);
                 var child = { id: "#" + ++i, name: obj.name, resource: obj, depth: level, relation: fieldName };
                 data.children.push(child);
                 traverse(obj, level + 1, child);
@@ -150,6 +163,23 @@ function setsEqual(S, T) {
     return true;
 }
 exports.setsEqual = setsEqual;
+function compareLinkedParts(a, b) {
+    var res = 0;
+    if (!a.treeParent) {
+        if (!b.treeParent)
+            res = 0;
+        else
+            res = -1;
+    }
+    if (!b.treeParent)
+        res = 1;
+    if (b.treeParent == a)
+        res = -1;
+    if (a.treeParent == b)
+        res = 1;
+    return res;
+}
+exports.compareLinkedParts = compareLinkedParts;
 function compareLinkedElements(a, b) {
     var res = 0;
     if (!a.cardinalityMultipliers) {

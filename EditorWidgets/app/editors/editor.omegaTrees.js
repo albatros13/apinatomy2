@@ -23,8 +23,8 @@ var widget_relations_1 = require('../widgets/widget.relations');
 var widget_resource_1 = require('../widgets/widget.resource');
 var service_resize_1 = require('../services/service.resize');
 var utils_model_1 = require('../services/utils.model');
-var model = require("open-physiology-model");
 var pipe_general_1 = require("../transformations/pipe.general");
+var utils_model_2 = require("../services/utils.model");
 var OmegaTreeEditor = (function () {
     function OmegaTreeEditor(resizeService, el) {
         var _this = this;
@@ -81,26 +81,26 @@ var OmegaTreeEditor = (function () {
                     ]
                 }]
         };
-        this.sLyphs = model.LyphType.p('all').subscribe(function (data) { _this.lyphs = data; });
-        this.sOmegaTrees = model.OmegaTreeType.p('all').subscribe(function (data) { _this.trees = data; });
+        this.sLyphs = utils_model_2.model.LyphType.p('all').subscribe(function (data) { _this.lyphs = data; });
+        this.sOmegaTrees = utils_model_2.model.OmegaTreeType.p('all').subscribe(function (data) { _this.trees = data; });
         (function () {
             return __awaiter(this, void 0, void 0, function* () {
                 /*External resources*/
-                var fma7203 = model.ExternalResource.new({ name: "FMA:7203", uri: "" });
-                var fma15610 = model.ExternalResource.new({ name: "FMA:15610", uri: "" });
-                var fma66610 = model.ExternalResource.new({ name: "FMA:66610", uri: "" });
-                var fma17881 = model.ExternalResource.new({ name: "FMA:17881", uri: "" });
+                var fma7203 = utils_model_2.model.ExternalResource.new({ name: "FMA:7203", uri: "" });
+                var fma15610 = utils_model_2.model.ExternalResource.new({ name: "FMA:15610", uri: "" });
+                var fma66610 = utils_model_2.model.ExternalResource.new({ name: "FMA:66610", uri: "" });
+                var fma17881 = utils_model_2.model.ExternalResource.new({ name: "FMA:17881", uri: "" });
                 var externals = [fma7203, fma15610, fma66610, fma17881];
                 yield Promise.all(externals.map(function (p) { return p.commit(); }));
                 /*Cylindrical lyphs*/
-                var renalH = model.CylindricalLyphType.new({ name: "Renal hilum", externals: [fma15610] });
-                var renalP = model.CylindricalLyphType.new({ name: "Renal parenchyma" });
-                var renalC = model.CylindricalLyphType.new({ name: "Renal capsule", externals: [fma66610] });
+                var renalH = utils_model_2.model.CylindricalLyphType.new({ name: "Renal hilum", externals: [fma15610] });
+                var renalP = utils_model_2.model.CylindricalLyphType.new({ name: "Renal parenchyma" });
+                var renalC = utils_model_2.model.CylindricalLyphType.new({ name: "Renal capsule", externals: [fma66610] });
                 var cLyphsGroup = [renalH, renalP, renalC];
                 yield Promise.all(cLyphsGroup.map(function (p) { return p.commit(); }));
-                var kidney = model.CylindricalLyphType.new({ name: "Kidney", externals: [fma7203] });
+                var kidney = utils_model_2.model.CylindricalLyphType.new({ name: "Kidney", externals: [fma7203] });
                 yield kidney.commit();
-                var kidneyLobus = model.CylindricalLyphType.new({ name: "Kidney lobus", externals: [fma17881] });
+                var kidneyLobus = utils_model_2.model.CylindricalLyphType.new({ name: "Kidney lobus", externals: [fma17881] });
                 yield kidneyLobus.commit();
                 /*
                 let t1 = model.CylindricalLyphTemplate.new({name: "T: Renal hilum", type: renalH});

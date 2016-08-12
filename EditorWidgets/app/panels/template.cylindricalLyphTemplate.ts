@@ -2,11 +2,12 @@
  * Created by Natallia on 6/21/2016.
  */
 import {Component} from '@angular/core';
-import {SingleSelectInput} from '../components/component.select';
+import {MultiSelectInput, SingleSelectInput} from '../components/component.select';
 import {TemplateValue} from '../components/component.templateValue';
 import {LyphTemplatePanel} from "./template.lyphTemplate";
 import {BorderTemplatePanel} from "./template.borderTemplate";
-//import {OmegaTreePartTemplate} from "open-physiology-model";
+import {model} from "../services/utils.model";
+const {OmegaTreePartTemplate} = model;
 
 @Component({
   selector: 'cylindricalLyphTemplate-panel',
@@ -20,19 +21,37 @@ import {BorderTemplatePanel} from "./template.borderTemplate";
       (removed)  = "removed.emit($event)"
       (propertyUpdated) = "propertyUpdated.emit($event)">
       
+      <!--Length-->
+        <dimensionGroup>
+          <template-value *ngIf = "includeProperty('length')" 
+            [caption] = "getPropertyLabel('length')" 
+            [item] = "item.length"
+            (updated) = "updateProperty('length', $event)">
+          </template-value>
+        </dimensionGroup>
+      
       <!--TreeParent-->
-   <!--   <div  *ngIf="includeProperty('type')" class="input-control">
-        <label for="type">Tree parent: </label>
+      <div  *ngIf="includeProperty('treeParent')" class="input-control">
+        <label for="treeParent">{{getPropertyLabel('treeParent')}}: </label>
         <select-input-1 [item] = "item.p('treeParent') | async"
-         (updated)="updateProperty('treeParent', $event)"    
+         (updated) = "updateProperty('treeParent', $event)"    
          [options] = "OmegaTreePartTemplate.p('all') | async"></select-input-1>
-      </div>-->
-    
+      </div>
+      
+      <!--TreeChildren-->
+      <div class="input-control" *ngIf="includeProperty('treeChildren')">
+        <label for="treeChildren">{{getPropertyLabel('treeChildren')}}: </label>
+        <select-input 
+          [items]="item.p('treeChildren') | async" 
+          (updated)="updateProperty('treeChildren', $event)" 
+          [options]="OmegaTreePartTemplate.p('all') | async"></select-input>
+      </div>      
+   
 <!--
       <borderGroup>
         &lt;!&ndash;MinusBorder&ndash;&gt;
         <div class="input-control">      
-          <label for="minusBorder">Minus border: </label>
+          <label for="minusBorder">{{getPropertyLabel('minusBorder')}}: </label>
           <borderTemplate-panel [item]="item.minusBorder" 
             (added)  ="addTemplate('minusBorder', templateName.BorderTemplate)"
             (saved)  ="updateProperty('minusBorder', $event)"    
@@ -42,7 +61,7 @@ import {BorderTemplatePanel} from "./template.borderTemplate";
       
         &lt;!&ndash;PlusBorder&ndash;&gt;        
         <div class="input-control">      
-          <label for="plusBorder">Plus border: </label>
+          <label for="plusBorder">{{getPropertyLabel('plusBorder')}}: </label>
           <borderTemplate-panel [item]="item.plusBorder" 
             (added)  ="addTemplate('plusBorder', templateName.BorderTemplate)"
             (saved)  ="updateProperty('plusBorder', $event)"    
@@ -56,13 +75,13 @@ import {BorderTemplatePanel} from "./template.borderTemplate";
     
     </lyphTemplate-panel>
   `,
-  directives: [TemplateValue, SingleSelectInput, LyphTemplatePanel, BorderTemplatePanel]
+  directives: [TemplateValue, MultiSelectInput, SingleSelectInput, LyphTemplatePanel, BorderTemplatePanel]
 })
 export class CylindricalLyphTemplatePanel extends LyphTemplatePanel{
-  //OmegaTreePartTemplate = OmegaTreePartTemplate;
+  OmegaTreePartTemplate = OmegaTreePartTemplate;
 
   ngOnInit(){
     super.ngOnInit();
-   this.ignore = this.ignore.add('cardinalityMultipliers');
+    this.ignore = this.ignore.add('cardinalityMultipliers').add('treeParent').add('treeChildren');
   }
 }

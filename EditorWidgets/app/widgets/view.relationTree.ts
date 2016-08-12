@@ -2,7 +2,7 @@ import {Component, Input, Output, ElementRef, EventEmitter} from '@angular/core'
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
 
-import {getIcon, getColor, getTreeData} from "../services/utils.model";
+import {getIcon, getColor, getTreeData, model} from "../services/utils.model";
 
 declare var d3:any;
 

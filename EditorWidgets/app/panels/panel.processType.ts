@@ -7,7 +7,8 @@ import {MultiSelectInput, SingleSelectInput} from '../components/component.selec
 import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
 import {NodeTemplatePanel} from './template.nodeTemplate';
 import {SetToArray} from "../transformations/pipe.general";
-import {ProcessType, MaterialType} from "open-physiology-model";
+import {model} from "../services/utils.model";
+const {ProcessType, MaterialType} = model;
 
 @Component({
   selector: 'processType-panel',
@@ -23,14 +24,14 @@ import {ProcessType, MaterialType} from "open-physiology-model";
         
         <!--Species-->
         <div class="input-control" *ngIf="includeProperty('species')">
-          <label for="species">Species: </label>
+          <label for="species">{{getPropertyLabel('species')}}: </label>
           <input type="text" class="form-control" [(ngModel)]="item.species">
         </div>
           
         <!--TransportPhenomenon-->
           <div class="input-control" *ngIf="includeProperty('transportPhenomenon')">
             <fieldset>
-              <legend>Transport phenomenon:</legend>
+              <legend>{{getPropertyLabel('transportPhenomenon')}}:</legend>
               <checkbox-group [(ngModel)]="item.transportPhenomenon" [required]="true">
                  <input type="checkbox" value="diffusion">diffusion&nbsp;
                  <input type="checkbox" value="advection">advection<br/>
@@ -40,16 +41,16 @@ import {ProcessType, MaterialType} from "open-physiology-model";
           
          <!--Materials-->
         <div class="input-control" *ngIf="includeProperty('materials')">
-          <label for="meterials">Materials: </label>
+          <label for="meterials">{{getPropertyLabel('materials')}}: </label>
           <select-input [items]="item.p('materials') | async" 
           (updated)="updateProperty('materials', $event)" 
            [options]="MaterialType.p('all') | async"></select-input>
-          </div> 
+        </div> 
         
          <relationGroup>
           <!--Segments-->
           <div class="input-control" *ngIf="includeProperty('segments')">
-            <repo-template caption='Segments' 
+            <repo-template [caption]="getPropertyLabel('segments')" 
             [items]="item.p('segments') | async | setToArray" 
             (updated)="updateProperty('segments', $event)" 
             [types]="[templateName.ProcessTemplate]">
@@ -58,7 +59,7 @@ import {ProcessType, MaterialType} from "open-physiology-model";
           
           <!--Channels-->
           <div class="input-control" *ngIf="includeProperty('channels')">
-            <repo-template caption='Channels' 
+            <repo-template [caption]="getPropertyLabel('channels')" 
             [items]="item.p('channels') | async | setToArray" 
             (updated)="updateProperty('channels', $event)"           
             [types]="[templateName.ProcessTemplate]"></repo-template>
@@ -70,7 +71,7 @@ import {ProcessType, MaterialType} from "open-physiology-model";
         <providerGroup>
            <!--MaterialProviders-->
           <div class="input-control" *ngIf="includeProperty('materialProviders')">
-            <label for="materialProviders">Material providers: </label>
+            <label for="materialProviders">{{getPropertyLabel('materialProviders')}}:</label>
             <select-input [items]="item.p('materialProviders') | async" 
             (updated)="updateProperty('materialProviders', $event)" 
             [options]="ProcessType.p('all') | async"></select-input>
@@ -78,7 +79,7 @@ import {ProcessType, MaterialType} from "open-physiology-model";
           
            <!--SegmentProviders-->
           <div class="input-control" *ngIf="includeProperty('segmentProviders')">
-            <label for="segmentProviders">Segment providers: </label>
+            <label for="segmentProviders">{{getPropertyLabel('segmentProviders')}}: </label>
             <select-input [items]="item.p('segmentProviders') | async" 
             (updated)="updateProperty('segmentProviders', $event)" 
             [options]="ProcessType.p('all') | async"></select-input>
@@ -86,7 +87,7 @@ import {ProcessType, MaterialType} from "open-physiology-model";
           
           <!--ChannelProviders-->
           <div class="input-control" *ngIf="includeProperty('channelProviders')">
-            <label for="channelProviders">Channel providers: </label>
+            <label for="channelProviders">{{getPropertyLabel('channelProviders')}}: </label>
             <select-input [items]="item.p('channelProviders') | async" 
             (updated)="updateProperty('channelProviders', $event)"           
             [options]="ProcessType.p('all') | async"></select-input>

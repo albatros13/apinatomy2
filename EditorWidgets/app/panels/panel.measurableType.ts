@@ -4,7 +4,8 @@
 import {Component} from '@angular/core';
 import {TypePanel} from "./panel.type";
 import {MultiSelectInput} from '../components/component.select';
-import {MaterialType} from 'open-physiology-model';
+import {model} from "../services/utils.model";
+const {MaterialType} = model;
 
 @Component({
   selector: 'measurableType-panel',
@@ -20,13 +21,13 @@ import {MaterialType} from 'open-physiology-model';
       
        <!--Quality-->
       <div class="input-control" *ngIf="includeProperty('quality')">
-        <label for="quality">Quality: </label>
+        <label for="quality">{{getPropertyLabel('quality')}}: </label>
         <input type="text" class="form-control" required [(ngModel)]="item.quality">
       </div>
       
       <!--Materials-->
       <div class="input-control" *ngIf="includeProperty('materials')">
-        <label for="materials">Materials: </label>
+        <label for="materials">{{getPropertyLabel('materials')}}: </label>
         <select-input [items]="item.p('materials') | async" 
         (updated)="updateProperty('materials', $event)"     
         [options]="MaterialType.p('all') | async"></select-input>

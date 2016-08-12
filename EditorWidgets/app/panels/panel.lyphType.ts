@@ -8,20 +8,20 @@ import {RepoTemplate} from '../repos/repo.template';
 import {SetToArray} from "../transformations/pipe.general";
 import {BorderTemplatePanel} from "./template.borderTemplate";
 import {TemplateValue} from '../components/component.templateValue';
-
-
-import {LyphType, ProcessTemplate, BorderTemplate} from "open-physiology-model";
+import {ResourceName, TemplateName} from '../services/utils.model';
+import {model} from "../services/utils.model";
+const {ProcessTemplate, BorderTemplate} = model;
 
 @Component({
   selector: 'lyphType-panel',
   inputs: ['item', 'ignore', 'options'],
   template:`
     <materialType-panel [item]="item" 
-        [ignore]="ignore"
-        [options] ="options"
-        (saved)    = "saved.emit($event)"
-        (canceled) = "canceled.emit($event)"
-        (removed)  = "removed.emit($event)"
+        [ignore]  = "ignore"
+        [options] = "options"
+        (saved)   = "saved.emit($event)"
+        (canceled)= "canceled.emit($event)"
+        (removed) = "removed.emit($event)"
         (propertyUpdated) = "propertyUpdated.emit($event)">
         
         <!--Species-->
@@ -31,10 +31,12 @@ import {LyphType, ProcessTemplate, BorderTemplate} from "open-physiology-model";
         </div>
          
         <!--Thickness-->
-        <template-value *ngIf="includeProperty('thickness')" caption="Thickness" 
+        <template-value *ngIf="includeProperty('thickness')" 
+          [caption]="getPropertyLabel('thickness')" 
           [item]="item.thickness"
           (updated)="updateProperty('thickness', $event)"
         ></template-value>
+        <ng-content select="dimensionGroup"></ng-content>  
         
         <ng-content></ng-content>   
         
@@ -54,34 +56,34 @@ import {LyphType, ProcessTemplate, BorderTemplate} from "open-physiology-model";
           <!--MixIn from MeasurableLocationType-->
           <!--MeasurableProviders-->
           <div class="input-control" *ngIf="includeProperty('measurableProviders')">
-            <label for="measurableProviders">Measurable providers: </label>
+            <label for="measurableProviders">{{getPropertyLabel('measurableProviders')}}: </label>
             <select-input [items]="item.p('measurableProviders') | async" 
             (updated)="updateProperty('measurableProviders', $event)" 
-            [options]="LyphType.p('all') | async"></select-input>
+            [options]="item.constructor.p('all') | async"></select-input>
           </div>
           
           <!--LayerProviders-->
           <div class="input-control" *ngIf="includeProperty('layerProviders')">
-            <label for="layerProviders">Layer providers: </label>
+            <label for="layerProviders">{{getPropertyLabel('layerProviders')}}: </label>
             <select-input [items]="item.p('layerProviders') | async" 
             (updated)="updateProperty('layerProviders', $event)" 
-            [options]="LyphType.p('all') | async"></select-input>
+            [options]="item.constructor.p('all') | async"></select-input>
           </div>
             
           <!--PatchProviders-->
           <div class="input-control" *ngIf="includeProperty('patchProviders')">
-            <label for="patchProviders">Patch providers: </label>
+            <label for="patchProviders">{{getPropertyLabel('patchProviders')}}: </label>
             <select-input [items]="item.p('patchProviders') | async" 
             (updated)="updateProperty('patchProviders', $event)" 
-            [options]="LyphType.p('all') | async"></select-input>
+            [options]="item.constructor.p('all') | async"></select-input>
           </div>
           
           <!--PartProviders-->
           <div class="input-control" *ngIf="includeProperty('partProviders')">
-            <label for="partProviders">Part providers: </label>
+            <label for="partProviders">{{getPropertyLabel('partProviders')}}: </label>
             <select-input [items]="item.p('partProviders') | async"
             (updated)="updateProperty('partProviders', $event)" 
-            [options]="LyphType.p('all') | async"></select-input>
+            [options]="item.constructor.p('all') | async"></select-input>
           </div>
           <ng-content select="providerGroup"></ng-content>
         </providerGroup>           
@@ -89,55 +91,55 @@ import {LyphType, ProcessTemplate, BorderTemplate} from "open-physiology-model";
         <relationGroup>   
            <!--Measurables-->
           <div class="input-control" *ngIf="includeProperty('measurables')">
-            <repo-template caption='Measurables' 
-            [items]="item.p('measurables') | async | setToArray" 
-            (updated)="updateProperty('measurables', $event)" 
-            [types]="[templateName.MeasurableTemplate]"></repo-template>
+            <repo-template [caption]="getPropertyLabel('measurables')" 
+            [items]  = "item.p('measurables') | async | setToArray" 
+            (updated)= "updateProperty('measurables', $event)" 
+            [types]  = "[templateName.MeasurableTemplate]"></repo-template>
           </div> 
            
           <!--Layers-->
           <div class="input-control" *ngIf="includeProperty('layers')">
-            <repo-template caption="Layers" 
+            <repo-template [caption]="getPropertyLabel('layers')" 
             [items]  = "item.p('layers') | async | setToArray" 
-            [ignore]="layersIgnore"
+            [ignore] = "layersIgnore"
             (updated)= "updateProperty('layers', $event)" 
-            [types]  = "[templateName.LyphTemplate, templateName.CylindricalLyphTemplate]"></repo-template>
+            [types]  = "[templateClass]"></repo-template>
           </div>          
   
           <!--Patches-->
           <div class="input-control" *ngIf="includeProperty('patches')">
-            <repo-template caption="Patches" 
-            [items] = "item.p('patches') | async | setToArray" 
-            [ignore]="patchesIgnore"
-            (updated)="updateProperty('patches', $event)" 
-            [types] = "[templateName.LyphTemplate, templateName.CylindricalLyphTemplate]"></repo-template>
+            <repo-template [caption]="getPropertyLabel('patches')" 
+            [items]  = "item.p('patches') | async | setToArray" 
+            [ignore] = "patchesIgnore"
+            (updated)= "updateProperty('patches', $event)" 
+            [types]  = "[templateClass]"></repo-template>
           </div>
                   
           <!--Parts-->
           <div class="input-control" *ngIf="includeProperty('parts')">
-            <repo-template caption="Parts" 
-            [items] = "item.p('parts') | async | setToArray" 
-            [ignore]="partsIgnore"
-            (updated)="updateProperty('parts', $event)" 
-            [types] = "[templateName.LyphTemplate, templateName.CylindricalLyphTemplate]"></repo-template>
+            <repo-template [caption]="getPropertyLabel('parts')" 
+            [items]  = "item.p('parts') | async | setToArray" 
+            [ignore] = "partsIgnore"
+            (updated)= "updateProperty('parts', $event)" 
+            [types]  = "[templateClass]"></repo-template>
           </div>
           
           <!--Processes-->
           <div class="input-control" *ngIf="includeProperty('processes')">
-            <repo-template caption="Processes" 
-             [items] = "item.p('processes') | async | setToArray" 
-             (updated)="updateProperty('processes', $event)"           
-             [types] = "[templateName.ProcessTemplate]" 
-               (added)  ="onProcessAdded($event)" 
-               (removed)="onProcessRemoved($event)"></repo-template>
+            <repo-template [caption]="getPropertyLabel('processes')" 
+             [items]  = "item.p('processes') | async | setToArray" 
+             (updated)= "updateProperty('processes', $event)"           
+             [types]  = "[templateName.ProcessTemplate]" 
+             (added)  = "onProcessAdded($event)" 
+             (removed)= "onProcessRemoved($event)"></repo-template>
           </div>
           
           <!--Nodes-->
           <div class="input-control" *ngIf="includeProperty('nodes')">
-            <repo-template caption="Nodes" 
-            [items] = "item.p('nodes') | async | setToArray" 
-            (updated)="updateProperty('nodes', $event)"
-            [types] = "[templateName.NodeTemplate]"></repo-template>
+            <repo-template [caption]="getPropertyLabel('nodes')" 
+            [items]  = "item.p('nodes') | async | setToArray" 
+            (updated)= "updateProperty('nodes', $event)"
+            [types]  = "[templateName.NodeTemplate]"></repo-template>
           </div>            
           <ng-content select="relationGroup"></ng-content>
         </relationGroup>     
@@ -147,7 +149,7 @@ import {LyphType, ProcessTemplate, BorderTemplate} from "open-physiology-model";
           
           <!--InnerBorder-->
           <div class="input-control">      
-            <label for="innerBorder">Inner border: </label>
+            <label for="innerBorder">{{getPropertyLabel('innerBorder')}}: </label>
             <borderTemplate-panel [item]="item.innerBorder" 
               [options]="borderPanelOptions"
               (added)  ="addTemplate('innerBorder', templateName.BorderTemplate)"
@@ -158,7 +160,7 @@ import {LyphType, ProcessTemplate, BorderTemplate} from "open-physiology-model";
         
           <!--OuterBorder-->        
           <div class="input-control">      
-            <label for="outerBorder">Outer border: </label>
+            <label for="outerBorder">{{getPropertyLabel('outerBorder')}}: </label>
             <borderTemplate-panel [item]="item.outerBorder" 
               [options]= "borderPanelOptions"
               (added)  = "addTemplate('outerBorder', templateName.BorderTemplate)"
@@ -177,25 +179,37 @@ import {LyphType, ProcessTemplate, BorderTemplate} from "open-physiology-model";
   pipes: [SetToArray]
 })
 export class LyphTypePanel extends MaterialTypePanel{
-  LyphType = LyphType;
   borderPanelOptions = {'hideRemove': true, 'hideSave': true, 'hideRestore': true};
 
   layersIgnore: Set<string> = new Set<string>();
   patchesIgnore: Set<string> = new Set<string>();
   partsIgnore: Set<string> = new Set<string>();
 
+  templateClass = TemplateName.LyphTemplate;
+
   ngOnInit(){
     super.ngOnInit();
-    this.layersIgnore = new Set<string>(['cardinalityBase', 'cardinalityMultipliers']);
-    this.patchesIgnore = new Set<string>(['cardinalityBase', 'cardinalityMultipliers']);
-    this.partsIgnore = new Set<string>(['cardinalityBase', 'cardinalityMultipliers']);
+    this.layersIgnore = new Set<string>(['cardinalityBase', 'cardinalityMultipliers', 'treeParent', 'treeChildren']);
+    this.patchesIgnore = new Set<string>(['cardinalityBase', 'cardinalityMultipliers', 'treeParent', 'treeChildren']);
+    this.partsIgnore = new Set<string>(['cardinalityBase', 'cardinalityMultipliers', 'treeParent', 'treeChildren']);
+
+    if (this.item && (this.item.class == ResourceName.CylindricalLyphType)) this.templateClass = TemplateName.CylindricalLyphTemplate;
+
+    if (this.item){
+      this.item.p('layers').subscribe(x => {
+        console.log("Layers updated", x);
+      })
+      this.item.p('parts').subscribe(x => {
+        console.log("Parts updated", x);
+      })
+    }
   }
 
-  onProcessAdded(process: ProcessTemplate){
+  onProcessAdded(process: any){
     if (process) process.conveyingLyph = this.item;
   }
 
-  onProcessRemoved(process: ProcessTemplate){
+  onProcessRemoved(process: any){
     if (process && (process.conveyingLyph == this.item)) process.conveyingLyph = null;
   }
 

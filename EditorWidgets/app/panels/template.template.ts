@@ -6,7 +6,6 @@ import {SingleSelectInput, MultiSelectInput} from '../components/component.selec
 import {TemplateValue} from '../components/component.templateValue';
 import {ResourcePanel} from "./panel.resource";
 import {TemplateName} from "../services/utils.model";
-//import {CylindricalLyphTemplate, OmegaTreeTemplate, OmegaTreePartTemplate} from "open-physiology-model";
 
 @Component({
   selector: 'template-panel',
@@ -22,7 +21,7 @@ import {TemplateName} from "../services/utils.model";
       
       <!--Type-->
       <div  *ngIf="includeProperty('type')" class="input-control">
-        <label for="type">Type: </label>
+        <label for="type">{{getPropertyLabel('type')}}: </label>
         <select-input-1 [item] = "item.p('type') | async"
          (updated)="onTypeUpdate($event)"    
          [options] = "getTypes() | async"></select-input-1>
@@ -30,17 +29,19 @@ import {TemplateName} from "../services/utils.model";
     
       <!--Template-->
       <!--Cardinality base-->
-      <template-value *ngIf="includeProperty('cardinalityBase')" caption="Cardinality base" 
+      <template-value *ngIf="includeProperty('cardinalityBase')" 
+        [caption]="getPropertyLabel('cardinalityBase')" 
         [item]="item.cardinalityBase"
+        [step]="0.1"
         (updated)="updateProperty('cardinalityBase', $event)"
       ></template-value>
       
       <!--Cardinality multipliers-->
       <div class="input-control" *ngIf="includeProperty('cardinalityMultipliers')">
-        <label for="cardinalityMultipliers">Cardinality multipliers: </label>
+        <label for="cardinalityMultipliers">{{getPropertyLabel('cardinalityMultipliers')}}: </label>
           <select-input [items]="item.p('cardinalityMultipliers') | async" 
           (updated)="updateProperty('cardinalityMultipliers', $event)"          
-          [options]="getLinks() | async"></select-input>  
+          [options]="item.constructor.p('all') | async"></select-input>  
       </div>
 
       <ng-content></ng-content>            
@@ -59,13 +60,6 @@ export class TemplatePanel extends ResourcePanel{
 
   getTypes(){
     return this.item.constructor.relationships['-->HasType'].codomain.resourceClass.p('all');
-  }
-
-  getLinks(){
-    // if ((this.item.class == TemplateName.OmegaTreeTemplate) || (this.item.class == TemplateName.CylindricalLyphTemplate)){
-    //   return OmegaTreePartTemplate.p('all');
-    // }
-    return this.item.constructor.p('all');
   }
 
   ngOnInit(){

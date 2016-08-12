@@ -5,7 +5,8 @@ import {Component} from '@angular/core';
 import {TypePanel} from "./panel.type";
 import {MultiSelectInput} from '../components/component.select';
 import {RepoTemplate} from '../repos/repo.template';
-import {MaterialType} from "open-physiology-model";
+import {model} from "../services/utils.model";
+const {MaterialType} = model;
 
 @Component({
   selector: 'materialType-panel',
@@ -21,7 +22,7 @@ import {MaterialType} from "open-physiology-model";
         
         <!--Materials-->
         <div class="input-control" *ngIf="includeProperty('materials')">
-          <label for="materials">Materials: </label>
+          <label for="materials">{{getPropertyLabel('materials')}}: </label>
           <select-input 
             [items]="item.p('materials') | async" 
             (updated)="updateProperty('materials', $event)" 
@@ -31,7 +32,7 @@ import {MaterialType} from "open-physiology-model";
         <providerGroup>             
           <!--MaterialProviders-->
           <div class="input-control" *ngIf="includeProperty('materialProviders')">
-            <label for="materialProviders">Material providers: </label>
+            <label for="materialProviders">{{getPropertyLabel('materialProviders')}}: </label>
             <select-input 
               [items]="item.p('materialProviders') | async" 
               (updated)="updateProperty('materialProviders', $event)" 

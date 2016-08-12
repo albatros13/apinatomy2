@@ -2,7 +2,7 @@
  * Created by Natallia on 7/8/2016.
  */
 import {Component, Input, Output, EventEmitter} from '@angular/core';
-import * as model from "open-physiology-model";
+import {model} from "../services/utils.model";
 
 @Component({
   selector: 'item-header',
@@ -13,10 +13,29 @@ import * as model from "open-physiology-model";
           'glyphicon-chevron-down': (item == selectedItem) && isSelectedOpen, 
           'glyphicon-chevron-right': (item != selectedItem) || !isSelectedOpen}"></i>&nbsp;
         {{(item.id)? item.id: "?"}}: {{item.name}}
-        <img class="pull-right icon" src="{{icon}}"/>
+        <span class="pull-right">
+          <img *ngIf="isTemplate" class="imtip" src="images/template.png"/>
+          <img class="icon" src="{{icon}}"/>
+        </span>
   `
 })
-export class ItemHeader {}
+export class ItemHeader {
+  @Input() item: any;
+  @Input() selectedItem: any;
+  @Input() isSelectedOpen: boolean;
+  @Input() icon: string;
+
+  isTemplate = false;
+
+  ngOnInit(){
+    //if (model.Template.hasInstance(this.item))
+    //  this.isTemplate = true;
+
+    if (this.item){
+      if (this.item.class.indexOf('Template') > -1) this.isTemplate = true;
+    }
+  }
+}
 
 export abstract class RepoAbstract{
   @Output() added = new EventEmitter();
@@ -68,7 +87,7 @@ export abstract class RepoAbstract{
     this.searchString = config.filter;
   }
 
-    protected onSaved(item: any, updatedItem: any){
+  protected onSaved(item: any, updatedItem: any){
     this.updated.emit(this.items);
     if (item == this.selectedItem){
        this.selected.emit(this.selectedItem);

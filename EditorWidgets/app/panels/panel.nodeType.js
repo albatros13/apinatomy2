@@ -21,18 +21,19 @@ var panel_measurableLocationType_1 = require("./panel.measurableLocationType");
 var component_select_1 = require('../components/component.select');
 var repo_template_1 = require('../repos/repo.template');
 var pipe_general_1 = require("../transformations/pipe.general");
-var open_physiology_model_1 = require("open-physiology-model");
+var utils_model_1 = require("../services/utils.model");
+var NodeType = utils_model_1.model.NodeType;
 var NodeTypePanel = (function (_super) {
     __extends(NodeTypePanel, _super);
     function NodeTypePanel() {
         _super.apply(this, arguments);
-        this.NodeType = open_physiology_model_1.NodeType;
+        this.NodeType = NodeType;
     }
     NodeTypePanel = __decorate([
         core_1.Component({
             selector: 'nodeType-panel',
             inputs: ['item', 'ignore', 'options'],
-            template: "\n    <measurableLocationType-panel [item]=\"item\" \n      [ignore]   = \"ignore\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <ng-content></ng-content>   \n \n      <providerGroup>\n        <!--ChannelProviders-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('channelProviders')\">\n          <label for=\"channelProviders\">Channel providers: </label>\n          <select-input [items]=\"item.p('channelProviders') | async\" \n          (updated)=\"updateProperty('channelProviders', $event)\" \n          [options]=\"NodeType.p('all') | async\"></select-input>\n        </div>\n        <ng-content select=\"providerGroup\"></ng-content>\n      </providerGroup>\n\n      <relationGroup>\n      <!--Channels-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('channels')\"> \n        <repo-template caption=\"Channels\" \n          [items] = \"item.p('channels') | async | setToArray\" \n          (updated)=\"updateProperty('channels', $event)\"     \n          [types]=\"[templateName.NodeTemplate]\"></repo-template>\n        </div>\n        <ng-content select=\"relationGroup\"></ng-content>\n      </relationGroup>\n      \n    \n    </measurableLocationType-panel>\n  ",
+            template: "\n    <measurableLocationType-panel [item]=\"item\" \n      [ignore]   = \"ignore\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <ng-content></ng-content>   \n \n      <providerGroup>\n        <!--ChannelProviders-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('channelProviders')\">\n          <label for=\"channelProviders\">{{getPropertyLabel('channelProviders')}}: </label>\n          <select-input [items]=\"item.p('channelProviders') | async\" \n          (updated)=\"updateProperty('channelProviders', $event)\" \n          [options]=\"NodeType.p('all') | async\"></select-input>\n        </div>\n        <ng-content select=\"providerGroup\"></ng-content>\n      </providerGroup>\n\n      <relationGroup>\n      <!--Channels-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('channels')\"> \n        <repo-template [caption]=\"getPropertyLabel('channels')\" \n          [items] = \"item.p('channels') | async | setToArray\" \n          (updated)=\"updateProperty('channels', $event)\"     \n          [types]=\"[templateName.NodeTemplate]\"></repo-template>\n        </div>\n        <ng-content select=\"relationGroup\"></ng-content>\n      </relationGroup>      \n    \n    </measurableLocationType-panel>\n  ",
             directives: [component_select_1.MultiSelectInput, panel_measurableLocationType_1.MeasurableLocationTypePanel, repo_template_1.RepoTemplate],
             pipes: [pipe_general_1.SetToArray]
         }), 

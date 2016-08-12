@@ -6,8 +6,8 @@ import {MultiSelectInput} from '../components/component.select';
 import {FormToolbar} from '../components/toolbar.panelEdit';
 import {MapToCategories} from "../transformations/pipe.general";
 import {PropertyToolbar} from '../components/toolbar.propertySettings';
-import * as model from "open-physiology-model";
-import {getPropertyLabel} from "../services/utils.model";
+import {model, TemplateName} from "../services/utils.model";
+import {getPropertyLabel as generalPropertyLabel} from "../services/utils.model";
 
 @Component({
   selector: 'resource-panel',
@@ -29,24 +29,24 @@ import {getPropertyLabel} from "../services/utils.model";
           
           <div class="panel-content">
               <div class="input-control" *ngIf="includeProperty('id')">
-                <label for="id">ID: </label>
+                <label for="id">{{getPropertyLabel('id')}}: </label>
                 <input type="text" class="form-control" disabled readonly [ngModel]="item.id">
               </div>
 
               <div class="input-control" *ngIf="includeProperty('href')">
-                <label for="href">Reference: </label>
+                <label for="href">{{getPropertyLabel('href')}}: </label>
                 <input type="text" class="form-control" disabled readonly [ngModel]="item.href">
               </div>
 
               <!--Name-->
               <div class="input-control" *ngIf="includeProperty('name')">
-                <label for="name">Name: </label>
+                <label for="name">{{getPropertyLabel('name')}}: </label>
                 <input type="text" class="form-control" [(ngModel)]="item.name">
               </div>
               
               <!--Externals-->
               <div class="input-control" *ngIf="includeProperty('externals')">
-                <label for="externals">External annotations: </label>
+                <label for="externals">{{getPropertyLabel('externals')}}: </label>
                 <select-input 
                 [items]="item.p('externals') | async" 
                 (updated)="updateProperty('externals', $event)" 
@@ -72,9 +72,17 @@ export class ResourcePanel {
   @Output() propertyUpdated = new EventEmitter();
 
   ExternalResource = model.ExternalResource;
-  getPropertyLabel = getPropertyLabel;
 
   properties: any[] = [];
+
+  protected getPropertyLabel(option: string){
+    if (this.item)
+      if ((this.item.class == TemplateName.CylindricalLyphTemplate) ||
+        (this.item.class == TemplateName.OmegaTreeTemplate)) {
+        if (option == "cardinalityBase") return "Branching factor";
+      }
+    return generalPropertyLabel(option);
+  }
 
   ngOnInit(){
     if (!this.ignore) this.ignore = new Set<string>();

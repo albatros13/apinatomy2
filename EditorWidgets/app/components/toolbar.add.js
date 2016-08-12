@@ -14,26 +14,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require('@angular/core');
 var common_1 = require('@angular/common');
 var dropdown_1 = require('ng2-bootstrap/components/dropdown');
-var EditToolbar = (function () {
-    function EditToolbar() {
+var AddToolbar = (function () {
+    function AddToolbar() {
         this.added = new core_1.EventEmitter();
     }
     __decorate([
         core_1.Output(), 
         __metadata('design:type', Object)
-    ], EditToolbar.prototype, "added", void 0);
-    EditToolbar = __decorate([
+    ], AddToolbar.prototype, "added", void 0);
+    AddToolbar = __decorate([
         core_1.Component({
-            selector: 'edit-toolbar',
+            selector: 'add-toolbar',
             inputs: ['options', 'transform'],
             template: "\n      <div *ngIf=\"options && (options.length > 1)\" class=\"btn-group\" dropdown>\n        <button type=\"button\" class=\"btn btn-default dropdown-toggle\" aria-label=\"Add\" dropdownToggle>\n          <span class=\"glyphicon glyphicon-plus\"></span>\n        </button>\n        <ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"Add\">\n          <li *ngFor=\"let option of options; let i = index\" role=\"menuitem\" (click)=\"added.emit(option)\">\n            <a class=\"dropdown-item\" href=\"#\">{{transform? transform(option): option}}</a>\n          </li>\n        </ul>\n      </div>\n      <button *ngIf=\"options && (options.length == 1)\" \n        type=\"button\" class=\"btn btn-default\" (click)=\"added.emit(options[0])\">\n        <span class=\"glyphicon glyphicon-plus\"></span>\n      </button>\n    ",
             directives: [dropdown_1.DROPDOWN_DIRECTIVES, common_1.CORE_DIRECTIVES]
         }), 
         __metadata('design:paramtypes', [])
-    ], EditToolbar);
-    return EditToolbar;
+    ], AddToolbar);
+    return AddToolbar;
 }());
-exports.EditToolbar = EditToolbar;
+exports.AddToolbar = AddToolbar;
 var FormToolbar = (function () {
     function FormToolbar() {
         this.removed = new core_1.EventEmitter();
@@ -64,4 +64,4 @@ var FormToolbar = (function () {
     return FormToolbar;
 }());
 exports.FormToolbar = FormToolbar;
-//# sourceMappingURL=toolbar.repoEdit.js.map
+//# sourceMappingURL=toolbar.add.js.map

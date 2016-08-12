@@ -5,8 +5,8 @@ import {Component} from '@angular/core';
 import {ResourcePanel} from "./panel.resource";
 import {MultiSelectInput} from '../components/component.select';
 import {RepoTemplate} from '../repos/repo.template';
-import {TemplateName} from "../services/utils.model";
-import {LyphType} from "open-physiology-model";
+import {TemplateName, model} from "../services/utils.model";
+const {LyphType} = model;
 import {SetToArray} from '../transformations/pipe.general';
 
 @Component({
@@ -23,7 +23,7 @@ import {SetToArray} from '../transformations/pipe.general';
 
       <!--InterfaceLayers-->
         <div class="input-control" *ngIf="includeProperty('interfaceLayers')">
-          <label for="interfaceLayers">Interface layers: </label>
+          <label for="interfaceLayers">{{getPropertyLabel('interfaceLayers')}}: </label>
           <select-input [items]="item.p('interfaceLayers') | async" 
           (updated)="updateProperty('interfaceLayers', $event)"          
           [options]="LyphType.p('all') | async"></select-input>
@@ -31,7 +31,8 @@ import {SetToArray} from '../transformations/pipe.general';
         
       <!--Lyphs-->
         <div class="input-control" *ngIf="includeProperty('lyphs')">
-          <repo-template caption='Lyphs' [items]="item.p('lyphs') | async | setToArray" 
+          <repo-template [caption]="getPropertyLabel('lyphs')" 
+          [items]="item.p('lyphs') | async | setToArray" 
           (updated)="updateProperty('lyphs', $event)"          
           [types]="[templateName.LyphTemplate, templateName.CylindricalLyphTemplate]"></repo-template>
         </div>

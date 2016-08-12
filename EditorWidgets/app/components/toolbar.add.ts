@@ -5,10 +5,8 @@ import {Component, Input, Output, EventEmitter} from '@angular/core';
 import {CORE_DIRECTIVES} from '@angular/common';
 import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap/components/dropdown';
 
-import * as model from "open-physiology-model";
-
 @Component({
-  selector: 'edit-toolbar',
+  selector: 'add-toolbar',
   inputs: ['options', 'transform'],
   template: `
       <div *ngIf="options && (options.length > 1)" class="btn-group" dropdown>
@@ -28,7 +26,7 @@ import * as model from "open-physiology-model";
     `,
   directives:[DROPDOWN_DIRECTIVES, CORE_DIRECTIVES]
 })
-export class EditToolbar {
+export class AddToolbar {
   @Output() added = new EventEmitter();
 }
 

@@ -5,7 +5,7 @@ import {Component, Input, EventEmitter, Output} from '@angular/core';
 import {FormToolbar} from "./toolbar.panelEdit";
 
 @Component({
-  "inputs": ["caption", "item", "mode"],
+  "inputs": ["caption", "item", "mode", "min", "max", "step"],
   "selector": "template-value",
   "template": `
       <div class="input-control">
@@ -23,24 +23,46 @@ import {FormToolbar} from "./toolbar.panelEdit";
         </div>
         
         <input *ngIf="valueType == 'Value'" 
-          type="number" class="form-control" min="0" max="100" 
+          type="number" class="form-control" 
+           [min] ="min? min: 0" 
+           [max] ="max? max: 10" 
+           [step]="step? step: 1" 
           [(ngModel)]="value" (ngModelChange)="updated.emit(value)"/>
         
         <fieldset *ngIf="valueType == 'Distribution'">
           <div class="input-control">
+          <!--Min--> 
             <label for="min">Min: </label>
-            <input type="number" class="form-control" min="0" max="100" step="0.1" required [(ngModel)]="distribution.min">
-         
+            <input type="number" class="form-control" 
+              [min] ="min? min: 0" 
+              [max] ="max? max: 10" 
+              [step]="step? step: 1" 
+              required [(ngModel)]="distribution.min">
+          <!--Max-->
             <label for="max">Max: </label>
-            <input type="number" class="form-control" min="0" max="100" step="0.1" required [(ngModel)]="distribution.max">
+            <input type="number" class="form-control" 
+              [min] ="min? min: 0" 
+              [max] ="max? max: 10" 
+              [step]="step? step: 1" 
+              required [(ngModel)]="distribution.max">
           </div>
+          <!--Normal distribution-->
           <div *ngIf="mode == 'distribution'">
+          <!--Mean-->
             <div class="input-control">
               <label for="mean">Mean: </label>
-              <input type="number" class="form-control" min="0" max="100" step="0.1" required [(ngModel)]="distribution.mean">
-         
+              <input type="number" class="form-control" 
+              [min] ="min? min: 0" 
+              [max] ="max? max: 10" 
+              [step]="step? step: 1" 
+              required [(ngModel)]="distribution.mean">
+          <!--Std-->
               <label for="std">Std: </label>
-              <input type="number" class="form-control" min="0" max="100" step="0.1" required [(ngModel)]="distribution.std">
+              <input type="number" class="form-control" 
+              [min] ="min? min: 0" 
+              [max] ="max? max: 10" 
+              [step]="step? step: 1" 
+              required [(ngModel)]="distribution.std">
             </div>
           </div>
         </fieldset>

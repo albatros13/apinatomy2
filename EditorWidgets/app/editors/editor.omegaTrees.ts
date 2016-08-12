@@ -6,8 +6,8 @@ import {ResourceWidget} from '../widgets/widget.resource';
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
 import {ResourceName, TemplateName} from '../services/utils.model';
-import * as model from "open-physiology-model";
 import {SetToArray} from "../transformations/pipe.general";
+import {model} from "../services/utils.model";
 
 declare var GoldenLayout:any;
 declare var $: any;

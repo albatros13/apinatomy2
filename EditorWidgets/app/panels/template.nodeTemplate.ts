@@ -5,7 +5,8 @@ import {Component} from '@angular/core';
 import {MultiSelectInput} from '../components/component.select';
 import {TemplateValue} from '../components/component.templateValue';
 import {TemplatePanel} from "./template.template";
-import {ProcessTemplate} from "open-physiology-model";
+import {model} from "../services/utils.model";
+const {ProcessTemplate} = model;
 
 @Component({
   selector: 'nodeTemplate-panel',
@@ -21,7 +22,7 @@ import {ProcessTemplate} from "open-physiology-model";
       
       <!--Incoming processes-->
       <div class="input-control" *ngIf="includeProperty('incomingProcesses')">      
-        <label for="incomingProcesses">Incoming processes: </label>
+        <label for="incomingProcesses">{{getPropertyLabel('incomingProcesses')}}: </label>
         <select-input [items] = "item.incomingProcesses" 
           (updated) = "updateProperty('incomingProcesses', $event)"  
           [options] = "ProcessTemplate.p('all') | async"></select-input>
@@ -29,7 +30,7 @@ import {ProcessTemplate} from "open-physiology-model";
       
       <!--Outgoing processes-->
       <div class="input-control" *ngIf="includeProperty('outgoingProcesses')">      
-        <label for="outgoingProcesses">Outgoing processes: </label>
+        <label for="outgoingProcesses">{{getPropertyLabel('outgoingProcesses')}}: </label>
         <select-input [items] = "item.outgoingProcesses" 
           (updated) = "updateProperty('outgoingProcesses', $event)"   
           [options] = "ProcessTemplate.p('all') | async"></select-input>

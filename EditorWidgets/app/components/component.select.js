@@ -27,9 +27,6 @@ var MultiSelectInput /*implements OnChanges*/ = (function () {
         this.externalChange = false;
     }
     MultiSelectInput /*implements OnChanges*/.prototype.ngOnChanges = function (changes) {
-        //let array = Array.from(this.items);
-        //if (array[0] && (array[0].class === "CylindricalLyphTemplate"))
-        //  console.log("Select update:", array.map(x => x.name));
         var _this = this;
         if (this.externalChange) {
             setTimeout(function () { _this.active = false; }, 0);

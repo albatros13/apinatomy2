@@ -15,7 +15,7 @@ import {CoalescencePanel}    from './panel.coalescence';
 
 import {GroupTypePanel}      from './panel.groupType';
 import {OmegaTreeTypePanel}  from './panel.omegaTreeType';
-import {ResourceName} from "../services/utils.model";
+import {ResourceName, model} from "../services/utils.model";
 import {ToastyService, Toasty} from 'ng2-toasty/ng2-toasty';
 
 @Component({

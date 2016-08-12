@@ -20,7 +20,7 @@ import {TemplateName} from "../services/utils.model";
   
       <!--Supertypes-->
       <div class="input-control" *ngIf="includeProperty('supertypes')">
-        <label for="name">Supertypes: </label>
+        <label for="supertypes">{{getPropertyLabel('supertypes')}}: </label>
         <select-input [items]="item.p('supertypes') | async" 
         (updated)="updateProperty('supertypes', $event)" 
         [options]="item.constructor.p('all') | async"></select-input>
@@ -28,7 +28,7 @@ import {TemplateName} from "../services/utils.model";
       
       <!--Subtypes-->
       <div class="input-control" *ngIf="includeProperty('subtypes')">
-        <label for="name">Subtypes: </label>
+        <label for="subtypes">{{getPropertyLabel('subtypes')}}:: </label>
         <select-input [items]="item.p('subtypes') | async" 
           (updated)="updateProperty('subtypes', $event)" 
         [options]="item.constructor.p('all') | async"></select-input>
@@ -45,5 +45,5 @@ import {TemplateName} from "../services/utils.model";
   directives: [ResourcePanel, MultiSelectInput]
 })
 export class TypePanel extends ResourcePanel implements OnInit{
-  templateName = TemplateName;
+  protected templateName = TemplateName;
 }

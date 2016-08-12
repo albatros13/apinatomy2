@@ -6,7 +6,8 @@ import {TemplateValue} from '../components/component.templateValue';
 import {TemplatePanel} from "./template.template";
 import {SingleSelectInput} from '../components/component.select';
 import {FilterByClass} from "../transformations/pipe.general";
-import {MeasurableTemplate} from "open-physiology-model";
+import {model} from "../services/utils.model";
+const {MeasurableTemplate} = model;
 
 @Component({
   selector: 'causalityTemplate-panel',
@@ -22,7 +23,7 @@ import {MeasurableTemplate} from "open-physiology-model";
       
       <!--Cause-->
       <div class="input-control" *ngIf="includeProperty('cause')">      
-        <label for="cause">Cause: </label>
+        <label for="cause">{{getPropertyLabel('cause')}}: </label>
         <select-input-1 [item] = "item.p('cause') | async" 
           (updated)="updateProperty('cause', $event)"    
           [options] = "MeasurableTemplate.p('all') | async"></select-input-1>
@@ -30,7 +31,7 @@ import {MeasurableTemplate} from "open-physiology-model";
       
       <!--Effect-->
       <div class="input-control" *ngIf="includeProperty('effect')">      
-        <label for="effect">Effect: </label>
+        <label for="effect">{{getPropertyLabel('effect')}}: </label>
         <select-input-1 [item] = "item.effect" 
           (updated) = "updateProperty('effect', $event)"    
           [options] = "MeasurableTemplate.p('all') | async"></select-input-1>

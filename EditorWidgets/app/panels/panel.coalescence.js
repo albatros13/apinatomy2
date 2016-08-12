@@ -21,20 +21,20 @@ var panel_resource_1 = require("./panel.resource");
 var component_select_1 = require('../components/component.select');
 var repo_template_1 = require('../repos/repo.template');
 var utils_model_1 = require("../services/utils.model");
-var open_physiology_model_1 = require("open-physiology-model");
+var LyphType = utils_model_1.model.LyphType;
 var pipe_general_1 = require('../transformations/pipe.general');
 var CoalescencePanel = (function (_super) {
     __extends(CoalescencePanel, _super);
     function CoalescencePanel() {
         _super.apply(this, arguments);
         this.templateName = utils_model_1.TemplateName;
-        this.LyphType = open_physiology_model_1.LyphType;
+        this.LyphType = LyphType;
     }
     CoalescencePanel = __decorate([
         core_1.Component({
             selector: 'coalescence-panel',
             inputs: ['item', 'ignore', 'options'],
-            template: "\n    <resource-panel [item] = \"item\" \n      [ignore] = \"ignore\"\n      [options] =\"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <!--InterfaceLayers-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('interfaceLayers')\">\n          <label for=\"interfaceLayers\">Interface layers: </label>\n          <select-input [items]=\"item.p('interfaceLayers') | async\" \n          (updated)=\"updateProperty('interfaceLayers', $event)\"          \n          [options]=\"LyphType.p('all') | async\"></select-input>\n        </div>\n        \n      <!--Lyphs-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('lyphs')\">\n          <repo-template caption='Lyphs' [items]=\"item.p('lyphs') | async | setToArray\" \n          (updated)=\"updateProperty('lyphs', $event)\"          \n          [types]=\"[templateName.LyphTemplate, templateName.CylindricalLyphTemplate]\"></repo-template>\n        </div>\n\n        <ng-content></ng-content>      \n\n    </resource-panel>\n  ",
+            template: "\n    <resource-panel [item] = \"item\" \n      [ignore] = \"ignore\"\n      [options] =\"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <!--InterfaceLayers-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('interfaceLayers')\">\n          <label for=\"interfaceLayers\">{{getPropertyLabel('interfaceLayers')}}: </label>\n          <select-input [items]=\"item.p('interfaceLayers') | async\" \n          (updated)=\"updateProperty('interfaceLayers', $event)\"          \n          [options]=\"LyphType.p('all') | async\"></select-input>\n        </div>\n        \n      <!--Lyphs-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('lyphs')\">\n          <repo-template [caption]=\"getPropertyLabel('lyphs')\" \n          [items]=\"item.p('lyphs') | async | setToArray\" \n          (updated)=\"updateProperty('lyphs', $event)\"          \n          [types]=\"[templateName.LyphTemplate, templateName.CylindricalLyphTemplate]\"></repo-template>\n        </div>\n\n        <ng-content></ng-content>      \n\n    </resource-panel>\n  ",
             directives: [panel_resource_1.ResourcePanel, component_select_1.MultiSelectInput, repo_template_1.RepoTemplate],
             pipes: [pipe_general_1.SetToArray]
         }), 

@@ -5,7 +5,8 @@ import {Component} from '@angular/core';
 import {TypePanel} from "./panel.type";
 import {MultiSelectInput} from '../components/component.select';
 import {RepoTemplate} from '../repos/repo.template';
-import {MaterialType, MeasurableTemplate, MeasurableType} from "open-physiology-model";
+import {model} from "../services/utils.model";
+const {MaterialType, MeasurableTemplate} = model;
 import {SetToArray} from "../transformations/pipe.general";
 
 @Component({
@@ -23,7 +24,7 @@ import {SetToArray} from "../transformations/pipe.general";
        <providerGroup>
           <!--MeasurableProviders-->
           <div class="input-control" *ngIf="includeProperty('measurableProviders')">
-            <label for="measurableProviders">Measurable providers: </label>
+            <label for="measurableProviders">{{getPropertyLabel('measurableProviders')}}: </label>
             <select-input [items]="item.p('measurableProviders') | async" 
             (updated)="updateProperty('measurableProviders', $event)" 
             [options]="item.constructor.p('all') | async"></select-input>
@@ -34,7 +35,7 @@ import {SetToArray} from "../transformations/pipe.general";
        <relationGroup>
           <!--Measurables-->
           <div class="input-control" *ngIf="includeProperty('measurables')">
-            <repo-template caption='Measurables' 
+            <repo-template [caption]="getPropertyLabel('measurables')" 
             [items]="item.p('measurables') | async | setToArray" 
             (updated)="updateProperty('measurables', $event)" 
             [types]="[templateName.MeasurableTemplate]"></repo-template>

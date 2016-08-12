@@ -12,15 +12,40 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  * Created by Natallia on 7/8/2016.
  */
 var core_1 = require('@angular/core');
-var model = require("open-physiology-model");
+var utils_model_1 = require("../services/utils.model");
 var ItemHeader = (function () {
     function ItemHeader() {
+        this.isTemplate = false;
     }
+    ItemHeader.prototype.ngOnInit = function () {
+        //if (model.Template.hasInstance(this.item))
+        //  this.isTemplate = true;
+        if (this.item) {
+            if (this.item.class.indexOf('Template') > -1)
+                this.isTemplate = true;
+        }
+    };
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Object)
+    ], ItemHeader.prototype, "item", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Object)
+    ], ItemHeader.prototype, "selectedItem", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Boolean)
+    ], ItemHeader.prototype, "isSelectedOpen", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', String)
+    ], ItemHeader.prototype, "icon", void 0);
     ItemHeader = __decorate([
         core_1.Component({
             selector: 'item-header',
             inputs: ['item', 'selectedItem', 'isSelectedOpen', 'icon'],
-            template: "\n      <i class=\"pull-left glyphicon\"\n        [ngClass]=\"{\n          'glyphicon-chevron-down': (item == selectedItem) && isSelectedOpen, \n          'glyphicon-chevron-right': (item != selectedItem) || !isSelectedOpen}\"></i>&nbsp;\n        {{(item.id)? item.id: \"?\"}}: {{item.name}}\n        <img class=\"pull-right icon\" src=\"{{icon}}\"/>\n  "
+            template: "\n      <i class=\"pull-left glyphicon\"\n        [ngClass]=\"{\n          'glyphicon-chevron-down': (item == selectedItem) && isSelectedOpen, \n          'glyphicon-chevron-right': (item != selectedItem) || !isSelectedOpen}\"></i>&nbsp;\n        {{(item.id)? item.id: \"?\"}}: {{item.name}}\n        <span class=\"pull-right\">\n          <img *ngIf=\"isTemplate\" class=\"imtip\" src=\"images/template.png\"/>\n          <img class=\"icon\" src=\"{{icon}}\"/>\n        </span>\n  "
         }), 
         __metadata('design:paramtypes', [])
     ], ItemHeader);
@@ -101,14 +126,14 @@ var RepoAbstract = (function () {
         if (Class.indexOf("Template") > 0) {
             proto = { name: "" };
         }
-        var newItem = model[Class].new(proto);
+        var newItem = utils_model_1.model[Class].new(proto);
         this.items.push(newItem);
         this.added.emit(newItem);
         this.updated.emit(this.items);
         this.selectedItem = newItem;
     };
     RepoAbstract.prototype.getClassLabel = function (option) {
-        var name = model[option].singular;
+        var name = utils_model_1.model[option].singular;
         return name[0].toUpperCase() + name.substring(1);
     };
     __decorate([

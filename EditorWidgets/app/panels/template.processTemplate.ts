@@ -5,7 +5,8 @@ import {TemplateValue} from '../components/component.templateValue';
 import {TemplatePanel} from "./template.template";
 import {RADIO_GROUP_DIRECTIVES} from "ng2-radio-group";
 import {FilterByClass} from "../transformations/pipe.general";
-import {NodeTemplate, LyphType, LyphTemplate} from "open-physiology-model";
+import {model} from "../services/utils.model";
+const {NodeTemplate, LyphType, LyphTemplate} = model;
 
 @Component({
   selector: 'processTemplate-panel',
@@ -22,7 +23,7 @@ import {NodeTemplate, LyphType, LyphTemplate} from "open-physiology-model";
       <!--TransportPhenomenon-->
       <div class="input-control" *ngIf="includeProperty('transportPhenomenon')">
         <fieldset>
-          <legend>Transport phenomenon:</legend>
+          <legend>{{getPropertyLabel('transportPhenomenon')}}:</legend>
           <radio-group [(ngModel)]="item.transportPhenomenon" [required]="true">
              <input type="radio" value="diffusion">diffusion&nbsp;
              <input type="radio" value="advection">advection<br/>
@@ -32,7 +33,7 @@ import {NodeTemplate, LyphType, LyphTemplate} from "open-physiology-model";
       
       <!--ConveyingLyph-->
       <div class="input-control" *ngIf="includeProperty('conveyingLyph')">
-        <label for="conveyingLyph">Conveying lyph: </label>
+        <label for="conveyingLyph">{{getPropertyLabel('conveyingLyph')}}: </label>
         <select-input-1 [item] = "item.p('conveyingLyph') | async"
          (updated) = "updateProperty('conveyingLyph', $event)"    
          [options] = "LyphType.p('all') | async"></select-input-1>
@@ -40,7 +41,7 @@ import {NodeTemplate, LyphType, LyphTemplate} from "open-physiology-model";
       
       <!--SourceContainer-->
       <div class="input-control" *ngIf="includeProperty('sourceLyph')">      
-        <label for="sourceLyph">Source lyph: </label>
+        <label for="sourceLyph">{{getPropertyLabel('sourceLyph')}}: </label>
         <select-input-1 [item] = "item.sourceLyph" 
           (updated) = "onSourceLyphChanged($event)"  
           [options] = "LyphTemplate.p('all') | async"></select-input-1>
@@ -48,7 +49,7 @@ import {NodeTemplate, LyphType, LyphTemplate} from "open-physiology-model";
       
       <!--TargetContainer-->
       <div class="input-control" *ngIf="includeProperty('targetLyph')">      
-        <label for="targetLyph">Target lyph: </label>
+        <label for="targetLyph">{{getPropertyLabel('targetLyph')}}: </label>
         <select-input-1 [item] = "item.targetLyph" 
           (updated) = "onTargetLyphChanged($event)"   
           [options] = "LyphTemplate.p('all') | async"></select-input-1>
@@ -56,7 +57,7 @@ import {NodeTemplate, LyphType, LyphTemplate} from "open-physiology-model";
       
       <!--Source-->
       <div class="input-control" *ngIf="includeProperty('source')">      
-        <label for="source">Source: </label>
+        <label for="source">{{getPropertyLabel('source')}}: </label>
         <select-input-1 [item] = "item.source" 
           (updated) = "onSourceChanged($event)"   
           [options] = "NodeTemplate.p('all') | async"></select-input-1>
@@ -64,7 +65,7 @@ import {NodeTemplate, LyphType, LyphTemplate} from "open-physiology-model";
       
       <!--Target-->
       <div class="input-control" *ngIf="includeProperty('target')">      
-        <label for="target">Target: </label>
+        <label for="target">{{getPropertyLabel('target')}}: </label>
         <select-input-1 [item] = "item.target" 
           (updated) = "onTargetChanged($event)"  
           [options] = "NodeTemplate.p('all') | async"></select-input-1>

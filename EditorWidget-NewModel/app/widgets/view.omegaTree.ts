@@ -4,7 +4,7 @@
 import {Component, Input, Output, ViewChild, ElementRef, Renderer, EventEmitter} from '@angular/core';
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
-import {getIcon, getColor, getTreeData, compareLinkedParts, compareLinkedElements, ResourceName, model} from "../services/utils.model";
+import {getIcon, getColor, getTreeData, compareLinkedParts, ResourceName, model} from "../services/utils.model";
 
 declare var d3:any;
 
@@ -23,16 +23,16 @@ export class TemplateBox{
 
     if (this.model.layers && (this.model.layers.size > 0)){
       let layers = Array.from(this.model.layers);
-        let x0 = options.center.x;
-        let y0 = options.center.y;
-        let dx = options.size.width / layers.length;
-        let dy = options.size.height;
-        for (let i = 0; i < layers.length; i++){
-          lyph.append("rect")
-            .attr("x", x0 + i * dx).attr("y", y0)
-            .attr("width", dx).attr("height", dy)
-            .style("stroke", "black").style("fill", getColor(layers[i].id));
-        }
+      let x0 = options.center.x;
+      let y0 = options.center.y;
+      let dx = options.size.width / layers.length;
+      let dy = options.size.height;
+      for (let i = 0; i < layers.length; i++){
+        lyph.append("rect")
+          .attr("x", x0 + i * dx).attr("y", y0)
+          .attr("width", dx).attr("height", dy)
+          .style("stroke", "black").style("fill", getColor(layers[i].id));
+      }
     }
 
     return lyph;
@@ -197,7 +197,6 @@ export class OmegaTreeWidget{
     }
   }
 
-
   getOmegaTreeData(item: any) {
     if (!item) return {};
 
@@ -253,7 +252,7 @@ export class OmegaTreeWidget{
                 if (leaves.length > 0){
                   next.parent = leaves[0];
                   for (let j = 1; j < leaves.length; j++){
-                    //replicate following nodes
+                    //TODO: replicate following nodes
                   }
                 }
               }
@@ -264,43 +263,6 @@ export class OmegaTreeWidget{
       subtrees = tree.filter(x => (x.resource && (x.resource.class === ResourceName.OmegaTree)));
     }
 
-    return tree[0];
-  }
-
-  //Old - tree via cardinality multipliers
-  getOmegaTreeFromMultipliers(item: any) {
-    if (!item) return {};
-
-    function linkElements(root, item) {
-      let relations = new Set<string>().add("elements");
-      let treeData = getTreeData(item, relations, -1); //creates structure for d3 tree out of item.elements
-      let elements = treeData.children;
-
-      let queue: Array<any> = [root];
-      if (!elements) return queue;
-      elements.sort((a, b) => compareLinkedElements(a.resource, b.resource));
-
-      for (let i = 0; i < elements.length; i++) {
-        let child = {id: elements[i].id, name: elements[i].name, resource: elements[i].resource};
-        let links = elements[i].resource.cardinalityMultipliers;
-        if (!links || (links.size == 0)){
-          root.children.push(child);
-        } else {
-          links.forEach(link => {
-            let parent = queue.find(x => (x.resource == link));
-            if (parent){
-              if (!parent.children) parent.children = [];
-              parent.children.push(child);
-            }
-          });
-        }
-      }
-      return queue;
-    }
-
-    let root: any = {id:  "#0", name: item.name, children: []};
-    let tree = linkElements(root, item);
-    //TODO: unwrap recursively trees in the queue
     return tree[0];
   }
 }

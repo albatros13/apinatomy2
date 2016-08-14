@@ -55,7 +55,7 @@ var RelationshipWidget = (function () {
         }
     };
     RelationshipWidget.prototype.updateRelations = function () {
-        var privateRelations = new Set(["themes", "plusBorder", "minusBorder", "innerBorder", "outerBorder"]);
+        var privateRelations = new Set(["themes"]);
         this.relationOptions = [];
         if (this.item) {
             var relations = Object.assign({}, this.item.constructor.relationshipShortcuts);

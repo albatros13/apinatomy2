@@ -19,14 +19,13 @@ import {Component, Input, Output, EventEmitter} from '@angular/core';
       *ngIf="!(options && options.hideRestore)" 
       type="button" class="btn btn-default btn-icon" aria-label="Restore" (click)="canceled.emit()">
       <span class="glyphicon glyphicon-refresh"></span>
-    </button>
-    `
+    </button>    
+  `
 })
 export class FormToolbar {
+  @Input() options: any;
   @Output() removed = new EventEmitter();
   @Output() canceled = new EventEmitter();
   @Output() saved = new EventEmitter();
-
-  constructor(){};
 }
 

@@ -82,6 +82,7 @@ var OmegaTreeEditor = (function () {
         };
         this.sLyphs = utils_model_2.model.Lyph.p('all').subscribe(function (data) { _this.lyphs = data; });
         this.sOmegaTrees = utils_model_2.model.OmegaTree.p('all').subscribe(function (data) { _this.trees = data; });
+        var self = this;
         (function () {
             return __awaiter(this, void 0, void 0, function* () {
                 /*External resources*/
@@ -91,16 +92,17 @@ var OmegaTreeEditor = (function () {
                 var fma17881 = utils_model_2.model.ExternalResource.new({ name: "FMA:17881", uri: "" });
                 var externals = [fma7203, fma15610, fma66610, fma17881];
                 yield Promise.all(externals.map(function (p) { return p.commit(); }));
-                /*Cylindrical lyphs*/
-                var renalH = utils_model_2.model.CylindricalLyph.new({ name: "Renal hilum", externals: [fma15610] });
-                var renalP = utils_model_2.model.CylindricalLyph.new({ name: "Renal parenchyma" });
-                var renalC = utils_model_2.model.CylindricalLyph.new({ name: "Renal capsule", externals: [fma66610] });
+                /*Lyphs*/
+                var renalH = utils_model_2.model.Lyph.new({ name: "Renal hilum", externals: [fma15610] });
+                var renalP = utils_model_2.model.Lyph.new({ name: "Renal parenchyma" });
+                var renalC = utils_model_2.model.Lyph.new({ name: "Renal capsule", externals: [fma66610] });
                 var cLyphsGroup = [renalH, renalP, renalC];
                 yield Promise.all(cLyphsGroup.map(function (p) { return p.commit(); }));
-                var kidney = utils_model_2.model.CylindricalLyph.new({ name: "Kidney", externals: [fma7203] });
+                var kidney = utils_model_2.model.Lyph.new({ name: "Kidney", externals: [fma7203] });
                 yield kidney.commit();
-                var kidneyLobus = utils_model_2.model.CylindricalLyph.new({ name: "Kidney lobus", externals: [fma17881] });
+                var kidneyLobus = utils_model_2.model.Lyph.new({ name: "Kidney lobus", externals: [fma17881] });
                 yield kidneyLobus.commit();
+                self.selectedItem = kidney;
             });
         })();
     }
@@ -168,7 +170,7 @@ var OmegaTreeEditor = (function () {
             providers: [
                 service_resize_1.ResizeService
             ],
-            template: "\n    <repo-general id=\"omegaTreeRepo\"\n      [items]=\"trees | setToArray\" \n      [caption]=\"'Omega trees'\"\n      [types]=\"[ResourceName.OmegaTree]\"\n      (selected)=\"onItemSelected($event)\"\n      >\n    </repo-general>         \n    \n    <repo-general id=\"lyphRepo\"\n      [items]=\"lyphs | setToArray\" \n      [caption]=\"'Lyphs'\" \n      [types]=\"[ResourceName.Lyph, ResourceName.CylindricalLyph]\"\n      (selected)=\"onItemSelected($event)\">\n    </repo-general>\n    \n    <hierarchy-widget id = \"hierarchy\" [item]=\"selectedItem\"></hierarchy-widget>\n    <resource-widget id = \"resource\" [item]=\"selectedItem\"></resource-widget>   \n    \n    <div id=\"main\"></div>\n  ",
+            template: "\n    <repo-general id=\"omegaTreeRepo\"\n      [items]=\"trees | setToArray\" \n      [caption]=\"'Omega trees'\"\n      [types]=\"[ResourceName.OmegaTree]\"\n      (selectedItemChange)=\"onItemSelected($event)\"\n      >\n    </repo-general>         \n    \n    <repo-general id=\"lyphRepo\"\n      [items]=\"lyphs | setToArray\" \n      [caption]=\"'Lyphs'\" \n      [types]=\"[ResourceName.Lyph]\"\n      (selected)=\"onItemSelected($event)\">\n    </repo-general>\n    \n    <hierarchy-widget id = \"hierarchy\" [item]=\"selectedItem\"></hierarchy-widget>\n    <resource-widget id = \"resource\" [item]=\"selectedItem\"></resource-widget>   \n    \n    <div id=\"main\"></div>\n  ",
             styles: ["#main {width: 100%; height: 100%; border: 0; margin: 0; padding: 0}"],
             directives: [repo_general_1.RepoGeneral, repo_nested_1.RepoNested, widget_relations_1.RelationshipWidget, widget_resource_1.ResourceWidget],
             pipes: [pipe_general_1.SetToArray]

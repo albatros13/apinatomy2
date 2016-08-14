@@ -14,29 +14,37 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 /**
- * Created by Natallia on 6/17/2016.
+ * Created by Natallia on 6/19/2016.
  */
 var core_1 = require('@angular/core');
 var panel_template_1 = require("./panel.template");
 var component_select_1 = require('../components/component.select');
 var repo_nested_1 = require('../repos/repo.nested');
-var pipe_general_1 = require("../transformations/pipe.general");
-var MeasurableLocationPanel = (function (_super) {
-    __extends(MeasurableLocationPanel, _super);
-    function MeasurableLocationPanel() {
+var pipe_general_1 = require('../transformations/pipe.general');
+var CoalescenceScenarioPanel = (function (_super) {
+    __extends(CoalescenceScenarioPanel, _super);
+    function CoalescenceScenarioPanel() {
         _super.apply(this, arguments);
     }
-    MeasurableLocationPanel = __decorate([
+    CoalescenceScenarioPanel.prototype.onSaved = function (event) {
+        if (this.item && this.item.lyphs) {
+            if (this.item.lyphs.size != 2) {
+                console.log("Wrong number of lyphs", this.item.lyphs.size);
+            }
+        }
+        this.saved.emit({ createType: this.createType });
+    };
+    CoalescenceScenarioPanel = __decorate([
         core_1.Component({
-            selector: 'measurableLocation-panel',
+            selector: 'coalescenceScenario-panel',
             inputs: ['item', 'ignore', 'options'],
-            template: "\n    <template-panel [item]=\"item\" \n      [ignore]   = \"ignore\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n        \n       <relationGroup>\n          <!--Measurables-->\n          <div class=\"input-control\" *ngIf=\"includeProperty('measurables')\">\n            <repo-nested [caption]=\"getPropertyLabel('measurables')\" \n            [items]=\"item.p('measurables') | async | setToArray\" \n            (updated)=\"updateProperty('measurables', $event)\" \n            [types]=\"[ResourceName.Measurable]\"></repo-nested>\n          </div>\n           <ng-content select=\"relationGroup\"></ng-content>\n       </relationGroup>      \n      \n       <ng-content></ng-content>      \n\n    </template-panel>\n  ",
+            template: "\n    <template-panel [item] = \"item\" \n      [ignore] = \"ignore\"\n      [options] =\"options\"\n      (saved)    = \"onSaved($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n\n      <!--Lyphs-->\n        <div class=\"input-control\" *ngIf=\"includeProperty('lyphs')\">\n          <repo-nested [caption]=\"getPropertyLabel('lyphs')\" \n          [items]=\"item.p('lyphs') | async | setToArray\" \n          (updated)=\"updateProperty('lyphs', $event)\"          \n          [types]=\"[ResourceName.Lyph]\"></repo-nested>\n        </div>\n      <ng-content></ng-content>      \n\n    </template-panel>\n  ",
             directives: [panel_template_1.TemplatePanel, component_select_1.MultiSelectInput, repo_nested_1.RepoNested],
             pipes: [pipe_general_1.SetToArray]
         }), 
         __metadata('design:paramtypes', [])
-    ], MeasurableLocationPanel);
-    return MeasurableLocationPanel;
+    ], CoalescenceScenarioPanel);
+    return CoalescenceScenarioPanel;
 }(panel_template_1.TemplatePanel));
-exports.MeasurableLocationPanel = MeasurableLocationPanel;
-//# sourceMappingURL=panel.measurableLocation.js.map
+exports.CoalescenceScenarioPanel = CoalescenceScenarioPanel;
+//# sourceMappingURL=panel.coalescenceScenario.js.map

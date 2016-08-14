@@ -20,9 +20,9 @@ declare var $: any;
   ],
   template: `
     <repo-general id="repo"
-      [items]="items | setToArray | hideClass: ['Border']" 
+      [items]="items | setToArray | hideClass : ['Border']" 
       [caption]="'Resources'" 
-      (selected)="onItemSelected($event)">
+      (selectedItemChange)="onItemSelected($event)">
     </repo-general>
     <hierarchy-widget id = "hierarchy" [item]="selectedItem"></hierarchy-widget>
     <resource-widget id = "resource" [item]="selectedItem"></resource-widget>   
@@ -84,7 +84,7 @@ export class ResourceEditor {
               public el:ElementRef) {
     this.rs = model.Resource.p('all').subscribe(
       (data: any) => {
-      //  this.items = data
+        this.items = data
       });
   }
   ngOnDestroy() {

@@ -27,16 +27,19 @@ import {ToastyService, Toasty} from 'ng2-toasty/ng2-toasty';
     <div class="panel panel-warning repo-nested">
       <div class="panel-heading">{{caption}}</div>
       <div class="panel-body" >
-        <select-input-1 style="float: left;" [item] = "itemToInclude"
-         (updated) = "itemToInclude = $event"    
-         [options] = "allItems">
-        </select-input-1>
-        <button type="button" class="btn btn-default btn-icon" (click)="onIncluded(itemToInclude)">
-          <span class="glyphicon glyphicon-save"></span>
-        </button>
+        <span  *ngIf = "!(options?.readOnly || options?.headersOnly)">
+          <select-input-1
+            style="float: left;" [item] = "itemToInclude"
+           (updated) = "itemToInclude = $event"    
+           [options] = "allItems">
+          </select-input-1>
+          <button type="button" class="btn btn-default btn-icon" (click)="onIncluded(itemToInclude)">
+            <span class="glyphicon glyphicon-save"></span>
+          </button>
+        </span>
         
         <sort-toolbar   *ngIf =  "options?.sortToolbar"  [options]="['Name', 'ID', 'Class']" (sorted)="onSorted($event)"></sort-toolbar>
-        <add-toolbar    *ngIf = "!options?.headersOnly"  [options]="types" [transform]="getClassLabel" (added)="onAdded($event)"></add-toolbar>
+        <add-toolbar    *ngIf = "!(options?.readOnly || options?.headersOnly)"  [options]="types" [transform]="getClassLabel" (added)="onAdded($event)"></add-toolbar>
         <filter-toolbar *ngIf =  "options?.filterToolbar" [options]="['Name', 'ID', 'Class']" [filter]="searchString" (applied)="onFiltered($event)"></filter-toolbar>
           
         <accordion class="list-group" [closeOthers]="true"
@@ -56,10 +59,11 @@ import {ToastyService, Toasty} from 'ng2-toasty/ng2-toasty';
 
             <div *ngIf="!options || !options.headersOnly">
               <panel-general *ngIf="item == selectedItem" 
-                [item]   ="item" 
-                [ignore] ="ignore"
-                (saved)  ="onSaved(item, $event)" 
-                (removed)="onRemoved(item)"></panel-general>            
+                [item]    ="item" 
+                [ignore]  ="ignore"
+                [options] ="options"
+                (saved)   ="onSaved(item, $event)" 
+                (removed) ="onRemoved(item)"></panel-general>            
             </div>
           </accordion-group>        
         </accordion>       
@@ -109,24 +113,31 @@ export class RepoNested extends RepoAbstract{
   ngOnChanges(changes: { [propName: string]: any }) {
     //Set correct initial order for linked set
     if (this.options.linked && this.items){
-      //this.items.sort((a, b) => compareLinkedElements(a, b));
       this.items.sort((a, b) => compareLinkedParts(a, b));
+    }
+    if (this.options.ordered && this.items){
+      this.items.sort((a, b) => {
+        return (a['-->HasLayer'].relativePosition - b['-->HasLayer'].relativePosition)
+      });
     }
   }
 
-  onDragStart(){
-    //TODO: swap 2 elements?
-  }
+  onDragStart(index: number){ }
 
-  onDragEnd(){
+  onDragEnd(index: number){
     if (this.options.linked){
       this.items[0].treeParent = null;
-      //this.items[0].cardinalityMultipliers.clear();
       for (let i = 1; i < this.items.length; i++){
-        // this.items[i].cardinalityMultipliers.clear();
-        // this.items[i].cardinalityMultipliers.add(this.items[i - 1]);
         this.items[i].treeParent = this.items[i - 1];
       }
+      this.updated.emit(this.items);
+    }
+
+    if (this.options.ordered){
+      for (let i = 0; i < this.items.length; i++){
+        this.items[i]['-->HasLayer'].relativePosition = i;
+      }
+      this.updated.emit(this.items);
     }
   }
 
@@ -136,7 +147,6 @@ export class RepoNested extends RepoAbstract{
       if (this.selectedItem){
         let index = this.items.indexOf(this.selectedItem);
         if (index > 0) {
-          //this.selectedItem.cardinalityMultipliers.add(this.items[index -1]);
           this.selectedItem.treeParent = this.items[index -1];
         }
       }

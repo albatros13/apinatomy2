@@ -19,6 +19,7 @@ var utils_model_1 = require("../services/utils.model");
 require('rxjs/add/operator/map');
 var ResourceEditor = (function () {
     function ResourceEditor(resizeService, el) {
+        var _this = this;
         this.resizeService = resizeService;
         this.el = el;
         this.layoutConfig = {
@@ -60,7 +61,7 @@ var ResourceEditor = (function () {
                 }]
         };
         this.rs = utils_model_1.model.Resource.p('all').subscribe(function (data) {
-            //  this.items = data
+            _this.items = data;
         });
     }
     ResourceEditor.prototype.ngOnDestroy = function () {
@@ -120,7 +121,7 @@ var ResourceEditor = (function () {
             providers: [
                 service_resize_1.ResizeService
             ],
-            template: "\n    <repo-general id=\"repo\"\n      [items]=\"items | setToArray | hideClass: ['Border']\" \n      [caption]=\"'Resources'\" \n      (selected)=\"onItemSelected($event)\">\n    </repo-general>\n    <hierarchy-widget id = \"hierarchy\" [item]=\"selectedItem\"></hierarchy-widget>\n    <resource-widget id = \"resource\" [item]=\"selectedItem\"></resource-widget>   \n    <div id=\"main\"></div>\n  ",
+            template: "\n    <repo-general id=\"repo\"\n      [items]=\"items | setToArray | hideClass : ['Border']\" \n      [caption]=\"'Resources'\" \n      (selectedItemChange)=\"onItemSelected($event)\">\n    </repo-general>\n    <hierarchy-widget id = \"hierarchy\" [item]=\"selectedItem\"></hierarchy-widget>\n    <resource-widget id = \"resource\" [item]=\"selectedItem\"></resource-widget>   \n    <div id=\"main\"></div>\n  ",
             styles: ["#main {width: 100%; height: 100%; border: 0; margin: 0; padding: 0}"],
             directives: [repo_general_1.RepoGeneral, repo_nested_1.RepoNested, widget_relations_1.RelationshipWidget, widget_resource_1.ResourceWidget],
             pipes: [pipe_general_1.SetToArray, pipe_general_1.HideClass]

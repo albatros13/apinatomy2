@@ -15,7 +15,14 @@ var core_1 = require('@angular/core');
 var utils_model_1 = require("../services/utils.model");
 var ItemHeader = (function () {
     function ItemHeader() {
+        this.isType = false;
     }
+    ItemHeader.prototype.ngOnInit = function () {
+        if (this.item) {
+            if (this.item.class.indexOf('Type') > -1)
+                this.isType = true;
+        }
+    };
     __decorate([
         core_1.Input(), 
         __metadata('design:type', Object)
@@ -36,7 +43,7 @@ var ItemHeader = (function () {
         core_1.Component({
             selector: 'item-header',
             inputs: ['item', 'selectedItem', 'isSelectedOpen', 'icon'],
-            template: "\n      <i class=\"pull-left glyphicon\"\n        [ngClass]=\"{\n          'glyphicon-chevron-down': (item == selectedItem) && isSelectedOpen, \n          'glyphicon-chevron-right': (item != selectedItem) || !isSelectedOpen}\"></i>&nbsp;\n        {{(item.id)? item.id: \"?\"}}: {{item.name}}\n        <span class=\"pull-right\">\n          <img class=\"icon\" src=\"{{icon}}\"/>\n        </span>\n  "
+            template: "\n      <i class=\"pull-left glyphicon\"\n        [ngClass]=\"{\n          'glyphicon-chevron-down': (item == selectedItem) && isSelectedOpen, \n          'glyphicon-chevron-right': (item != selectedItem) || !isSelectedOpen}\"></i>&nbsp;\n        {{(item.id)? item.id: \"?\"}}: {{item.name}}\n        <span class=\"pull-right\">\n          <img *ngIf=\"isType\" class=\"imtip\" src=\"images/t.png\"/>\n          <img class=\"icon\" src=\"{{icon}}\"/>\n        </span>\n  "
         }), 
         __metadata('design:paramtypes', [])
     ], ItemHeader);
@@ -48,7 +55,7 @@ var RepoAbstract = (function () {
         this.added = new core_1.EventEmitter();
         this.removed = new core_1.EventEmitter();
         this.updated = new core_1.EventEmitter();
-        this.selected = new core_1.EventEmitter();
+        this.selectedItemChange = new core_1.EventEmitter();
         this.items = [];
         this.types = [];
         this.options = {};
@@ -66,7 +73,7 @@ var RepoAbstract = (function () {
         set: function (item) {
             if (this._selectedItem != item) {
                 this._selectedItem = item;
-                this.selected.emit(this._selectedItem);
+                this.selectedItemChange.emit(this._selectedItem);
             }
         },
         enumerable: true,
@@ -99,7 +106,7 @@ var RepoAbstract = (function () {
     RepoAbstract.prototype.onSaved = function (item, updatedItem) {
         this.updated.emit(this.items);
         if (item == this.selectedItem) {
-            this.selected.emit(this.selectedItem);
+            this.selectedItemChange.emit(this.selectedItem);
         }
     };
     RepoAbstract.prototype.onCanceled = function (updatedItem) { };
@@ -120,7 +127,12 @@ var RepoAbstract = (function () {
         this.updated.emit(this.items);
     };
     RepoAbstract.prototype.onAdded = function (Class) {
-        var newItem = utils_model_1.model[Class].new({ name: "New " + Class });
+        var options = {};
+        if (Class == utils_model_1.ResourceName.LyphWithAxis) {
+            Class = utils_model_1.ResourceName.Lyph;
+            options = { createRadialBorders: true, createAxis: true };
+        }
+        var newItem = utils_model_1.model[Class].new({ name: "New " + Class }, options);
         if (Class == utils_model_1.ResourceName.Material) {
             var newType = utils_model_1.model.Type.new({ name: newItem.name, definition: newItem });
             newItem.p('name').subscribe(newType.p('name'));
@@ -131,13 +143,12 @@ var RepoAbstract = (function () {
         this.selectedItem = newItem;
     };
     RepoAbstract.prototype.getClassLabel = function (option) {
-        var Class = utils_model_1.model[option];
-        if (Class) {
-            var name_1 = utils_model_1.model[option].singular;
-            if (name_1)
-                return name_1[0].toUpperCase() + name_1.substring(1);
-        }
-        return option;
+        if (!option)
+            return "";
+        var label = option;
+        label = label.replace(/([a-z])([A-Z])/g, '$1 $2');
+        label = label[0].toUpperCase() + label.substring(1).toLowerCase();
+        return label;
     };
     __decorate([
         core_1.Output(), 
@@ -154,7 +165,7 @@ var RepoAbstract = (function () {
     __decorate([
         core_1.Output(), 
         __metadata('design:type', Object)
-    ], RepoAbstract.prototype, "selected", void 0);
+    ], RepoAbstract.prototype, "selectedItemChange", void 0);
     __decorate([
         core_1.Input(), 
         __metadata('design:type', Array)

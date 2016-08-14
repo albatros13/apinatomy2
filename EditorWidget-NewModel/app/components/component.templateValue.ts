@@ -2,7 +2,7 @@
  * Created by Natallia on 6/21/2016.
  */
 import {Component, Input, EventEmitter, Output} from '@angular/core';
-import {FormToolbar} from "./toolbar.panelEdit";
+import {FormToolbar} from "./toolbar.form";
 
 @Component({
   "inputs": ["caption", "item", "mode", "min", "max", "step"],

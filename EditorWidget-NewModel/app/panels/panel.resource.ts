@@ -3,7 +3,7 @@
  */
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {MultiSelectInput} from '../components/component.select';
-import {FormToolbar} from '../components/toolbar.panelEdit';
+import {FormToolbar} from '../components/toolbar.form';
 import {MapToCategories} from "../transformations/pipe.general";
 import {PropertyToolbar} from '../components/toolbar.propertySettings';
 import {model, ResourceName} from "../services/utils.model";
@@ -26,6 +26,7 @@ import {getPropertyLabel as generalPropertyLabel} from "../services/utils.model"
             [transform] = "getPropertyLabel"
             (selectionChanged) = "selectionChanged($event)">
           </property-toolbar>
+          <ng-content select="toolbar"></ng-content>
           
           <div class="panel-content">
               <div class="input-control" *ngIf="includeProperty('id')">
@@ -79,7 +80,7 @@ export class ResourcePanel {
 
   protected getPropertyLabel(option: string){
     if (this.item)
-      if ((this.item.class == ResourceName.CylindricalLyph) ||
+      if ((this.item.class == ResourceName.Lyph) ||
         (this.item.class == ResourceName.OmegaTree)) {
         if (option == "cardinalityBase") return "Branching factor";
       }
@@ -94,7 +95,7 @@ export class ResourcePanel {
   }
 
   setPropertySettings(){
-    let privateProperties: Set<string> = new Set(["class", "themes"]);
+    let privateProperties: Set<string> = new Set(["class", "themes", "parent", "children"]);
 
     if (this.item && this.item.constructor) {
       let properties = Object.assign({}, this.item.constructor.properties,
@@ -131,6 +132,11 @@ export class ResourcePanel {
       this.item.constructor.properties &&
       this.item.constructor.properties[property]
       && this.item.constructor.properties[property].readonly) return;
+
+
+      if (property == "axis"){
+        console.log("Updating axis", item);
+      }
 
       this.item[property] = item;
       this.propertyUpdated.emit({property: property, values: item});

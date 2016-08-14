@@ -13,27 +13,21 @@ import {TemplateValue} from '../components/component.templateValue';
     <resource-panel [item]="item" 
       [ignore]   ="ignore"
       [options]  ="options"
-      (saved)    = "saved.emit($event)"
+      (saved)    = "onSaved($event)"
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"
       (propertyUpdated) = "propertyUpdated.emit($event)">
       
-      <!--Supertypes-->
-<!--      <div class="input-control" *ngIf="includeProperty('supertypes')">
-        <label for="supertypes">{{getPropertyLabel('supertypes')}}: </label>
-        <select-input [items]="item.p('supertypes') | async" 
-        (updated)="updateProperty('supertypes', $event)" 
-        [options]="item.constructor.p('all') | async"></select-input>
-      </div>-->
+      <toolbar *ngIf="!(options && options.hideCreateType)" >
+        <input type="checkbox" [(ngModel)]="createType">Create type
+      </toolbar>
       
-      <!--Subtypes-->
-<!--      <div class="input-control" *ngIf="includeProperty('subtypes')">
-        <label for="subtypes">{{getPropertyLabel('subtypes')}}:: </label>
-        <select-input [items]="item.p('subtypes') | async" 
-          (updated)="updateProperty('subtypes', $event)" 
-        [options]="item.constructor.p('all') | async"></select-input>
-      </div>-->
-      
+      <!--Species-->
+      <div class="input-control" *ngIf="includeProperty('species')">
+        <label for="species">Species: </label>
+        <input type="text" class="form-control" [(ngModel)]="item.species">
+      </div>
+
       <!--Cardinality base-->
       <template-value *ngIf="includeProperty('cardinalityBase')" 
         [caption]="getPropertyLabel('cardinalityBase')" 
@@ -49,7 +43,15 @@ import {TemplateValue} from '../components/component.templateValue';
           (updated)="updateProperty('cardinalityMultipliers', $event)"          
           [options]="item.fields['cardinalityMultipliers'].p('possibleValues') | async"></select-input>  
       </div>
-
+      
+      <!--Types-->
+      <div class="input-control" *ngIf="includeProperty('types')">
+        <label for="types">{{getPropertyLabel('types')}}: </label>
+          <select-input [items]="item.p('types') | async" 
+          (updated)="updateProperty('types', $event)"          
+          [options]="item.fields['types'].p('possibleValues') | async"></select-input>  
+      </div>
+      
       <ng-content select="relationGroup"></ng-content>
       
       <ng-content></ng-content>      
@@ -59,6 +61,11 @@ import {TemplateValue} from '../components/component.templateValue';
   directives: [ResourcePanel, MultiSelectInput, TemplateValue]
 })
 export class TemplatePanel extends ResourcePanel{
+  createType = false;
+
+  onSaved(event: any){
+    this.saved.emit({createType: this.createType});
+  }
 
   //return this.item.constructor.relationships['-->HasType'].codomain.resourceClass.p('all');
 

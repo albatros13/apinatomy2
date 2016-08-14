@@ -2,33 +2,24 @@
  * Created by Natallia on 6/19/2016.
  */
 import {Component} from '@angular/core';
-import {ResourcePanel} from "./panel.resource";
+import {TemplatePanel} from "./panel.template";
 import {MultiSelectInput} from '../components/component.select';
 import {RepoNested} from '../repos/repo.nested';
 import {model} from "../services/utils.model";
-const {Lyph} = model;
 import {SetToArray} from '../transformations/pipe.general';
 
 @Component({
-  selector: 'coalescence-panel',
+  selector: 'coalescenceScenario-panel',
   inputs: ['item', 'ignore', 'options'],
   template:`
-    <resource-panel [item] = "item" 
+    <template-panel [item] = "item" 
       [ignore] = "ignore"
       [options] ="options"
-      (saved)    = "saved.emit($event)"
+      (saved)    = "onSaved($event)"
       (canceled) = "canceled.emit($event)"
       (removed)  = "removed.emit($event)"
       (propertyUpdated) = "propertyUpdated.emit($event)">
 
-      <!--Scenarios-->
-        <div class="input-control" *ngIf="includeProperty('scenarios')">
-          <label for="scenarios">{{getPropertyLabel('scenarios')}}: </label>
-          <select-input [items]="item.p('scenarios') | async" 
-          (updated)="updateProperty('scenarios', $event)"          
-          [options]="item.fields['scenarios'].p('possibleValues') | async"></select-input>
-        </div>
-        
       <!--Lyphs-->
         <div class="input-control" *ngIf="includeProperty('lyphs')">
           <repo-nested [caption]="getPropertyLabel('lyphs')" 
@@ -36,14 +27,21 @@ import {SetToArray} from '../transformations/pipe.general';
           (updated)="updateProperty('lyphs', $event)"          
           [types]="[ResourceName.Lyph]"></repo-nested>
         </div>
+      <ng-content></ng-content>      
 
-        <ng-content></ng-content>      
-
-    </resource-panel>
+    </template-panel>
   `,
-  directives: [ResourcePanel, MultiSelectInput, RepoNested],
+  directives: [TemplatePanel, MultiSelectInput, RepoNested],
   pipes: [SetToArray]
 })
-export class CoalescencePanel extends ResourcePanel{
-  Lyph = Lyph;
+export class CoalescenceScenarioPanel extends TemplatePanel{
+
+  onSaved(event: any){
+    if (this.item && this.item.lyphs){
+      if (this.item.lyphs.size != 2){
+        console.log("Wrong number of lyphs", this.item.lyphs.size);
+      }
+    }
+    this.saved.emit({createType: this.createType});
+  }
 }

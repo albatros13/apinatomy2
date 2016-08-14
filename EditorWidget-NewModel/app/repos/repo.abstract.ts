@@ -14,6 +14,7 @@ import {ResourceName, model} from "../services/utils.model";
           'glyphicon-chevron-right': (item != selectedItem) || !isSelectedOpen}"></i>&nbsp;
         {{(item.id)? item.id: "?"}}: {{item.name}}
         <span class="pull-right">
+          <img *ngIf="isType" class="imtip" src="images/t.png"/>
           <img class="icon" src="{{icon}}"/>
         </span>
   `
@@ -23,13 +24,21 @@ export class ItemHeader {
   @Input() selectedItem: any;
   @Input() isSelectedOpen: boolean;
   @Input() icon: string;
+
+  isType = false;
+
+  ngOnInit(){
+    if (this.item){
+      if (this.item.class.indexOf('Type') > -1) this.isType = true;
+    }
+  }
 }
 
 export abstract class RepoAbstract{
   @Output() added = new EventEmitter();
   @Output() removed = new EventEmitter();
   @Output() updated = new EventEmitter();
-  @Output() selected = new EventEmitter();
+  @Output() selectedItemChange = new EventEmitter();
 
   @Input() items: Array<any> = [];
   @Input() types: Array<any> = [];
@@ -47,7 +56,7 @@ export abstract class RepoAbstract{
   public set selectedItem (item: any) {
     if (this._selectedItem != item){
       this._selectedItem = item;
-      this.selected.emit(this._selectedItem);
+      this.selectedItemChange.emit(this._selectedItem);
     }
   }
 
@@ -85,7 +94,7 @@ export abstract class RepoAbstract{
   protected onSaved(item: any, updatedItem: any){
     this.updated.emit(this.items);
     if (item == this.selectedItem){
-       this.selected.emit(this.selectedItem);
+       this.selectedItemChange.emit(this.selectedItem);
     }
   }
 
@@ -107,7 +116,13 @@ export abstract class RepoAbstract{
   }
 
   protected onAdded(Class: any){
-    let newItem = model[Class].new({name: "New " + Class});
+    let options = {};
+    if (Class == ResourceName.LyphWithAxis) {
+      Class = ResourceName.Lyph;
+      options = {createRadialBorders: true, createAxis: true};
+    }
+
+    let newItem = model[Class].new({name: "New " + Class}, options);
 
     if (Class == ResourceName.Material) {
       let newType = model.Type.new({name: newItem.name, definition: newItem});
@@ -118,16 +133,13 @@ export abstract class RepoAbstract{
     this.added.emit(newItem);
     this.updated.emit(this.items);
     this.selectedItem = newItem;
-
   }
 
   getClassLabel(option: string){
-    let Class = model[option];
-    if (Class) {
-      let name = model[option].singular;
-      if (name)
-        return name[0].toUpperCase() + name.substring(1);
-    }
-    return option;
+    if (!option) return "";
+    let label = option;
+    label = label.replace(/([a-z])([A-Z])/g, '$1 $2');
+    label = label[0].toUpperCase() + label.substring(1).toLowerCase();
+    return label;
   }
 }

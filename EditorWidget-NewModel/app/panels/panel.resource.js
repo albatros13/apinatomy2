@@ -13,7 +13,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  */
 var core_1 = require('@angular/core');
 var component_select_1 = require('../components/component.select');
-var toolbar_panelEdit_1 = require('../components/toolbar.panelEdit');
+var toolbar_form_1 = require('../components/toolbar.form');
 var pipe_general_1 = require("../transformations/pipe.general");
 var toolbar_propertySettings_1 = require('../components/toolbar.propertySettings');
 var utils_model_1 = require("../services/utils.model");
@@ -31,7 +31,7 @@ var ResourcePanel = (function () {
     }
     ResourcePanel.prototype.getPropertyLabel = function (option) {
         if (this.item)
-            if ((this.item.class == utils_model_1.ResourceName.CylindricalLyph) ||
+            if ((this.item.class == utils_model_1.ResourceName.Lyph) ||
                 (this.item.class == utils_model_1.ResourceName.OmegaTree)) {
                 if (option == "cardinalityBase")
                     return "Branching factor";
@@ -45,7 +45,7 @@ var ResourcePanel = (function () {
         this.setPropertySettings();
     };
     ResourcePanel.prototype.setPropertySettings = function () {
-        var privateProperties = new Set(["class", "themes"]);
+        var privateProperties = new Set(["class", "themes", "parent", "children"]);
         if (this.item && this.item.constructor) {
             var properties = Object.assign({}, this.item.constructor.properties, this.item.constructor.relationshipShortcuts);
             for (var property in properties) {
@@ -77,6 +77,9 @@ var ResourcePanel = (function () {
             this.item.constructor.properties[property]
             && this.item.constructor.properties[property].readonly)
             return;
+        if (property == "axis") {
+            console.log("Updating axis", item);
+        }
         this.item[property] = item;
         this.propertyUpdated.emit({ property: property, values: item });
     };
@@ -115,8 +118,8 @@ var ResourcePanel = (function () {
         core_1.Component({
             selector: 'resource-panel',
             inputs: ['item', 'ignore', 'options'],
-            template: "\n    <div class=\"panel\">\n        <div class=\"panel-body\">\n          <form-toolbar  \n            [options]  = \"options\"\n            (saved)    = \"saved.emit(item)\"\n            (canceled) = \"canceled.emit(item)\"\n            (removed)  = \"removed.emit(item)\">\n          </form-toolbar>\n          <property-toolbar  \n            [options] = \"properties\"\n            [transform] = \"getPropertyLabel\"\n            (selectionChanged) = \"selectionChanged($event)\">\n          </property-toolbar>\n          \n          <div class=\"panel-content\">\n              <div class=\"input-control\" *ngIf=\"includeProperty('id')\">\n                <label for=\"id\">{{getPropertyLabel('id')}}: </label>\n                <input type=\"text\" class=\"form-control\" disabled readonly [ngModel]=\"item.id\">\n              </div>\n\n              <div class=\"input-control\" *ngIf=\"includeProperty('href')\">\n                <label for=\"href\">{{getPropertyLabel('href')}}: </label>\n                <input type=\"text\" class=\"form-control\" disabled readonly [ngModel]=\"item.href\">\n              </div>\n\n              <!--Name-->\n              <div class=\"input-control\" *ngIf=\"includeProperty('name')\">\n                <label for=\"name\">{{getPropertyLabel('name')}}: </label>\n                <input type=\"text\" class=\"form-control\" [(ngModel)]=\"item.name\">\n              </div>\n              \n              <!--Externals-->\n              <div class=\"input-control\" *ngIf=\"includeProperty('externals')\">\n                <label for=\"externals\">{{getPropertyLabel('externals')}}: </label>\n                <select-input \n                [items]=\"item.p('externals') | async\" \n                (updated)=\"updateProperty('externals', $event)\" \n                [options]=\"ExternalResource.p('all') | async\"></select-input>\n              </div>\n              \n              <ng-content></ng-content>\n              \n          </div>\n        </div>\n    </div>\n  ",
-            directives: [toolbar_panelEdit_1.FormToolbar, toolbar_propertySettings_1.PropertyToolbar, component_select_1.MultiSelectInput],
+            template: "\n    <div class=\"panel\">\n        <div class=\"panel-body\">\n          <form-toolbar  \n            [options]  = \"options\"\n            (saved)    = \"saved.emit(item)\"\n            (canceled) = \"canceled.emit(item)\"\n            (removed)  = \"removed.emit(item)\">\n          </form-toolbar>\n          <property-toolbar  \n            [options] = \"properties\"\n            [transform] = \"getPropertyLabel\"\n            (selectionChanged) = \"selectionChanged($event)\">\n          </property-toolbar>\n          <ng-content select=\"toolbar\"></ng-content>\n          \n          <div class=\"panel-content\">\n              <div class=\"input-control\" *ngIf=\"includeProperty('id')\">\n                <label for=\"id\">{{getPropertyLabel('id')}}: </label>\n                <input type=\"text\" class=\"form-control\" disabled readonly [ngModel]=\"item.id\">\n              </div>\n\n              <div class=\"input-control\" *ngIf=\"includeProperty('href')\">\n                <label for=\"href\">{{getPropertyLabel('href')}}: </label>\n                <input type=\"text\" class=\"form-control\" disabled readonly [ngModel]=\"item.href\">\n              </div>\n\n              <!--Name-->\n              <div class=\"input-control\" *ngIf=\"includeProperty('name')\">\n                <label for=\"name\">{{getPropertyLabel('name')}}: </label>\n                <input type=\"text\" class=\"form-control\" [(ngModel)]=\"item.name\">\n              </div>\n              \n              <!--Externals-->\n              <div class=\"input-control\" *ngIf=\"includeProperty('externals')\">\n                <label for=\"externals\">{{getPropertyLabel('externals')}}: </label>\n                <select-input \n                [items]=\"item.p('externals') | async\" \n                (updated)=\"updateProperty('externals', $event)\" \n                [options]=\"ExternalResource.p('all') | async\"></select-input>\n              </div>\n              \n              <ng-content></ng-content>\n              \n          </div>\n        </div>\n    </div>\n  ",
+            directives: [toolbar_form_1.FormToolbar, toolbar_propertySettings_1.PropertyToolbar, component_select_1.MultiSelectInput],
             pipes: [pipe_general_1.MapToCategories]
         }), 
         __metadata('design:paramtypes', [])

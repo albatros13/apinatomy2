@@ -2,13 +2,12 @@
 var open_physiology_model_1 = require("open-physiology-model");
 exports.modelRef = open_physiology_model_1.default();
 exports.model = exports.modelRef.classes;
-console.log("MODEL", exports.model);
 exports.getColor = d3.scale.category20();
 (function (ResourceName) {
     ResourceName[ResourceName["ExternalResource"] = "ExternalResource"] = "ExternalResource";
     ResourceName[ResourceName["Material"] = "Material"] = "Material";
     ResourceName[ResourceName["Lyph"] = "Lyph"] = "Lyph";
-    ResourceName[ResourceName["CylindricalLyph"] = "CylindricalLyph"] = "CylindricalLyph";
+    ResourceName[ResourceName["LyphWithAxis"] = "LyphWithAxis"] = "LyphWithAxis";
     ResourceName[ResourceName["Process"] = "Process"] = "Process";
     ResourceName[ResourceName["Measurable"] = "Measurable"] = "Measurable";
     ResourceName[ResourceName["Causality"] = "Causality"] = "Causality";
@@ -20,6 +19,7 @@ exports.getColor = d3.scale.category20();
     ResourceName[ResourceName["Correlation"] = "Correlation"] = "Correlation";
     ResourceName[ResourceName["ClinicalIndex"] = "ClinicalIndex"] = "ClinicalIndex";
     ResourceName[ResourceName["Coalescence"] = "Coalescence"] = "Coalescence";
+    ResourceName[ResourceName["CoalescenceScenario"] = "CoalescenceScenario"] = "CoalescenceScenario";
 })(exports.ResourceName || (exports.ResourceName = {}));
 var ResourceName = exports.ResourceName;
 function getPropertyLabel(option) {
@@ -39,11 +39,14 @@ function getPropertyLabel(option) {
 }
 exports.getPropertyLabel = getPropertyLabel;
 function getIcon(Class) {
+    var index = Class.indexOf('Type');
+    if (index >= 0)
+        Class = Class.substring(0, index);
     switch (Class) {
         case ResourceName.ExternalResource: return "images/external.png";
         case ResourceName.Material: return "images/material.png";
-        case ResourceName.Lyph: return "images/lyph.png";
-        case ResourceName.CylindricalLyph: return "images/cylindricalLyph.png";
+        case ResourceName.Lyph: //return "images/lyph.png";
+        case ResourceName.LyphWithAxis: return "images/cylindricalLyph.png";
         case ResourceName.Process: return "images/process.png";
         case ResourceName.Measurable: return "images/measurable.png";
         case ResourceName.Causality: return "images/causality.png";
@@ -80,9 +83,15 @@ function getTreeData(item, relations, depth) {
                 return;
             if (!data.children)
                 data.children = [];
-            for (var _b = 0, _c = Array.from(root[fieldName]); _b < _c.length; _b++) {
-                var obj = _c[_b];
-                //TODO fix for single relations
+            var objects = [];
+            if (root[fieldName] instanceof Set) {
+                objects = Array.from(root[fieldName]);
+            }
+            else {
+                objects.push(root[fieldName]);
+            }
+            for (var _b = 0, objects_1 = objects; _b < objects_1.length; _b++) {
+                var obj = objects_1[_b];
                 var child = { id: "#" + ++i, name: obj.name, resource: obj, depth: level, relation: fieldName };
                 data.children.push(child);
                 traverse(obj, level + 1, child);
@@ -130,7 +139,7 @@ function setsEqual(S, T) {
     }
     for (var _a = 0, T_1 = T; _a < T_1.length; _a++) {
         var x = T_1[_a];
-        if (!T.has(x))
+        if (!S.has(x))
             return false;
     }
     return true;
@@ -153,23 +162,4 @@ function compareLinkedParts(a, b) {
     return res;
 }
 exports.compareLinkedParts = compareLinkedParts;
-function compareLinkedElements(a, b) {
-    var res = 0;
-    if (!a.cardinalityMultipliers) {
-        if (!b.cardinalityMultipliers)
-            res = 0;
-        else
-            res = -1;
-    }
-    if (!b.cardinalityMultipliers)
-        res = 1;
-    if (b.cardinalityMultipliers && b.cardinalityMultipliers.has(a))
-        res = -1;
-    if (a.cardinalityMultipliers && a.cardinalityMultipliers.has(b))
-        res = 1;
-    //let s = (res == -1)? " < ": ((res == 1)? " > ": " == ");
-    //console.log(a.name + s + b.name);
-    return res;
-}
-exports.compareLinkedElements = compareLinkedElements;
 //# sourceMappingURL=utils.model.js.map

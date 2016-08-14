@@ -3,7 +3,7 @@ import modelFactory from "open-physiology-model";
 export const modelRef = modelFactory();
 export const model = modelRef.classes;
 
-console.log("MODEL", model);
+//console.log("MODEL", model);
 
 declare var d3:any;
 export const getColor = d3.scale.category20();
@@ -13,7 +13,7 @@ export enum ResourceName {
 
   Material            = <any>"Material",
   Lyph                = <any>"Lyph",
-  CylindricalLyph     = <any>"CylindricalLyph",
+  LyphWithAxis        = <any>"LyphWithAxis", //= Lyph + options
 
   Process             = <any>"Process",
   Measurable          = <any>"Measurable",
@@ -28,7 +28,9 @@ export enum ResourceName {
   Correlation         = <any>"Correlation",
   ClinicalIndex       = <any>"ClinicalIndex",
 
-  Coalescence         = <any>"Coalescence"
+  Coalescence         = <any>"Coalescence",
+  CoalescenceScenario = <any>"CoalescenceScenario"
+
 }
 
 export function getPropertyLabel(option: string): string{
@@ -46,11 +48,14 @@ export function getPropertyLabel(option: string): string{
 }
 
 export function getIcon(Class: any): string{
+  let index = Class.indexOf('Type');
+  if (index >= 0) Class = Class.substring(0, index);
+
   switch (Class){
     case ResourceName.ExternalResource : return "images/external.png";
     case ResourceName.Material         : return "images/material.png";
-    case ResourceName.Lyph             : return "images/lyph.png";
-    case ResourceName.CylindricalLyph  : return "images/cylindricalLyph.png";
+    case ResourceName.Lyph             : //return "images/lyph.png";
+    case ResourceName.LyphWithAxis     : return "images/cylindricalLyph.png";
 
     case ResourceName.Process          : return "images/process.png";
     case ResourceName.Measurable       : return "images/measurable.png";
@@ -65,7 +70,6 @@ export function getIcon(Class: any): string{
     case ResourceName.Publication      : return "images/publication.png";
     case ResourceName.Correlation      : return "images/correlation.png";
     case ResourceName.ClinicalIndex    : return "images/clinicalIndex.png";
-
   }
   return "images/resource.png";
 }
@@ -86,8 +90,16 @@ export function getTreeData(item: any, relations: Set<string>, depth: number) {/
       if ((depth - level) == 0) return;
       if (!data.children) data.children = [];
 
-      for (let obj of Array.from(root[fieldName])) {
-        //TODO fix for single relations
+
+      let objects = [];
+      if (root[fieldName] instanceof Set){
+        objects = Array.from(root[fieldName]);
+      }
+      else {
+        objects.push(root[fieldName]);
+      }
+
+      for (let obj of objects) {
         var child = {id: "#" + ++i, name: obj.name, resource: obj, depth: level, relation: fieldName};
         data.children.push(child);
         traverse(obj, level + 1, child);
@@ -124,7 +136,7 @@ export function getGraphData(item: any, relations: Set<string>, depth: number) {
 
 export function setsEqual(S, T){
   for (let x of S) if (!T.has(x)) return false;
-  for (let x of T) if (!T.has(x)) return false;
+  for (let x of T) if (!S.has(x)) return false;
   return true;
 }
 
@@ -139,19 +151,4 @@ export function compareLinkedParts(a, b){
   if (a.treeParent == b) res = 1;
   return res;
 }
-
-export function compareLinkedElements(a, b){
-  let res = 0;
-  if (!a.cardinalityMultipliers) {
-    if (!b.cardinalityMultipliers) res = 0;
-    else res = -1;
-  }
-  if (!b.cardinalityMultipliers) res = 1;
-  if (b.cardinalityMultipliers && b.cardinalityMultipliers.has(a)) res = -1;
-  if (a.cardinalityMultipliers && a.cardinalityMultipliers.has(b)) res = 1;
-  //let s = (res == -1)? " < ": ((res == 1)? " > ": " == ");
-  //console.log(a.name + s + b.name);
-  return res;
-}
-
 

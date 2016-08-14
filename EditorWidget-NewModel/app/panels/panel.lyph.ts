@@ -22,21 +22,19 @@ import {ResourceName} from '../services/utils.model';
         (removed) = "removed.emit($event)"
         (propertyUpdated) = "propertyUpdated.emit($event)">
         
-        <!--Species-->
-        <div class="input-control" *ngIf="includeProperty('species')">
-          <label for="species">Species: </label>
-          <input type="text" class="form-control" [(ngModel)]="item.species">
-        </div>
-         
         <!--Thickness-->
         <template-value *ngIf="includeProperty('thickness')" 
           [caption]="getPropertyLabel('thickness')" 
           [item]="item.thickness"
           (updated)="updateProperty('thickness', $event)"
         ></template-value>
-        <ng-content select="dimensionGroup"></ng-content>  
-       
-        <ng-content></ng-content>   
+        
+        <!--Length-->
+        <template-value *ngIf="includeProperty('length')" 
+            [caption]="getPropertyLabel('length')" 
+            [item]="item.length"
+            (updated)="updateProperty('length', $event)">
+        </template-value>
         
         <!--Auxilliary field: measurables to generate-->
         <!--TODO: replace with modal-->
@@ -64,9 +62,20 @@ import {ResourceName} from '../services/utils.model';
             <repo-nested [caption]="getPropertyLabel('layers')" 
             [items]  = "item.p('layers') | async | setToArray" 
             [ignore] = "layersIgnore"
+            [options]="{ordered: true}"
             (updated)= "updateProperty('layers', $event)" 
             [types]  = "[item.class]"></repo-nested>
-          </div>          
+          </div>     
+               
+          <!--Segments-->
+          <div class="input-control" *ngIf="includeProperty('segments', 'relations')">
+            <repo-nested [caption]="getPropertyLabel('segments')" 
+            [items] = "item.p('segments') | async | setToArray" 
+            [ignore]="segmentsIgnore"
+            [options]="{ordered: true}"
+            (updated)="updateProperty('segments', $event)"
+            [types]="[item.class]"></repo-nested>
+          </div>     
   
           <!--Patches-->
           <div class="input-control" *ngIf="includeProperty('patches')">
@@ -130,30 +139,59 @@ import {ResourceName} from '../services/utils.model';
         <fieldset *ngIf="includeProperty('borders')" >  
           <legend>Borders</legend>
           
-          <!--InnerBorder-->
-          <div class="input-control">      
-            <label for="innerBorder">{{getPropertyLabel('innerBorder')}}: </label>
-            <border-panel [item]="item.p('innerBorder') | async" 
-              [options]="borderPanelOptions"
+          <!--Axis-->
+          <div class="input-control" *ngIf="item.axis">      
+            <label for="axis">{{getPropertyLabel('axis')}}: </label>
+            <border-panel [item]="item.p('axis') | async" 
+              [options]="borderOptions"
               (propertyUpdated) = "propertyUpdated.emit($event)"
-              (saved)  ="updateProperty('innerBorder', $event)"    
-              (removed)="removeTemplate('innerBorder', $event)">
+              (saved)  ="updateProperty('axis', $event)">
             </border-panel>
           </div>              
         
-          <!--OuterBorder-->        
-          <div class="input-control">      
-            <label for="outerBorder">{{getPropertyLabel('outerBorder')}}: </label>
-            <border-panel [item]="item.p('outerBorder') | async" 
-              [options]= "borderPanelOptions"
-              (propertyUpdated) = "propertyUpdated.emit($event)"
-              (saved)  = "updateProperty('outerBorder', $event)"  
-              (removed)= "removeTemplate('outerBorder', $event)">
-            </border-panel>
+          <!--RadialBorders-->        
+          <div class="input-control" *ngIf="item.axis && item.radialBorders">      
+            <label for="radialBorders">{{getPropertyLabel('radialBorders')}}: </label>
+             <repo-nested [caption]="getPropertyLabel('radialBorders')" 
+               [items]  = "item.p('radialBorders') | async | setToArray" 
+               [types]  = "[ResourceName.Border]" 
+               [options] = "borderOptions"
+               (updated)= "updateProperty('radialBorders', $event)"           
+             ></repo-nested>
+          </div>
+          
+          <!--LongitudinalBorders-->        
+          <div class="input-control"  *ngIf="item.longitudinalBorders">      
+            <label for="longitudinalBorders">{{getPropertyLabel('longitudinalBorders')}}: </label>
+             <repo-nested [caption]="getPropertyLabel('longitudinalBorders')" 
+               [items]  = "item.p('longitudinalBorders') | async | setToArray" 
+               [types]  = "[ResourceName.Border]" 
+               [options] = "borderOptions"
+               (updated)= "updateProperty('longitudinalBorders', $event)"           
+             ></repo-nested>
           </div>
           
           <ng-content select="borderGroup"></ng-content>
         </fieldset>
+        
+        <!--TreeParent-->
+        <div  *ngIf="includeProperty('treeParent')" class="input-control">
+          <label for="treeParent">{{getPropertyLabel('treeParent')}}: </label>
+          <select-input-1 [item] = "item.p('treeParent') | async"
+           (updated) = "updateProperty('treeParent', $event)"    
+           [options] = "item.fields['treeParent'].p('possibleValues') | async"></select-input-1>
+        </div>
+        
+        <!--TreeChildren-->
+        <div class="input-control" *ngIf="includeProperty('treeChildren')">
+          <label for="treeChildren">{{getPropertyLabel('treeChildren')}}: </label>
+          <select-input 
+            [items]="item.p('treeChildren') | async" 
+            (updated)="updateProperty('treeChildren', $event)" 
+            [options]="item.fields['treeChildren'].p('possibleValues') | async"></select-input>
+        </div> 
+       
+        <ng-content></ng-content>  
         
     </material-panel>
   `,
@@ -162,26 +200,31 @@ import {ResourceName} from '../services/utils.model';
   pipes: [SetToArray]
 })
 export class LyphPanel extends MaterialPanel{
-  borderPanelOptions = {'hideRemove': true, 'hideSave': true, 'hideRestore': true};
+  borderOptions = {'readOnly': true, 'hideRemove': true, 'hideCreateType': true};
 
   layersIgnore  : Set<string> = new Set<string>();
   patchesIgnore : Set<string> = new Set<string>();
   partsIgnore   : Set<string> = new Set<string>();
+  segmentsIgnore: Set<string> = new Set<string>();
 
   ngOnInit(){
     super.ngOnInit();
     this.layersIgnore  = new Set<string>(['cardinalityBase', 'cardinalityMultipliers', 'treeParent', 'treeChildren']);
     this.patchesIgnore = new Set<string>(['cardinalityBase', 'cardinalityMultipliers', 'treeParent', 'treeChildren']);
     this.partsIgnore   = new Set<string>(['cardinalityBase', 'cardinalityMultipliers', 'treeParent', 'treeChildren']);
+    this.segmentsIgnore = new Set<string>(['cardinalityBase', 'cardinalityMultipliers', 'treeParent', 'treeChildren']);
 
-    if (this.item){
+    //longitudinalBorders
+    //radialBorders
+
+/*    if (this.item){
       this.item.p('layers').subscribe(x => {
         console.log("Layers updated", x);
       });
       this.item.p('parts').subscribe(x => {
         console.log("Parts updated", x);
       })
-    }
+    }*/
   }
 
   //MeasurableType = MeasurableType;

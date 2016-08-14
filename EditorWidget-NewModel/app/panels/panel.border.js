@@ -17,8 +17,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
  * Created by Natallia on 6/19/2016.
  */
 var core_1 = require('@angular/core');
-var panel_measurableLocation_1 = require("./panel.measurableLocation");
+var panel_template_1 = require("./panel.template");
 var ng2_radio_group_1 = require("ng2-radio-group");
+var pipe_general_1 = require("../transformations/pipe.general");
+var repo_nested_1 = require("../repos/repo.nested");
 var BorderPanel = (function (_super) {
     __extends(BorderPanel, _super);
     function BorderPanel() {
@@ -29,20 +31,20 @@ var BorderPanel = (function (_super) {
     };
     BorderPanel.prototype.ngOnInit = function () {
         _super.prototype.ngOnInit.call(this);
-        this.ignore = this.ignore
-            .add('externals').add('measurables')
-            .add('name').add('cardinalityBase').add('cardinalityMultipliers').add('type');
+        this.ignore = this.ignore.add('externals').add('species')
+            .add('measurables').add('name').add('types').add('cardinalityBase').add('cardinalityMultipliers');
     };
     BorderPanel = __decorate([
         core_1.Component({
             selector: 'border-panel',
             inputs: ['item', 'ignore', 'options'],
-            template: "\n    <measurableLocation-panel [item] = \"item\" \n      [ignore] = \"ignore\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n            \n      <!--Nature-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('nature')\">\n        <fieldset>\n          <legend>{{getPropertyLabel('nature')}}:</legend>\n           <checkbox-group [(ngModel)]=\"item.nature\" (ngModelChange)=\"onSelectChange(item.nature)\">\n             <input type=\"checkbox\" value=\"open\">open&nbsp;\n             <input type=\"checkbox\" value=\"closed\">closed<br/>\n           </checkbox-group>\n        </fieldset>\n      </div>\n      \n     <ng-content></ng-content>  \n            \n    </measurableLocation-panel>\n  ",
-            directives: [panel_measurableLocation_1.MeasurableLocationPanel, ng2_radio_group_1.RADIO_GROUP_DIRECTIVES]
+            template: "\n    <template-panel [item] = \"item\" \n      [ignore] = \"ignore\"\n      [options]  = \"options\"\n      (saved)    = \"saved.emit($event)\"\n      (canceled) = \"canceled.emit($event)\"\n      (removed)  = \"removed.emit($event)\"\n      (propertyUpdated) = \"propertyUpdated.emit($event)\">\n            \n      <!--Nature-->\n      <div class=\"input-control\" *ngIf=\"includeProperty('nature')\">\n        <fieldset>\n          <legend>{{getPropertyLabel('nature')}}:</legend>\n           <checkbox-group [(ngModel)]=\"item.nature\" (ngModelChange)=\"onSelectChange(item.nature)\">\n             <input type=\"checkbox\" value=\"open\">open&nbsp;\n             <input type=\"checkbox\" value=\"closed\">closed<br/>\n           </checkbox-group>\n        </fieldset>\n      </div>\n      \n       <relationGroup>\n          <!--Measurables-->\n          <div class=\"input-control\" *ngIf=\"includeProperty('measurables')\">\n            <repo-nested [caption]=\"getPropertyLabel('measurables')\" \n            [items]=\"item.p('measurables') | async | setToArray\" \n            (updated)=\"updateProperty('measurables', $event)\" \n            [types]=\"[ResourceName.Measurable]\"></repo-nested>\n          </div>\n           <ng-content select=\"relationGroup\"></ng-content>\n       </relationGroup>\n      \n     <ng-content></ng-content>  \n            \n    </template-panel>\n  ",
+            directives: [panel_template_1.TemplatePanel, repo_nested_1.RepoNested, ng2_radio_group_1.RADIO_GROUP_DIRECTIVES],
+            pipes: [pipe_general_1.SetToArray]
         }), 
         __metadata('design:paramtypes', [])
     ], BorderPanel);
     return BorderPanel;
-}(panel_measurableLocation_1.MeasurableLocationPanel));
+}(panel_template_1.TemplatePanel));
 exports.BorderPanel = BorderPanel;
 //# sourceMappingURL=panel.border.js.map

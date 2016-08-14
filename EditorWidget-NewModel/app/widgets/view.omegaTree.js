@@ -235,45 +235,6 @@ var OmegaTreeWidget = (function () {
         }
         return tree[0];
     };
-    //Old - tree via cardinality multipliers
-    OmegaTreeWidget.prototype.getOmegaTreeFromMultipliers = function (item) {
-        if (!item)
-            return {};
-        function linkElements(root, item) {
-            var relations = new Set().add("elements");
-            var treeData = utils_model_1.getTreeData(item, relations, -1); //creates structure for d3 tree out of item.elements
-            var elements = treeData.children;
-            var queue = [root];
-            if (!elements)
-                return queue;
-            elements.sort(function (a, b) { return utils_model_1.compareLinkedElements(a.resource, b.resource); });
-            var _loop_2 = function(i) {
-                var child = { id: elements[i].id, name: elements[i].name, resource: elements[i].resource };
-                var links = elements[i].resource.cardinalityMultipliers;
-                if (!links || (links.size == 0)) {
-                    root.children.push(child);
-                }
-                else {
-                    links.forEach(function (link) {
-                        var parent = queue.find(function (x) { return (x.resource == link); });
-                        if (parent) {
-                            if (!parent.children)
-                                parent.children = [];
-                            parent.children.push(child);
-                        }
-                    });
-                }
-            };
-            for (var i = 0; i < elements.length; i++) {
-                _loop_2(i);
-            }
-            return queue;
-        }
-        var root = { id: "#0", name: item.name, children: [] };
-        var tree = linkElements(root, item);
-        //TODO: unwrap recursively trees in the queue
-        return tree[0];
-    };
     __decorate([
         core_1.Input(), 
         __metadata('design:type', Object)

@@ -36,7 +36,7 @@ const {Node, OmegaTreePart} = model;
            [items] = "item.p('parts') | async | setToArray" 
            (updated)="updateProperty('parts', $event)"
            [options]="{linked: true}"
-           [types]="[ResourceName.CylindricalLyph, ResourceName.OmegaTree]"></repo-nested>
+           [types]="[ResourceName.Lyph, ResourceName.OmegaTree]"></repo-nested>
         </div>
          <ng-content select="relationGroup"></ng-content> 
       </relationGroup>

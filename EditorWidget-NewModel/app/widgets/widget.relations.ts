@@ -102,7 +102,7 @@ export class RelationshipWidget{
   }
 
   updateRelations(){
-    let privateRelations: Set<string> = new Set(["themes", "plusBorder", "minusBorder", "innerBorder", "outerBorder"]);
+    let privateRelations: Set<string> = new Set(["themes"]);
 
     this.relationOptions = [];
     if (this.item){

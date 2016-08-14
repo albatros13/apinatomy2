@@ -24,7 +24,7 @@ import {SetToArray} from "../transformations/pipe.general";
            <repo-nested [caption]="getPropertyLabel('elements')" 
            [items] = "item.p('elements') | async | setToArray" 
            (updated)="updateProperty('elements', $event)"
-           [types]="[ResourceName.CylindricalLyph, ResourceName.OmegaTree]"></repo-nested>
+           [types]="[ResourceName.Lyph, ResourceName.OmegaTree]"></repo-nested>
         </div>
          <ng-content select="relationGroup"></ng-content> 
       </relationGroup>

@@ -22,14 +22,14 @@ declare var $: any;
       [items]="trees | setToArray" 
       [caption]="'Omega trees'"
       [types]="[ResourceName.OmegaTree]"
-      (selected)="onItemSelected($event)"
+      (selectedItemChange)="onItemSelected($event)"
       >
     </repo-general>         
     
     <repo-general id="lyphRepo"
       [items]="lyphs | setToArray" 
       [caption]="'Lyphs'" 
-      [types]="[ResourceName.Lyph, ResourceName.CylindricalLyph]"
+      [types]="[ResourceName.Lyph]"
       (selected)="onItemSelected($event)">
     </repo-general>
     
@@ -109,6 +109,7 @@ export class OmegaTreeEditor {
     this.sOmegaTrees = model.OmegaTree.p('all').subscribe(
       (data:any) => {this.trees = data;});
 
+    let self = this;
     (async function() {
 
       /*External resources*/
@@ -120,21 +121,24 @@ export class OmegaTreeEditor {
       var externals = [fma7203, fma15610, fma66610, fma17881];
       await Promise.all(externals.map(p => p.commit()));
 
-      /*Cylindrical lyphs*/
-      let renalH = model.CylindricalLyph.new({name: "Renal hilum", externals: [fma15610]});
-      let renalP = model.CylindricalLyph.new({name: "Renal parenchyma"});
-      let renalC = model.CylindricalLyph.new({name: "Renal capsule", externals: [fma66610]});
+      /*Lyphs*/
+      let renalH = model.Lyph.new({name: "Renal hilum", externals: [fma15610]});
+      let renalP = model.Lyph.new({name: "Renal parenchyma"});
+      let renalC = model.Lyph.new({name: "Renal capsule", externals: [fma66610]});
 
       var cLyphsGroup = [renalH, renalP, renalC];
       await Promise.all(cLyphsGroup.map(p => p.commit()));
 
-      let kidney = model.CylindricalLyph.new({name: "Kidney", externals: [fma7203]});
+      let kidney = model.Lyph.new({name: "Kidney", externals: [fma7203]});
       await kidney.commit();
 
-      let kidneyLobus = model.CylindricalLyph.new({name: "Kidney lobus", externals: [fma17881]});
+      let kidneyLobus = model.Lyph.new({name: "Kidney lobus", externals: [fma17881]});
       await kidneyLobus.commit();
 
+      self.selectedItem = kidney;
+
     })();
+
   }
 
 

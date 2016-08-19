@@ -86,6 +86,45 @@ export class ResourceEditor {
       (data: any) => {
         this.items = data
       });
+
+    let self = this;
+    (async function() {
+
+      /*Lyphs*/
+      let renalH = model.Lyph.new({name: "Renal hilum"});
+      let renalP = model.Lyph.new({name: "Renal parenchyma"});
+      let renalC = model.Lyph.new({name: "Renal capsule"});
+
+      var cLyphsGroup = [renalH, renalP, renalC];
+      //await Promise.all(cLyphsGroup.map(p => p.commit()));
+
+      let kidney = model.Lyph.new({name: "Kidney", layers: cLyphsGroup});
+      //await kidney.commit();
+
+      let layers = Array.from(kidney.layers);
+      let parts = Array.from(kidney.parts);
+      console.log("LAYERS", layers);
+      console.log("PARTS", parts);
+
+      kidney.p('measurables').subscribe(
+        x => {
+          let measurablesP = Array.from(x);
+          console.log("MEASURABLES", measurablesP);
+        }
+      );
+
+      let measurable1 = model.Measurable.new({name: "Measurable 1"});
+      kidney.measurables = [measurable1];
+
+      let measurable2 = model.Measurable.new({name: "Measurable 2"});
+      kidney.measurables.add(measurable2);
+
+      
+      //let kidneyLobus = model.Lyph.new({name: "Kidney lobus"});
+      //await kidneyLobus.commit();
+
+    })();
+
   }
   ngOnDestroy() {
     this.rs.unsubscribe();

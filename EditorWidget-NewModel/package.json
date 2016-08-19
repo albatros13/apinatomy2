@@ -54,6 +54,7 @@
     "ng2-toastr": "^0.3.1",
     "ng2-toasty": "^1.9.0",
     "open-physiology-model": "https://github.com/mhelvens/open-physiology-model.git#new-type-template-structure",
+    "lyph-edit-widget": "https://github.com/mhelvens/lyph-edit-widget.git#master",
     "reflect-metadata": "^0.1.3",
     "rxjs": "5.0.0-beta.6",
     "systemjs": "0.19.27",

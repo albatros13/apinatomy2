@@ -71,7 +71,8 @@ export abstract class RepoAbstract{
     //Resources
     if (this.types.length == 0) {
       for (let x in ResourceName) {
-        this.types.push(x);
+        if (x != ResourceName.Border)
+          this.types.push(x);
       }
     }
     this.zones = this.types.map(x => x + "_zone");
@@ -130,8 +131,8 @@ export abstract class RepoAbstract{
     }
 
     this.items.push(newItem);
-    this.added.emit(newItem);
     this.updated.emit(this.items);
+    this.added.emit(newItem);
     this.selectedItem = newItem;
   }
 

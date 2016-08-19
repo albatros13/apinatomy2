@@ -8,6 +8,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator.throw(value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments)).next());
+    });
+};
 var core_1 = require('@angular/core');
 var repo_general_1 = require('../repos/repo.general');
 var repo_nested_1 = require('../repos/repo.nested');
@@ -63,6 +71,33 @@ var ResourceEditor = (function () {
         this.rs = utils_model_1.model.Resource.p('all').subscribe(function (data) {
             _this.items = data;
         });
+        var self = this;
+        (function () {
+            return __awaiter(this, void 0, void 0, function* () {
+                /*Lyphs*/
+                var renalH = utils_model_1.model.Lyph.new({ name: "Renal hilum" });
+                var renalP = utils_model_1.model.Lyph.new({ name: "Renal parenchyma" });
+                var renalC = utils_model_1.model.Lyph.new({ name: "Renal capsule" });
+                var cLyphsGroup = [renalH, renalP, renalC];
+                //await Promise.all(cLyphsGroup.map(p => p.commit()));
+                var kidney = utils_model_1.model.Lyph.new({ name: "Kidney", layers: cLyphsGroup });
+                //await kidney.commit();
+                var layers = Array.from(kidney.layers);
+                var parts = Array.from(kidney.parts);
+                console.log("LAYERS", layers);
+                console.log("PARTS", parts);
+                kidney.p('measurables').subscribe(function (x) {
+                    var measurablesP = Array.from(x);
+                    console.log("MEASURABLES", measurablesP);
+                });
+                var measurable1 = utils_model_1.model.Measurable.new({ name: "Measurable 1" });
+                kidney.measurables = [measurable1];
+                var measurable2 = utils_model_1.model.Measurable.new({ name: "Measurable 2" });
+                kidney.measurables.add(measurable2);
+                //let kidneyLobus = model.Lyph.new({name: "Kidney lobus"});
+                //await kidneyLobus.commit();
+            });
+        })();
     }
     ResourceEditor.prototype.ngOnDestroy = function () {
         this.rs.unsubscribe();

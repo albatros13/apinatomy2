@@ -39,9 +39,11 @@ function getPropertyLabel(option) {
 }
 exports.getPropertyLabel = getPropertyLabel;
 function getIcon(Class) {
-    var index = Class.indexOf('Type');
-    if (index >= 0)
-        Class = Class.substring(0, index);
+    if (Class) {
+        var index = Class.indexOf('Type');
+        if (index >= 0)
+            Class = Class.substring(0, index);
+    }
     switch (Class) {
         case ResourceName.ExternalResource: return "images/external.png";
         case ResourceName.Material: return "images/material.png";

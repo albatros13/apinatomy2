@@ -1,5 +1,4 @@
 import modelFactory from "open-physiology-model";
-
 export const modelRef = modelFactory();
 export const model = modelRef.classes;
 
@@ -48,8 +47,10 @@ export function getPropertyLabel(option: string): string{
 }
 
 export function getIcon(Class: any): string{
-  let index = Class.indexOf('Type');
-  if (index >= 0) Class = Class.substring(0, index);
+  if (Class){
+    let index = Class.indexOf('Type');
+    if (index >= 0) Class = Class.substring(0, index);
+  }
 
   switch (Class){
     case ResourceName.ExternalResource : return "images/external.png";

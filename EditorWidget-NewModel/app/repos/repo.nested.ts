@@ -1,7 +1,7 @@
 /**
  * Created by Natallia on 6/28/2016.
  */
-import {Component, forwardRef} from '@angular/core';
+import {Component, forwardRef, Input} from '@angular/core';
 import {CORE_DIRECTIVES, FORM_DIRECTIVES} from '@angular/common';
 import {ACCORDION_DIRECTIVES} from 'ng2-bootstrap/components/accordion';
 import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
@@ -21,7 +21,7 @@ import {ToastyService, Toasty} from 'ng2-toasty/ng2-toasty';
 
 @Component({
   selector: 'repo-nested',
-  inputs: ['items', 'caption', 'ignore', 'types', 'selectedItem', 'options'],
+  inputs: ['items', 'caption', 'ignore', 'types', 'selectedItem', 'options', 'selectionOptions'],
   providers: [ToastyService],
   template:`
     <div class="panel panel-warning repo-nested">
@@ -31,7 +31,7 @@ import {ToastyService, Toasty} from 'ng2-toasty/ng2-toasty';
           <select-input-1
             style="float: left;" [item] = "itemToInclude"
            (updated) = "itemToInclude = $event"    
-           [options] = "allItems">
+           [options] = "selectionOptions">
           </select-input-1>
           <button type="button" class="btn btn-default btn-icon" (click)="onIncluded(itemToInclude)">
             <span class="glyphicon glyphicon-save"></span>
@@ -81,7 +81,7 @@ export class RepoNested extends RepoAbstract{
   getIcon = getIcon;
   includeExisting = false;
   itemToInclude: any = null;
-  allItems: Set<any> = new Set<any>();
+  @Input() selectionOptions: Set<any>;
 
   ts: Subscription;
 
@@ -92,33 +92,45 @@ export class RepoNested extends RepoAbstract{
   ngOnInit(){
     super.ngOnInit();
 
-    if (this.types.length == 1){
-      this.ts = model[this.types[0]].p('all').subscribe(
-        (data: any) => {this.allItems = data});
-    } else {
-      if (this.types.length > 1){
-        let setToArray = new SetToArray();
-        let filterByClass = new FilterByClass();
+    //If selectionOptions are not provided by parent, subscribe and get all for given types
+    if (!this.selectionOptions){
+      if (this.types.length == 1){
+        this.ts = model[this.types[0]].p('all').subscribe(
+          (data: any) => {
+            this.selectionOptions = data;
+          });
+      } else {
+        if (this.types.length > 1){
+          let setToArray = new SetToArray();
+          let filterByClass = new FilterByClass();
 
-        this.ts = model.Template.p('all').subscribe(
-          (data: any) => {this.allItems = new Set(filterByClass.transform(setToArray.transform(data), this.types))});
+          this.ts = model.Template.p('all').subscribe(
+            (data: any) => {this.selectionOptions = new Set(filterByClass.transform(setToArray.transform(data), this.types))});
+
+        }
       }
     }
   }
 
   ngOnDestroy() {
-    this.ts.unsubscribe();
+    if (this.ts)
+      this.ts.unsubscribe();
   }
 
   ngOnChanges(changes: { [propName: string]: any }) {
-    //Set correct initial order for linked set
-    if (this.options.linked && this.items){
-      this.items.sort((a, b) => compareLinkedParts(a, b));
-    }
-    if (this.options.ordered && this.items){
-      this.items.sort((a, b) => {
-        return (a['-->HasLayer'].relativePosition - b['-->HasLayer'].relativePosition)
-      });
+    //Set correct initial order for linked set]
+    if (this.items) {
+      if (this.options.linked) {
+        this.items.sort((a, b) => compareLinkedParts(a, b));
+      }
+      else if (this.options.ordered) {
+        this.items.sort((a, b) => {
+          return (a['-->HasLayer'].relativePosition - b['-->HasLayer'].relativePosition)
+        });
+      }
+      /*if ((this.types.length == 1)) {
+        console.log("Nested repo " + this.types[0], this.items);
+      }*/
     }
   }
 
@@ -132,36 +144,41 @@ export class RepoNested extends RepoAbstract{
       }
       this.updated.emit(this.items);
     }
-
-    if (this.options.ordered){
-      for (let i = 0; i < this.items.length; i++){
-        this.items[i]['-->HasLayer'].relativePosition = i;
+    else
+      if (this.options.ordered){
+        for (let i = 0; i < this.items.length; i++){
+          this.items[i]['-->HasLayer'].relativePosition = i;
+        }
+        this.updated.emit(this.items);
       }
-      this.updated.emit(this.items);
-    }
   }
 
   protected onAdded(Class: any){
     super.onAdded(Class);
-    if (this.options.linked){
-      if (this.selectedItem){
-        let index = this.items.indexOf(this.selectedItem);
-        if (index > 0) {
-          this.selectedItem.treeParent = this.items[index -1];
-        }
-      }
-    }
+    if (this.options.linked) this.linkAdded();
   }
 
   onIncluded(newItem: any){
     if (newItem){
       if (this.items.indexOf(newItem) < 0){
+        if (this.options.linked) this.linkAdded();
+
         this.items.push(newItem);
-        this.added.emit(newItem);
         this.updated.emit(this.items);
+        this.added.emit(newItem);
         this.selectedItem = newItem;
+
       } else {
         this.toastyService.error("Selected resource is already included to the set!");
+      }
+    }
+  }
+
+  linkAdded(){
+    if (this.selectedItem){
+      let index = this.items.indexOf(this.selectedItem);
+      if (index > 0) {
+        this.selectedItem.treeParent = this.items[index -1];
       }
     }
   }

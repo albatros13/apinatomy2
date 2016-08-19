@@ -87,7 +87,8 @@ var RepoAbstract = (function () {
         //Resources
         if (this.types.length == 0) {
             for (var x in utils_model_1.ResourceName) {
-                this.types.push(x);
+                if (x != utils_model_1.ResourceName.Border)
+                    this.types.push(x);
             }
         }
         this.zones = this.types.map(function (x) { return x + "_zone"; });
@@ -138,8 +139,8 @@ var RepoAbstract = (function () {
             newItem.p('name').subscribe(newType.p('name'));
         }
         this.items.push(newItem);
-        this.added.emit(newItem);
         this.updated.emit(this.items);
+        this.added.emit(newItem);
         this.selectedItem = newItem;
     };
     RepoAbstract.prototype.getClassLabel = function (option) {

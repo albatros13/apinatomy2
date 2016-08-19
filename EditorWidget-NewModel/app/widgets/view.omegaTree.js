@@ -14,34 +14,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require('@angular/core');
 var service_resize_1 = require('../services/service.resize');
 var utils_model_1 = require("../services/utils.model");
-//Resource visualization widget stub
-var TemplateBox = (function () {
-    function TemplateBox(model) {
-        this.model = model;
-    }
-    TemplateBox.prototype.render = function (svg, options) {
-        var lyph = svg.append("rect")
-            .attr("x", options.center.x).attr("y", options.center.y)
-            .attr("width", options.size.width).attr("height", options.size.height)
-            .style("stroke", "black").style("fill", "white");
-        if (this.model.layers && (this.model.layers.size > 0)) {
-            var layers = Array.from(this.model.layers);
-            var x0 = options.center.x;
-            var y0 = options.center.y;
-            var dx = options.size.width / layers.length;
-            var dy = options.size.height;
-            for (var i = 0; i < layers.length; i++) {
-                lyph.append("rect")
-                    .attr("x", x0 + i * dx).attr("y", y0)
-                    .attr("width", dx).attr("height", dy)
-                    .style("stroke", "black").style("fill", utils_model_1.getColor(layers[i].id));
-            }
-        }
-        return lyph;
-    };
-    return TemplateBox;
-}());
-exports.TemplateBox = TemplateBox;
+var lyph_edit_widget_1 = require("lyph-edit-widget");
 var OmegaTreeWidget = (function () {
     function OmegaTreeWidget(renderer, el, resizeService) {
         var _this = this;
@@ -144,8 +117,10 @@ var OmegaTreeWidget = (function () {
                         .attr("width", 24).attr("height", 24);
                 }
                 else {
-                    var item = new TemplateBox(d.target.resource);
-                    item.render(svgGroup, { center: position, size: vp.node.size });
+                    var model_1 = new lyph_edit_widget_1.default({ model: d.target.resource,
+                        x: position.x, y: position.y, width: vp.node.size.width, height: vp.node.size.height });
+                    $(svgGroup.node()).append(model_1.element);
+                    var lyph = d3.select(model_1.element).attr("transform", "rotate(" + 90 + ',' + (position.x + dx) + ',' + (position.y + dy) + ")");
                 }
             }
         });

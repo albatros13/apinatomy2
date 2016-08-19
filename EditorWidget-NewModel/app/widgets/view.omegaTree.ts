@@ -5,39 +5,10 @@ import {Component, Input, Output, ViewChild, ElementRef, Renderer, EventEmitter}
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
 import {getIcon, getColor, getTreeData, compareLinkedParts, ResourceName, model} from "../services/utils.model";
+import LyphRectangle from "lyph-edit-widget";
 
 declare var d3:any;
-
-//Resource visualization widget stub
-export class TemplateBox{
-  model: any;
-  constructor(model: any) {
-    this.model = model;
-  }
-
-  render(svg: any, options: any) {
-    let lyph = svg.append("rect")
-      .attr("x", options.center.x).attr("y", options.center.y)
-      .attr("width", options.size.width).attr("height", options.size.height)
-      .style("stroke", "black").style("fill", "white");
-
-    if (this.model.layers && (this.model.layers.size > 0)){
-      let layers = Array.from(this.model.layers);
-      let x0 = options.center.x;
-      let y0 = options.center.y;
-      let dx = options.size.width / layers.length;
-      let dy = options.size.height;
-      for (let i = 0; i < layers.length; i++){
-        lyph.append("rect")
-          .attr("x", x0 + i * dx).attr("y", y0)
-          .attr("width", dx).attr("height", dy)
-          .style("stroke", "black").style("fill", getColor(layers[i].id));
-      }
-    }
-
-    return lyph;
-  }
-}
+declare var $:any;
 
 @Component({
   selector: 'omega-tree',
@@ -174,8 +145,10 @@ export class OmegaTreeWidget{
               .attr("x", position.x + dx - 12).attr("y", position.y + dy - 12)
               .attr("width", 24).attr("height", 24);
           } else {
-            let item = new TemplateBox(d.target.resource);
-            item.render(svgGroup, {center: position, size: vp.node.size});
+            let model = new LyphRectangle({model: d.target.resource,
+                x: position.x, y: position.y, width: vp.node.size.width, height: vp.node.size.height});
+            $(svgGroup.node()).append(model.element);
+            let lyph = d3.select(model.element).attr("transform", "rotate(" + 90 + ',' + (position.x + dx) + ',' + (position.y + dy) + ")")
           }
          }
       });

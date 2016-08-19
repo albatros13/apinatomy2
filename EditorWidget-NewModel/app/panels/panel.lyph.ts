@@ -53,7 +53,8 @@ import {ResourceName} from '../services/utils.model';
           <div class="input-control" *ngIf="includeProperty('measurables')">
             <repo-nested [caption]="getPropertyLabel('measurables')" 
             [items]  = "item.p('measurables') | async | setToArray" 
-            (updated)= "updateProperty('measurables', $event)" 
+            (updated) = "updateProperty('measurables', $event)"
+            [selectionOptions] = "item.fields['measurables'].p('possibleValues')"
             [types]  = "[ResourceName.Measurable]"></repo-nested>
           </div> 
            
@@ -73,7 +74,7 @@ import {ResourceName} from '../services/utils.model';
             [items] = "item.p('segments') | async | setToArray" 
             [ignore]="segmentsIgnore"
             [options]="{ordered: true}"
-            (updated)="updateProperty('segments', $event)"
+            (updated)= "updateProperty('segments', $event)" 
             [types]="[item.class]"></repo-nested>
           </div>     
   
@@ -102,7 +103,7 @@ import {ResourceName} from '../services/utils.model';
             <repo-nested [caption]="getPropertyLabel('processes')" 
              [items]  = "item.p('processes') | async | setToArray" 
              [types]  = "[ResourceName.Process]" 
-             (updated)= "updateProperty('processes', $event)"           
+             (updated)= "updateProperty('processes', $event)" 
              ></repo-nested>
           </div>
           
@@ -111,7 +112,7 @@ import {ResourceName} from '../services/utils.model';
             <repo-nested [caption]="getPropertyLabel('coalescences')" 
              [items]  = "item.p('coalescences') | async | setToArray" 
              [types]  = "[ResourceName.Coalescence]" 
-             (updated)= "updateProperty('coalescences', $event)"           
+             (updated) = "updateProperty('coalescences', $event)" 
              ></repo-nested>
           </div>
             
@@ -120,7 +121,7 @@ import {ResourceName} from '../services/utils.model';
             <repo-nested [caption]="getPropertyLabel('incomingProcesses')" 
              [items]  = "item.p('incomingProcesses') | async | setToArray" 
              [types]  = "[ResourceName.Process]" 
-             (updated)= "updateProperty('incomingProcesses', $event)"           
+             (updated) = "updateProperty('incomingProcesses', $event)" 
              ></repo-nested>
           </div>
           
@@ -129,7 +130,7 @@ import {ResourceName} from '../services/utils.model';
             <repo-nested [caption]="getPropertyLabel('outgoingProcesses')" 
              [items]  = "item.p('outgoingProcesses') | async | setToArray" 
              [types]  = "[ResourceName.Process]" 
-             (updated)= "updateProperty('outgoingProcesses', $event)"           
+             (updated) = "updateProperty('outgoingProcesses', $event)" 
              ></repo-nested>
           </div>
           
@@ -145,7 +146,7 @@ import {ResourceName} from '../services/utils.model';
             <border-panel [item]="item.p('axis') | async" 
               [options]="borderOptions"
               (propertyUpdated) = "propertyUpdated.emit($event)"
-              (saved)  ="updateProperty('axis', $event)">
+              (saved)  = "updateProperty('axis', $event)">
             </border-panel>
           </div>              
         
@@ -156,7 +157,7 @@ import {ResourceName} from '../services/utils.model';
                [items]  = "item.p('radialBorders') | async | setToArray" 
                [types]  = "[ResourceName.Border]" 
                [options] = "borderOptions"
-               (updated)= "updateProperty('radialBorders', $event)"           
+               (updated) = "updateProperty('radialBorders', $event)" 
              ></repo-nested>
           </div>
           
@@ -167,7 +168,7 @@ import {ResourceName} from '../services/utils.model';
                [items]  = "item.p('longitudinalBorders') | async | setToArray" 
                [types]  = "[ResourceName.Border]" 
                [options] = "borderOptions"
-               (updated)= "updateProperty('longitudinalBorders', $event)"           
+               (updated) = "updateProperty('longitudinalBorders', $event)" 
              ></repo-nested>
           </div>
           
@@ -259,6 +260,5 @@ export class LyphPanel extends MaterialPanel{
    }
    this.saved.emit(event);
    }*/
-
 
 }

@@ -50,7 +50,11 @@ System.config({
       "defaultExtension": "js"
     },
     "open-physiology-model": {
-      "main": "open-physiology-model.js",
+      "main": "open-physiology-model-minimal.js",
+      "defaultExtension": "js"
+    },
+    "lyph-edit-widget": {
+      "main": "LyphRectangle.js",
       "defaultExtension": "js"
     },
     "@angular/common": {
@@ -110,6 +114,7 @@ System.config({
     "ng2-toasty": "node_modules/ng2-toasty",
     "nvd3": "npm:nvd3@1.8.4",
     "open-physiology-model": "node_modules/open-physiology-model/dist",
+    "lyph-edit-widget": "node_modules/lyph-edit-widget/dist",
     "plugin-babel": "npm:systemjs-plugin-babel@0.0.12",
     "plugin-babel-runtime": "npm:babel-runtime@5.8.38",
     "rx": "node_modules/rx",

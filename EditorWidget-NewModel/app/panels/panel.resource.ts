@@ -133,22 +133,21 @@ export class ResourcePanel {
       this.item.constructor.properties[property]
       && this.item.constructor.properties[property].readonly) return;
 
-
-      if (property == "axis"){
-        console.log("Updating axis", item);
-      }
-
       this.item[property] = item;
       this.propertyUpdated.emit({property: property, values: item});
   }
 
-  addTemplate(property: string, Class: string){
-    this.item[property] = model[Class].new({name: "T: " + property + " " + this.item.name});
+  addItem(parent: any, property: string, item: any){
+    console.log("Updating " + property, parent[property]);
+    if (parent && (parent[property])){
+      parent[property].add(item);
+      this.propertyUpdated.emit({property: property, values: parent[property]});
+    }
   }
 
-  removeTemplate(property: string, item: any){
+  removeItem(parent: any, property: string, item: any){
     item.delete();
-    this.updateProperty(property, null);
+    this.updateProperty(property, parent[property]);
   }
 
 }

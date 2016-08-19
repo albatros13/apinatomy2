@@ -28,7 +28,7 @@ import {TemplateValue} from '../components/component.templateValue';
       
       <!--Subtypes-->
       <div class="input-control" *ngIf="includeProperty('subtypes')">
-        <label for="subtypes">{{getPropertyLabel('subtypes')}}:: </label>
+        <label for="subtypes">{{getPropertyLabel('subtypes')}}: </label>
         <select-input [items]="item.p('subtypes') | async" 
           (updated)="updateProperty('subtypes', $event)" 
         [options]="item.constructor.p('all') | async"></select-input>

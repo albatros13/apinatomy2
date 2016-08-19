@@ -77,18 +77,19 @@ var ResourcePanel = (function () {
             this.item.constructor.properties[property]
             && this.item.constructor.properties[property].readonly)
             return;
-        if (property == "axis") {
-            console.log("Updating axis", item);
-        }
         this.item[property] = item;
         this.propertyUpdated.emit({ property: property, values: item });
     };
-    ResourcePanel.prototype.addTemplate = function (property, Class) {
-        this.item[property] = utils_model_1.model[Class].new({ name: "T: " + property + " " + this.item.name });
+    ResourcePanel.prototype.addItem = function (parent, property, item) {
+        console.log("Updating " + property, parent[property]);
+        if (parent && (parent[property])) {
+            parent[property].add(item);
+            this.propertyUpdated.emit({ property: property, values: parent[property] });
+        }
     };
-    ResourcePanel.prototype.removeTemplate = function (property, item) {
+    ResourcePanel.prototype.removeItem = function (parent, property, item) {
         item.delete();
-        this.updateProperty(property, null);
+        this.updateProperty(property, parent[property]);
     };
     __decorate([
         core_1.Input(), 

@@ -103,13 +103,10 @@ export class ResourceEditor {
 
       let layers = Array.from(kidney.layers);
       let parts = Array.from(kidney.parts);
-      console.log("LAYERS", layers);
-      console.log("PARTS", parts);
 
       kidney.p('measurables').subscribe(
         x => {
           let measurablesP = Array.from(x);
-          console.log("MEASURABLES", measurablesP);
         }
       );
 
@@ -119,7 +116,6 @@ export class ResourceEditor {
       let measurable2 = model.Measurable.new({name: "Measurable 2"});
       kidney.measurables.add(measurable2);
 
-      
       //let kidneyLobus = model.Lyph.new({name: "Kidney lobus"});
       //await kidneyLobus.commit();
 

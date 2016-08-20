@@ -16,6 +16,7 @@ import {ResourceName, model} from "../services/utils.model";
         <span class="pull-right">
           <img *ngIf="isType" class="imtip" src="images/t.png"/>
           <img class="icon" src="{{icon}}"/>
+          <ng-content select="extra"></ng-content>
         </span>
   `
 })
@@ -39,10 +40,13 @@ export abstract class RepoAbstract{
   @Output() removed = new EventEmitter();
   @Output() updated = new EventEmitter();
   @Output() selectedItemChange = new EventEmitter();
+  @Output() activeItemChange = new EventEmitter();
 
   @Input() items: Array<any> = [];
   @Input() types: Array<any> = [];
   @Input() options: any = {};
+  _selectedItem: any;
+  _activeItem: any;
 
   zones: Array<string> = [];
   ignore: Set<string> = new Set<string>();
@@ -50,7 +54,6 @@ export abstract class RepoAbstract{
   sortByMode: string = "unsorted";
   filterByMode: string = "Name";
   searchString: string = "";
-  _selectedItem: any;
   isSelectedOpen: boolean = false;
 
   public set selectedItem (item: any) {
@@ -62,6 +65,17 @@ export abstract class RepoAbstract{
 
   public get selectedItem () {
     return this._selectedItem;
+  }
+
+  public set activeItem (item: any) {
+    if (this._activeItem != item){
+      this._activeItem = item;
+      this.activeItemChange.emit(this._activeItem);
+    }
+  }
+
+  public get activeItem () {
+    return this._activeItem;
   }
 
   ngOnInit(){
@@ -78,7 +92,11 @@ export abstract class RepoAbstract{
     this.zones = this.types.map(x => x + "_zone");
   }
 
-  protected onHeaderClick(item: any){
+  protected updateActive(item: any){
+    this.activeItem = item;
+  }
+
+  protected updateSelected(item: any){
     this.selectedItem = item;
     this.isSelectedOpen = !this.isSelectedOpen;
   }

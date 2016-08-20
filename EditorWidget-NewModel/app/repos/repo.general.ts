@@ -2,6 +2,7 @@
 import {Component} from '@angular/core';
 import {CORE_DIRECTIVES, FORM_DIRECTIVES} from '@angular/common';
 import {ACCORDION_DIRECTIVES} from 'ng2-bootstrap/components/accordion';
+
 import {DND_DIRECTIVES} from 'ng2-dnd/ng2-dnd';
 
 import {AddToolbar} from '../components/toolbar.add';
@@ -19,13 +20,19 @@ import {ItemHeader, RepoAbstract} from "./repo.abstract";
   inputs: ['items', 'caption', 'ignore', 'types', 'selectedItem', 'options'],
   template:`
      <div class="panel panel-info repo">
-        <div class="panel-heading">{{caption}}</div>
+        <div class="panel-heading">{{caption}}
+          <span class="pull-right" *ngIf="options?.showActive">
+            <button type="button" class="btn btn-default btn-header" 
+              [ngClass]="{'active': activeItem == null}" (click)="updateActive(null)">
+            </button>
+          </span>
+        </div>
         <div class="panel-body">
-          <sort-toolbar [options]="['Name', 'ID', 'Class']" (sorted)="onSorted($event)"></sort-toolbar>
-          <add-toolbar [options]="types" [transform]="getClassLabel" (added)="onAdded($event)"></add-toolbar>
+          <sort-toolbar  [options]="['Name', 'ID', 'Class']" (sorted)="onSorted($event)"></sort-toolbar>
+          <add-toolbar   [options]="types" [transform]="getClassLabel" (added)="onAdded($event)"></add-toolbar>
           <filter-toolbar [filter]="searchString" [options]="['Name', 'ID', 'Class']" (applied)="onFiltered($event)"></filter-toolbar>
           
-<!--          <property-toolbar  
+          <!--<property-toolbar  
             [options] = "properties"
             [transform] = "getClassLabel"
             (selectionChanged) = "hiddenTypesChanged($event)">
@@ -33,17 +40,24 @@ import {ItemHeader, RepoAbstract} from "./repo.abstract";
           
           <accordion class="list-group" [closeOthers]="true"> 
             <!--dnd-sortable-container [dropZones]="zones" [sortableData]="items">-->
-          <accordion-group *ngFor="let item of items | orderBy : sortByMode | filterBy: [searchString, filterByMode]; let i = index">
+          <accordion-group *ngFor="let item of items 
+          | orderBy : sortByMode 
+          | filterBy: [searchString, filterByMode]; let i = index">
             <!--class="list-group-item" dnd-sortable [sortableIndex]="i"> -->
-            <div accordion-heading (click)="onHeaderClick(item)">
+            <div accordion-heading (click)="updateSelected(item)">
               <item-header [item]="item" 
-                [selectedItem]="selectedItem" 
+                [selectedItem]  ="selectedItem" 
                 [isSelectedOpen]="isSelectedOpen" 
-                [icon]="getIcon(item.class)">
+                [icon]          ="getIcon(item.class)">   
+                <extra *ngIf="options?.showActive">
+                  <button type="button" class="btn btn-default btn-header" 
+                    [ngClass]="{'active': activeItem == item}" (click)="updateActive(item)">
+                  </button>
+                </extra>
               </item-header>
             </div>
 
-            <div *ngIf="!options || !options.headersOnly">
+            <div *ngIf="!options?.headersOnly">
               <panel-general *ngIf="item == selectedItem" [item]="item"
                 [ignore]="ignore"
                 (saved)="onSaved(item, $event)" 

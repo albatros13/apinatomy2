@@ -48,7 +48,7 @@ import {ToastyService, Toasty} from 'ng2-toasty/ng2-toasty';
             | orderBy : sortByMode 
             | filterBy: [searchString, filterByMode]; let i = index" 
             class="list-group-item" dnd-sortable (onDragStart)="onDragStart()" (onDragEnd)="onDragEnd()"
-           [sortableIndex]="i" (click)="onHeaderClick(item)">
+           [sortableIndex]="i" (click)="updateSelected(item)">
             <div accordion-heading>
               <item-header [item]="item" 
                 [selectedItem]="selectedItem" 
@@ -57,7 +57,7 @@ import {ToastyService, Toasty} from 'ng2-toasty/ng2-toasty';
               </item-header>
             </div>
 
-            <div *ngIf="!options || !options.headersOnly">
+            <div *ngIf="!options?.headersOnly">
               <panel-general *ngIf="item == selectedItem" 
                 [item]    ="item" 
                 [ignore]  ="ignore"

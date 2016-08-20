@@ -36,7 +36,6 @@ var LyphWidget = (function () {
             if (this.svg && this.model) {
                 this.model.width = this.vp.size.width;
                 this.model.height = this.vp.size.height;
-                console.log("NEW MODEL WIDTH", this.model.width);
             }
         }
     };
@@ -46,7 +45,7 @@ var LyphWidget = (function () {
     LyphWidget.prototype.ngOnChanges = function (changes) {
         this.svg = $('#lyphSvg');
         if (this.item) {
-            this.model = new lyph_edit_widget_1.default({ model: this.item,
+            this.model = new lyph_edit_widget_1.LyphRectangle({ model: this.item,
                 x: this.vp.margin.x, y: this.vp.margin.y,
                 width: this.vp.size.width - 2 * this.vp.margin.x, height: this.vp.size.height - 2 * this.vp.margin.y });
             this.svg.append(this.model.element);

@@ -117,7 +117,7 @@ var OmegaTreeWidget = (function () {
                         .attr("width", 24).attr("height", 24);
                 }
                 else {
-                    var model_1 = new lyph_edit_widget_1.default({ model: d.target.resource,
+                    var model_1 = new lyph_edit_widget_1.LyphRectangle({ model: d.target.resource,
                         x: position.x, y: position.y, width: vp.node.size.width, height: vp.node.size.height });
                     $(svgGroup.node()).append(model_1.element);
                     var lyph = d3.select(model_1.element).attr("transform", "rotate(" + 90 + ',' + (position.x + dx) + ',' + (position.y + dy) + ")");

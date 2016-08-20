@@ -5,7 +5,7 @@ import {Component, Input, Output, ViewChild, ElementRef, Renderer, EventEmitter}
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
 import {getIcon, getColor, getTreeData, compareLinkedParts, ResourceName, model} from "../services/utils.model";
-import LyphRectangle from "lyph-edit-widget";
+import {LyphRectangle} from "lyph-edit-widget";
 
 declare var d3:any;
 declare var $:any;

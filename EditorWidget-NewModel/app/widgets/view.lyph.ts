@@ -5,7 +5,7 @@ import {Component, Input, Output, ViewChild, ElementRef, Renderer, EventEmitter}
 import {ResizeService} from '../services/service.resize';
 import {Subscription}   from 'rxjs/Subscription';
 import {getIcon, ResourceName, model} from "../services/utils.model";
-import LyphRectangle from "lyph-edit-widget";
+import {LyphRectangle} from "lyph-edit-widget";
 
 declare var $:any;
 
@@ -47,8 +47,6 @@ export class LyphWidget{
       if (this.svg && this.model){
          this.model.width = this.vp.size.width;
          this.model.height = this.vp.size.height;
-        console.log("NEW MODEL WIDTH", this.model.width);
-
       }
     }
   }

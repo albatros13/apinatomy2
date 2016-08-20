@@ -17,6 +17,7 @@ System.config({
       "main": "index.js",
       "defaultExtension": "js"
     },
+    'symbol-observable': { "defaultExtension": 'js', "main": 'index.js'},
     "ng2-select": {
       "main": "notify.js",
       "defaultExtension": "js"
@@ -54,7 +55,7 @@ System.config({
       "defaultExtension": "js"
     },
     "lyph-edit-widget": {
-      "main": "LyphRectangle.js",
+      "main": "index.js",
       "defaultExtension": "js"
     },
     "@angular/common": {
@@ -98,6 +99,7 @@ System.config({
   map: {
     "@angular": "node_modules/@angular",
     "angular2-in-memory-web-api": "node_modules/angular2-in-memory-web-api",
+    'symbol-observable': 'node_modules/symbol-observable',
     "babel-polyfill": "jspm_packages/npm/babel-polyfill@6.9.1/dist/polyfill.js",
     "css": "github:systemjs/plugin-css@0.1.23",
     "d3": "npm:d3@4.1.1",

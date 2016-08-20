@@ -19,14 +19,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var core_1 = require('@angular/core');
 var repo_general_1 = require('../repos/repo.general');
 var repo_nested_1 = require('../repos/repo.nested');
-var widget_relations_1 = require('../widgets/widget.relations');
-var widget_resource_1 = require('../widgets/widget.resource');
+var widget_graph_1 = require('../widgets/widget.graph');
 var service_resize_1 = require('../services/service.resize');
 var pipe_general_1 = require("../transformations/pipe.general");
 var utils_model_1 = require("../services/utils.model");
 require('rxjs/add/operator/map');
-var ResourceEditor = (function () {
-    function ResourceEditor(resizeService, el) {
+var GraphEditor = (function () {
+    function GraphEditor(resizeService, el) {
         var _this = this;
         this.resizeService = resizeService;
         this.el = el;
@@ -52,18 +51,8 @@ var ResourceEditor = (function () {
                             componentName: 'RepoPanel'
                         },
                         {
-                            type: 'column',
-                            content: [
-                                {
-                                    type: 'component',
-                                    componentName: 'HierarchyPanel'
-                                },
-                                {
-                                    type: 'component',
-                                    componentName: 'ResourcePanel'
-                                }
-                            ],
-                            width: 50
+                            type: 'component',
+                            componentName: 'GraphWidgetPanel'
                         }
                     ]
                 }]
@@ -74,32 +63,37 @@ var ResourceEditor = (function () {
         var self = this;
         (function () {
             return __awaiter(this, void 0, void 0, function* () {
-                /*Lyphs*/
-                var renalH = utils_model_1.model.Lyph.new({ name: "Renal hilum" });
-                var renalP = utils_model_1.model.Lyph.new({ name: "Renal parenchyma" });
-                var renalC = utils_model_1.model.Lyph.new({ name: "Renal capsule" });
-                var cLyphsGroup = [renalH, renalP, renalC];
-                //await Promise.all(cLyphsGroup.map(p => p.commit()));
-                var kidney = utils_model_1.model.Lyph.new({ name: "Kidney", layers: cLyphsGroup });
-                //await kidney.commit();
-                var layers = Array.from(kidney.layers);
-                var parts = Array.from(kidney.parts);
-                kidney.p('measurables').subscribe(function (x) {
-                    var measurablesP = Array.from(x);
-                });
-                var measurable1 = utils_model_1.model.Measurable.new({ name: "Measurable 1" });
-                kidney.measurables = [measurable1];
-                var measurable2 = utils_model_1.model.Measurable.new({ name: "Measurable 2" });
-                kidney.measurables.add(measurable2);
-                //let kidneyLobus = model.Lyph.new({name: "Kidney lobus"});
-                //await kidneyLobus.commit();
+                var vesselWall, bloodLayer, node1, node2;
+                var bloodVessel = utils_model_1.model.Lyph.new({
+                    name: 'Blood Vessel',
+                    layers: [
+                        vesselWall = utils_model_1.model.Lyph.new({ name: 'Vessel Wall' }, { createRadialBorders: true }),
+                        bloodLayer = utils_model_1.model.Lyph.new({
+                            name: 'Blood Layer',
+                            parts: [
+                                utils_model_1.model.Lyph.new({ name: 'Sublyph' }, { createAxis: true, createRadialBorders: true })
+                            ]
+                        }, { createRadialBorders: true })
+                    ],
+                    nodes: [
+                        node1 = utils_model_1.model.Node.new()
+                    ]
+                }, { createAxis: true, createRadialBorders: true });
+                var brain = utils_model_1.model.Lyph.new({
+                    name: 'Brain',
+                    nodes: [
+                        node2 = utils_model_1.model.Node.new()
+                    ]
+                }, { createAxis: true, createRadialBorders: true });
+                self.bloodVessel = bloodVessel;
+                self.brain = brain;
             });
         })();
     }
-    ResourceEditor.prototype.ngOnDestroy = function () {
+    GraphEditor.prototype.ngOnDestroy = function () {
         this.rs.unsubscribe();
     };
-    ResourceEditor.prototype.onItemSelected = function (item) {
+    GraphEditor.prototype.updateSelected = function (item) {
         var _this = this;
         setTimeout(function () {
             _this.selectedItem = null;
@@ -108,7 +102,16 @@ var ResourceEditor = (function () {
             _this.selectedItem = item;
         }, 0);
     };
-    ResourceEditor.prototype.ngOnInit = function () {
+    GraphEditor.prototype.updateActive = function (item) {
+        var _this = this;
+        setTimeout(function () {
+            _this.activeItem = null;
+        }, 0);
+        setTimeout(function () {
+            _this.activeItem = item;
+        }, 0);
+    };
+    GraphEditor.prototype.ngOnInit = function () {
         var self = this;
         var main = $('app > #main');
         this.mainLayout = new GoldenLayout(this.layoutConfig, main);
@@ -117,50 +120,36 @@ var ResourceEditor = (function () {
             var content = $('app > #repo');
             content.detach().appendTo(panel);
         });
-        this.mainLayout.registerComponent('HierarchyPanel', function (container, componentState) {
+        this.mainLayout.registerComponent('GraphWidgetPanel', function (container, componentState) {
             var panel = container.getElement();
-            var component = $('app > #hierarchy');
+            var component = $('app > #graphWidget');
             component.detach().appendTo(panel);
             //Notify components about window resize
             container.on('open', function () {
                 var size = { width: container.width, height: container.height };
-                self.resizeService.announceResize({ target: "hierarchy-widget", size: size });
+                self.resizeService.announceResize({ target: "graph-widget", size: size });
             });
             container.on('resize', function () {
                 var size = { width: container.width, height: container.height };
-                self.resizeService.announceResize({ target: "hierarchy-widget", size: size });
-            });
-        });
-        this.mainLayout.registerComponent('ResourcePanel', function (container, componentState) {
-            var panel = container.getElement();
-            var component = $('app > #resource');
-            component.detach().appendTo(panel);
-            //Notify components about window resize
-            container.on('open', function () {
-                var size = { width: container.width, height: container.height };
-                self.resizeService.announceResize({ target: "resource-widget", size: size });
-            });
-            container.on('resize', function () {
-                var size = { width: container.width, height: container.height };
-                self.resizeService.announceResize({ target: "resource-widget", size: size });
+                self.resizeService.announceResize({ target: "graph-widget", size: size });
             });
         });
         this.mainLayout.init();
     };
-    ResourceEditor = __decorate([
+    GraphEditor = __decorate([
         core_1.Component({
             selector: 'app',
             providers: [
                 service_resize_1.ResizeService
             ],
-            template: "\n    <repo-general id=\"repo\"\n      [items]=\"items | setToArray | hideClass : ['Border']\" \n      [caption]=\"'Resources'\" \n      (selectedItemChange)=\"onItemSelected($event)\">\n    </repo-general>\n    <hierarchy-widget id = \"hierarchy\" [item]=\"selectedItem\"></hierarchy-widget>\n    <resource-widget id = \"resource\" [item]=\"selectedItem\"></resource-widget>   \n    <div id=\"main\"></div>\n  ",
+            template: "\n    <repo-general id=\"repo\"\n      [items]=\"items | setToArray | hideClass : ['Border', 'Node']\" \n      [caption]=\"'Resources'\" \n      [options]=\"{showActive: true}\"\n      (selectedItemChange)=\"updateSelected($event)\"\n      (activeItemChange)  =\"updateActive($event)\">\n    </repo-general>\n    <graph-widget id = \"graphWidget\" [brain]=\"brain\" [bloodVessel]=\"bloodVessel\"></graph-widget>\n    <div id=\"main\"></div>\n  ",
             styles: ["#main {width: 100%; height: 100%; border: 0; margin: 0; padding: 0}"],
-            directives: [repo_general_1.RepoGeneral, repo_nested_1.RepoNested, widget_relations_1.RelationshipWidget, widget_resource_1.ResourceWidget],
+            directives: [repo_general_1.RepoGeneral, repo_nested_1.RepoNested, widget_graph_1.GraphWidget],
             pipes: [pipe_general_1.SetToArray, pipe_general_1.HideClass]
         }), 
         __metadata('design:paramtypes', [service_resize_1.ResizeService, core_1.ElementRef])
-    ], ResourceEditor);
-    return ResourceEditor;
+    ], GraphEditor);
+    return GraphEditor;
 }());
-exports.ResourceEditor = ResourceEditor;
-//# sourceMappingURL=editor.resources.js.map
+exports.GraphEditor = GraphEditor;
+//# sourceMappingURL=editor.graph.js.map

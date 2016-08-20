@@ -1,6 +1,7 @@
 import modelFactory from "open-physiology-model";
 export const modelRef = modelFactory();
 export const model = modelRef.classes;
+window.module = modelRef;
 
 //console.log("MODEL", model);
 

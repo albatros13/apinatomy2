@@ -2,6 +2,7 @@
 var open_physiology_model_1 = require("open-physiology-model");
 exports.modelRef = open_physiology_model_1.default();
 exports.model = exports.modelRef.classes;
+window.module = exports.modelRef;
 exports.getColor = d3.scale.category20();
 (function (ResourceName) {
     ResourceName[ResourceName["ExternalResource"] = "ExternalResource"] = "ExternalResource";

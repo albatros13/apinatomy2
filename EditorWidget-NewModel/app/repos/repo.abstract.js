@@ -43,7 +43,7 @@ var ItemHeader = (function () {
         core_1.Component({
             selector: 'item-header',
             inputs: ['item', 'selectedItem', 'isSelectedOpen', 'icon'],
-            template: "\n      <i class=\"pull-left glyphicon\"\n        [ngClass]=\"{\n          'glyphicon-chevron-down': (item == selectedItem) && isSelectedOpen, \n          'glyphicon-chevron-right': (item != selectedItem) || !isSelectedOpen}\"></i>&nbsp;\n        {{(item.id)? item.id: \"?\"}}: {{item.name}}\n        <span class=\"pull-right\">\n          <img *ngIf=\"isType\" class=\"imtip\" src=\"images/t.png\"/>\n          <img class=\"icon\" src=\"{{icon}}\"/>\n        </span>\n  "
+            template: "\n      <i class=\"pull-left glyphicon\"\n        [ngClass]=\"{\n          'glyphicon-chevron-down': (item == selectedItem) && isSelectedOpen, \n          'glyphicon-chevron-right': (item != selectedItem) || !isSelectedOpen}\"></i>&nbsp;\n        {{(item.id)? item.id: \"?\"}}: {{item.name}}\n        <span class=\"pull-right\">\n          <img *ngIf=\"isType\" class=\"imtip\" src=\"images/t.png\"/>\n          <img class=\"icon\" src=\"{{icon}}\"/>\n          <ng-content select=\"extra\"></ng-content>\n        </span>\n  "
         }), 
         __metadata('design:paramtypes', [])
     ], ItemHeader);
@@ -56,6 +56,7 @@ var RepoAbstract = (function () {
         this.removed = new core_1.EventEmitter();
         this.updated = new core_1.EventEmitter();
         this.selectedItemChange = new core_1.EventEmitter();
+        this.activeItemChange = new core_1.EventEmitter();
         this.items = [];
         this.types = [];
         this.options = {};
@@ -79,6 +80,19 @@ var RepoAbstract = (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(RepoAbstract.prototype, "activeItem", {
+        get: function () {
+            return this._activeItem;
+        },
+        set: function (item) {
+            if (this._activeItem != item) {
+                this._activeItem = item;
+                this.activeItemChange.emit(this._activeItem);
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
     RepoAbstract.prototype.ngOnInit = function () {
         if (!this.items)
             this.items = [];
@@ -93,7 +107,10 @@ var RepoAbstract = (function () {
         }
         this.zones = this.types.map(function (x) { return x + "_zone"; });
     };
-    RepoAbstract.prototype.onHeaderClick = function (item) {
+    RepoAbstract.prototype.updateActive = function (item) {
+        this.activeItem = item;
+    };
+    RepoAbstract.prototype.updateSelected = function (item) {
         this.selectedItem = item;
         this.isSelectedOpen = !this.isSelectedOpen;
     };
@@ -167,6 +184,10 @@ var RepoAbstract = (function () {
         core_1.Output(), 
         __metadata('design:type', Object)
     ], RepoAbstract.prototype, "selectedItemChange", void 0);
+    __decorate([
+        core_1.Output(), 
+        __metadata('design:type', Object)
+    ], RepoAbstract.prototype, "activeItemChange", void 0);
     __decorate([
         core_1.Input(), 
         __metadata('design:type', Array)

@@ -22,7 +22,7 @@ declare var $:any;
 
 @Component({
   selector: 'graph-widget',
-  inputs: ['item', 'bloodVessel', 'brain'],
+  inputs: ['activeItem', 'highlightedItem',  'bloodVessel', 'brain'],
   template : `
      <div class="panel panel-success">
      <div class="panel-heading">Graph editor</div>
@@ -33,8 +33,10 @@ declare var $:any;
   `
 })
 export class GraphWidget{
-  @Input() item: any;
+  @Input() activeItem: any;
+  @Input() highlightedItem: any;
 
+  //TESTING - remove from inputs
   @Input() bloodVessel: any;
   @Input() brain: any;
 
@@ -71,7 +73,6 @@ export class GraphWidget{
       this.root = new Canvas({element: this.svg});
     }
     if (!this.root) return;
-
 
     new SelectTool      (this.root.context);
     new DragDropTool    (this.root.context);
@@ -116,5 +117,10 @@ export class GraphWidget{
     if (this.subscription)
       this.subscription.unsubscribe();
   }
+
+  ngOnChanges(changes: { [propName: string]: any }) {
+    //console.log("Change!", this.highlightedItem);
+  }
+
 
 }

@@ -57,6 +57,7 @@ var RepoAbstract = (function () {
         this.updated = new core_1.EventEmitter();
         this.selectedItemChange = new core_1.EventEmitter();
         this.activeItemChange = new core_1.EventEmitter();
+        this.highlightedItemChange = new core_1.EventEmitter();
         this.items = [];
         this.types = [];
         this.options = {};
@@ -93,6 +94,23 @@ var RepoAbstract = (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(RepoAbstract.prototype, "highlightedItem", {
+        set: function (item) {
+            if (this.highlightedItem != item) {
+                this._highlightedItem = item;
+                this.highlightedItemChange.emit(this._highlightedItem);
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RepoAbstract.prototype, "highightedItem", {
+        get: function () {
+            return this._highlightedItem;
+        },
+        enumerable: true,
+        configurable: true
+    });
     RepoAbstract.prototype.ngOnInit = function () {
         if (!this.items)
             this.items = [];
@@ -106,6 +124,13 @@ var RepoAbstract = (function () {
             }
         }
         this.zones = this.types.map(function (x) { return x + "_zone"; });
+    };
+    RepoAbstract.prototype.updateHighlighted = function (item) {
+        this.highlightedItem = item;
+    };
+    RepoAbstract.prototype.cleanHighlighted = function (item) {
+        if (this.highlightedItem == item)
+            this.highlightedItem = null;
     };
     RepoAbstract.prototype.updateActive = function (item) {
         this.activeItem = item;
@@ -188,6 +213,10 @@ var RepoAbstract = (function () {
         core_1.Output(), 
         __metadata('design:type', Object)
     ], RepoAbstract.prototype, "activeItemChange", void 0);
+    __decorate([
+        core_1.Output(), 
+        __metadata('design:type', Object)
+    ], RepoAbstract.prototype, "highlightedItemChange", void 0);
     __decorate([
         core_1.Input(), 
         __metadata('design:type', Array)

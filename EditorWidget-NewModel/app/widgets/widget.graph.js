@@ -82,10 +82,17 @@ var GraphWidget = (function () {
         if (this.subscription)
             this.subscription.unsubscribe();
     };
+    GraphWidget.prototype.ngOnChanges = function (changes) {
+        //console.log("Change!", this.highlightedItem);
+    };
     __decorate([
         core_1.Input(), 
         __metadata('design:type', Object)
-    ], GraphWidget.prototype, "item", void 0);
+    ], GraphWidget.prototype, "activeItem", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Object)
+    ], GraphWidget.prototype, "highlightedItem", void 0);
     __decorate([
         core_1.Input(), 
         __metadata('design:type', Object)
@@ -97,7 +104,7 @@ var GraphWidget = (function () {
     GraphWidget = __decorate([
         core_1.Component({
             selector: 'graph-widget',
-            inputs: ['item', 'bloodVessel', 'brain'],
+            inputs: ['activeItem', 'highlightedItem', 'bloodVessel', 'brain'],
             template: "\n     <div class=\"panel panel-success\">\n     <div class=\"panel-heading\">Graph editor</div>\n       <div class=\"panel-body\">\n          <svg id=\"graphSvg\" class=\"svg-widget\"></svg>\n       </div>\n    </div> \n  "
         }), 
         __metadata('design:paramtypes', [core_1.Renderer, core_1.ElementRef, service_resize_1.ResizeService])

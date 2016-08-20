@@ -41,12 +41,14 @@ export abstract class RepoAbstract{
   @Output() updated = new EventEmitter();
   @Output() selectedItemChange = new EventEmitter();
   @Output() activeItemChange = new EventEmitter();
+  @Output() highlightedItemChange = new EventEmitter();
 
   @Input() items: Array<any> = [];
   @Input() types: Array<any> = [];
   @Input() options: any = {};
   _selectedItem: any;
   _activeItem: any;
+  _highlightedItem: any;
 
   zones: Array<string> = [];
   ignore: Set<string> = new Set<string>();
@@ -78,6 +80,17 @@ export abstract class RepoAbstract{
     return this._activeItem;
   }
 
+  public set highlightedItem (item: any) {
+    if (this.highlightedItem != item){
+      this._highlightedItem = item;
+      this.highlightedItemChange.emit(this._highlightedItem);
+    }
+  }
+
+  public get highightedItem () {
+    return this._highlightedItem;
+  }
+
   ngOnInit(){
     if (!this.items) this.items = [];
     if (this.items[0] || !this.selectedItem)
@@ -90,6 +103,14 @@ export abstract class RepoAbstract{
       }
     }
     this.zones = this.types.map(x => x + "_zone");
+  }
+
+  protected updateHighlighted(item){
+    this.highlightedItem = item;
+  }
+
+  protected cleanHighlighted(item){
+    if (this.highlightedItem == item) this.highlightedItem = null;
   }
 
   protected updateActive(item: any){

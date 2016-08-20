@@ -44,7 +44,9 @@ import {ItemHeader, RepoAbstract} from "./repo.abstract";
           | orderBy : sortByMode 
           | filterBy: [searchString, filterByMode]; let i = index">
             <!--class="list-group-item" dnd-sortable [sortableIndex]="i"> -->
-            <div accordion-heading (click)="updateSelected(item)">
+            <div accordion-heading 
+              (click)="updateSelected(item)" 
+              (mouseover)="updateHighlighted(item)" (mouseout)="cleanHighlighted(item)">
               <item-header [item]="item" 
                 [selectedItem]  ="selectedItem" 
                 [isSelectedOpen]="isSelectedOpen" 

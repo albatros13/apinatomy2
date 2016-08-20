@@ -23,9 +23,14 @@ declare var $: any;
       [caption]="'Resources'" 
       [options]="{showActive: true}"
       (selectedItemChange)="updateSelected($event)"
-      (activeItemChange)  ="updateActive($event)">
+      (activeItemChange)  ="updateActive($event)"
+      (highlightedItemChange)="updateHighlighted($event)"
+      >
     </repo-general>
-    <graph-widget id = "graphWidget" [brain]="brain" [bloodVessel]="bloodVessel"></graph-widget>
+    <graph-widget id = "graphWidget" 
+      [activeItem]="activeItem" [highlightedItem]="highlightedItem" 
+      [brain]="brain" [bloodVessel]="bloodVessel">
+    </graph-widget>
     <div id="main"></div>
   `,
   styles: [`#main {width: 100%; height: 100%; border: 0; margin: 0; padding: 0}`],
@@ -36,6 +41,7 @@ export class GraphEditor {
   items : Array<any>;
   selectedItem : any;
   activeItem   : any;
+  highlightedItem : any;
 
   layoutConfig = {
     settings: {
@@ -134,12 +140,11 @@ export class GraphEditor {
   }
 
   updateActive(item:any) {
-    setTimeout(() => {
-      this.activeItem = null;
-    }, 0);
-    setTimeout(() => {
-      this.activeItem = item;
-    }, 0);
+    this.activeItem = item;
+  }
+
+  updateHighlighted(item:any) {
+    this.highlightedItem = item;
   }
 
   ngOnInit() {

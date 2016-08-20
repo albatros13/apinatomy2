@@ -103,13 +103,10 @@ var GraphEditor = (function () {
         }, 0);
     };
     GraphEditor.prototype.updateActive = function (item) {
-        var _this = this;
-        setTimeout(function () {
-            _this.activeItem = null;
-        }, 0);
-        setTimeout(function () {
-            _this.activeItem = item;
-        }, 0);
+        this.activeItem = item;
+    };
+    GraphEditor.prototype.updateHighlighted = function (item) {
+        this.highlightedItem = item;
     };
     GraphEditor.prototype.ngOnInit = function () {
         var self = this;
@@ -142,7 +139,7 @@ var GraphEditor = (function () {
             providers: [
                 service_resize_1.ResizeService
             ],
-            template: "\n    <repo-general id=\"repo\"\n      [items]=\"items | setToArray | hideClass : ['Border', 'Node']\" \n      [caption]=\"'Resources'\" \n      [options]=\"{showActive: true}\"\n      (selectedItemChange)=\"updateSelected($event)\"\n      (activeItemChange)  =\"updateActive($event)\">\n    </repo-general>\n    <graph-widget id = \"graphWidget\" [brain]=\"brain\" [bloodVessel]=\"bloodVessel\"></graph-widget>\n    <div id=\"main\"></div>\n  ",
+            template: "\n    <repo-general id=\"repo\"\n      [items]=\"items | setToArray | hideClass : ['Border', 'Node']\" \n      [caption]=\"'Resources'\" \n      [options]=\"{showActive: true}\"\n      (selectedItemChange)=\"updateSelected($event)\"\n      (activeItemChange)  =\"updateActive($event)\"\n      (highlightedItemChange)=\"updateHighlighted($event)\"\n      >\n    </repo-general>\n    <graph-widget id = \"graphWidget\" \n      [activeItem]=\"activeItem\" [highlightedItem]=\"highlightedItem\" \n      [brain]=\"brain\" [bloodVessel]=\"bloodVessel\">\n    </graph-widget>\n    <div id=\"main\"></div>\n  ",
             styles: ["#main {width: 100%; height: 100%; border: 0; margin: 0; padding: 0}"],
             directives: [repo_general_1.RepoGeneral, repo_nested_1.RepoNested, widget_graph_1.GraphWidget],
             pipes: [pipe_general_1.SetToArray, pipe_general_1.HideClass]
